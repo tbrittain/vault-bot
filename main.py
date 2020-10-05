@@ -1,4 +1,5 @@
 import discord
+from discord.ext import tasks
 import os
 from dotenv import load_dotenv
 import asyncio
@@ -6,6 +7,7 @@ import spotify_commands
 import time
 from spotipy import SpotifyException
 import schedule
+from datetime import datetime, timedelta
 
 load_dotenv()
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
@@ -25,6 +27,9 @@ async def on_ready():
         print(f"- {guild.id} (name: {guild.name})")
         guild_count = guild_count + 1
     print(f"VaultBot is in {guild_count} guilds.")
+    print(f"VaultBot is fully loaded and online.")
+    await bot.change_presence(activity=discord.Game('$help')) # sets discord activity to $help
+    song_time_check.start()
 
 
 @bot.event
@@ -51,8 +56,8 @@ async def on_message(message):
                 msg = await message.channel.send(search_results[0])
 
                 track_ids = search_results[1]
-                print(len(track_ids))
-                print(track_ids)
+                # print(len(track_ids))
+                # print(track_ids)
 
                 emojis = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣',
                           '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟']
@@ -97,7 +102,7 @@ async def on_message(message):
                         track_selection = 8
                     elif reaction.emoji == '🔟':
                         track_selection = 9
-                    print(track_ids[track_selection][track_selection + 1])
+                    # print(track_ids[track_selection][track_selection + 1])
                     selected_track_id = track_ids[track_selection][track_selection + 1]
                     await message.channel.send('👍')
                     await spotify_commands.add_to_playlist(selected_track_id)
@@ -147,7 +152,38 @@ async def on_message(message):
             await message.channel.send(f'Unrecognized command "{first_word}", {message.author.mention}!')
 
 
+@tasks.loop(minutes=60)
+async def song_time_check():
+    await bot.wait_until_ready()
+    results = spotify_commands.sp.playlist_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs')
+    tracks = results['items']
+    while results['next']:
+        results = spotify_commands.sp.next(results)
+        tracks.extend(results['items'])
+
+    track_list = []
+    if len(tracks) > 0:
+        for track in tracks:
+            # date in YYYY-MM-DD format by default from Spotify
+            added_at = track['added_at']
+            added_at = added_at.split('T', 1)  # precision of the track removal is to the day, not to the hour
+            added_at = added_at[0]
+            track_dict = {track['track']['id']: added_at}
+
+            track_list.append(track_dict)
+    for track in track_list:
+        for key, value in track.items():
+            date_split = value.split('-')
+            time_difference = datetime.now() - datetime(year=int(date_split[0]),
+                                                        month=int(date_split[1]),
+                                                        day=int(date_split[2]))
+            if time_difference > timedelta(days=14):  # set 2 weeks threshold for track removal
+                spotify_commands.sp.playlist_remove_all_occurrences_of_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs',
+                                                                             items=[key])
+                print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) + f' Song {key} removed from playlist')
+    print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) + ' Hourly playlist cleanup complete')
+
+
 if __name__ == "__main__":
     bot.run(DISCORD_TOKEN)
-    # after this, need to invoke command to analyze whether song been added >2 weeks ago, then remove it from dynamic
-    # playlist
+

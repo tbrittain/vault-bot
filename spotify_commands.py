@@ -55,36 +55,11 @@ async def add_to_playlist(song_id):
     song_id = [song_id, ]
     sp.playlist_add_items('5YQHb5wt9d0hmShWNxjsTs', song_id)
     print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) +
-          f'Song of ID {song_id} added to Vault Community Playlist')
+          f' Song of ID {song_id} added to Vault Community Playlist')
     sp.playlist_add_items('4C6pU7YmbBUG8sFFk4eSXj', song_id)
     print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) +
-          f'Song of ID {song_id} added to Vault Community Archive Playlist')
+          f' Song of ID {song_id} added to Vault Community Archive Playlist')
 
-
-def song_time_check():
-    results = sp.playlist_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs')
-    tracks = results['items']
-    while results['next']:
-        results = sp.next(results)
-        tracks.extend(results['items'])
-
-    track_list = []
-    if len(tracks) > 0:
-        for track in tracks:
-            # date in YYYY-MM-DD format by default from Spotify
-            added_at = track['added_at']
-            added_at = added_at.split('T', 1)
-            added_at = added_at[0]
-            track_dict = {track['track']['id']: added_at}
-
-            track_list.append(track_dict)
-    for track in track_list:
-        for key, value in track.items():
-            date_split = value.split('-')
-            time_difference = datetime.now() - datetime(year=int(date_split[0]),
-                                                        month=int(date_split[1]),
-                                                        day=int(date_split[2]))
-            print(time_difference)
 
 # https://stackoverflow.com/a/61529490/14338656
 def octToDec(octal_number):
@@ -98,11 +73,4 @@ def octToDec(octal_number):
 
 
 if __name__ == "__main__":
-    song_time_check()
-    # print(datetime.now())
-    # print(datetime(year=2020, month=10, day=int(5)))
-    # d = datetime.now() - datetime(year=2020, month=9, day=int(5))
-    # if d > timedelta(days=14):
-    #     print('This returned true')
-    #     print(d)
-
+    pass
