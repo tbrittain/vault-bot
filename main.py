@@ -6,7 +6,6 @@ import asyncio
 import spotify_commands
 import time
 from spotipy import SpotifyException
-import schedule
 from datetime import datetime, timedelta
 
 load_dotenv()
@@ -28,7 +27,7 @@ async def on_ready():
         guild_count = guild_count + 1
     print(f"VaultBot is in {guild_count} guilds.")
     print(f"VaultBot is fully loaded and online.")
-    await bot.change_presence(activity=discord.Game('$help')) # sets discord activity to $help
+    await bot.change_presence(activity=discord.Game('$help'))  # sets discord activity to $help
     song_time_check.start()
 
 
@@ -80,7 +79,8 @@ async def on_message(message):
                 try:
                     reaction, user = await bot.wait_for('reaction_add', timeout=60.0, check=check)
                 except asyncio.TimeoutError:
-                    await message.channel.send(f'Nevermind, {message.author.mention}. Be that way.')
+                    await message.channel.send(f'Never mind, {message.author.mention}. '
+                                               f'You took too long. Please try again.')
                 else:  # song added to playlist here
                     if reaction.emoji == '1️⃣':
                         track_selection = 0
@@ -114,7 +114,9 @@ async def on_message(message):
             message_body = message_body.replace(']', "")
             message_body = message_body.replace("'", "")
             try:
+                await message.channel.send('👍')
                 await spotify_commands.add_to_playlist(message_body)
+                await message.channel.send('Track has been added to the community playlist!')
             except IndexError:
                 await message.channel.send(f'Please enter a Spotify track ID, {message.author.mention}')
             except SpotifyException:
@@ -186,4 +188,3 @@ async def song_time_check():
 
 if __name__ == "__main__":
     bot.run(DISCORD_TOKEN)
-

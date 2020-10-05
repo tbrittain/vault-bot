@@ -2,9 +2,7 @@ import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 from dotenv import load_dotenv
 import os
-import asyncio
 import time
-from datetime import datetime, timedelta
 
 load_dotenv()
 CLIENT_ID = os.getenv("SPOTIPY_CLIENT_ID")
@@ -59,6 +57,7 @@ async def add_to_playlist(song_id):
     sp.playlist_add_items('4C6pU7YmbBUG8sFFk4eSXj', song_id)
     print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) +
           f' Song of ID {song_id} added to Vault Community Archive Playlist')
+
 
 
 # https://stackoverflow.com/a/61529490/14338656
