@@ -7,6 +7,8 @@ import spotify_commands
 import time
 from spotipy import SpotifyException
 from datetime import datetime, timedelta
+import random
+import stats_commands
 
 load_dotenv()
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
@@ -104,19 +106,34 @@ async def on_message(message):
                         track_selection = 9
                     # print(track_ids[track_selection][track_selection + 1])
                     selected_track_id = track_ids[track_selection][track_selection + 1]
-                    await message.channel.send('👍')
-                    await spotify_commands.add_to_playlist(selected_track_id)
-                    await message.channel.send('Track has been added to the community playlist!')
+                    emoji_responses = ['👌', '👍', '🤘', '🤙', '🤝']
+                    await message.channel.send(random.choice(emoji_responses))
+
+                    await spotify_commands.add_to_playlist(song_id=selected_track_id, user=message.author)
+                    # cannot await the JSON serializable stats_song_add()
+                    stats_commands.stats_song_add(song_id=selected_track_id, user=str(message.author))
+
+                    await message.channel.send('Track has been added to the community playlists!')
+                    print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) +
+                          f' Song of ID {selected_track_id} added to playlists by {message.author}')
 
         elif first_word == 'add':  # $add command
             message_body = str(message_body)
             message_body = message_body.replace('[', "")
             message_body = message_body.replace(']', "")
             message_body = message_body.replace("'", "")
+            emoji_responses = ['👌', '👍', '🤘', '🤙', '🤝']
             try:
-                await message.channel.send('👍')
-                await spotify_commands.add_to_playlist(message_body)
-                await message.channel.send('Track has been added to the community playlist!')
+                await message.channel.send(random.choice(emoji_responses))
+
+                converted_song_id = await spotify_commands.convert_to_track_id(message_body)
+                await spotify_commands.add_to_playlist(song_id=converted_song_id, user=message.author)
+                stats_commands.stats_song_add(song_id=converted_song_id, user=str(message.author))
+
+                await message.channel.send('Track has been added to the community playlists!')
+                print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) +
+                      f' Song of ID {message_body} added to playlists by {message.author}')
+
             except IndexError:
                 await message.channel.send(f'Please enter a Spotify track ID, {message.author.mention}')
             except SpotifyException:
@@ -132,7 +149,8 @@ async def on_message(message):
                 playlist_embed.add_field(name='Main playlist', value='https://open.spotify.com/playlist'
                                                                      '/5YQHb5wt9d0hmShWNxjsTs?si=Zw8fNLiKSligb1pQcMfUlg')
                 playlist_embed.add_field(name='Archive playlist', value='https://open.spotify.com/playlist'
-                                                                        '/4C6pU7YmbBUG8sFFk4eSXj?si=R2O3G3suS1CSuFEQPjZIhA')
+                                                                        '/4C6pU7YmbBUG8sFFk4eSXj?si'
+                                                                        '=R2O3G3suS1CSuFEQPjZIhA')
                 await message.channel.send(embed=playlist_embed)
             except IndexError:
                 pass
@@ -146,7 +164,7 @@ async def on_message(message):
                                                            'and lists the top 10 results')
                 help_embed.add_field(name='$add', value='Input a Spotify song link/URI/ID to add it directly to the '
                                                         'playlist')
-                help_embed.add_field(name='$playlist', value='Pastes link to the Spotify playlist')
+                help_embed.add_field(name='$playlist', value='Links to the Spotify playlists')
                 await message.channel.send(embed=help_embed)
             except IndexError:
                 pass
@@ -180,6 +198,7 @@ async def song_time_check():
                                                         month=int(date_split[1]),
                                                         day=int(date_split[2]))
             if time_difference > timedelta(days=14):  # set 2 weeks threshold for track removal
+                # TODO: update the json to remove values corresponding to community playlist tracks
                 spotify_commands.sp.playlist_remove_all_occurrences_of_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs',
                                                                              items=[key])
                 print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) + f' Song {key} removed from playlist')
@@ -187,4 +206,4 @@ async def song_time_check():
 
 
 if __name__ == "__main__":
-    bot.run(DISCORD_TOKEN)
+    bot.run(DISCORD_TOKEN)  # statement is blocking, needs to be final in execution
