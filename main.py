@@ -201,6 +201,8 @@ async def song_time_check():
                 # TODO: update the json to remove values corresponding to community playlist tracks
                 spotify_commands.sp.playlist_remove_all_occurrences_of_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs',
                                                                              items=[key])
+                stats_commands.purge_stats(song_id=[key])
+
                 print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) + f' Song {key} removed from playlist')
     print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) + ' Hourly playlist cleanup complete')
 
