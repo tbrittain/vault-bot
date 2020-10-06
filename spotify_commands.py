@@ -49,15 +49,11 @@ async def song_search(user_message):
 
 
 # TODO: prevent episodes from being added to playlist
-async def add_to_playlist(song_id, user):
+async def add_to_playlist(song_id):
     song_id = [song_id, ]  # for whatever reason, spotipy input is a list
     # TODO: prevent duplicate tracks from being added to community playlist
     sp.playlist_add_items('5YQHb5wt9d0hmShWNxjsTs', song_id)
     sp.playlist_add_items('4C6pU7YmbBUG8sFFk4eSXj', song_id)
-
-    # may need a separate song search function to pull exact song ID just in case user submits URL
-
-    # invoke JSON functions here to add to stats.json
 
 
 # https://stackoverflow.com/a/61529490/14338656

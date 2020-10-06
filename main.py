@@ -37,15 +37,14 @@ async def on_ready():
 async def on_message(message):
     if message.content[0] == "$":  # $ dollar sign will be the default bot command
         user_input = str(message.content)
-        channel = message.channel
+        user_input = user_input.lower()  # added to normalize all user input into lowercase
+
         print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) + f' User {message.author} invoked = {user_input}')
 
         user_input = user_input.replace("$", "")  # bot already called, removing $ for parsing user message
         first_word = user_input.split(' ', 1)[0]  # first word corresponds to command
-        try:
-            message_body = user_input.split(' ', 1)[1:]  # rest of body correspond to command argument(s)
-        except IndexError:
-            pass  # some commands do not have arguments, so ignore
+
+        message_body = user_input.split(' ', 1)[1:]  # rest of body correspond to command argument(s)
 
         # begin commands
         if first_word == 'search':  # $search command
@@ -79,7 +78,7 @@ async def on_message(message):
                         return False
 
                 try:
-                    reaction, user = await bot.wait_for('reaction_add', timeout=60.0, check=check)
+                    reaction, user = await bot.wait_for('reaction_add', timeout=30.0, check=check)
                 except asyncio.TimeoutError:
                     await message.channel.send(f'Never mind, {message.author.mention}. '
                                                f'You took too long. Please try again.')
@@ -109,7 +108,7 @@ async def on_message(message):
                     emoji_responses = ['👌', '👍', '🤘', '🤙', '🤝']
                     await message.channel.send(random.choice(emoji_responses))
 
-                    await spotify_commands.add_to_playlist(song_id=selected_track_id, user=message.author)
+                    await spotify_commands.add_to_playlist(song_id=selected_track_id)
                     # cannot await the JSON serializable stats_song_add()
                     stats_commands.stats_song_add(song_id=selected_track_id, user=str(message.author))
 
@@ -124,10 +123,9 @@ async def on_message(message):
             message_body = message_body.replace("'", "")
             emoji_responses = ['👌', '👍', '🤘', '🤙', '🤝']
             try:
-                await message.channel.send(random.choice(emoji_responses))
-
                 converted_song_id = await spotify_commands.convert_to_track_id(message_body)
-                await spotify_commands.add_to_playlist(song_id=converted_song_id, user=message.author)
+                await message.channel.send(random.choice(emoji_responses))
+                await spotify_commands.add_to_playlist(song_id=converted_song_id)
                 stats_commands.stats_song_add(song_id=converted_song_id, user=str(message.author))
 
                 await message.channel.send('Track has been added to the community playlists!')
@@ -141,20 +139,33 @@ async def on_message(message):
                 await message.channel.send(f'Valid arguments for $add are the raw Spotify song link, song URI, '
                                            f'or song ID')
 
+        # TODO: fix ability to parse message_body to view dynamic and archive stats
         elif first_word == 'stats':
-            pass
+            await message.channel.send(stats_commands.display_stats())
+            # if message_body == '' or message_body == 'dynamic':
+            #     general_stats = await stats_commands.display_stats()
+            #     await message.channel.send(general_stats)
+            #     print('stats dynamic worked')
+            # elif message_body == 'archive':
+            #     general_stats = await stats_commands.display_stats(playlist='archive')
+            #     await message.channel.send(general_stats)
+            #     print('stats archive worked')
+            # print('stats ended')
         elif first_word == 'hiscores':
             pass
         elif first_word == 'playlist':
             try:
                 playlist_embed = discord.Embed(title='$playlist',
-                                               description='Links to the playlists',
+                                               description='Links to the playlists. Paste the URI in your browser to '
+                                                           'open the playlist on your desktop client!',
                                                color=0x00ff00)
                 playlist_embed.add_field(name='Main playlist', value='https://open.spotify.com/playlist'
                                                                      '/5YQHb5wt9d0hmShWNxjsTs?si=Zw8fNLiKSligb1pQcMfUlg')
                 playlist_embed.add_field(name='Archive playlist', value='https://open.spotify.com/playlist'
                                                                         '/4C6pU7YmbBUG8sFFk4eSXj?si'
                                                                         '=R2O3G3suS1CSuFEQPjZIhA')
+                playlist_embed.add_field(name='Main Spotify URI', value='spotify:playlist:5YQHb5wt9d0hmShWNxjsTs')
+                playlist_embed.add_field(name='Archive Spotify URI', value='spotify:playlist:4C6pU7YmbBUG8sFFk4eSXj')
                 await message.channel.send(embed=playlist_embed)
             except IndexError:
                 pass
@@ -202,7 +213,7 @@ async def song_time_check():
                                                         month=int(date_split[1]),
                                                         day=int(date_split[2]))
             if time_difference > timedelta(days=14):  # set 2 weeks threshold for track removal
-                # TODO: update the json to remove values corresponding to community playlist tracks
+                # TODO: update the json to refresh calculating average attributes when tracks removed
                 spotify_commands.sp.playlist_remove_all_occurrences_of_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs',
                                                                              items=[key])
                 stats_commands.purge_stats(song_id=[key])

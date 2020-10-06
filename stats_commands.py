@@ -1,5 +1,6 @@
 import json
 import spotify_commands
+import math
 
 
 # after writing to the stats.json file in the proper format, be sure to add
@@ -138,8 +139,66 @@ def average_features(features_dict):
     return avg_dict
 
 
-def display_stats():
-    pass
+def time_digit_to_min_sec(duration):
+    duration = duration * 60  # getting total seconds bc formatted in minutes
+    minutes = int(math.floor(duration / 60))
+    seconds = int(round(duration % 60, 0))
+    duration_string = str(minutes) + ":" + str(seconds)
+    return duration_string
+
+
+def display_stats(playlist='dynamic'):
+    with open('stats.json') as f:
+        data = json.load(f)
+
+    playlist_results_string = f'__***Audio features for the {playlist} playlist***__\n'
+    playlist_results_string += "```fix\n"
+
+    # looking at avg attributes first
+    metadata = data['playlists'][playlist]['meta']['avg_features']
+    song_duration = time_digit_to_min_sec(metadata['song_length'])
+    playlist_results_string += f'Average length: {song_duration}\n'
+
+    avg_tempo = round(metadata['tempo'], 1)
+    playlist_results_string += f'Average tempo in BPM: {avg_tempo}\n'
+
+    avg_dance = round(metadata['danceability'], 3)
+    playlist_results_string += f'Average danceability: {avg_dance}\n'
+
+    avg_energy = round(metadata['energy'], 3)
+    playlist_results_string += f'Average energy: {avg_energy}\n'
+
+    avg_loudness = round(metadata['energy'], 3)
+    playlist_results_string += f'Average loudness: {avg_loudness}\n'
+
+    avg_valence = round(metadata['valence'], 3)
+    playlist_results_string += f'Average valence: {avg_valence}\n'
+    playlist_results_string += f'\n'
+    playlist_results_string += f'See https://bit.ly/3d9Z9bm for more info on Spotify track attributes\n'
+    playlist_results_string += '```'
+
+    playlist_results_string += f'\n'
+
+    # looking at user counts
+    metadata = data['playlists'][playlist]
+    playlist_results_string += f'__***User participation in the {playlist} playlist***__\n'
+    playlist_results_string += "```fix\n"
+
+    users = {}
+    for track, values in metadata['tracks'].items():
+        if values['added_by'] not in users:
+            users[values['added_by']] = 1
+        else:
+            users[values['added_by']] += 1
+
+    users = {key: value for key, value in sorted(users.items(), key=lambda item: item[1], reverse=True)}
+    counter = 1
+    for user, track_add in users.items():
+        playlist_results_string += f'{counter}. {user}: {track_add} tracks added\n'
+        counter += 1
+
+    playlist_results_string += '```'
+    return playlist_results_string
 
 
 def display_hiscores():
@@ -147,18 +206,4 @@ def display_hiscores():
 
 
 if __name__ == "__main__":
-    # generate_json(song_id='5qNNanYonpCwahfJGuFVRQ', user='threesquared#3899')
-    # stats_song_add(song_id='7pBrj5rt4SSxXwFKOyZfHR', user='threesquared#3899')
-    # stats_song_add(song_id='3DYZKxjG8SZrWpVcoUilqQ', user='threesquared#3899')
-    # stats_song_add(song_id='0bQsNfzUMg134oWkAclfeK', user='threesquared#3899')
-    # stats_song_add(song_id='1bq6eYt2tdB5rSkwXgiwgD', user='threesquared#3899')
-    # stats_song_add(song_id='2PBcNVg8jB1e5kVkjXJyZ5', user='threesquared#3899')
-    # stats_song_add(song_id='2oeqKWbVwK5Ly2vjwWJKHd', user='threesquared#3899')
-    # stats_song_add(song_id='4V3N5LvUOh3yDPP16cwAhE', user='threesquared#3899')
-    # stats_song_add(song_id='1Pf5Ab6WhHBnSmw2EL5asT', user='threesquared#3899')
-    # stats_song_add(song_id='3bEvzQYZFSvlP2eUe4lPeu', user='threesquared#3899')
-    # stats_song_add(song_id='0PWsvwAT2AR6HBHb9kgvEI', user='threesquared#3899')
-    # stats_song_add(song_id='33OgftlouizHnppeukWtrk', user='threesquared#3899')
-    # stats_song_add(song_id='65u7IbuZ4viAlVBHxnpos1', user='threesquared#3899')
-    # stats_song_add(song_id='1aRvUHgMe9ichgcHAAs12f', user='Schmene#1026')
-    pass
+    print(display_stats())

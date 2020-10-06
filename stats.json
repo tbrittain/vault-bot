@@ -2,8 +2,18 @@
   "playlists": {
     "dynamic": {
       "meta": {
-        "avg_features": {},
-        "count": 15
+        "avg_features": {
+          "song_length": 3.6914298611111107,
+          "tempo": 117.68658333333333,
+          "danceability": 0.6452083333333332,
+          "energy": 0.6554291666666666,
+          "loudness": -6.967500000000001,
+          "acousticness": 0.23541541666666663,
+          "instrumentalness": 0.2463058716666667,
+          "liveness": 0.17861249999999995,
+          "valence": 0.5853750000000001
+        },
+        "count": 24
       },
       "tracks": {
         "5qNNanYonpCwahfJGuFVRQ": {
@@ -245,13 +255,167 @@
           "instrumentalness": 0.626,
           "liveness": 0.228,
           "valence": 0.526
+        },
+        "5UlOgMp7rSc9SJoB2rDcBa": {
+          "artist": "Vanilla",
+          "song": "Sakura",
+          "album": "Moonlight",
+          "added_by": "threesquared#3899",
+          "added_at": "2020-10-05 21:41:57.539651",
+          "song_length": 3.2744166666666668,
+          "tempo": 92.02,
+          "danceability": 0.747,
+          "energy": 0.441,
+          "loudness": -8.465,
+          "acousticness": 0.106,
+          "instrumentalness": 0.812,
+          "liveness": 0.0635,
+          "valence": 0.411
+        },
+        "4DtB1PJsbl4KAb2rZVNCUL": {
+          "artist": "Queen",
+          "song": "I Want It All - Remastered 2011",
+          "album": "The Miracle (Deluxe Remastered Version)",
+          "added_by": "threesquared#3899",
+          "added_at": "2020-10-05 21:44:47.829211",
+          "song_length": 4.034883333333333,
+          "tempo": 92.09,
+          "danceability": 0.414,
+          "energy": 0.842,
+          "loudness": -5.698,
+          "acousticness": 0.025,
+          "instrumentalness": 2.45e-06,
+          "liveness": 0.374,
+          "valence": 0.392
+        },
+        "5EYdTPdJD74r9EVZBztqGG": {
+          "artist": "Bloodhound Gang",
+          "song": "The Bad Touch",
+          "album": "Hooray For Boobies",
+          "added_by": "TigerMart#6593",
+          "added_at": "2020-10-05 21:54:47.044960",
+          "song_length": 4.3417666666666666,
+          "tempo": 122.979,
+          "danceability": 0.831,
+          "energy": 0.735,
+          "loudness": -6.254,
+          "acousticness": 0.00397,
+          "instrumentalness": 0.0205,
+          "liveness": 0.123,
+          "valence": 0.97
+        },
+        "66MpvsWO5O7gy9LjXGFw6I": {
+          "artist": "Khruangbin",
+          "song": "Maria Tambi\u00e9n",
+          "album": "Con Todo El Mundo",
+          "added_by": "RollinRastogi#4430",
+          "added_at": "2020-10-05 22:02:20.783836",
+          "song_length": 3.183316666666667,
+          "tempo": 103.597,
+          "danceability": 0.748,
+          "energy": 0.63,
+          "loudness": -7.318,
+          "acousticness": 0.00261,
+          "instrumentalness": 0.859,
+          "liveness": 0.532,
+          "valence": 0.846
+        },
+        "41CHb7F7SXcmkj0h8wekeF": {
+          "artist": "Billie Holiday",
+          "song": "Gloomy Sunday - Take 1",
+          "album": "Lady Day: The Complete Billie Holiday On Columbia (1933-1944)",
+          "added_by": "RollinRastogi#4430",
+          "added_at": "2020-10-05 22:03:58.627176",
+          "song_length": 3.18,
+          "tempo": 127.089,
+          "danceability": 0.484,
+          "energy": 0.0823,
+          "loudness": -11.273,
+          "acousticness": 0.98,
+          "instrumentalness": 2.47e-06,
+          "liveness": 0.159,
+          "valence": 0.191
+        },
+        "7q4MJZSiqPC16dbhQWxugv": {
+          "artist": "Vampire Weekend",
+          "song": "Cape Cod Kwassa Kwassa",
+          "album": "Vampire Weekend",
+          "added_by": "RollinRastogi#4430",
+          "added_at": "2020-10-05 22:06:00.075486",
+          "song_length": 3.5784333333333334,
+          "tempo": 105.058,
+          "danceability": 0.852,
+          "energy": 0.518,
+          "loudness": -7.155,
+          "acousticness": 0.832,
+          "instrumentalness": 0.0893,
+          "liveness": 0.14,
+          "valence": 0.794
+        },
+        "4NxyGehfY0tAmpmDmusg2x": {
+          "artist": "Post Animal",
+          "song": "Gelatin Mode",
+          "album": "When I Think Of You In A Castle",
+          "added_by": "RollinRastogi#4430",
+          "added_at": "2020-10-05 22:06:50.369567",
+          "song_length": 5.79955,
+          "tempo": 153.714,
+          "danceability": 0.274,
+          "energy": 0.719,
+          "loudness": -6.072,
+          "acousticness": 0.121,
+          "instrumentalness": 0,
+          "liveness": 0.116,
+          "valence": 0.494
+        },
+        "2ZMI0QNoqU9fQZFirR9WpK": {
+          "artist": "Greta Van Fleet",
+          "song": "When The Curtain Falls",
+          "album": "Anthem Of The Peaceful Army",
+          "added_by": "RollinRastogi#4430",
+          "added_at": "2020-10-05 22:07:07.133737",
+          "song_length": 3.716,
+          "tempo": 96.004,
+          "danceability": 0.535,
+          "energy": 0.975,
+          "loudness": -2.959,
+          "acousticness": 0.0297,
+          "instrumentalness": 0.126,
+          "liveness": 0.0482,
+          "valence": 0.689
+        },
+        "3MKevsnOdyWx6roRjKC0h5": {
+          "artist": "Moksi",
+          "song": "Downtown",
+          "album": "The Return of House Music",
+          "added_by": "threesquared#3899",
+          "added_at": "2020-10-05 22:46:59.392494",
+          "song_length": 3.39235,
+          "tempo": 124.005,
+          "danceability": 0.761,
+          "energy": 0.867,
+          "loudness": -6.024,
+          "acousticness": 0.00556,
+          "instrumentalness": 0.105,
+          "liveness": 0.0336,
+          "valence": 0.813
         }
       }
     },
     "archive": {
       "meta": {
-        "avg_features": {},
-        "count": 15
+        "avg_features": {
+          "song_length": 3.6914298611111107,
+          "tempo": 117.68658333333333,
+          "danceability": 0.6452083333333332,
+          "energy": 0.6554291666666666,
+          "loudness": -6.967500000000001,
+          "acousticness": 0.23541541666666663,
+          "instrumentalness": 0.2463058716666667,
+          "liveness": 0.17861249999999995,
+          "valence": 0.5853750000000001
+        },
+        "count": 24
       },
       "tracks": {
         "5qNNanYonpCwahfJGuFVRQ": {
@@ -493,13 +657,157 @@
           "instrumentalness": 0.626,
           "liveness": 0.228,
           "valence": 0.526
+        },
+        "5UlOgMp7rSc9SJoB2rDcBa": {
+          "artist": "Vanilla",
+          "song": "Sakura",
+          "album": "Moonlight",
+          "added_by": "threesquared#3899",
+          "added_at": "2020-10-05 21:41:57.539651",
+          "song_length": 3.2744166666666668,
+          "tempo": 92.02,
+          "danceability": 0.747,
+          "energy": 0.441,
+          "loudness": -8.465,
+          "acousticness": 0.106,
+          "instrumentalness": 0.812,
+          "liveness": 0.0635,
+          "valence": 0.411
+        },
+        "4DtB1PJsbl4KAb2rZVNCUL": {
+          "artist": "Queen",
+          "song": "I Want It All - Remastered 2011",
+          "album": "The Miracle (Deluxe Remastered Version)",
+          "added_by": "threesquared#3899",
+          "added_at": "2020-10-05 21:44:47.829211",
+          "song_length": 4.034883333333333,
+          "tempo": 92.09,
+          "danceability": 0.414,
+          "energy": 0.842,
+          "loudness": -5.698,
+          "acousticness": 0.025,
+          "instrumentalness": 2.45e-06,
+          "liveness": 0.374,
+          "valence": 0.392
+        },
+        "5EYdTPdJD74r9EVZBztqGG": {
+          "artist": "Bloodhound Gang",
+          "song": "The Bad Touch",
+          "album": "Hooray For Boobies",
+          "added_by": "TigerMart#6593",
+          "added_at": "2020-10-05 21:54:47.044960",
+          "song_length": 4.3417666666666666,
+          "tempo": 122.979,
+          "danceability": 0.831,
+          "energy": 0.735,
+          "loudness": -6.254,
+          "acousticness": 0.00397,
+          "instrumentalness": 0.0205,
+          "liveness": 0.123,
+          "valence": 0.97
+        },
+        "66MpvsWO5O7gy9LjXGFw6I": {
+          "artist": "Khruangbin",
+          "song": "Maria Tambi\u00e9n",
+          "album": "Con Todo El Mundo",
+          "added_by": "RollinRastogi#4430",
+          "added_at": "2020-10-05 22:02:20.783836",
+          "song_length": 3.183316666666667,
+          "tempo": 103.597,
+          "danceability": 0.748,
+          "energy": 0.63,
+          "loudness": -7.318,
+          "acousticness": 0.00261,
+          "instrumentalness": 0.859,
+          "liveness": 0.532,
+          "valence": 0.846
+        },
+        "41CHb7F7SXcmkj0h8wekeF": {
+          "artist": "Billie Holiday",
+          "song": "Gloomy Sunday - Take 1",
+          "album": "Lady Day: The Complete Billie Holiday On Columbia (1933-1944)",
+          "added_by": "RollinRastogi#4430",
+          "added_at": "2020-10-05 22:03:58.627176",
+          "song_length": 3.18,
+          "tempo": 127.089,
+          "danceability": 0.484,
+          "energy": 0.0823,
+          "loudness": -11.273,
+          "acousticness": 0.98,
+          "instrumentalness": 2.47e-06,
+          "liveness": 0.159,
+          "valence": 0.191
+        },
+        "7q4MJZSiqPC16dbhQWxugv": {
+          "artist": "Vampire Weekend",
+          "song": "Cape Cod Kwassa Kwassa",
+          "album": "Vampire Weekend",
+          "added_by": "RollinRastogi#4430",
+          "added_at": "2020-10-05 22:06:00.075486",
+          "song_length": 3.5784333333333334,
+          "tempo": 105.058,
+          "danceability": 0.852,
+          "energy": 0.518,
+          "loudness": -7.155,
+          "acousticness": 0.832,
+          "instrumentalness": 0.0893,
+          "liveness": 0.14,
+          "valence": 0.794
+        },
+        "4NxyGehfY0tAmpmDmusg2x": {
+          "artist": "Post Animal",
+          "song": "Gelatin Mode",
+          "album": "When I Think Of You In A Castle",
+          "added_by": "RollinRastogi#4430",
+          "added_at": "2020-10-05 22:06:50.369567",
+          "song_length": 5.79955,
+          "tempo": 153.714,
+          "danceability": 0.274,
+          "energy": 0.719,
+          "loudness": -6.072,
+          "acousticness": 0.121,
+          "instrumentalness": 0,
+          "liveness": 0.116,
+          "valence": 0.494
+        },
+        "2ZMI0QNoqU9fQZFirR9WpK": {
+          "artist": "Greta Van Fleet",
+          "song": "When The Curtain Falls",
+          "album": "Anthem Of The Peaceful Army",
+          "added_by": "RollinRastogi#4430",
+          "added_at": "2020-10-05 22:07:07.133737",
+          "song_length": 3.716,
+          "tempo": 96.004,
+          "danceability": 0.535,
+          "energy": 0.975,
+          "loudness": -2.959,
+          "acousticness": 0.0297,
+          "instrumentalness": 0.126,
+          "liveness": 0.0482,
+          "valence": 0.689
+        },
+        "3MKevsnOdyWx6roRjKC0h5": {
+          "artist": "Moksi",
+          "song": "Downtown",
+          "album": "The Return of House Music",
+          "added_by": "threesquared#3899",
+          "added_at": "2020-10-05 22:46:59.392494",
+          "song_length": 3.39235,
+          "tempo": 124.005,
+          "danceability": 0.761,
+          "energy": 0.867,
+          "loudness": -6.024,
+          "acousticness": 0.00556,
+          "instrumentalness": 0.105,
+          "liveness": 0.0336,
+          "valence": 0.813
         }
       }
     }
   },
   "users": {
     "meta": {
-      "count": 2
+      "count": 4
     },
     "user_list": {
       "threesquared#3899": {
@@ -727,10 +1035,68 @@
             "instrumentalness": 0.626,
             "liveness": 0.228,
             "valence": 0.526
+          },
+          "5UlOgMp7rSc9SJoB2rDcBa": {
+            "artist": "Vanilla",
+            "song": "Sakura",
+            "album": "Moonlight",
+            "added_by": "threesquared#3899",
+            "added_at": "2020-10-05 21:41:57.539651",
+            "song_length": 3.2744166666666668,
+            "tempo": 92.02,
+            "danceability": 0.747,
+            "energy": 0.441,
+            "loudness": -8.465,
+            "acousticness": 0.106,
+            "instrumentalness": 0.812,
+            "liveness": 0.0635,
+            "valence": 0.411
+          },
+          "4DtB1PJsbl4KAb2rZVNCUL": {
+            "artist": "Queen",
+            "song": "I Want It All - Remastered 2011",
+            "album": "The Miracle (Deluxe Remastered Version)",
+            "added_by": "threesquared#3899",
+            "added_at": "2020-10-05 21:44:47.829211",
+            "song_length": 4.034883333333333,
+            "tempo": 92.09,
+            "danceability": 0.414,
+            "energy": 0.842,
+            "loudness": -5.698,
+            "acousticness": 0.025,
+            "instrumentalness": 2.45e-06,
+            "liveness": 0.374,
+            "valence": 0.392
+          },
+          "3MKevsnOdyWx6roRjKC0h5": {
+            "artist": "Moksi",
+            "song": "Downtown",
+            "album": "The Return of House Music",
+            "added_by": "threesquared#3899",
+            "added_at": "2020-10-05 22:46:59.392494",
+            "song_length": 3.39235,
+            "tempo": 124.005,
+            "danceability": 0.761,
+            "energy": 0.867,
+            "loudness": -6.024,
+            "acousticness": 0.00556,
+            "instrumentalness": 0.105,
+            "liveness": 0.0336,
+            "valence": 0.813
           }
         },
-        "avg_features": {},
-        "song_count": 14
+        "avg_features": {
+          "song_length": 3.598139215686275,
+          "tempo": 116.84682352941175,
+          "danceability": 0.6620588235294116,
+          "energy": 0.6791176470588234,
+          "loudness": -6.838411764705883,
+          "acousticness": 0.1968641176470588,
+          "instrumentalness": 0.2832940852941177,
+          "liveness": 0.1810470588235294,
+          "valence": 0.5572941176470588
+        },
+        "song_count": 17
       },
       "Schmene#1026": {
         "total_tracks_added": {
@@ -751,8 +1117,146 @@
             "valence": 0.591
           }
         },
-        "avg_features": {},
+        "avg_features": {
+          "song_length": 3.6268833333333332,
+          "tempo": 129.641,
+          "danceability": 0.506,
+          "energy": 0.526,
+          "loudness": -9.936,
+          "acousticness": 0.334,
+          "instrumentalness": 0.000539,
+          "liveness": 0.0907,
+          "valence": 0.591
+        },
         "song_count": 1
+      },
+      "TigerMart#6593": {
+        "total_tracks_added": {
+          "5EYdTPdJD74r9EVZBztqGG": {
+            "artist": "Bloodhound Gang",
+            "song": "The Bad Touch",
+            "album": "Hooray For Boobies",
+            "added_by": "TigerMart#6593",
+            "added_at": "2020-10-05 21:54:47.044960",
+            "song_length": 4.3417666666666666,
+            "tempo": 122.979,
+            "danceability": 0.831,
+            "energy": 0.735,
+            "loudness": -6.254,
+            "acousticness": 0.00397,
+            "instrumentalness": 0.0205,
+            "liveness": 0.123,
+            "valence": 0.97
+          }
+        },
+        "avg_features": {
+          "song_length": 4.3417666666666666,
+          "tempo": 122.979,
+          "danceability": 0.831,
+          "energy": 0.735,
+          "loudness": -6.254,
+          "acousticness": 0.00397,
+          "instrumentalness": 0.0205,
+          "liveness": 0.123,
+          "valence": 0.97
+        },
+        "song_count": 1
+      },
+      "RollinRastogi#4430": {
+        "total_tracks_added": {
+          "66MpvsWO5O7gy9LjXGFw6I": {
+            "artist": "Khruangbin",
+            "song": "Maria Tambi\u00e9n",
+            "album": "Con Todo El Mundo",
+            "added_by": "RollinRastogi#4430",
+            "added_at": "2020-10-05 22:02:20.783836",
+            "song_length": 3.183316666666667,
+            "tempo": 103.597,
+            "danceability": 0.748,
+            "energy": 0.63,
+            "loudness": -7.318,
+            "acousticness": 0.00261,
+            "instrumentalness": 0.859,
+            "liveness": 0.532,
+            "valence": 0.846
+          },
+          "41CHb7F7SXcmkj0h8wekeF": {
+            "artist": "Billie Holiday",
+            "song": "Gloomy Sunday - Take 1",
+            "album": "Lady Day: The Complete Billie Holiday On Columbia (1933-1944)",
+            "added_by": "RollinRastogi#4430",
+            "added_at": "2020-10-05 22:03:58.627176",
+            "song_length": 3.18,
+            "tempo": 127.089,
+            "danceability": 0.484,
+            "energy": 0.0823,
+            "loudness": -11.273,
+            "acousticness": 0.98,
+            "instrumentalness": 2.47e-06,
+            "liveness": 0.159,
+            "valence": 0.191
+          },
+          "7q4MJZSiqPC16dbhQWxugv": {
+            "artist": "Vampire Weekend",
+            "song": "Cape Cod Kwassa Kwassa",
+            "album": "Vampire Weekend",
+            "added_by": "RollinRastogi#4430",
+            "added_at": "2020-10-05 22:06:00.075486",
+            "song_length": 3.5784333333333334,
+            "tempo": 105.058,
+            "danceability": 0.852,
+            "energy": 0.518,
+            "loudness": -7.155,
+            "acousticness": 0.832,
+            "instrumentalness": 0.0893,
+            "liveness": 0.14,
+            "valence": 0.794
+          },
+          "4NxyGehfY0tAmpmDmusg2x": {
+            "artist": "Post Animal",
+            "song": "Gelatin Mode",
+            "album": "When I Think Of You In A Castle",
+            "added_by": "RollinRastogi#4430",
+            "added_at": "2020-10-05 22:06:50.369567",
+            "song_length": 5.79955,
+            "tempo": 153.714,
+            "danceability": 0.274,
+            "energy": 0.719,
+            "loudness": -6.072,
+            "acousticness": 0.121,
+            "instrumentalness": 0,
+            "liveness": 0.116,
+            "valence": 0.494
+          },
+          "2ZMI0QNoqU9fQZFirR9WpK": {
+            "artist": "Greta Van Fleet",
+            "song": "When The Curtain Falls",
+            "album": "Anthem Of The Peaceful Army",
+            "added_by": "RollinRastogi#4430",
+            "added_at": "2020-10-05 22:07:07.133737",
+            "song_length": 3.716,
+            "tempo": 96.004,
+            "danceability": 0.535,
+            "energy": 0.975,
+            "loudness": -2.959,
+            "acousticness": 0.0297,
+            "instrumentalness": 0.126,
+            "liveness": 0.0482,
+            "valence": 0.689
+          }
+        },
+        "avg_features": {
+          "song_length": 3.89146,
+          "tempo": 117.0924,
+          "danceability": 0.5786,
+          "energy": 0.58486,
+          "loudness": -6.9554,
+          "acousticness": 0.393062,
+          "instrumentalness": 0.214860494,
+          "liveness": 0.19904000000000002,
+          "valence": 0.6028
+        },
+        "song_count": 5
       }
     }
   }
