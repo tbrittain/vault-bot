@@ -48,7 +48,6 @@ async def song_search(user_message):
         return f'No Spotify tracks for query {original_message} found!'
 
 
-# TODO: add sqlite database or JSON integration here to track overall stats
 # TODO: prevent episodes from being added to playlist
 async def add_to_playlist(song_id, user):
     song_id = [song_id, ]  # for whatever reason, spotipy input is a list

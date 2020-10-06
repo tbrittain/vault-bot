@@ -141,6 +141,10 @@ async def on_message(message):
                 await message.channel.send(f'Valid arguments for $add are the raw Spotify song link, song URI, '
                                            f'or song ID')
 
+        elif first_word == 'stats':
+            pass
+        elif first_word == 'hiscores':
+            pass
         elif first_word == 'playlist':
             try:
                 playlist_embed = discord.Embed(title='$playlist',

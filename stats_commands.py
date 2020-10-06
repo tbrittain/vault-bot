@@ -65,6 +65,15 @@ def stats_song_add(song_id, user):
     data['users']['meta']['count'] = len(data['users']['user_list'])
     data['users']['user_list'][user]['song_count'] = len(data['users']['user_list'][user]['total_tracks_added'])
 
+    # TODO: make stats update when $stats called as well, not just when song is added
+    # update average attributes
+    data['playlists']['dynamic']['meta']['avg_features'] = average_features(
+        features_dict=data['playlists']['dynamic']['tracks'])
+    data['playlists']['archive']['meta']['avg_features'] = average_features(
+        features_dict=data['playlists']['archive']['tracks'])
+    for user, value in data['users']['user_list'].items():
+        value['avg_features'] = average_features(features_dict=value['total_tracks_added'])
+
     with open('stats.json', 'w') as f:
         json.dump(data, f, indent=2)
 
@@ -78,6 +87,63 @@ def purge_stats(song_id):
 
     with open('stats.json', 'w') as f:
         json.dump(data, f, indent=2)
+
+
+def average_features(features_dict):
+    """
+
+    :param features_dict: Dictionary of dictionaries containing Spotify song features
+    """
+
+    def list_avg(feature_sum_list):
+        item_sum = 0
+        for item in feature_sum_list:
+            item_sum += item
+        return item_sum / len(feature_sum_list)
+
+    song_lengths = []
+    tempos = []
+    dances = []
+    energies = []
+    loudnesses = []
+    acoustics = []
+    instruments = []
+    livenesses = []
+    valences = []
+
+    for track_id, track_dict in features_dict.items():
+        song_lengths.append(track_dict["song_length"])
+        tempos.append(track_dict["tempo"])
+        dances.append(track_dict["danceability"])
+        energies.append(track_dict["energy"])
+        loudnesses.append(track_dict["loudness"])
+        acoustics.append(track_dict["acousticness"])
+        instruments.append(track_dict["instrumentalness"])
+        livenesses.append(track_dict["liveness"])
+        valences.append(track_dict["valence"])
+
+    song_length_avg = list_avg(song_lengths)
+    tempo_avg = list_avg(tempos)
+    dance_avg = list_avg(dances)
+    energy_avg = list_avg(energies)
+    loudness_avg = list_avg(loudnesses)
+    acoustics_avg = list_avg(acoustics)
+    instruments_avg = list_avg(instruments)
+    liveness_avg = list_avg(livenesses)
+    valence_avg = list_avg(valences)
+
+    avg_dict = {'song_length': song_length_avg, 'tempo': tempo_avg, 'danceability': dance_avg,
+                'energy': energy_avg, 'loudness': loudness_avg, 'acousticness': acoustics_avg,
+                'instrumentalness': instruments_avg, 'liveness': liveness_avg, 'valence': valence_avg}
+    return avg_dict
+
+
+def display_stats():
+    pass
+
+
+def display_hiscores():
+    pass
 
 
 if __name__ == "__main__":
