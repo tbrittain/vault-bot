@@ -19,6 +19,7 @@ bot = discord.Client()
 # TODO: urgent! backup json
 # TODO: make bot ignore messages from other bots
 # TODO: troubleshoot why bot sometimes responds with N instead of song results
+# TODO: loudness in stats might be broken
 
 @bot.event
 async def on_ready():
@@ -186,7 +187,27 @@ async def on_message(message):
                 await message.channel.send(f'Be sure you enter user name in the correct format, e.g. {message.author}')
         # TODO: highscores
         elif first_word.lower() == 'highscores':
-            pass
+            try:
+                if not message_body:
+                    await message.channel.send(f'Please enter a valid argument, such as $highscores playlist or '
+                                               f'$highscores user, {message.author.mention}!')
+                else:
+                    message_body = str(message_body)
+                    message_body = message_body.replace('[', '')
+                    message_body = message_body.replace(']', '')
+                    message_body = message_body.replace('"', '')
+                    message_body = message_body.replace("'", '')
+
+                    method_argument = message_body.split(' ', 1)[0]
+                    method_argument = str(method_argument)
+
+                    if method_argument != 'playlist' and method_argument != 'user':  # defaults to dynamic playlist
+                        message_body = 'playlist'
+
+                    await message.channel.send(stats_commands.display_highscores(method=message_body))
+            except ValueError:
+                await message.channel.send(f'User not present in my ledger, {message.author.mention}!')
+                await message.channel.send(f'Be sure you enter user name in the correct format, e.g. {message.author}')
         elif first_word.lower() == 'playlists' or first_word.lower() == 'playlist':
             try:
                 playlist_embed = discord.Embed(title='$playlists',

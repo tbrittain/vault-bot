@@ -1,6 +1,7 @@
 import json
 import spotify_commands
 import math
+import pandas as pd
 
 
 # after writing to the stats.json file in the proper format, be sure to add
@@ -189,8 +190,8 @@ def display_stats(method='playlist'):
             avg_energy = round(metadata['energy'], 3)
             playlist_results_string += f'Average energy: {avg_energy}\n'
 
-            avg_loudness = round(metadata['energy'], 3)
-            playlist_results_string += f'Average loudness: {avg_loudness}\n'
+            avg_loudness = round(metadata['loudness'], 3)
+            playlist_results_string += f'Average loudness in dB: {avg_loudness}\n'
 
             avg_valence = round(metadata['valence'], 3)
             playlist_results_string += f'Average valence: {avg_valence}\n'
@@ -244,8 +245,8 @@ def display_stats(method='playlist'):
             avg_energy = round(metadata['energy'], 3)
             playlist_results_string += f'Average energy: {avg_energy}\n'
 
-            avg_loudness = round(metadata['energy'], 3)
-            playlist_results_string += f'Average loudness: {avg_loudness}\n'
+            avg_loudness = round(metadata['loudness'], 3)
+            playlist_results_string += f'Average loudness in dB: {avg_loudness}\n'
 
             avg_valence = round(metadata['valence'], 3)
             playlist_results_string += f'Average valence: {avg_valence}\n'
@@ -259,7 +260,7 @@ def display_stats(method='playlist'):
     return playlist_results_string
 
 
-def display_highscores(method='dynamic'):
+def display_highscores(method):
     global playlist_results_string
     with open('stats.json') as f:
         data = json.load(f)
@@ -274,79 +275,105 @@ def display_highscores(method='dynamic'):
     method_argument = method_argument.replace('"', '')
     method_argument = method_argument.replace("'", '')
 
+    # create pd df here with all info
+    features_list = ['artist', 'song', 'added_by', 'added_at', 'Song length', 'Tempo', 'Danceability',
+                     'Energy', 'Loudness', 'Acousticness', 'Instrumentalness', 'Liveness', 'Valence']
+    high_score_features = ['Length', 'Tempo', 'Danceability',
+                           'Energy', 'Loudness', 'Valence']
+    total_playlist_array = pd.DataFrame(columns=features_list)
+
     if method.__contains__('playlist'):
         if method_argument.__contains__('dynamic'):
-            method_argument = 'dynamic'
+            playlist_name = 'dynamic'
         elif method_argument.__contains__('archive'):
-            method_argument = 'archive'
+            playlist_name = 'archive'
         else:
-            method_argument = 'dynamic'
+            method_argument += 'dynamic'
+            playlist_name = 'dynamic'
+        if not method_argument.__contains__('high') and not method_argument.__contains__('low'):
+            method_argument += ' high'
 
         if method_argument.__contains__('dynamic') or method_argument.__contains__('archive'):
-            playlist_results_string = f'__***High scores for the {method_argument} playlist***__\n'
-            playlist_results_string += "```fix\n"
 
             # looking at attributes first
-            metadata = data['playlists'][method_argument]['tracks']
+            tracks = data['playlists'][playlist_name]['tracks']
+            pd.options.display.width = 0
+
+            for name, song in tracks.items():
+                track_info = {
+                    'artist': song['artist'],
+                    'song': song['song'],
+                    'added_by': song['added_by'],
+                    'added_at': song['added_at'],
+                    'song_length': song['song_length'],
+                    'Tempo': song['tempo'],
+                    'Danceability': song['danceability'],
+                    'Energy': song['energy'],
+                    'Loudness': song['loudness'],
+                    'Acousticness': song['acousticness'],
+                    'Instrumentalness': song['instrumentalness'],
+                    'Liveness': song['liveness'],
+                    'Valence': song['valence']
+                }
+                track_array = pd.DataFrame(track_info, index=[0])
+                total_playlist_array = pd.concat([total_playlist_array, track_array], ignore_index=True)
+
+            total_playlist_array['fixed_song_length'] = total_playlist_array.song_length.apply(
+                lambda x: time_digit_to_min_sec(x))
+            total_playlist_array = total_playlist_array.rename(columns={'fixed_song_length': 'Length'})
+
+            if method_argument.__contains__('high'):
+                playlist_results_string = f'__***High scores for the {playlist_name} playlist***__\n'
+                playlist_results_string += "```fix\n"
+
+                # begin iteration
+                # high scores
+                for feature in high_score_features:
+                    playlist_df = total_playlist_array[['artist', 'song', 'added_by', feature]].copy()
+                    playlist_df = playlist_df.sort_values(by=feature, ascending=False)  # high scores
+                    high_df = playlist_df.iloc[:4]
+
+                    playlist_results_string += f"\n"
+                    playlist_results_string += f"{feature} high scores: \n"
+                    counter = 1
+                    for index, row in high_df.iterrows():
+                        playlist_results_string += f"{counter}. {row[feature]} - {row['song']}" \
+                                                   f" by {row['artist']} ({row['added_by']})\n"
+                        counter += 1
+
+            elif method_argument.__contains__('low'):
+                playlist_results_string += f'__***Low scores for the {playlist_name} playlist***__\n'
+                playlist_results_string += "```fix\n"
+
+                # low scores
+                for feature in high_score_features:
+                    playlist_df = total_playlist_array[['artist', 'song', 'added_by', feature]].copy()
+                    playlist_df = playlist_df.sort_values(by=feature, ascending=True)  # low scores
+                    low_df = playlist_df.iloc[:4]
+                    # iterate over new df and produce
+
+                    playlist_results_string += f"\n"
+                    playlist_results_string += f"{feature} low scores: \n"
+                    counter = 1
+                    for index, row in low_df.iterrows():
+                        playlist_results_string += f"{counter}. {row[feature]} - {row['song']}" \
+                                                   f" by {row['artist']} ({row['added_by']})\n"
+                        counter += 1
 
             playlist_results_string += f'\n'
-            playlist_results_string += '```'
 
-            playlist_results_string += f'\n'
-
-            # looking at user counts
-            metadata = data['playlists'][method_argument]
-            playlist_results_string += f'__***User participation in the {method_argument} playlist***__\n'
-            playlist_results_string += "```fix\n"
-            user_count = data['users']['meta']['count']
-            playlist_results_string += f'Total number of contributors: {user_count}\n'
-            playlist_results_string += f'Top 5 contributors:\n'
-
-            users = {}
-            for track, values in metadata['tracks'].items():
-                if values['added_by'] not in users:
-                    users[values['added_by']] = 1
-                else:
-                    users[values['added_by']] += 1
-
-            users = {key: value for key, value in
-                     sorted(users.items(), key=lambda item: item[1], reverse=True)}  # sort dic
-            top_users = {k: users[k] for k in list(users)[:5]}  # dictionary comprehension to pull first 5 sorted pairs
-
-            counter = 1
-            for user, track_add in top_users.items():
-                playlist_results_string += f'{counter}. {user}: {track_add} tracks added\n'
-                counter += 1
     elif method.__contains__('user'):
-        if method_argument in users:
-            playlist_results_string = f'__***High scores for {method_argument} ***__\n'
-            playlist_results_string += "```fix\n"
-            metadata = data['users']['user_list'][method_argument]['avg_features']
-
-            tracks_added = data['users']['user_list'][method_argument]['song_count']
-            playlist_results_string += f'Total tracks added: {tracks_added}\n'
-
-            song_duration = time_digit_to_min_sec(metadata['song_length'])
-            playlist_results_string += f'Average length: {song_duration}\n'
-
-            avg_tempo = round(metadata['tempo'], 1)
-            playlist_results_string += f'Average tempo in BPM: {avg_tempo}\n'
-
-            avg_dance = round(metadata['danceability'], 3)
-            playlist_results_string += f'Average danceability: {avg_dance}\n'
-
-            avg_energy = round(metadata['energy'], 3)
-            playlist_results_string += f'Average energy: {avg_energy}\n'
-
-            avg_loudness = round(metadata['energy'], 3)
-            playlist_results_string += f'Average loudness: {avg_loudness}\n'
-
-            avg_valence = round(metadata['valence'], 3)
-            playlist_results_string += f'Average valence: {avg_valence}\n'
-            playlist_results_string += f'\n'
-
-        else:
-            raise ValueError('User not found in database')
+        # going to need to filter total_playlist_array to only user and then print stats
+        return "Trey is still working on this feature"
+        # if method_argument in users:
+        #     playlist_results_string = f'__***High scores for {method_argument} ***__\n'
+        #     playlist_results_string += "```fix\n"
+        #     metadata = data['users']['user_list'][method_argument]['avg_features']
+        #
+        #     playlist_results_string += f'\n'
+        #
+        # else:
+        #     raise ValueError('User not found in database')
 
     playlist_results_string += '```'
     return playlist_results_string
@@ -360,4 +387,4 @@ def valid_user_list():
 
 
 if __name__ == "__main__":
-    print(display_highscores())
+    print(display_highscores('playlist dynamic low'))
