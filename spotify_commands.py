@@ -3,6 +3,7 @@ from spotipy.oauth2 import SpotifyOAuth
 from dotenv import load_dotenv
 import os
 from datetime import datetime
+from spotipy import SpotifyException
 
 load_dotenv()
 CLIENT_ID = os.getenv("SPOTIPY_CLIENT_ID")
@@ -49,27 +50,36 @@ async def song_search(user_message):
 
 
 # TODO: prevent episodes from being added to playlist
+# may need to perform a spotify search on the track being added prior to adding it to the playlist
+# and if type == episode or duration > 10 min don't add it
 async def add_to_playlist(song_id):
-    song_id = [song_id, ]  # for whatever reason, spotipy input is a list
-    # TODO: prevent duplicate tracks from being added to community playlist
-    sp.playlist_add_items('5YQHb5wt9d0hmShWNxjsTs', song_id)
-    sp.playlist_add_items('4C6pU7YmbBUG8sFFk4eSXj', song_id)
+    existing_songs = await songs_in_dyn_playlist()
+    if song_id in existing_songs:
+        raise FileExistsError('Song already present in Dyn playist! Not adding duplicate ID.')
+    else:
+        song_id = [song_id, ]  # for whatever reason, spotipy input is a list
+        sp.playlist_add_items('5YQHb5wt9d0hmShWNxjsTs', song_id)
+        sp.playlist_add_items('4C6pU7YmbBUG8sFFk4eSXj', song_id)
 
 
-# https://stackoverflow.com/a/61529490/14338656
-def octToDec(octal_number):
-    string_oct = str(octal_number)
-    le = len(string_oct)
-    octal = 0
-    for i in (range(le)):
-        octal = octal + int(string_oct[i]) * pow(8, le - 1)
-        le -= 1
-    print(octal)
+async def songs_in_dyn_playlist():
+    results = sp.playlist_items('5YQHb5wt9d0hmShWNxjsTs')  # dynamic playlist ID
+    tracks = results['items']
+    while results['next']:
+        results = sp.next(results)
+        tracks.extend(results['items'])
+
+    tracks_in_playlist = {}
+    for song in tracks:
+        tracks_in_playlist[song['track']['id']] = song['track']['name']
+
+    return tracks_in_playlist
 
 
 async def convert_to_track_id(song_input):
     song = sp.track(track_id=song_input)
     print(f'Converted input {song_input} to {song["id"]}')
+
     return song['id']
 
 
@@ -102,9 +112,16 @@ def get_track_info(track_id, user):
     return track_info
 
 
-if __name__ == "__main__":
-    user = 'Trey'
-    track = 'spotify:track:3E9oQBH768xYj5YuZ9WIH7'
-    new_track_id = convert_to_track_id(song_input=track)
+async def check_song(track_id):
+    try:
+        song = sp.track(track_id=track_id)
+        if int(song['duration_ms']) > 600000:  # catch if song greater than 600k ms (10 min)
+            raise OverflowError('Track too long!')
 
-    print(get_track_info(track_id=new_track_id, user='Trey'))
+    # never reached bc handled prior to reaching this function
+    except SpotifyException:  # catch if user tries to add podcast episode to playlist
+        raise ValueError('Cannot add podcast episode to playlist!')
+
+
+if __name__ == "__main__":
+    print(check_song('7CLasN0tGYWWbpkPEHgDjZ'))

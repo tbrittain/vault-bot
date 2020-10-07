@@ -66,7 +66,6 @@ def stats_song_add(song_id, user):
     data['users']['meta']['count'] = len(data['users']['user_list'])
     data['users']['user_list'][user]['song_count'] = len(data['users']['user_list'][user]['total_tracks_added'])
 
-    # TODO: make stats update when $stats called as well, not just when song is added
     # update average attributes
     data['playlists']['dynamic']['meta']['avg_features'] = average_features(
         features_dict=data['playlists']['dynamic']['tracks'])
@@ -93,6 +92,7 @@ def purge_stats(song_id):
 def average_features(features_dict):
     """
 
+    :return:
     :param features_dict: Dictionary of dictionaries containing Spotify song features
     """
 
@@ -147,63 +147,217 @@ def time_digit_to_min_sec(duration):
     return duration_string
 
 
-def display_stats(playlist='dynamic'):
+def display_stats(method='playlist'):
+    global playlist_results_string
     with open('stats.json') as f:
         data = json.load(f)
 
-    playlist_results_string = f'__***Audio features for the {playlist} playlist***__\n'
-    playlist_results_string += "```fix\n"
+    playlist_results_string = ''
+    users = data['users']['user_list'].keys()
 
-    # looking at avg attributes first
-    metadata = data['playlists'][playlist]['meta']['avg_features']
-    song_duration = time_digit_to_min_sec(metadata['song_length'])
-    playlist_results_string += f'Average length: {song_duration}\n'
+    method_argument = method.split(' ', 1)[1:]
+    method_argument = str(method_argument)
+    method_argument = method_argument.replace('[', '')
+    method_argument = method_argument.replace(']', '')
+    method_argument = method_argument.replace('"', '')
+    method_argument = method_argument.replace("'", '')
 
-    avg_tempo = round(metadata['tempo'], 1)
-    playlist_results_string += f'Average tempo in BPM: {avg_tempo}\n'
-
-    avg_dance = round(metadata['danceability'], 3)
-    playlist_results_string += f'Average danceability: {avg_dance}\n'
-
-    avg_energy = round(metadata['energy'], 3)
-    playlist_results_string += f'Average energy: {avg_energy}\n'
-
-    avg_loudness = round(metadata['energy'], 3)
-    playlist_results_string += f'Average loudness: {avg_loudness}\n'
-
-    avg_valence = round(metadata['valence'], 3)
-    playlist_results_string += f'Average valence: {avg_valence}\n'
-    playlist_results_string += f'\n'
-    playlist_results_string += f'See https://bit.ly/3d9Z9bm for more info on Spotify track attributes\n'
-    playlist_results_string += '```'
-
-    playlist_results_string += f'\n'
-
-    # looking at user counts
-    metadata = data['playlists'][playlist]
-    playlist_results_string += f'__***User participation in the {playlist} playlist***__\n'
-    playlist_results_string += "```fix\n"
-
-    users = {}
-    for track, values in metadata['tracks'].items():
-        if values['added_by'] not in users:
-            users[values['added_by']] = 1
+    if method.__contains__('playlist'):
+        if method_argument.__contains__('dynamic'):
+            method_argument = 'dynamic'
+        elif method_argument.__contains__('archive'):
+            method_argument = 'archive'
         else:
-            users[values['added_by']] += 1
+            method_argument = 'dynamic'
 
-    users = {key: value for key, value in sorted(users.items(), key=lambda item: item[1], reverse=True)}
-    counter = 1
-    for user, track_add in users.items():
-        playlist_results_string += f'{counter}. {user}: {track_add} tracks added\n'
-        counter += 1
+        if method_argument.__contains__('dynamic') or method_argument.__contains__('archive'):
+            # TODO: add standard deviation in addition to average?
+            playlist_results_string = f'__***Audio features for the {method_argument} playlist***__\n'
+            playlist_results_string += "```fix\n"
+
+            # looking at avg attributes first
+            metadata = data['playlists'][method_argument]['meta']['avg_features']
+            song_duration = time_digit_to_min_sec(metadata['song_length'])
+            playlist_results_string += f'Average length: {song_duration}\n'
+
+            avg_tempo = round(metadata['tempo'], 1)
+            playlist_results_string += f'Average tempo in BPM: {avg_tempo}\n'
+
+            avg_dance = round(metadata['danceability'], 3)
+            playlist_results_string += f'Average danceability: {avg_dance}\n'
+
+            avg_energy = round(metadata['energy'], 3)
+            playlist_results_string += f'Average energy: {avg_energy}\n'
+
+            avg_loudness = round(metadata['energy'], 3)
+            playlist_results_string += f'Average loudness: {avg_loudness}\n'
+
+            avg_valence = round(metadata['valence'], 3)
+            playlist_results_string += f'Average valence: {avg_valence}\n'
+            playlist_results_string += f'\n'
+            playlist_results_string += f'See https://bit.ly/3d9Z9bm for more info on Spotify track attributes\n'
+            playlist_results_string += '```'
+
+            playlist_results_string += f'\n'
+
+            # looking at user counts
+            metadata = data['playlists'][method_argument]
+            playlist_results_string += f'__***User participation in the {method_argument} playlist***__\n'
+            playlist_results_string += "```fix\n"
+            user_count = data['users']['meta']['count']
+            playlist_results_string += f'Total number of contributors: {user_count}\n'
+            playlist_results_string += f'Top 5 contributors:\n'
+
+            users = {}
+            for track, values in metadata['tracks'].items():
+                if values['added_by'] not in users:
+                    users[values['added_by']] = 1
+                else:
+                    users[values['added_by']] += 1
+
+            users = {key: value for key, value in
+                     sorted(users.items(), key=lambda item: item[1], reverse=True)}  # sort dic
+            top_users = {k: users[k] for k in list(users)[:5]}  # dictionary comprehension to pull first 5 sorted pairs
+
+            counter = 1
+            for user, track_add in top_users.items():
+                playlist_results_string += f'{counter}. {user}: {track_add} tracks added\n'
+                counter += 1
+    elif method.__contains__('user'):
+        if method_argument in users:
+            playlist_results_string = f'__***Stats for {method_argument} ***__\n'
+            playlist_results_string += "```fix\n"
+            metadata = data['users']['user_list'][method_argument]['avg_features']
+
+            tracks_added = data['users']['user_list'][method_argument]['song_count']
+            playlist_results_string += f'Total tracks added: {tracks_added}\n'
+
+            song_duration = time_digit_to_min_sec(metadata['song_length'])
+            playlist_results_string += f'Average length: {song_duration}\n'
+
+            avg_tempo = round(metadata['tempo'], 1)
+            playlist_results_string += f'Average tempo in BPM: {avg_tempo}\n'
+
+            avg_dance = round(metadata['danceability'], 3)
+            playlist_results_string += f'Average danceability: {avg_dance}\n'
+
+            avg_energy = round(metadata['energy'], 3)
+            playlist_results_string += f'Average energy: {avg_energy}\n'
+
+            avg_loudness = round(metadata['energy'], 3)
+            playlist_results_string += f'Average loudness: {avg_loudness}\n'
+
+            avg_valence = round(metadata['valence'], 3)
+            playlist_results_string += f'Average valence: {avg_valence}\n'
+            playlist_results_string += f'\n'
+            playlist_results_string += f'See https://bit.ly/3d9Z9bm for more info on Spotify track attributes\n'
+
+        else:
+            raise ValueError('User not found in database')
 
     playlist_results_string += '```'
     return playlist_results_string
 
 
-def display_hiscores():
-    pass
+def display_highscores(method='dynamic'):
+    global playlist_results_string
+    with open('stats.json') as f:
+        data = json.load(f)
+
+    playlist_results_string = ''
+    users = data['users']['user_list'].keys()
+
+    method_argument = method.split(' ', 1)[1:]
+    method_argument = str(method_argument)
+    method_argument = method_argument.replace('[', '')
+    method_argument = method_argument.replace(']', '')
+    method_argument = method_argument.replace('"', '')
+    method_argument = method_argument.replace("'", '')
+
+    if method.__contains__('playlist'):
+        if method_argument.__contains__('dynamic'):
+            method_argument = 'dynamic'
+        elif method_argument.__contains__('archive'):
+            method_argument = 'archive'
+        else:
+            method_argument = 'dynamic'
+
+        if method_argument.__contains__('dynamic') or method_argument.__contains__('archive'):
+            playlist_results_string = f'__***High scores for the {method_argument} playlist***__\n'
+            playlist_results_string += "```fix\n"
+
+            # looking at attributes first
+            metadata = data['playlists'][method_argument]['tracks']
+
+            playlist_results_string += f'\n'
+            playlist_results_string += '```'
+
+            playlist_results_string += f'\n'
+
+            # looking at user counts
+            metadata = data['playlists'][method_argument]
+            playlist_results_string += f'__***User participation in the {method_argument} playlist***__\n'
+            playlist_results_string += "```fix\n"
+            user_count = data['users']['meta']['count']
+            playlist_results_string += f'Total number of contributors: {user_count}\n'
+            playlist_results_string += f'Top 5 contributors:\n'
+
+            users = {}
+            for track, values in metadata['tracks'].items():
+                if values['added_by'] not in users:
+                    users[values['added_by']] = 1
+                else:
+                    users[values['added_by']] += 1
+
+            users = {key: value for key, value in
+                     sorted(users.items(), key=lambda item: item[1], reverse=True)}  # sort dic
+            top_users = {k: users[k] for k in list(users)[:5]}  # dictionary comprehension to pull first 5 sorted pairs
+
+            counter = 1
+            for user, track_add in top_users.items():
+                playlist_results_string += f'{counter}. {user}: {track_add} tracks added\n'
+                counter += 1
+    elif method.__contains__('user'):
+        if method_argument in users:
+            playlist_results_string = f'__***High scores for {method_argument} ***__\n'
+            playlist_results_string += "```fix\n"
+            metadata = data['users']['user_list'][method_argument]['avg_features']
+
+            tracks_added = data['users']['user_list'][method_argument]['song_count']
+            playlist_results_string += f'Total tracks added: {tracks_added}\n'
+
+            song_duration = time_digit_to_min_sec(metadata['song_length'])
+            playlist_results_string += f'Average length: {song_duration}\n'
+
+            avg_tempo = round(metadata['tempo'], 1)
+            playlist_results_string += f'Average tempo in BPM: {avg_tempo}\n'
+
+            avg_dance = round(metadata['danceability'], 3)
+            playlist_results_string += f'Average danceability: {avg_dance}\n'
+
+            avg_energy = round(metadata['energy'], 3)
+            playlist_results_string += f'Average energy: {avg_energy}\n'
+
+            avg_loudness = round(metadata['energy'], 3)
+            playlist_results_string += f'Average loudness: {avg_loudness}\n'
+
+            avg_valence = round(metadata['valence'], 3)
+            playlist_results_string += f'Average valence: {avg_valence}\n'
+            playlist_results_string += f'\n'
+
+        else:
+            raise ValueError('User not found in database')
+
+    playlist_results_string += '```'
+    return playlist_results_string
+
+
+def valid_user_list():
+    with open('stats.json') as f:
+        data = json.load(f)
+    users = data['users']['user_list'].keys()
+    return users
 
 
 if __name__ == "__main__":
-    print(display_stats())
+    print(display_highscores())

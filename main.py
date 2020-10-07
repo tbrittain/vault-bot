@@ -16,7 +16,9 @@ DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 bot = discord.Client()
 
 
+# TODO: urgent! backup json
 # TODO: make bot ignore messages from other bots
+# TODO: troubleshoot why bot sometimes responds with N instead of song results
 
 @bot.event
 async def on_ready():
@@ -37,7 +39,6 @@ async def on_ready():
 async def on_message(message):
     if message.content[0] == "$":  # $ dollar sign will be the default bot command
         user_input = str(message.content)
-        user_input = user_input.lower()  # added to normalize all user input into lowercase
 
         print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) + f' User {message.author} invoked = {user_input}')
 
@@ -47,7 +48,7 @@ async def on_message(message):
         message_body = user_input.split(' ', 1)[1:]  # rest of body correspond to command argument(s)
 
         # begin commands
-        if first_word == 'search':  # $search command
+        if first_word.lower() == 'search':  # $search command
             if not message_body:  # handle if no arguments for search
                 await message.channel.send(f'Please search for a song with your words, {message.author.mention} ')
             else:
@@ -104,30 +105,44 @@ async def on_message(message):
                     elif reaction.emoji == '🔟':
                         track_selection = 9
                     # print(track_ids[track_selection][track_selection + 1])
-                    selected_track_id = track_ids[track_selection][track_selection + 1]
-                    emoji_responses = ['👌', '👍', '🤘', '🤙', '🤝']
-                    await message.channel.send(random.choice(emoji_responses))
+                    try:
+                        selected_track_id = track_ids[track_selection][track_selection + 1]
+                        emoji_responses = ['👌', '👍', '🤘', '🤙', '🤝']
 
-                    await spotify_commands.add_to_playlist(song_id=selected_track_id)
-                    # cannot await the JSON serializable stats_song_add()
-                    stats_commands.stats_song_add(song_id=selected_track_id, user=str(message.author))
+                        # check_song raises exceptions if song not valid for playlist
+                        await spotify_commands.check_song(track_id=selected_track_id)  # check if valid track
+                        await spotify_commands.add_to_playlist(song_id=selected_track_id)
 
-                    await message.channel.send('Track has been added to the community playlists!')
-                    print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) +
-                          f' Song of ID {selected_track_id} added to playlists by {message.author}')
+                        # cannot await the JSON serializable stats_song_add()
+                        stats_commands.stats_song_add(song_id=selected_track_id, user=str(message.author))
+                        await message.channel.send(random.choice(emoji_responses))
+                        await message.channel.send('Track has been added to the community playlists!')
+                        print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) +
+                              f' Song of ID {selected_track_id} added to playlists by {message.author}')
+                    except FileExistsError:
+                        await message.channel.send(f"Track already exists in dynamic playlist, "
+                                                   f"{message.author.mention}! I'm not gonna re-add it!")
+                    except ValueError:
+                        await message.channel.send(f"Cannot add podcast episode to playlist, "
+                                                   f"{message.author.mention}!")
+                    except OverflowError:
+                        await message.channel.send(f"Cannot add songs longer than 10 minutes "
+                                                   f"to playlist, {message.author.mention}!")
 
-        elif first_word == 'add':  # $add command
+        elif first_word.lower() == 'add':  # $add command
             message_body = str(message_body)
             message_body = message_body.replace('[', "")
             message_body = message_body.replace(']', "")
             message_body = message_body.replace("'", "")
+            print(f'message_body is {message_body}')
             emoji_responses = ['👌', '👍', '🤘', '🤙', '🤝']
             try:
                 converted_song_id = await spotify_commands.convert_to_track_id(message_body)
-                await message.channel.send(random.choice(emoji_responses))
+                await spotify_commands.check_song(track_id=converted_song_id)  # check if valid track
+
                 await spotify_commands.add_to_playlist(song_id=converted_song_id)
                 stats_commands.stats_song_add(song_id=converted_song_id, user=str(message.author))
-
+                await message.channel.send(random.choice(emoji_responses))
                 await message.channel.send('Track has been added to the community playlists!')
                 print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) +
                       f' Song of ID {message_body} added to playlists by {message.author}')
@@ -138,39 +153,56 @@ async def on_message(message):
                 await message.channel.send(f'Please enter a valid argument, {message.author.mention}')
                 await message.channel.send(f'Valid arguments for $add are the raw Spotify song link, song URI, '
                                            f'or song ID')
+            except FileExistsError:
+                await message.channel.send(f"Track already exists in dynamic playlist, "
+                                           f"{message.author.mention}! I'm not gonna re-add it!")
+            except ValueError:
+                await message.channel.send(f"Cannot add podcast episode to playlist, "
+                                           f"{message.author.mention}!")
+            except OverflowError:
+                await message.channel.send(f"Cannot add songs longer than 10 minutes "
+                                           f"to playlist, {message.author.mention}!")
 
-        # TODO: fix ability to parse message_body to view dynamic and archive stats
-        elif first_word == 'stats':
-            await message.channel.send(stats_commands.display_stats())
-            # if message_body == '' or message_body == 'dynamic':
-            #     general_stats = await stats_commands.display_stats()
-            #     await message.channel.send(general_stats)
-            #     print('stats dynamic worked')
-            # elif message_body == 'archive':
-            #     general_stats = await stats_commands.display_stats(playlist='archive')
-            #     await message.channel.send(general_stats)
-            #     print('stats archive worked')
-            # print('stats ended')
-        elif first_word == 'hiscores':
-            pass
-        elif first_word == 'playlist':
+        elif first_word.lower() == 'stats':
             try:
-                playlist_embed = discord.Embed(title='$playlist',
+                if not message_body:
+                    await message.channel.send(f'Please enter a valid argument, '
+                                               f'such as $stats playlist or $stats user, {message.author.mention}!')
+                else:
+                    message_body = str(message_body)
+                    message_body = message_body.replace('[', '')
+                    message_body = message_body.replace(']', '')
+                    message_body = message_body.replace('"', '')
+                    message_body = message_body.replace("'", '')
+
+                    method_argument = message_body.split(' ', 1)[0]
+                    method_argument = str(method_argument)
+
+                    if method_argument != 'playlist' and method_argument != 'user':  # defaults to dynamic playlist
+                        message_body = 'playlist'
+                    await message.channel.send(stats_commands.display_stats(method=message_body))
+            except ValueError:
+                await message.channel.send(f'User not present in my ledger, {message.author.mention}!')
+                await message.channel.send(f'Be sure you enter user name in the correct format, e.g. {message.author}')
+        # TODO: highscores
+        elif first_word.lower() == 'highscores':
+            pass
+        elif first_word.lower() == 'playlists' or first_word.lower() == 'playlist':
+            try:
+                playlist_embed = discord.Embed(title='$playlists',
                                                description='Links to the playlists. Paste the URI in your browser to '
-                                                           'open the playlist on your desktop client!',
+                                                           'open the playlist on your desktop client! Be sure to '
+                                                           'follow the playlist for easy access :grinning:',
                                                color=0x00ff00)
-                playlist_embed.add_field(name='Main playlist', value='https://open.spotify.com/playlist'
-                                                                     '/5YQHb5wt9d0hmShWNxjsTs?si=Zw8fNLiKSligb1pQcMfUlg')
-                playlist_embed.add_field(name='Archive playlist', value='https://open.spotify.com/playlist'
-                                                                        '/4C6pU7YmbBUG8sFFk4eSXj?si'
-                                                                        '=R2O3G3suS1CSuFEQPjZIhA')
+                playlist_embed.add_field(name='Main playlist', value='https://spoti.fi/33AnPqd')
+                playlist_embed.add_field(name='Archive playlist', value='https://spoti.fi/3iGBNeE')
                 playlist_embed.add_field(name='Main Spotify URI', value='spotify:playlist:5YQHb5wt9d0hmShWNxjsTs')
                 playlist_embed.add_field(name='Archive Spotify URI', value='spotify:playlist:4C6pU7YmbBUG8sFFk4eSXj')
                 await message.channel.send(embed=playlist_embed)
             except IndexError:
                 pass
 
-        elif first_word == 'help':
+        elif first_word.lower() == 'help':
             try:
                 help_embed = discord.Embed(title='$help',
                                            description='Hopefully this answers your question...',
@@ -179,7 +211,10 @@ async def on_message(message):
                                                            'and lists the top 10 results')
                 help_embed.add_field(name='$add', value='Input a Spotify song link/URI/ID to add it directly to the '
                                                         'playlist')
-                help_embed.add_field(name='$playlist', value='Links to the Spotify playlists')
+                help_embed.add_field(name='$playlists', value='Links to the Spotify playlists')
+                help_embed.add_field(name='$stats', value='General statistics for the songs and users of the playlists')
+                help_embed.add_field(name='$highscores', value='TBA')  # TODO: highscores
+
                 await message.channel.send(embed=help_embed)
             except IndexError:
                 pass
