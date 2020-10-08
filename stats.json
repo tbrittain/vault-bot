@@ -3,17 +3,17 @@
     "dynamic": {
       "meta": {
         "avg_features": {
-          "song_length": 3.6882628930817605,
-          "tempo": 118.8078679245283,
-          "danceability": 0.6218301886792451,
-          "energy": 0.6829679245283017,
-          "loudness": -6.954962264150943,
-          "acousticness": 0.23174219622641518,
-          "instrumentalness": 0.27311111358490564,
-          "liveness": 0.17732075471698114,
-          "valence": 0.5412603773584904
+          "song_length": 3.711869753086419,
+          "tempo": 119.38792592592593,
+          "danceability": 0.6181296296296295,
+          "energy": 0.6828574074074072,
+          "loudness": -6.932833333333333,
+          "acousticness": 0.23209882222222228,
+          "instrumentalness": 0.2680535661111111,
+          "liveness": 0.177,
+          "valence": 0.5339407407407406
         },
-        "count": 53
+        "count": 54
       },
       "tracks": {
         "5qNNanYonpCwahfJGuFVRQ": {
@@ -863,23 +863,39 @@
           "instrumentalness": 0.81,
           "liveness": 0.289,
           "valence": 0.551
+        },
+        "27YD36FUikKxbp3bKSiKGZ": {
+          "artist": "Seven Lions",
+          "song": "First Time (feat. Dylan Matthew)",
+          "album": "First Time (feat. Dylan Matthew)",
+          "added_by": "threesquared#3899",
+          "added_at": "2020-10-08 11:21:12.762738",
+          "song_length": 4.963033333333334,
+          "tempo": 150.131,
+          "danceability": 0.422,
+          "energy": 0.677,
+          "loudness": -5.76,
+          "acousticness": 0.251,
+          "instrumentalness": 3.55e-06,
+          "liveness": 0.16,
+          "valence": 0.146
         }
       }
     },
     "archive": {
       "meta": {
         "avg_features": {
-          "song_length": 3.6882628930817605,
-          "tempo": 118.8078679245283,
-          "danceability": 0.6218301886792451,
-          "energy": 0.6829679245283017,
-          "loudness": -6.954962264150943,
-          "acousticness": 0.23174219622641518,
-          "instrumentalness": 0.27311111358490564,
-          "liveness": 0.17732075471698114,
-          "valence": 0.5412603773584904
+          "song_length": 3.711869753086419,
+          "tempo": 119.38792592592593,
+          "danceability": 0.6181296296296295,
+          "energy": 0.6828574074074072,
+          "loudness": -6.932833333333333,
+          "acousticness": 0.23209882222222228,
+          "instrumentalness": 0.2680535661111111,
+          "liveness": 0.177,
+          "valence": 0.5339407407407406
         },
-        "count": 53
+        "count": 54
       },
       "tracks": {
         "5qNNanYonpCwahfJGuFVRQ": {
@@ -1729,6 +1745,22 @@
           "instrumentalness": 0.81,
           "liveness": 0.289,
           "valence": 0.551
+        },
+        "27YD36FUikKxbp3bKSiKGZ": {
+          "artist": "Seven Lions",
+          "song": "First Time (feat. Dylan Matthew)",
+          "album": "First Time (feat. Dylan Matthew)",
+          "added_by": "threesquared#3899",
+          "added_at": "2020-10-08 11:21:12.762738",
+          "song_length": 4.963033333333334,
+          "tempo": 150.131,
+          "danceability": 0.422,
+          "energy": 0.677,
+          "loudness": -5.76,
+          "acousticness": 0.251,
+          "instrumentalness": 3.55e-06,
+          "liveness": 0.16,
+          "valence": 0.146
         }
       }
     }
@@ -2299,20 +2331,36 @@
             "instrumentalness": 0.81,
             "liveness": 0.289,
             "valence": 0.551
+          },
+          "27YD36FUikKxbp3bKSiKGZ": {
+            "artist": "Seven Lions",
+            "song": "First Time (feat. Dylan Matthew)",
+            "album": "First Time (feat. Dylan Matthew)",
+            "added_by": "threesquared#3899",
+            "added_at": "2020-10-08 11:21:12.762738",
+            "song_length": 4.963033333333334,
+            "tempo": 150.131,
+            "danceability": 0.422,
+            "energy": 0.677,
+            "loudness": -5.76,
+            "acousticness": 0.251,
+            "instrumentalness": 3.55e-06,
+            "liveness": 0.16,
+            "valence": 0.146
           }
         },
         "avg_features": {
-          "song_length": 3.811047619047619,
-          "tempo": 116.65017142857141,
-          "danceability": 0.6379714285714284,
-          "energy": 0.6956285714285715,
-          "loudness": -7.095742857142858,
-          "acousticness": 0.19957285714285708,
-          "instrumentalness": 0.31020197000000005,
-          "liveness": 0.16795142857142858,
-          "valence": 0.5484514285714285
+          "song_length": 3.843047222222222,
+          "tempo": 117.58019444444443,
+          "danceability": 0.631972222222222,
+          "energy": 0.6951111111111111,
+          "loudness": -7.05863888888889,
+          "acousticness": 0.20100138888888883,
+          "instrumentalness": 0.3015853472222223,
+          "liveness": 0.16773055555555558,
+          "valence": 0.5372722222222222
         },
-        "song_count": 35
+        "song_count": 36
       },
       "Schmene#1026": {
         "total_tracks_added": {
