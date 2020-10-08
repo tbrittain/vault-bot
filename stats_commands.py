@@ -195,8 +195,6 @@ def display_stats(method='playlist'):
 
             avg_valence = round(metadata['valence'], 3)
             playlist_results_string += f'Average valence: {avg_valence}\n'
-            playlist_results_string += f'\n'
-            playlist_results_string += f'See https://bit.ly/3d9Z9bm for more info on Spotify track attributes\n'
             playlist_results_string += '```'
 
             playlist_results_string += f'\n'
@@ -250,8 +248,6 @@ def display_stats(method='playlist'):
 
             avg_valence = round(metadata['valence'], 3)
             playlist_results_string += f'Average valence: {avg_valence}\n'
-            playlist_results_string += f'\n'
-            playlist_results_string += f'See https://bit.ly/3d9Z9bm for more info on Spotify track attributes\n'
 
         else:
             raise ValueError('User not found in database')

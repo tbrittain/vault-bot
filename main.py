@@ -19,7 +19,9 @@ bot = discord.Client()
 # TODO: urgent! backup json
 # TODO: make bot ignore messages from other bots
 # TODO: troubleshoot why bot sometimes responds with N instead of song results
-# TODO: loudness in stats might be broken
+# TODO: consider rewriting main.py according to @bot.command() rather than on message for all events
+# TODO: function that updates playlist description with some genres?
+# https://github.com/Rapptz/discord.py <- look at examples
 
 @bot.event
 async def on_ready():
@@ -58,8 +60,6 @@ async def on_message(message):
                 msg = await message.channel.send(search_results[0])
 
                 track_ids = search_results[1]
-                # print(len(track_ids))
-                # print(track_ids)
 
                 emojis = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣',
                           '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟']
@@ -135,7 +135,7 @@ async def on_message(message):
             message_body = message_body.replace('[', "")
             message_body = message_body.replace(']', "")
             message_body = message_body.replace("'", "")
-            print(f'message_body is {message_body}')
+            # print(f'message_body is {message_body}')
             emoji_responses = ['👌', '👍', '🤘', '🤙', '🤝']
             try:
                 converted_song_id = await spotify_commands.convert_to_track_id(message_body)
@@ -185,7 +185,7 @@ async def on_message(message):
             except ValueError:
                 await message.channel.send(f'User not present in my ledger, {message.author.mention}!')
                 await message.channel.send(f'Be sure you enter user name in the correct format, e.g. {message.author}')
-        # TODO: highscores
+
         elif first_word.lower() == 'highscores':
             try:
                 if not message_body:
@@ -208,6 +208,7 @@ async def on_message(message):
             except ValueError:
                 await message.channel.send(f'User not present in my ledger, {message.author.mention}!')
                 await message.channel.send(f'Be sure you enter user name in the correct format, e.g. {message.author}')
+
         elif first_word.lower() == 'playlists' or first_word.lower() == 'playlist':
             try:
                 playlist_embed = discord.Embed(title='$playlists',
@@ -215,30 +216,142 @@ async def on_message(message):
                                                            'open the playlist on your desktop client! Be sure to '
                                                            'follow the playlist for easy access :grinning:',
                                                color=0x00ff00)
-                playlist_embed.add_field(name='Main playlist', value='https://spoti.fi/33AnPqd')
-                playlist_embed.add_field(name='Archive playlist', value='https://spoti.fi/3iGBNeE')
-                playlist_embed.add_field(name='Main Spotify URI', value='spotify:playlist:5YQHb5wt9d0hmShWNxjsTs')
-                playlist_embed.add_field(name='Archive Spotify URI', value='spotify:playlist:4C6pU7YmbBUG8sFFk4eSXj')
+                playlist_embed.add_field(name='Main playlist', value='https://spoti.fi/33AnPqd', inline=False)
+                playlist_embed.add_field(name='Archive playlist', value='https://spoti.fi/3iGBNeE', inline=False)
+                playlist_embed.add_field(name='Main Spotify URI',
+                                         value='spotify:playlist:5YQHb5wt9d0hmShWNxjsTs', inline=False)
+                playlist_embed.add_field(name='Archive Spotify URI',
+                                         value='spotify:playlist:4C6pU7YmbBUG8sFFk4eSXj', inline=False)
                 await message.channel.send(embed=playlist_embed)
             except IndexError:
                 pass
 
-        elif first_word.lower() == 'help':
-            try:
-                help_embed = discord.Embed(title='$help',
-                                           description='Hopefully this answers your question...',
-                                           color=0x00ff00)
-                help_embed.add_field(name='$search', value='Searches Spotify based on song name '
-                                                           'and lists the top 10 results')
-                help_embed.add_field(name='$add', value='Input a Spotify song link/URI/ID to add it directly to the '
-                                                        'playlist')
-                help_embed.add_field(name='$playlists', value='Links to the Spotify playlists')
-                help_embed.add_field(name='$stats', value='General statistics for the songs and users of the playlists')
-                help_embed.add_field(name='$highscores', value='TBA')  # TODO: highscores
+        elif first_word.lower() == 'random':
+            number = random.randint(1, 8)
 
-                await message.channel.send(embed=help_embed)
-            except IndexError:
-                pass
+            if number == 1:
+                file = discord.File("embeds/gato.jpg", filename="gato.jpg")
+                await message.channel.send(file=file)
+            elif number == 2:
+                file = discord.File("embeds/necky.mp4", filename="necky.mp4")
+                await message.channel.send(file=file)
+            elif number == 3:
+                file = discord.File("embeds/flip.mp4", filename="flip.mp4")
+                await message.channel.send(file=file)
+            elif number == 4:
+                file = discord.File("embeds/kyle.mp3", filename="kyle.mp3")
+                await message.channel.send(file=file)
+            elif number == 5:
+                file = discord.File("embeds/lasana.jpg", filename="lasana.jpg")
+                await message.channel.send(file=file)
+            elif number == 6:
+                file = discord.File("embeds/nuggy.jpg", filename="nuggy.jpg")
+                await message.channel.send(file=file)
+            elif number == 7:
+                file = discord.File("embeds/hit.jpg", filename="hit.jpg")
+                await message.channel.send(file=file)
+            elif number == 8:
+                file = discord.File("embeds/kyle2.mp3", filename="kyle2.mp3")
+                await message.channel.send(file=file)
+
+        # help documentation
+        elif first_word.lower() == 'help':
+            command_names = ['search', 'add', 'stats', 'highscores', 'playlists']
+            message_body = str(message_body)
+            message_body = message_body.replace("'", "")
+            message_body = message_body.replace("[", "")
+            message_body = message_body.replace("]", "")
+            message_body = message_body.replace('"', "")
+
+            if message_body in command_names:
+                if message_body.__contains__('search'):
+                    help_embed = discord.Embed(title='$help search', color=random.randint(0, 0xffffff))
+                    help_embed.add_field(name="Function information",
+                                         value='Finds a song to add to the playlist with duration no '
+                                               'greater than 10 minutes. Returns the top 10 results. Select emoji on '
+                                               'bot message to confirm track.')
+                    help_embed.add_field(name="Example",
+                                         value='$search bohemian rhapsody')
+                    await message.channel.send(embed=help_embed)
+
+                elif message_body.__contains__('add'):
+                    help_embed = discord.Embed(title='$help add', color=random.randint(0, 0xffffff))
+                    help_embed.add_field(name="Function information",
+                                         value='Directly adds a song to the playlist without needing to go through '
+                                               '$search. Accepts Spotify song URL/URI/ID.', inline=False)
+                    help_embed.add_field(name="URL",
+                                         value='$add https://open.spotify.com/track/7tFiyTwD0nx5a1eklYtX2J?si'
+                                               '=pXHaPjlgSt6mFwjFWdFf9Q', inline=False)
+                    help_embed.add_field(name="URI",
+                                         value='$add spotify:track:7tFiyTwD0nx5a1eklYtX2J', inline=False)
+                    help_embed.add_field(name="ID",
+                                         value='$add 7tFiyTwD0nx5a1eklYtX2J', inline=False)
+                    await message.channel.send(embed=help_embed)
+                    file = discord.File("embeds/addmobile.gif", filename="addmobile.gif")
+                    await message.channel.send('You can even PM me a song directly to add it to the playlist!',
+                                               file=file)
+
+                elif message_body.__contains__('stats'):
+                    help_embed = discord.Embed(title='$help stats', color=random.randint(0, 0xffffff))
+                    help_embed.add_field(name="Function information",
+                                         value='Retrieve some interesting statistics for a playlist/user', inline=False)
+                    help_embed.add_field(name="Spotify track attributes",
+                                         value='See https://bit.ly/3d9Z9bm for more info on Spotify track attributes', inline=False)
+                    help_embed.add_field(name="Playlist example",
+                                         value='$stats playlist', inline=False)
+                    help_embed.add_field(name="User example",
+                                         value='$stats user threesquared#3899', inline=False)
+                    await message.channel.send(embed=help_embed)
+
+                elif message_body.__contains__('highscores'):
+                    help_embed = discord.Embed(title='$help highscores', color=random.randint(0, 0xffffff))
+                    help_embed.add_field(name="Function information",
+                                         value='Retrieve the high or low statistics for a playlist/user', inline=False)
+                    help_embed.add_field(name="Spotify track attributes",
+                                         value='See https://bit.ly/3d9Z9bm for more info on Spotify track attributes',
+                                         inline=False)
+                    help_embed.add_field(name="Playlist high scores example",
+                                         value='$highscores playlist', inline=False)
+                    help_embed.add_field(name="Playlist low scores example",
+                                         value='$highscores playlist low', inline=False)
+                    help_embed.add_field(name="Archive playlist high scores example",
+                                         value='$highscores playlist archive high', inline=False)
+                    help_embed.add_field(name="User example (TBA)",
+                                         value='$highscores user threesquared#3899', inline=False)
+                    await message.channel.send(embed=help_embed)
+
+                elif message_body.__contains__('playlists'):
+                    help_embed = discord.Embed(title='$help playlists', color=random.randint(0, 0xffffff))
+                    help_embed.add_field(name="Function information",
+                                         value='Retrieve direct playlist links for easy access',
+                                         inline=False)
+                    help_embed.add_field(name="URLs",
+                                         value='Click them to open in your browser if you prefer web Spotify',
+                                         inline=False)
+                    help_embed.add_field(name="URIs",
+                                         value='Paste these in your browser and it will open the playlist in your '
+                                               'desktop client', inline=False)
+                    await message.channel.send(embed=help_embed)
+
+            else:
+                try:
+                    help_embed = discord.Embed(title='$help',
+                                               description='Get specific function help with $help FUNCTION (ex. $help '
+                                                           'add)',
+                                               color=random.randint(0, 0xffffff))
+                    help_embed.add_field(name='$search', value='Searches Spotify based on song name '
+                                                               'and lists the top results', inline=False)
+                    help_embed.add_field(name='$add', value='Input a Spotify song link/URI/ID to '
+                                                            'add it directly to the playlist', inline=False)
+                    help_embed.add_field(name='$playlists', value='Links to the Spotify playlists', inline=False)
+                    help_embed.add_field(name='$stats', value='General statistics for the songs '
+                                                              'and users of the playlists', inline=False)
+                    help_embed.add_field(name='$highscores', value='Lists the top tracks for each Spotify attribute '
+                                                                   'for a playlist/user', inline=False)
+
+                    await message.channel.send(embed=help_embed)
+                except IndexError:
+                    pass
         else:
             await message.channel.send(f'Unrecognized command "{first_word}", {message.author.mention}!')
 
