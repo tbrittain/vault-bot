@@ -1,8 +1,11 @@
+#!C:\Program Files\R\R-3.5.1\bin\Rscript.exe --vanilla --default-packages=jsonlite,tibble,data.table,GGally,ggplot2.dplyr
+# important that the path above is added to system path
 library(jsonlite)
 library(tibble)
 library(data.table)
 library(GGally)
 library(ggplot2)
+library(dplyr)
 
 # Title     : Stats_graphics
 # Objective : Display advanced song statistics through ggplot
@@ -10,7 +13,7 @@ library(ggplot2)
 # Created on: 10/8/2020
 
 # dynamic playlist info from json to df
-stats_raw <- jsonlite::fromJSON("stats.json")
+stats_raw <- jsonlite::fromJSON("D:/Github/vault-bot/stats.json")
 stats_df <- tibble::as_tibble(stats_raw$playlists$dynamic$tracks)
 
 total_df <- data.frame(artist=character(), # init empty df with all relevant columns
@@ -35,7 +38,7 @@ for (song_attribute in stats_df){
   temp_df <- data.frame(song_attribute)
   total_df <- rbind(total_df, temp_df)
 }
-# rename columns because this info was lost during transposing
+# rename columns
 names(total_df)[1] <- "Artist"
 names(total_df)[2] <- "Song"
 names(total_df)[3] <- "Album"
@@ -51,10 +54,36 @@ names(total_df)[12] <- "Instrumentalness"
 names(total_df)[13] <- "Liveness"
 names(total_df)[14] <- "Valence"
 
-song_count <- print(nrow(total_df))
+# keeps track of number of songs
+song_count <- nrow(total_df)
+
+# add new column of corrected_user, being the normal username if their track count > 3
+# else, overwrite username as "other"
+# this will allow for data to be colored according to user
 
 
-# unfortunately cannot
+#user_counts <- aggregate(data.frame(count = total_df$User), list(value = total_df$User), length)
+#for (test in user_counts){
+#    print(test)
+#}
+#rows <- function(tab) lapply(
+#  seq_len(nrow(tab)),
+#  function(i) unclass(tab[i,,drop=F])
+#)
+#
+#stop()
+#
+#for (test in total_df$User){
+#  print(test)
+#}
+#
+#stop()
+#total_df$Corrected_user <- dplyr::if_else(sum(total_df$User) >= 3, yes=total_df$user, no="Other")
+#stop()
+
+
+# unfortunately cannot color by user when some users have only submitted 1 song
+# need to create workaround that bundles users with <3 tracks submitted into "other" category
 p <- ggpairs(total_df, title = "Energized Attribute Pairwise Comparisons",
         columns = c("Danceability", "Energy", "Loudness", "Valence", "User"),
         # aes(colour = as.character(User), alpha = 0.2),
@@ -86,4 +115,4 @@ ggmatrix(plots,
   theme(axis.text.x.bottom = element_text(angle = 90, vjust = 0.5, hjust=1, size=8)) +
   theme(axis.text.y = element_text(angle = 30, vjust = 0, hjust=1, size=8))
 
-ggsave(filename = "embeds/dynamic_plot.jpg", plot = last_plot(), width = 10, height = 10)
+ggsave(filename = "D:/Github/vault-bot/embeds/dynamic_plot.jpg", plot = last_plot(), width = 10, height = 10)

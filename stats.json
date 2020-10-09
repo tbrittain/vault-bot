@@ -3,17 +3,17 @@
     "dynamic": {
       "meta": {
         "avg_features": {
-          "song_length": 3.711869753086419,
-          "tempo": 119.38792592592593,
-          "danceability": 0.6181296296296295,
-          "energy": 0.6828574074074072,
-          "loudness": -6.932833333333333,
-          "acousticness": 0.23209882222222228,
-          "instrumentalness": 0.2680535661111111,
-          "liveness": 0.177,
-          "valence": 0.5339407407407406
+          "song_length": 3.7251903030303026,
+          "tempo": 120.48303636363636,
+          "danceability": 0.6147090909090908,
+          "energy": 0.6869145454545452,
+          "loudness": -6.866509090909092,
+          "acousticness": 0.2280806618181819,
+          "instrumentalness": 0.2631798649090909,
+          "liveness": 0.17501636363636364,
+          "valence": 0.5379418181818181
         },
-        "count": 54
+        "count": 55
       },
       "tracks": {
         "5qNNanYonpCwahfJGuFVRQ": {
@@ -879,23 +879,39 @@
           "instrumentalness": 3.55e-06,
           "liveness": 0.16,
           "valence": 0.146
+        },
+        "2uXidnW2mwi9kk4ZWVr0n5": {
+          "artist": "Gramatik",
+          "song": "Satoshi Nakamoto",
+          "album": "Epigram",
+          "added_by": "threesquared#3899",
+          "added_at": "2020-10-09 12:55:47.086963",
+          "song_length": 4.4445,
+          "tempo": 179.619,
+          "danceability": 0.43,
+          "energy": 0.906,
+          "loudness": -3.285,
+          "acousticness": 0.0111,
+          "instrumentalness": 0,
+          "liveness": 0.0679,
+          "valence": 0.754
         }
       }
     },
     "archive": {
       "meta": {
         "avg_features": {
-          "song_length": 3.711869753086419,
-          "tempo": 119.38792592592593,
-          "danceability": 0.6181296296296295,
-          "energy": 0.6828574074074072,
-          "loudness": -6.932833333333333,
-          "acousticness": 0.23209882222222228,
-          "instrumentalness": 0.2680535661111111,
-          "liveness": 0.177,
-          "valence": 0.5339407407407406
+          "song_length": 3.7251903030303026,
+          "tempo": 120.48303636363636,
+          "danceability": 0.6147090909090908,
+          "energy": 0.6869145454545452,
+          "loudness": -6.866509090909092,
+          "acousticness": 0.2280806618181819,
+          "instrumentalness": 0.2631798649090909,
+          "liveness": 0.17501636363636364,
+          "valence": 0.5379418181818181
         },
-        "count": 54
+        "count": 55
       },
       "tracks": {
         "5qNNanYonpCwahfJGuFVRQ": {
@@ -1761,6 +1777,22 @@
           "instrumentalness": 3.55e-06,
           "liveness": 0.16,
           "valence": 0.146
+        },
+        "2uXidnW2mwi9kk4ZWVr0n5": {
+          "artist": "Gramatik",
+          "song": "Satoshi Nakamoto",
+          "album": "Epigram",
+          "added_by": "threesquared#3899",
+          "added_at": "2020-10-09 12:55:47.086963",
+          "song_length": 4.4445,
+          "tempo": 179.619,
+          "danceability": 0.43,
+          "energy": 0.906,
+          "loudness": -3.285,
+          "acousticness": 0.0111,
+          "instrumentalness": 0,
+          "liveness": 0.0679,
+          "valence": 0.754
         }
       }
     }
@@ -2347,20 +2379,36 @@
             "instrumentalness": 3.55e-06,
             "liveness": 0.16,
             "valence": 0.146
+          },
+          "2uXidnW2mwi9kk4ZWVr0n5": {
+            "artist": "Gramatik",
+            "song": "Satoshi Nakamoto",
+            "album": "Epigram",
+            "added_by": "threesquared#3899",
+            "added_at": "2020-10-09 12:55:47.086963",
+            "song_length": 4.4445,
+            "tempo": 179.619,
+            "danceability": 0.43,
+            "energy": 0.906,
+            "loudness": -3.285,
+            "acousticness": 0.0111,
+            "instrumentalness": 0,
+            "liveness": 0.0679,
+            "valence": 0.754
           }
         },
         "avg_features": {
-          "song_length": 3.843047222222222,
-          "tempo": 117.58019444444443,
-          "danceability": 0.631972222222222,
-          "energy": 0.6951111111111111,
-          "loudness": -7.05863888888889,
-          "acousticness": 0.20100138888888883,
-          "instrumentalness": 0.3015853472222223,
-          "liveness": 0.16773055555555558,
-          "valence": 0.5372722222222222
+          "song_length": 3.8593027027027023,
+          "tempo": 119.2569189189189,
+          "danceability": 0.6265135135135134,
+          "energy": 0.7008108108108108,
+          "loudness": -6.956648648648649,
+          "acousticness": 0.19586891891891886,
+          "instrumentalness": 0.29343439189189197,
+          "liveness": 0.16503243243243243,
+          "valence": 0.5431297297297297
         },
-        "song_count": 36
+        "song_count": 37
       },
       "Schmene#1026": {
         "total_tracks_added": {

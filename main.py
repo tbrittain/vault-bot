@@ -9,6 +9,7 @@ from spotipy import SpotifyException
 from datetime import datetime, timedelta
 import random
 import stats_commands
+import subprocess
 
 load_dotenv()
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
@@ -179,9 +180,17 @@ async def on_message(message):
                     method_argument = message_body.split(' ', 1)[0]
                     method_argument = str(method_argument)
 
-                    if method_argument != 'playlist' and method_argument != 'user':  # defaults to dynamic playlist
+                    if method_argument != 'playlist' and method_argument != 'user' and method_argument != 'advanced':
+                        # defaults to dynamic playlist
                         message_body = 'playlist'
-                    await message.channel.send(stats_commands.display_stats(method=message_body))
+                    if message_body == 'advanced':
+                        # had to use the absolute paths due to R and Rscript.exe not understanding relative paths
+                        subprocess.call(
+                            ["C:/Program Files/R/R-3.5.1/bin/Rscript.exe", "D:/Github/vault-bot/stats_graphics.R"])
+                        file = discord.File("embeds/dynamic_plot.jpg", filename="dynamic_plot.jpg")
+                        await message.channel.send(file=file)
+                    else:
+                        await message.channel.send(stats_commands.display_stats(method=message_body))
             except ValueError:
                 await message.channel.send(f'User not present in my ledger, {message.author.mention}!')
                 await message.channel.send(f'Be sure you enter user name in the correct format, e.g. {message.author}')

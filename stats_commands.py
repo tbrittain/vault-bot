@@ -172,7 +172,6 @@ def display_stats(method='playlist'):
             method_argument = 'dynamic'
 
         if method_argument.__contains__('dynamic') or method_argument.__contains__('archive'):
-            # TODO: add standard deviation in addition to average?
             playlist_results_string = f'__***Audio features for the {method_argument} playlist***__\n'
             playlist_results_string += "```fix\n"
 

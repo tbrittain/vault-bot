@@ -35,7 +35,7 @@ async def song_search(user_message):
             track_id = (item['id'])
             track_id_dic = {counter: track_id}
             results_list.append(track_id_dic)
-            # TODO: figure out how to embed links in markdown
+
             # https://stackoverflow.com/questions/44862112/how-can-i-send-an-embed-via-my-discord-bot-w-python
             # https://support.discord.com/hc/en-us/articles/210298617-Markdown-Text-101-Chat-Formatting-Bold-Italic-Underline-
             # artist_url = (item['album']['artists'][0]['external_urls']['spotify'])
@@ -49,9 +49,6 @@ async def song_search(user_message):
         return f'No Spotify tracks for query {original_message} found!'
 
 
-# TODO: prevent episodes from being added to playlist
-# may need to perform a spotify search on the track being added prior to adding it to the playlist
-# and if type == episode or duration > 10 min don't add it
 async def add_to_playlist(song_id):
     existing_songs = await songs_in_dyn_playlist()
     if song_id in existing_songs:
@@ -83,6 +80,7 @@ async def convert_to_track_id(song_input):
     return song['id']
 
 
+# cannot await this function since used with updating the json
 def get_track_info(track_id, user):
     global track_info
     song = sp.track(track_id=track_id)
@@ -123,5 +121,38 @@ async def check_song(track_id):
         raise ValueError('Cannot add podcast episode to playlist!')
 
 
+# TODO: implement playlist_genres in a playlist_desc_update function
+# likely once a song added/songs purged
+def playlist_genres(playlist_id):
+    results = sp.playlist_items(playlist_id)  # dynamic playlist ID
+    tracks = results['items']
+    while results['next']:
+        results = sp.next(results)
+        tracks.extend(results['items'])
+
+    artist_list = []
+    for song in tracks:
+        artist_list.append(song['track']['artists'][0]['id'])
+
+    artist_genres = {}
+    for artist in artist_list:
+        artist_genres[artist] = sp.artist(artist)['genres']
+
+    genre_count = {}
+    for artist, artist_genres in artist_genres.items():
+        try:
+            if artist_genres[0] not in genre_count:
+                genre_count[artist_genres[0]] = 1
+            else:
+                genre_count[artist_genres[0]] += 1
+        except IndexError:  # some artists do not have a genre
+            pass
+
+    genre_count = {key: value for key, value in
+                   sorted(genre_count.items(), key=lambda item: item[1], reverse=True)}
+
+    return genre_count
+
+
 if __name__ == "__main__":
-    print(check_song('7CLasN0tGYWWbpkPEHgDjZ'))
+    print(playlist_genres("5YQHb5wt9d0hmShWNxjsTs"))
