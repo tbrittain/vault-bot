@@ -55,8 +55,8 @@ async def add_to_playlist(song_id):
         raise FileExistsError('Song already present in Dyn playist! Not adding duplicate ID.')
     else:
         song_id = [song_id, ]  # for whatever reason, spotipy input is a list
-        sp.playlist_add_items('5YQHb5wt9d0hmShWNxjsTs', song_id)
-        sp.playlist_add_items('4C6pU7YmbBUG8sFFk4eSXj', song_id)
+        sp.playlist_add_items('5YQHb5wt9d0hmShWNxjsTs', song_id)  # dynamic
+        sp.playlist_add_items('4C6pU7YmbBUG8sFFk4eSXj', song_id)  # archive
 
 
 async def songs_in_dyn_playlist():
@@ -110,7 +110,7 @@ def get_track_info(track_id, user):
     return track_info
 
 
-async def check_song(track_id):
+async def validate_song(track_id):
     try:
         song = sp.track(track_id=track_id)
         if int(song['duration_ms']) > 600000:  # catch if song greater than 600k ms (10 min)
@@ -138,13 +138,19 @@ def playlist_genres(playlist_id):
     for artist in artist_list:
         artist_genres[artist] = sp.artist(artist)['genres']
 
-    genre_count = {}
+    # make it so all genres from artists are taken into account
+    total_genre_list = []
     for artist, artist_genres in artist_genres.items():
+        for individual_genre in artist_genres:
+            total_genre_list.append(individual_genre)
+
+    genre_count = {}
+    for genre in total_genre_list:
         try:
-            if artist_genres[0] not in genre_count:
-                genre_count[artist_genres[0]] = 1
+            if genre not in genre_count:
+                genre_count[genre] = 1
             else:
-                genre_count[artist_genres[0]] += 1
+                genre_count[genre] += 1
         except IndexError:  # some artists do not have a genre
             pass
 
@@ -154,5 +160,34 @@ def playlist_genres(playlist_id):
     return genre_count
 
 
+def playlist_description_update(playlist_id, playlist_name):
+    global desc
+    genre_count_dict = playlist_genres(playlist_id)
+    top_genres = {k: genre_count_dict[k] for k in list(genre_count_dict)[:10]}
+    if playlist_name == 'dynamic':
+        desc = 'This is a dynamic playlist, meaning that the songs ' \
+               'are automagically purged by VaultBot after two weeks. '
+    elif playlist_name == 'archive':
+        desc = 'This playlist keeps all of the tracks that were added ' \
+               'in the original Vault Community Playlist. '
+
+    if len(top_genres) > 0:  # only adds genre details if there are actually artists in the playlist
+        desc += 'Prominent genres include: '
+        for genre, count in top_genres.items():
+            desc += f'{genre}, '
+        desc += 'and more!'
+
+    # print(desc)
+    description_length = len(desc)
+    print(f'Updated length of playlist {playlist_name} description: {description_length}')
+
+    if len(desc) < 300:  # need to ensure playlist description is 300 characters or fewer
+        print(f'Playlist description length within valid range. Updating description of {playlist_name} playlist.')
+        sp.playlist_change_details(playlist_id=playlist_id, description=desc)
+    else:
+        print(f'Description too long. Not updating {playlist_name} playlist description.')
+
+
 if __name__ == "__main__":
-    print(playlist_genres("5YQHb5wt9d0hmShWNxjsTs"))
+    playlist_description_update(playlist_id="5YQHb5wt9d0hmShWNxjsTs", playlist_name='dynamic')
+    playlist_description_update(playlist_id="4C6pU7YmbBUG8sFFk4eSXj", playlist_name='archive')

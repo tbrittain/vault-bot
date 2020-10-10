@@ -21,7 +21,7 @@ bot = discord.Client()
 # TODO: make bot ignore messages from other bots
 # TODO: troubleshoot why bot sometimes responds with N instead of song results
 # TODO: consider rewriting main.py according to @bot.command() rather than on message for all events
-# TODO: function that updates playlist description with some genres?
+# TODO: handle when no results found for song
 # https://github.com/Rapptz/discord.py <- look at examples
 
 @bot.event
@@ -112,7 +112,7 @@ async def on_message(message):
                         emoji_responses = ['👌', '👍', '🤘', '🤙', '🤝']
 
                         # check_song raises exceptions if song not valid for playlist
-                        await spotify_commands.check_song(track_id=selected_track_id)  # check if valid track
+                        await spotify_commands.validate_song(track_id=selected_track_id)  # check if valid track
                         await spotify_commands.add_to_playlist(song_id=selected_track_id)
 
                         # cannot await the JSON serializable stats_song_add()
@@ -140,7 +140,7 @@ async def on_message(message):
             emoji_responses = ['👌', '👍', '🤘', '🤙', '🤝']
             try:
                 converted_song_id = await spotify_commands.convert_to_track_id(message_body)
-                await spotify_commands.check_song(track_id=converted_song_id)  # check if valid track
+                await spotify_commands.validate_song(track_id=converted_song_id)  # check if valid track
 
                 await spotify_commands.add_to_playlist(song_id=converted_song_id)
                 stats_commands.stats_song_add(song_id=converted_song_id, user=str(message.author))
@@ -180,7 +180,8 @@ async def on_message(message):
                     method_argument = message_body.split(' ', 1)[0]
                     method_argument = str(method_argument)
 
-                    if method_argument != 'playlist' and method_argument != 'user' and method_argument != 'advanced':
+                    if method_argument != 'playlist' and method_argument != 'user' and \
+                            method_argument != 'advanced' and method_argument != 'song':
                         # defaults to dynamic playlist
                         message_body = 'playlist'
                     if message_body == 'advanced':
@@ -194,6 +195,8 @@ async def on_message(message):
             except ValueError:
                 await message.channel.send(f'User not present in my ledger, {message.author.mention}!')
                 await message.channel.send(f'Be sure you enter user name in the correct format, e.g. {message.author}')
+            except AttributeError:
+                await message.channel.send(f'Song ID not found in the database, {message.author.mention}!')
 
         elif first_word.lower() == 'highscores':
             try:
@@ -305,7 +308,8 @@ async def on_message(message):
                     help_embed.add_field(name="Function information",
                                          value='Retrieve some interesting statistics for a playlist/user', inline=False)
                     help_embed.add_field(name="Spotify track attributes",
-                                         value='See https://bit.ly/3d9Z9bm for more info on Spotify track attributes', inline=False)
+                                         value='See https://bit.ly/3d9Z9bm for more info on Spotify track attributes',
+                                         inline=False)
                     help_embed.add_field(name="Playlist example",
                                          value='$stats playlist', inline=False)
                     help_embed.add_field(name="User example",
@@ -391,12 +395,18 @@ async def song_time_check():
                                                         month=int(date_split[1]),
                                                         day=int(date_split[2]))
             if time_difference > timedelta(days=14):  # set 2 weeks threshold for track removal
-                # TODO: update the json to refresh calculating average attributes when tracks removed
                 spotify_commands.sp.playlist_remove_all_occurrences_of_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs',
                                                                              items=[key])
                 stats_commands.purge_stats(song_id=[key])
 
                 print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) + f' Song {key} removed from playlist')
+
+    # TODO: update the json to refresh calculating average attributes when tracks removed
+    # updates playlist descriptions based on genres present
+    spotify_commands.playlist_description_update(playlist_id="5YQHb5wt9d0hmShWNxjsTs", playlist_name='dynamic')
+    # TODO: figure out why it can only update description of one of the two playlists, but not both
+    time.sleep(2)  # may need to take a little bit of time in between the playlist description updates
+    # spotify_commands.playlist_description_update(playlist_id="4C6pU7YmbBUG8sFFk4eSXj", playlist_name='archive')
     print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) + ' Hourly playlist cleanup complete')
 
 

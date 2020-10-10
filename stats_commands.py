@@ -250,6 +250,43 @@ def display_stats(method='playlist'):
 
         else:
             raise ValueError('User not found in database')
+    elif method.__contains__('song'):
+
+        metadata = data['playlists']['archive']['tracks']
+
+        song_names = []
+
+        for song in metadata:
+            song_names.append(song)
+
+        if method_argument in song_names:
+            playlist_results_string = f'__***Song statistics for ID {method_argument} ***__\n'
+            playlist_results_string += "```fix\n"
+
+            playlist_results_string += f'Song: "{metadata[method_argument]["song"]}" by ' \
+                                       f'{metadata[method_argument]["artist"]} from album ' \
+                                       f'"{metadata[method_argument]["album"]}"\n'
+
+            playlist_results_string += f'Added by {metadata[method_argument]["added_by"]} on ' \
+                                       f'{metadata[method_argument]["added_at"]}\n'
+
+            playlist_results_string += '```'
+            playlist_results_string += f'__***Song attributes***__\n'
+            playlist_results_string += "```fix\n"
+
+            playlist_results_string += f'Song length: ' \
+                                       f'{time_digit_to_min_sec(metadata[method_argument]["song_length"])}\n'
+            playlist_results_string += f'Tempo: {metadata[method_argument]["tempo"]}\n'
+            playlist_results_string += f'Danceability: {metadata[method_argument]["danceability"]}\n'
+            playlist_results_string += f'Energy: {metadata[method_argument]["energy"]}\n'
+            playlist_results_string += f'Loudness: {metadata[method_argument]["loudness"]}\n'
+            playlist_results_string += f'Acousticness: {metadata[method_argument]["acousticness"]}\n'
+            playlist_results_string += f'Instrumentalness: {metadata[method_argument]["instrumentalness"]}\n'
+            playlist_results_string += f'Liveness: {metadata[method_argument]["liveness"]}\n'
+            playlist_results_string += f'Valence: {metadata[method_argument]["valence"]}\n'
+
+        else:
+            raise AttributeError('Song ID not found')
 
     playlist_results_string += '```'
     return playlist_results_string
@@ -382,4 +419,4 @@ def valid_user_list():
 
 
 if __name__ == "__main__":
-    print(display_highscores('playlist dynamic low'))
+    print(display_stats('song 5KupfEBaVJwL7D2ZN0n1Q1'))

@@ -1,4 +1,4 @@
-#!C:\Program Files\R\R-3.5.1\bin\Rscript.exe --vanilla --default-packages=jsonlite,tibble,data.table,GGally,ggplot2.dplyr
+#!C:\Program Files\R\R-3.5.1\bin\Rscript.exe --vanilla --default-packages=jsonlite,tibble,data.table,GGally,ggplot2,dplyr
 # important that the path above is added to system path
 library(jsonlite)
 library(tibble)
@@ -61,36 +61,28 @@ song_count <- nrow(total_df)
 # else, overwrite username as "other"
 # this will allow for data to be colored according to user
 
+# determine user counts
+user_counts <- aggregate(data.frame(count = total_df$User), list(value = total_df$User), length)
+names(user_counts)[1] <- "User"
 
-#user_counts <- aggregate(data.frame(count = total_df$User), list(value = total_df$User), length)
-#for (test in user_counts){
-#    print(test)
-#}
-#rows <- function(tab) lapply(
-#  seq_len(nrow(tab)),
-#  function(i) unclass(tab[i,,drop=F])
-#)
-#
-#stop()
-#
-#for (test in total_df$User){
-#  print(test)
-#}
-#
-#stop()
-#total_df$Corrected_user <- dplyr::if_else(sum(total_df$User) >= 3, yes=total_df$user, no="Other")
-#stop()
+# merge user counts with original df for user_corrected
+total_df <- merge(x=total_df, y=user_counts, by="User")
+
+# replace users with few songs added with "other"
+total_df$Corrected_user <- replace(total_df$User, total_df$count < 3, NA)
+total_df <- na.omit(total_df)
+# cant get this to work, just going to omit NAs
+# total_df$Corrected_user[which(is.na(total_df$Corrected_user))] <- "Other"
 
 
-# unfortunately cannot color by user when some users have only submitted 1 song
-# need to create workaround that bundles users with <3 tracks submitted into "other" category
 p <- ggpairs(total_df, title = "Energized Attribute Pairwise Comparisons",
-        columns = c("Danceability", "Energy", "Loudness", "Valence", "User"),
-        # aes(colour = as.character(User), alpha = 0.2),
-        lower = (list(continuous = wrap("points", alpha = 0.5, size = 0.8),
-                      discrete = wrap("facetbar", alpha = 0.5)))) +
-        #diag = list(continuous ="barDiag", discrete = wrap("barDiag", alpha = 0.5))) +
-        # upper = list(continuous = wrap(ggally_cor, display_grid = FALSE))) +
+        columns = c("Tempo", "Danceability", "Energy", "Loudness", "Valence", "Corrected_user"),
+        aes(colour = as.character(Corrected_user), alpha = 0.2),
+        lower = (list(continuous = wrap("points", alpha = 0.8, size = 0.8),
+                      discrete = wrap("facetbar", alpha = 0.5))),
+        diag = list(continuous =wrap("densityDiag", alpha = 0.3),
+                    discrete = wrap("barDiag", alpha = 0.5)),
+        upper = list(continuous = wrap(ggally_cor, display_grid = FALSE, size=2))) +
         theme(panel.grid.major = element_blank()) +
         theme(axis.text.x.bottom = element_text(angle = 90, vjust = 0.5, hjust=1))
 
@@ -98,7 +90,7 @@ p <- ggpairs(total_df, title = "Energized Attribute Pairwise Comparisons",
 #getPlot(p, 5, 5) + guides(fill=FALSE)
 
 plots <- list()
-for (i in 1:5){
+for (i in 1:6){
   plots <- c(plots, lapply(1:p$nrow, function(j) getPlot(p, i = i, j = j)))
 }
 
@@ -108,7 +100,7 @@ plot_title <- sprintf("Energized Attribute Pairwise Comparisons (%d songs as of 
 
 ggmatrix(plots,
          nrow = p$nrow,
-         ncol=5,
+         ncol=6,
          xAxisLabels = p$xAxisLabels,
          yAxisLabels = p$yAxisLabels,
          title=plot_title) +
