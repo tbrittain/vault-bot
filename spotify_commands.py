@@ -121,7 +121,6 @@ async def validate_song(track_id):
         raise ValueError('Cannot add podcast episode to playlist!')
 
 
-# TODO: implement playlist_genres in a playlist_desc_update function
 # likely once a song added/songs purged
 def playlist_genres(playlist_id):
     results = sp.playlist_items(playlist_id)  # dynamic playlist ID

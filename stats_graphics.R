@@ -6,6 +6,7 @@ library(data.table)
 library(GGally)
 library(ggplot2)
 library(dplyr)
+library(wesanderson)
 
 # Title     : Stats_graphics
 # Objective : Display advanced song statistics through ggplot
@@ -77,14 +78,16 @@ total_df <- na.omit(total_df)
 
 p <- ggpairs(total_df, title = "Energized Attribute Pairwise Comparisons",
         columns = c("Tempo", "Danceability", "Energy", "Loudness", "Valence", "Corrected_user"),
-        aes(colour = as.character(Corrected_user), alpha = 0.2),
-        lower = (list(continuous = wrap("points", alpha = 0.8, size = 0.8),
+        mapping = ggplot2::aes(colour = as.character(Corrected_user), alpha = 0.2), legend = 1,
+             # change points to smooth for a best fit line, need to work on aesthetics tho
+        lower = (list(continuous = wrap("points", alpha = 0.6, size = 0.5),
                       discrete = wrap("facetbar", alpha = 0.5))),
         diag = list(continuous =wrap("densityDiag", alpha = 0.3),
                     discrete = wrap("barDiag", alpha = 0.5)),
         upper = list(continuous = wrap(ggally_cor, display_grid = FALSE, size=2))) +
         theme(panel.grid.major = element_blank()) +
         theme(axis.text.x.bottom = element_text(angle = 90, vjust = 0.5, hjust=1))
+        #scale_fill_brewer(palette="Set2")
 
 #getPlot(p, 5, 5) + guides(fill=FALSE)
 #getPlot(p, 5, 5) + guides(fill=FALSE)
@@ -106,5 +109,6 @@ ggmatrix(plots,
          title=plot_title) +
   theme(axis.text.x.bottom = element_text(angle = 90, vjust = 0.5, hjust=1, size=8)) +
   theme(axis.text.y = element_text(angle = 30, vjust = 0, hjust=1, size=8))
+  #scale_fill_brewer(palette="Set2")
 
 ggsave(filename = "D:/Github/vault-bot/embeds/dynamic_plot.jpg", plot = last_plot(), width = 10, height = 10)
