@@ -20,6 +20,8 @@ bot = discord.Client()
 # TODO: urgent! backup json
 # TODO: make bot ignore messages from other bots
 # TODO: consider rewriting main.py according to @bot.command() rather than on message for all events
+# TODO: song time print function cuts off octal 0
+# TODO: consider allowing other forms of $stats song URL or URI in addition to ID
 # https://github.com/Rapptz/discord.py <- look at examples
 
 @bot.event
@@ -409,7 +411,7 @@ async def song_time_check():
     # updates playlist descriptions based on genres present
     spotify_commands.playlist_description_update(playlist_id="5YQHb5wt9d0hmShWNxjsTs", playlist_name='dynamic')
     # TODO: figure out why it can only update description of one of the two playlists, but not both
-    time.sleep(2)  # may need to take a little bit of time in between the playlist description updates
+    # time.sleep(2)  # may need to take a little bit of time in between the playlist description updates
     # spotify_commands.playlist_description_update(playlist_id="4C6pU7YmbBUG8sFFk4eSXj", playlist_name='archive')
     print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) + ' Hourly playlist cleanup complete')
 
