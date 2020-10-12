@@ -21,7 +21,6 @@ bot = discord.Client()
 # TODO: make bot ignore messages from other bots
 # TODO: consider rewriting main.py according to @bot.command() rather than on message for all events
 # TODO: song time print function cuts off octal 0
-# TODO: consider allowing other forms of $stats song URL or URI in addition to ID
 # https://github.com/Rapptz/discord.py <- look at examples
 
 @bot.event
@@ -413,6 +412,14 @@ async def song_time_check():
     # TODO: figure out why it can only update description of one of the two playlists, but not both
     # time.sleep(2)  # may need to take a little bit of time in between the playlist description updates
     # spotify_commands.playlist_description_update(playlist_id="4C6pU7YmbBUG8sFFk4eSXj", playlist_name='archive')
+
+    # produce new interactive HTML table
+    subprocess.call(
+        ["C:/Program Files/R/R-3.5.1/bin/Rscript.exe", "D:/Github/vault-bot/interactive_table.R"])
+
+    # upload interactive table to Google Cloud through batch file
+    subprocess.call([r"D:/Github/vault-bot/cloudsync.bat"])
+
     print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) + ' Hourly playlist cleanup complete')
 
 

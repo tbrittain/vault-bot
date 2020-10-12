@@ -3,17 +3,17 @@
     "dynamic": {
       "meta": {
         "avg_features": {
-          "song_length": 3.8744108156028343,
-          "tempo": 122.24297872340428,
-          "danceability": 0.6070638297872337,
-          "energy": 0.7003542553191489,
-          "loudness": -7.10996808510638,
-          "acousticness": 0.2174910744680852,
-          "instrumentalness": 0.2451447119148936,
-          "liveness": 0.18290744680851065,
-          "valence": 0.5239180851063827
+          "song_length": 3.874610590277775,
+          "tempo": 121.85412500000001,
+          "danceability": 0.6081354166666664,
+          "energy": 0.702096875,
+          "loudness": -7.108999999999998,
+          "acousticness": 0.21462126041666674,
+          "instrumentalness": 0.2402635720833333,
+          "liveness": 0.18408645833333334,
+          "valence": 0.5223781249999997
         },
-        "count": 94
+        "count": 96
       },
       "tracks": {
         "5qNNanYonpCwahfJGuFVRQ": {
@@ -1519,23 +1519,55 @@
           "instrumentalness": 0.00243,
           "liveness": 0.378,
           "valence": 0.663
+        },
+        "4cLYmYHG10Rzb8bZqlo7Dx": {
+          "artist": "Touch Sensitive",
+          "song": "Lay Down",
+          "album": "Visions",
+          "added_by": "threesquared#3899",
+          "added_at": "2020-10-12 00:44:27.815690",
+          "song_length": 4.2449,
+          "tempo": 109.793,
+          "danceability": 0.457,
+          "energy": 0.761,
+          "loudness": -6.182,
+          "acousticness": 0.00348,
+          "instrumentalness": 0,
+          "liveness": 0.375,
+          "valence": 0.349
+        },
+        "1NpLCZNSYEegtDYCRA5PNN": {
+          "artist": "Sublime",
+          "song": "Scarlet Begonias",
+          "album": "40oz. To Freedom",
+          "added_by": "threesquared#3899",
+          "added_at": "2020-10-12 16:23:41.588034",
+          "song_length": 3.5231,
+          "tempo": 97.363,
+          "danceability": 0.86,
+          "energy": 0.807,
+          "loudness": -7.945,
+          "acousticness": 0.156,
+          "instrumentalness": 0.0217,
+          "liveness": 0.104,
+          "valence": 0.551
         }
       }
     },
     "archive": {
       "meta": {
         "avg_features": {
-          "song_length": 3.8744108156028343,
-          "tempo": 122.24297872340428,
-          "danceability": 0.6070638297872337,
-          "energy": 0.7003542553191489,
-          "loudness": -7.10996808510638,
-          "acousticness": 0.2174910744680852,
-          "instrumentalness": 0.2451447119148936,
-          "liveness": 0.18290744680851065,
-          "valence": 0.5239180851063827
+          "song_length": 3.874610590277775,
+          "tempo": 121.85412500000001,
+          "danceability": 0.6081354166666664,
+          "energy": 0.702096875,
+          "loudness": -7.108999999999998,
+          "acousticness": 0.21462126041666674,
+          "instrumentalness": 0.2402635720833333,
+          "liveness": 0.18408645833333334,
+          "valence": 0.5223781249999997
         },
-        "count": 94
+        "count": 96
       },
       "tracks": {
         "5qNNanYonpCwahfJGuFVRQ": {
@@ -3041,6 +3073,38 @@
           "instrumentalness": 0.00243,
           "liveness": 0.378,
           "valence": 0.663
+        },
+        "4cLYmYHG10Rzb8bZqlo7Dx": {
+          "artist": "Touch Sensitive",
+          "song": "Lay Down",
+          "album": "Visions",
+          "added_by": "threesquared#3899",
+          "added_at": "2020-10-12 00:44:27.815690",
+          "song_length": 4.2449,
+          "tempo": 109.793,
+          "danceability": 0.457,
+          "energy": 0.761,
+          "loudness": -6.182,
+          "acousticness": 0.00348,
+          "instrumentalness": 0,
+          "liveness": 0.375,
+          "valence": 0.349
+        },
+        "1NpLCZNSYEegtDYCRA5PNN": {
+          "artist": "Sublime",
+          "song": "Scarlet Begonias",
+          "album": "40oz. To Freedom",
+          "added_by": "threesquared#3899",
+          "added_at": "2020-10-12 16:23:41.588034",
+          "song_length": 3.5231,
+          "tempo": 97.363,
+          "danceability": 0.86,
+          "energy": 0.807,
+          "loudness": -7.945,
+          "acousticness": 0.156,
+          "instrumentalness": 0.0217,
+          "liveness": 0.104,
+          "valence": 0.551
         }
       }
     }
@@ -3963,20 +4027,52 @@
             "instrumentalness": 0.00243,
             "liveness": 0.378,
             "valence": 0.663
+          },
+          "4cLYmYHG10Rzb8bZqlo7Dx": {
+            "artist": "Touch Sensitive",
+            "song": "Lay Down",
+            "album": "Visions",
+            "added_by": "threesquared#3899",
+            "added_at": "2020-10-12 00:44:27.815690",
+            "song_length": 4.2449,
+            "tempo": 109.793,
+            "danceability": 0.457,
+            "energy": 0.761,
+            "loudness": -6.182,
+            "acousticness": 0.00348,
+            "instrumentalness": 0,
+            "liveness": 0.375,
+            "valence": 0.349
+          },
+          "1NpLCZNSYEegtDYCRA5PNN": {
+            "artist": "Sublime",
+            "song": "Scarlet Begonias",
+            "album": "40oz. To Freedom",
+            "added_by": "threesquared#3899",
+            "added_at": "2020-10-12 16:23:41.588034",
+            "song_length": 3.5231,
+            "tempo": 97.363,
+            "danceability": 0.86,
+            "energy": 0.807,
+            "loudness": -7.945,
+            "acousticness": 0.156,
+            "instrumentalness": 0.0217,
+            "liveness": 0.104,
+            "valence": 0.551
           }
         },
         "avg_features": {
-          "song_length": 3.823381286549707,
-          "tempo": 119.56717543859651,
-          "danceability": 0.6197368421052628,
-          "energy": 0.7023157894736842,
-          "loudness": -7.205894736842105,
-          "acousticness": 0.18512816140350868,
-          "instrumentalness": 0.24892677894736845,
-          "liveness": 0.17440701754385965,
-          "valence": 0.5221403508771931
+          "song_length": 3.8254361581920895,
+          "tempo": 119.02516949152543,
+          "danceability": 0.6210508474576268,
+          "energy": 0.705084745762712,
+          "loudness": -7.201067796610169,
+          "acousticness": 0.18155568135593214,
+          "instrumentalness": 0.24085637966101697,
+          "liveness": 0.1766135593220339,
+          "valence": 0.5196949152542374
         },
-        "song_count": 57
+        "song_count": 59
       },
       "Schmene#1026": {
         "total_tracks_added": {

@@ -13,6 +13,8 @@ library(dplyr)
 # Created by: Trey
 # Created on: 10/11/2020
 
+# TODO: create new date column with only day dates
+
 # dynamic playlist info from json to df
 stats_raw <- jsonlite::fromJSON("D:/Github/vault-bot/stats.json")
 stats_df <- tibble::as_tibble(stats_raw$playlists$dynamic$tracks)
@@ -54,7 +56,8 @@ names(total_df)[11] <- "Acoustic"
 names(total_df)[12] <- "Instrumental"
 names(total_df)[13] <- "Liveness"
 names(total_df)[14] <- "Valence"
-#
+
+# gets rid of data with fewer than 3 user observations
 #user_counts <- aggregate(data.frame(count = total_df$User), list(value = total_df$User), length)
 #names(user_counts)[1] <- "User"
 #
@@ -65,12 +68,10 @@ names(total_df)[14] <- "Valence"
 #total_df$Corrected_user <- replace(total_df$User, total_df$count < 3, NA)
 #total_df <- na.omit(total_df)
 
-
+# variables for use in title
 title_today <- format(Sys.time(), "%c")
 song_count <- nrow(total_df)
 
-# color gradient for heatmap
-GnYlRd <- function(x) rgb(colorRamp(c("#63be7b", "#ffeb84", "#f87274"))(x), maxColorValue = 255)
 
 options(reactable.theme = reactableTheme(
   color = "hsl(233, 9%, 87%)",
@@ -97,8 +98,6 @@ table_data$Danceability <- round(table_data$Danceability, digits = 3)
 table_data$Energy <- round(table_data$Energy, digits = 3)
 table_data$Valence <- round(table_data$Valence, digits = 3)
 
-# table_data$Loudness <- abs(table_data$Loudness)
-
 # bar chart function for use in reactable colDef function
 bar_chart <- function(label, width = "100%", height = "16px", fill = "#00bfc4", background = NULL) {
   bar <- div(style = list(background = fill, width = width, height = height))
@@ -111,12 +110,15 @@ with_tooltip <- function(value, tooltip) {
             title = tooltip, value)
 }
 
+plot_title <- sprintf("Overall view of every song present in the playlist (%d songs as of %s). Updates every hour!",
+                      song_count, title_today)
 
-reactable(
+tbl <- reactable(
   table_data,
   columns = list(
     User = colDef(align = "left",
-                  style = list(fontFamily = "monospace", whiteSpace = "pre")),
+                  style = list(fontFamily = "monospace", whiteSpace = "pre"),
+                  footer = "Average"),
     Artist = colDef(align = "left",
                     style = list(fontFamily = "monospace", whiteSpace = "pre")),
     Album = colDef(align = "left",
@@ -138,7 +140,17 @@ reactable(
                                background = "#e1e1e1",
                                fill = "#000000")
                   }, header = with_tooltip("Length", "Minutes in decimal form"),
-                    style = list(fontFamily = "monospace", whiteSpace = "pre")),
+                    style = list(fontFamily = "monospace", whiteSpace = "pre"),
+                    footer = JS("function(colInfo) {
+                      var total = 0
+                      var number_obsv = 0
+                      colInfo.data.forEach(function(row) {
+                      total += row[colInfo.column.id]
+                      number_obsv += 1
+                      })
+                      var avg_value = total / number_obsv
+                      return avg_value.toFixed(2)
+                      }")),
     Tempo = colDef(aggregate = "mean",
                    align = "left",
                    filterable = FALSE,
@@ -151,7 +163,17 @@ reactable(
                                fill = "#264653")
                   },
                    header = with_tooltip("Tempo", "Take with a grain of salt"),
-                   style = list(fontFamily = "monospace", whiteSpace = "pre")),
+                   style = list(fontFamily = "monospace", whiteSpace = "pre"),
+                   footer = JS("function(colInfo) {
+                    var total = 0
+                    var number_obsv = 0
+                    colInfo.data.forEach(function(row) {
+                    total += row[colInfo.column.id]
+                    number_obsv += 1
+                    })
+                    var avg_value = total / number_obsv
+                    return avg_value.toFixed(2)
+                    }")),
     Danceability = colDef(aggregate = "mean",
                           align = "left",
                           format = colFormat(digits = 3),
@@ -162,7 +184,17 @@ reactable(
                            bar_chart(value, width = width,
                                             background = "#e1e1e1",
                                             fill = "#2a9d8f")
-                  }, style = list(fontFamily = "monospace", whiteSpace = "pre")),
+                          }, style = list(fontFamily = "monospace", whiteSpace = "pre"),
+                          footer = JS("function(colInfo) {
+                            var total = 0
+                            var number_obsv = 0
+                            colInfo.data.forEach(function(row) {
+                            total += row[colInfo.column.id]
+                            number_obsv += 1
+                            })
+                            var avg_value = total / number_obsv
+                            return avg_value.toFixed(2)
+                            }")),
     Energy = colDef(aggregate = "mean",
                     align = "left",
                     format = colFormat(digits = 3),
@@ -173,18 +205,38 @@ reactable(
                      bar_chart(value, width = width,
                                       background = "#e1e1e1",
                                       fill = "#e9c46a")
-                  }, style = list(fontFamily = "monospace", whiteSpace = "pre")),
+                  }, style = list(fontFamily = "monospace", whiteSpace = "pre"),
+                    footer = JS("function(colInfo) {
+                      var total = 0
+                      var number_obsv = 0
+                      colInfo.data.forEach(function(row) {
+                      total += row[colInfo.column.id]
+                      number_obsv += 1
+                      })
+                      var avg_value = total / number_obsv
+                      return avg_value.toFixed(2)
+                      }")),
     Loudness = colDef(aggregate = "mean",
                       align = "left",
                       format = colFormat(digits = 2),
                       filterable = FALSE,
                       cell = function(value){
-                       width <- paste0(abs(1 / (value / max(table_data$Loudness))) * 100, "%")
+                       width <- paste0(abs(1.5 / (value / max(table_data$Loudness))) * 100, "%")
                        value <- format(value, width = 5, justify = "right")
                        bar_chart(value, width = width,
                                         background = "#e1e1e1",
                                         fill = "#f4a261")
-                  }, style = list(fontFamily = "monospace", whiteSpace = "pre")),
+                  }, style = list(fontFamily = "monospace", whiteSpace = "pre"),
+                      footer = JS("function(colInfo) {
+                        var total = 0
+                        var number_obsv = 0
+                        colInfo.data.forEach(function(row) {
+                        total += row[colInfo.column.id]
+                        number_obsv += 1
+                        })
+                        var avg_value = total / number_obsv
+                        return avg_value.toFixed(2)
+                        }")),
     Valence = colDef(aggregate = "mean",
                      align = "left",
                      format = colFormat(digits = 3),
@@ -195,10 +247,20 @@ reactable(
                        bar_chart(value, width = width,
                                  background = "#e1e1e1",
                                  fill = "#e76f51")
-                  }, style = list(fontFamily = "monospace", whiteSpace = "pre"))
+                  }, style = list(fontFamily = "monospace", whiteSpace = "pre"),
+                      footer = JS("function(colInfo) {
+                        var total = 0
+                        var number_obsv = 0
+                        colInfo.data.forEach(function(row) {
+                        total += row[colInfo.column.id]
+                        number_obsv += 1
+                        })
+                        var avg_value = total / number_obsv
+                        return avg_value.toFixed(2)
+                        }"))
   ),
-  style = list(fontFamily = "Work Sans, sans-serif", fontSize = "14px"),
-  defaultSorted = "User",
+  style = list(fontFamily = "monospace", whiteSpace = "pre", fontSize = "15px"),
+  defaultSorted = list(Date = "desc"),
   defaultColDef = colDef(headerClass = "bar-sort-header"),
   highlight = TRUE,
   compact = TRUE,
@@ -207,9 +269,9 @@ reactable(
   filterable = TRUE,
   wrap = FALSE,
   resizable = TRUE,
-  defaultPageSize = 50,
+  defaultPageSize = 25,
   showPageSizeOptions = TRUE,
-  pageSizeOptions = c(50, 100, 200),
+  pageSizeOptions = c(25, 50, 100, 200),
   theme = reactableTheme(
     borderColor = "#dfe2e5",
     stripedColor = "#f6f8fa",
@@ -220,21 +282,23 @@ reactable(
   )
 )
 
-stop()
-plot_title <- sprintf("Overall view of every song present in the playlist (%d songs as of %s)",
-                      song_count, title_today)
+
 
 # generate HTML
 webpage <- div(class = "playlist-statistics",
   div(class = "playlist-header",
-    h2(class = "playlist-title", "Dynamic Playlist Song Statistics"),
+    h2(class = "playlist-title", "VaultBot Playlist Song Statistics"),
     plot_title
   ),
   tbl
 )
 
+
+
 # save HTML
 htmltools::save_html(html=webpage,
-                     file = "D:/Github/vault-bot/embeds/song_stats.html",
+                     file = "D:/Github/vault-bot/vaultbot_stats_table/index.html",
                      background = "white",
-                     libdir = "D:/Github/vault-bot/embeds/song_stats")
+                     libdir = "D:/Github/vault-bot/vaultbot_stats_table")
+
+
