@@ -8,8 +8,8 @@ import time
 from spotipy import SpotifyException
 from datetime import datetime, timedelta
 import random
-import stats_commands
 import subprocess
+import db
 
 load_dotenv()
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
@@ -17,10 +17,8 @@ DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 bot = discord.Client()
 
 
-# TODO: urgent! backup json
 # TODO: make bot ignore messages from other bots
 # TODO: consider rewriting main.py according to @bot.command() rather than on message for all events
-# TODO: song time print function cuts off octal 0
 # https://github.com/Rapptz/discord.py <- look at examples
 
 @bot.event
@@ -121,7 +119,7 @@ async def on_message(message):
                             await spotify_commands.add_to_playlist(song_id=selected_track_id)
 
                             # cannot await the JSON serializable stats_song_add()
-                            stats_commands.stats_song_add(song_id=selected_track_id, user=str(message.author))
+                            db.db_song_add(song_id=selected_track_id, user=str(message.author))
                             await message.channel.send(random.choice(emoji_responses))
                             await message.channel.send('Track has been added to the community playlists!')
                             print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) +
@@ -141,14 +139,14 @@ async def on_message(message):
             message_body = message_body.replace('[', "")
             message_body = message_body.replace(']', "")
             message_body = message_body.replace("'", "")
-            # print(f'message_body is {message_body}')
+
             emoji_responses = ['👌', '👍', '🤘', '🤙', '🤝']
             try:
                 converted_song_id = await spotify_commands.convert_to_track_id(message_body)
                 await spotify_commands.validate_song(track_id=converted_song_id)  # check if valid track
 
                 await spotify_commands.add_to_playlist(song_id=converted_song_id)
-                stats_commands.stats_song_add(song_id=converted_song_id, user=str(message.author))
+                db.db_song_add(song_id=converted_song_id, user=str(message.author))
                 await message.channel.send(random.choice(emoji_responses))
                 await message.channel.send('Track has been added to the community playlists!')
                 print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) +
@@ -170,61 +168,27 @@ async def on_message(message):
                 await message.channel.send(f"Cannot add songs longer than 10 minutes "
                                            f"to playlist, {message.author.mention}!")
 
+        # re-did stats to simply paste link to the website
+        # phased out highscores
         elif first_word.lower() == 'stats':
-            try:
-                if not message_body:
-                    await message.channel.send(f'Please enter a valid argument, '
-                                               f'such as $stats playlist or $stats user, {message.author.mention}!')
-                else:
-                    message_body = str(message_body)
-                    message_body = message_body.replace('[', '')
-                    message_body = message_body.replace(']', '')
-                    message_body = message_body.replace('"', '')
-                    message_body = message_body.replace("'", '')
 
-                    method_argument = message_body.split(' ', 1)[0]
-                    method_argument = str(method_argument)
+            message_body = str(message_body)
+            message_body = message_body.replace('[', "")
+            message_body = message_body.replace(']', "")
+            message_body = message_body.replace("'", "")
 
-                    if method_argument != 'playlist' and method_argument != 'user' and \
-                            method_argument != 'advanced' and method_argument != 'song':
-                        # defaults to dynamic playlist
-                        message_body = 'playlist'
-                    if message_body == 'advanced':
-                        # had to use the absolute paths due to R and Rscript.exe not understanding relative paths
-                        subprocess.call(
-                            ["C:/Program Files/R/R-3.5.1/bin/Rscript.exe", "D:/Github/vault-bot/stats_graphics.R"])
-                        file = discord.File("embeds/dynamic_plot.jpg", filename="dynamic_plot.jpg")
-                        await message.channel.send(file=file)
-                    else:
-                        await message.channel.send(stats_commands.display_stats(method=message_body))
-            except ValueError:
-                await message.channel.send(f'User not present in my ledger, {message.author.mention}!')
-                await message.channel.send(f'Be sure you enter user name in the correct format, e.g. {message.author}')
-            except AttributeError:
-                await message.channel.send(f'Song ID not found in the database, {message.author.mention}!')
-
-        elif first_word.lower() == 'highscores':
-            try:
-                if not message_body:
-                    await message.channel.send(f'Please enter a valid argument, such as $highscores playlist or '
-                                               f'$highscores user, {message.author.mention}!')
-                else:
-                    message_body = str(message_body)
-                    message_body = message_body.replace('[', '')
-                    message_body = message_body.replace(']', '')
-                    message_body = message_body.replace('"', '')
-                    message_body = message_body.replace("'", '')
-
-                    method_argument = message_body.split(' ', 1)[0]
-                    method_argument = str(method_argument)
-
-                    if method_argument != 'playlist' and method_argument != 'user':  # defaults to dynamic playlist
-                        message_body = 'playlist'
-
-                    await message.channel.send(stats_commands.display_highscores(method=message_body))
-            except ValueError:
-                await message.channel.send(f'User not present in my ledger, {message.author.mention}!')
-                await message.channel.send(f'Be sure you enter user name in the correct format, e.g. {message.author}')
+            if message_body == 'advanced':
+                # had to use the absolute paths due to R and Rscript.exe not understanding relative paths
+                subprocess.call(
+                    ["C:/Program Files/R/R-3.5.1/bin/Rscript.exe", "D:/Github/vault-bot/stats_graphics.R"])
+                file = discord.File("embeds/dynamic_plot.jpg", filename="dynamic_plot.jpg")
+                await message.channel.send(file=file)
+            else:
+                playlist_embed = discord.Embed(title='$stats',
+                                               description='Link to stats',
+                                               color=random.randint(0, 0xffffff))
+                playlist_embed.add_field(name='Link', value='http://vaultbot.tbrittain.com/', inline=False)
+                await message.channel.send(embed=playlist_embed)
 
         elif first_word.lower() == 'playlists' or first_word.lower() == 'playlist':
             try:
@@ -232,7 +196,7 @@ async def on_message(message):
                                                description='Links to the playlists. Paste the URI in your browser to '
                                                            'open the playlist on your desktop client! Be sure to '
                                                            'follow the playlist for easy access :grinning:',
-                                               color=0x00ff00)
+                                               color=random.randint(0, 0xffffff))
                 playlist_embed.add_field(name='Main playlist', value='https://spoti.fi/33AnPqd', inline=False)
                 playlist_embed.add_field(name='Archive playlist', value='https://spoti.fi/3iGBNeE', inline=False)
                 playlist_embed.add_field(name='Main Spotify URI',
@@ -273,7 +237,7 @@ async def on_message(message):
 
         # help documentation
         elif first_word.lower() == 'help':
-            command_names = ['search', 'add', 'stats', 'highscores', 'playlists']
+            command_names = ['search', 'add', 'stats', 'playlists']
             message_body = str(message_body)
             message_body = message_body.replace("'", "")
             message_body = message_body.replace("[", "")
@@ -315,27 +279,10 @@ async def on_message(message):
                     help_embed.add_field(name="Spotify track attributes",
                                          value='See https://bit.ly/3d9Z9bm for more info on Spotify track attributes',
                                          inline=False)
-                    help_embed.add_field(name="Playlist example",
-                                         value='$stats playlist', inline=False)
-                    help_embed.add_field(name="User example",
-                                         value='$stats user threesquared#3899', inline=False)
-                    await message.channel.send(embed=help_embed)
-
-                elif message_body.__contains__('highscores'):
-                    help_embed = discord.Embed(title='$help highscores', color=random.randint(0, 0xffffff))
-                    help_embed.add_field(name="Function information",
-                                         value='Retrieve the high or low statistics for a playlist/user', inline=False)
-                    help_embed.add_field(name="Spotify track attributes",
-                                         value='See https://bit.ly/3d9Z9bm for more info on Spotify track attributes',
-                                         inline=False)
-                    help_embed.add_field(name="Playlist high scores example",
-                                         value='$highscores playlist', inline=False)
-                    help_embed.add_field(name="Playlist low scores example",
-                                         value='$highscores playlist low', inline=False)
-                    help_embed.add_field(name="Archive playlist high scores example",
-                                         value='$highscores playlist archive high', inline=False)
-                    help_embed.add_field(name="User example (TBA)",
-                                         value='$highscores user threesquared#3899', inline=False)
+                    help_embed.add_field(name="Playlist (gives browser link)",
+                                         value='$stats', inline=False)
+                    help_embed.add_field(name="Advanced",
+                                         value='$stats advanced', inline=False)
                     await message.channel.send(embed=help_embed)
 
                 elif message_body.__contains__('playlists'):
@@ -364,8 +311,6 @@ async def on_message(message):
                     help_embed.add_field(name='$playlists', value='Links to the Spotify playlists', inline=False)
                     help_embed.add_field(name='$stats', value='General statistics for the songs '
                                                               'and users of the playlists', inline=False)
-                    help_embed.add_field(name='$highscores', value='Lists the top tracks for each Spotify attribute '
-                                                                   'for a playlist/user', inline=False)
 
                     await message.channel.send(embed=help_embed)
                 except IndexError:
@@ -393,6 +338,8 @@ async def song_time_check():
             track_dict = {track['track']['id']: added_at}
 
             track_list.append(track_dict)
+
+    # iterates over tracks pulled from spotify and for each one, determines whether it needs to be removed from
     for track in track_list:
         for key, value in track.items():
             date_split = value.split('-')
@@ -402,11 +349,10 @@ async def song_time_check():
             if time_difference > timedelta(days=14):  # set 2 weeks threshold for track removal
                 spotify_commands.sp.playlist_remove_all_occurrences_of_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs',
                                                                              items=[key])
-                stats_commands.purge_stats(song_id=[key])
+                db.db_purge_stats(song_id=[key])
 
                 print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) + f' Song {key} removed from playlist')
 
-    # TODO: update the json to refresh calculating average attributes when tracks removed
     # updates playlist descriptions based on genres present
     spotify_commands.playlist_description_update(playlist_id="5YQHb5wt9d0hmShWNxjsTs", playlist_name='dynamic')
     # TODO: figure out why it can only update description of one of the two playlists, but not both

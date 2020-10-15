@@ -1,47 +1,43 @@
-#!C:\Program Files\R\R-3.5.1\bin\Rscript.exe --vanilla --default-packages=jsonlite,tibble,data.table,GGally,ggplot2,dplyr
+#!C:\Program Files\R\R-3.5.1\bin\Rscript.exe --vanilla --default-packages=RPostgres,tibble,data.table,GGally,ggplot2,dplyr,DBI
 # important that the path above is added to system path
-library(jsonlite)
 library(tibble)
 library(data.table)
 library(GGally)
 library(ggplot2)
 library(dplyr)
-library(wesanderson)
+library(RPostgres)
+library(DBI)
 
 # Title     : Stats_graphics
 # Objective : Display advanced song statistics through ggplot
 # Created by: Trey
 # Created on: 10/8/2020
 
-# dynamic playlist info from json to df
-stats_raw <- jsonlite::fromJSON("D:/Github/vault-bot/stats.json")
-stats_df <- tibble::as_tibble(stats_raw$playlists$dynamic$tracks)
+readRenviron(".env")
+db_user <- Sys.getenv("DB_USER")
+db_pass <- Sys.getenv("DB_PASS")
+db <- 'vaultbot'
+db_port <- 5432
+db_host <- 'localhost'
 
-total_df <- data.frame(artist=character(), # init empty df with all relevant columns
-                       song=character(),
-                       album=character(),
-                       added_by=character(),
-                       added_at=character(),
-                       song_length=character(),
-                       tempo=character(),
-                       danceability=character(),
-                       energy=character(),
-                       loudness=character(),
-                       acousticness=character(),
-                       instrumentalness=character(),
-                       liveness=character(),
-                       valence=character(),
-                       stringsAsFactors=FALSE)
+con<-dbConnect(RPostgres::Postgres(), dbname=db, host=db_host, port=db_port, user=db_user, password=db_pass)
 
-# had to iterate over the stats_df as the json conversion made each value
-# actually a list of the key: value, so iterating like this gets rid of the key
-for (song_attribute in stats_df){
-  temp_df <- data.frame(song_attribute)
-  total_df <- rbind(total_df, temp_df)
-}
+# use following command to diagnose whether connection to PostgreSQL has been established
+#dbListTables(con)
+
+# example query below, was not needed due to being able to simply view table, see next execution
+# query db dynamic's raw results and save results as variable, then clear query
+#dyn_playlist_query <- RPostgres::dbGetQuery(con, "SELECT * FROM dynamic;")
+#result <- RPostgres::dbFetch(dyn_playlist_query)
+#RPostgres::dbClearResult(dyn_playlist_query)
+
+# view entire dynamic table
+total_df <- RPostgres::dbReadTable(con, "dynamic")
+
+# disconnect from db
+RPostgres::dbDisconnect(con)
 # rename columns
-names(total_df)[1] <- "Artist"
-names(total_df)[2] <- "Song"
+names(total_df)[2] <- "Artist"
 names(total_df)[3] <- "Album"
 names(total_df)[4] <- "User"
 names(total_df)[5] <- "Date"
@@ -54,6 +50,7 @@ names(total_df)[11] <- "Acousticness"
 names(total_df)[12] <- "Instrumentalness"
 names(total_df)[13] <- "Liveness"
 names(total_df)[14] <- "Valence"
+names(total_df)[15] <- "Song"
 
 # keeps track of number of songs
 song_count <- nrow(total_df)

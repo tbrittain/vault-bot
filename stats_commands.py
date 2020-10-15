@@ -12,6 +12,7 @@ import pandas as pd
 # with open('stats.json', 'w') as f:
 # json.dump(data, f, indent=2)
 
+# only used once, then depreciated
 def generate_json(song_id, user):  # only run once to generate the json for use with other functions
     fixed_song_id = spotify_commands.convert_to_track_id(song_id)
     test_track = spotify_commands.get_track_info(track_id=fixed_song_id, user=user)
@@ -43,6 +44,7 @@ def generate_json(song_id, user):  # only run once to generate the json for use 
         json.dump(overall_dict, f, indent=2)
 
 
+# depreciated
 def stats_song_add(song_id, user):
     with open('stats.json') as f:
         data = json.load(f)
@@ -79,6 +81,7 @@ def stats_song_add(song_id, user):
         json.dump(data, f, indent=2)
 
 
+# depreciated
 def purge_stats(song_id):
     with open('stats.json') as f:
         data = json.load(f)
@@ -90,6 +93,7 @@ def purge_stats(song_id):
         json.dump(data, f, indent=2)
 
 
+# depreciated
 def average_features(features_dict):
     """
 
@@ -148,6 +152,7 @@ def time_digit_to_min_sec(duration):
     return duration_string
 
 
+# depreciated
 def display_stats(method='playlist'):
     global playlist_results_string
     with open('stats.json') as f:
@@ -292,6 +297,7 @@ def display_stats(method='playlist'):
     return playlist_results_string
 
 
+# depreciated
 def display_highscores(method):
     global playlist_results_string
     with open('stats.json') as f:
@@ -411,6 +417,7 @@ def display_highscores(method):
     return playlist_results_string
 
 
+# never used
 def valid_user_list():
     with open('stats.json') as f:
         data = json.load(f)

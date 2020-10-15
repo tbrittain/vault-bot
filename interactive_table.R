@@ -1,12 +1,11 @@
-#!C:\Program Files\R\R-3.5.1\bin\Rscript.exe --vanilla --default-packages=jsonlite,tibble,reactable,htmltools,dplyr,shiny,rsconnect
+#!C:\Program Files\R\R-3.5.1\bin\Rscript.exe --vanilla --default-packages=RPostgres,tibble,reactable,htmltools,dplyr,DBI
 
-library(rsconnect)
-library(shiny)
-library(jsonlite)
 library(tibble)
 library(reactable)
 library(htmltools)
 library(dplyr)
+library(RPostgres)
+library(DBI)
 
 # Title     : interactive_table
 # Objective : display songs in the playlist in an interactive table
@@ -14,33 +13,21 @@ library(dplyr)
 # Created on: 10/11/2020
 
 # TODO: create new date column with only day dates
+# TODO: mess around with R markdown documents for formatting + HTML editing
 
-# dynamic playlist info from json to df
-stats_raw <- jsonlite::fromJSON("D:/Github/vault-bot/stats.json")
-stats_df <- tibble::as_tibble(stats_raw$playlists$dynamic$tracks)
+readRenviron(".env")
+db_user <- Sys.getenv("DB_USER")
+db_pass <- Sys.getenv("DB_PASS")
+db <- 'vaultbot'
+db_port <- 5432
+db_host <- 'localhost'
 
-total_df <- data.frame(artist=character(), # init empty df with all relevant columns
-                       song=character(),
-                       album=character(),
-                       added_by=character(),
-                       added_at=character(),
-                       song_length=character(),
-                       tempo=character(),
-                       danceability=character(),
-                       energy=character(),
-                       loudness=character(),
-                       acousticness=character(),
-                       instrumentalness=character(),
-                       liveness=character(),
-                       valence=character(),
-                       stringsAsFactors=FALSE)
+con<-dbConnect(RPostgres::Postgres(), dbname=db, host=db_host, port=db_port, user=db_user, password=db_pass)
 
-# had to iterate over the stats_df as the json conversion made each value
-# actually a list of the key: value, so iterating like this gets rid of the key
-for (song_attribute in stats_df){
-  temp_df <- data.frame(song_attribute)
-  total_df <- rbind(total_df, temp_df)
-}
+total_df <- RPostgres::dbReadTable(con, "dynamic")
+
+# disconnect from db
+RPostgres::dbDisconnect(con)
 # rename columns
 names(total_df)[1] <- "Artist"
 names(total_df)[2] <- "Tracks"
@@ -221,7 +208,7 @@ tbl <- reactable(
                       format = colFormat(digits = 2),
                       filterable = FALSE,
                       cell = function(value){
-                       width <- paste0(abs(1.5 / (value / max(table_data$Loudness))) * 100, "%")
+                       width <- paste0(3/(value/median(table_data$Loudness)) * 15, "%")
                        value <- format(value, width = 5, justify = "right")
                        bar_chart(value, width = width,
                                         background = "#e1e1e1",
@@ -282,8 +269,6 @@ tbl <- reactable(
   )
 )
 
-
-
 # generate HTML
 webpage <- div(class = "playlist-statistics",
   div(class = "playlist-header",
@@ -293,12 +278,8 @@ webpage <- div(class = "playlist-statistics",
   tbl
 )
 
-
-
 # save HTML
 htmltools::save_html(html=webpage,
                      file = "D:/Github/vault-bot/vaultbot_stats_table/index.html",
                      background = "white",
                      libdir = "D:/Github/vault-bot/vaultbot_stats_table")
-
-
