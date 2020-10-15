@@ -4,15 +4,13 @@ import math
 import pandas as pd
 
 
-# after writing to the stats.json file in the proper format, be sure to add
-# with open('stats.json') as f
-# data = json.load(f)
+#######################################################################################################################
+# this script mostly dealt with managing the data in the form of JSON, but has since been depreciated since the project
+# now uses a PostgreSQL database for managing playlist data. furthermore, the stats and highscores functions
+# have been replaced by the interactive_table.R being a webpage output that is much more user-friendly.
+#######################################################################################################################
 
-# writing to json:
-# with open('stats.json', 'w') as f:
-# json.dump(data, f, indent=2)
-
-# only used once, then depreciated
+# only used once to establish a JSON file from which we can add to
 def generate_json(song_id, user):  # only run once to generate the json for use with other functions
     fixed_song_id = spotify_commands.convert_to_track_id(song_id)
     test_track = spotify_commands.get_track_info(track_id=fixed_song_id, user=user)
@@ -144,6 +142,7 @@ def average_features(features_dict):
     return avg_dict
 
 
+# TODO: move this function to another script
 def time_digit_to_min_sec(duration):
     duration = duration * 60  # getting total seconds bc formatted in minutes
     minutes = int(math.floor(duration / 60))

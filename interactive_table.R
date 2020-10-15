@@ -12,8 +12,14 @@ library(DBI)
 # Created by: Trey
 # Created on: 10/11/2020
 
+# TODO: convert to Rmarkdown file
+# https://stackoverflow.com/questions/49904943/run-rmarkdown-with-arguments-on-the-command-line
+# https://bookdown.org/yihui/rmarkdown/notebook.html#saving-and-sharing
+# https://bookdown.org/yihui/rmarkdown/html-document.html
+
 # TODO: create new date column with only day dates
 # TODO: mess around with R markdown documents for formatting + HTML editing
+# TODO: remove 2nd decimal place on loudness column if loudness =< -10
 
 readRenviron(".env")
 db_user <- Sys.getenv("DB_USER")
@@ -29,8 +35,7 @@ total_df <- RPostgres::dbReadTable(con, "dynamic")
 # disconnect from db
 RPostgres::dbDisconnect(con)
 # rename columns
-names(total_df)[1] <- "Artist"
-names(total_df)[2] <- "Tracks"
+names(total_df)[2] <- "Artist"
 names(total_df)[3] <- "Album"
 names(total_df)[4] <- "User"
 names(total_df)[5] <- "Date"
@@ -39,10 +44,11 @@ names(total_df)[7] <- "Tempo"
 names(total_df)[8] <- "Danceability"
 names(total_df)[9] <- "Energy"
 names(total_df)[10] <- "Loudness"
-names(total_df)[11] <- "Acoustic"
-names(total_df)[12] <- "Instrumental"
+names(total_df)[11] <- "Acousticness"
+names(total_df)[12] <- "Instrumentalness"
 names(total_df)[13] <- "Liveness"
 names(total_df)[14] <- "Valence"
+names(total_df)[15] <- "Tracks"
 
 # gets rid of data with fewer than 3 user observations
 #user_counts <- aggregate(data.frame(count = total_df$User), list(value = total_df$User), length)

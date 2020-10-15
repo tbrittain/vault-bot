@@ -16,10 +16,14 @@ DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 
 bot = discord.Client()
 
-
+# TODO: append release date of song to new db column
 # TODO: make bot ignore messages from other bots
 # TODO: consider rewriting main.py according to @bot.command() rather than on message for all events
 # https://github.com/Rapptz/discord.py <- look at examples
+# TODO: create a $suggestion command that PMs me a user suggestion
+# https://stackoverflow.com/questions/47500214/how-to-get-discord-py-bot-to-dm-a-specific-user
+# TODO: check if message contains papa, then send the papa elton john video
+# maybe also get rid of $random
 
 @bot.event
 async def on_ready():
@@ -150,7 +154,7 @@ async def on_message(message):
                 await message.channel.send(random.choice(emoji_responses))
                 await message.channel.send('Track has been added to the community playlists!')
                 print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) +
-                      f' Song of ID {message_body} added to playlists by {message.author}')
+                      f' Song of ID {converted_song_id} added to playlists by {message.author}')
 
             except IndexError:
                 await message.channel.send(f'Please enter a Spotify track ID, {message.author.mention}')
@@ -367,6 +371,14 @@ async def song_time_check():
     subprocess.call([r"D:/Github/vault-bot/cloudsync.bat"])
 
     print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) + ' Hourly playlist cleanup complete')
+
+
+# TODO: create separate python script that executes a batch file to backup the vaultbot SQL file
+# https://www.youtube.com/watch?v=kH3XKCbwsHU
+# https://aticleworld.com/pass-parameters-batch-file-script/
+@tasks.loop(hours=8)
+async def sql_backup():
+    print("tri-daily backup complete homie")
 
 
 if __name__ == "__main__":

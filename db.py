@@ -9,6 +9,12 @@ db_user = os.getenv("DB_USER")
 db_pass = os.getenv("DB_PASS")
 
 
+# Note: the functions that interact directly with the PostgreSQL synchronously, even though the majority of
+# discord.py probably prefers asynchronous functioning. This is due to asynchronous queries of the database
+# through the psycopg2 package to auto-commit changes to the db, which could cause incomplete changes to be applied
+# to the entirety of the database, such as when iterating over it
+# https://www.psycopg.org/docs/advanced.html#asynchronous-support
+
 # one-time use to transfer the json to postgresql
 def json_transfer():
     con = psycopg2.connect(
@@ -159,6 +165,14 @@ def db_purge_stats(song_id):
 
     cur.close()
     con.close()
+
+
+# TODO: popularity_update()
+# needs to pull dyn playlist song IDs from db, run them through spotify song ID search -> pull popularity attribute
+# and reassign it to each song_ID through SQL update function
+# then need to go back into interactive_table and add column to site
+def popularity_update():
+    pass
 
 
 if __name__ == "__main__":
