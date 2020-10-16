@@ -3,10 +3,12 @@ from dotenv import load_dotenv
 import os
 import json
 import spotify_commands
+import config
 
 load_dotenv()
 db_user = os.getenv("DB_USER")
 db_pass = os.getenv("DB_PASS")
+db_name = config.database_name
 
 
 # Note: the functions that interact directly with the PostgreSQL synchronously, even though the majority of
@@ -15,10 +17,12 @@ db_pass = os.getenv("DB_PASS")
 # to the entirety of the database, such as when iterating over it
 # https://www.psycopg.org/docs/advanced.html#asynchronous-support
 
+# TODO: add release date attribute to each track, and append db_song_add() to include release date
+
 # one-time use to transfer the json to postgresql
 def json_transfer():
     con = psycopg2.connect(
-        database='vaultbot',
+        database=db_name,
         user=db_user,
         password=db_pass,
         port=5432)
@@ -106,7 +110,7 @@ def json_transfer():
 
 def db_song_add(song_id, user):
     con = psycopg2.connect(
-        database='vaultbot',
+        database=db_name,
         user=db_user,
         password=db_pass,
         port=5432)
@@ -131,6 +135,13 @@ def db_song_add(song_id, user):
     liveness = song_dict['liveness']
     valence = song_dict['valence']
 
+    if album.__contains__("'"):
+        album = album.replace("'", "''")
+    if artist.__contains__("'"):
+        artist = artist.replace("'", "''")
+    if song.__contains__("'"):
+        song = song.replace("'", "''")
+
     # inserting string into db dynamic
     cur.execute(f"""INSERT INTO dynamic (song_id, artist, song, album, added_by, added_at, song_length, tempo,
     danceability, energy, loudness, acousticness, instrumentalness, liveness, valence) VALUES ('{song_id}', '{artist}',
@@ -151,7 +162,7 @@ def db_song_add(song_id, user):
 
 def db_purge_stats(song_id):
     con = psycopg2.connect(
-        database='vaultbot',
+        database=db_name,
         user=db_user,
         password=db_pass,
         port=5432)
@@ -167,14 +178,23 @@ def db_purge_stats(song_id):
     con.close()
 
 
-# TODO: popularity_update()
-# needs to pull dyn playlist song IDs from db, run them through spotify song ID search -> pull popularity attribute
-# and reassign it to each song_ID through SQL update function
-# then need to go back into interactive_table and add column to site
-def popularity_update():
-    pass
+def popularity_update(track_id):
+    raw_results = spotify_commands.sp.track(track_id=track_id)
+    popularity = raw_results['popularity']
+
+    con = psycopg2.connect(
+        database=db_name,
+        user=db_user,
+        password=db_pass,
+        port=5432)
+
+    cur = con.cursor()
+    cur.execute(f"UPDATE dynamic SET popularity = {popularity} WHERE song_id = '{track_id}'")
+
+    con.commit()
+    cur.close()
+    con.close()
 
 
 if __name__ == "__main__":
-    db_song_add('4Gu4dC05SyYDOhqOpK1jbL', 'Trey')
-    db_purge_stats('4Gu4dC05SyYDOhqOpK1jbL')
+    popularity_update("6be1c0AWyPxxSS0qiYzoUC")

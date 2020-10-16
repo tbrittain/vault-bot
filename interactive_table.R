@@ -49,6 +49,7 @@ names(total_df)[12] <- "Instrumentalness"
 names(total_df)[13] <- "Liveness"
 names(total_df)[14] <- "Valence"
 names(total_df)[15] <- "Tracks"
+names(total_df)[16] <- "Popularity"
 
 # gets rid of data with fewer than 3 user observations
 #user_counts <- aggregate(data.frame(count = total_df$User), list(value = total_df$User), length)
@@ -80,7 +81,7 @@ options(reactable.theme = reactableTheme(
 
 # copy data from original df
 table_data <- total_df[, c("User", "Artist", "Album", "Tracks",
-                           "Date", "Length", "Tempo", "Danceability",
+                           "Date", "Popularity","Length", "Tempo", "Danceability",
                            "Energy", "Loudness", "Valence")]
 
 # round df values
@@ -123,6 +124,27 @@ tbl <- reactable(
     Tracks = colDef(aggregate = "count",
                     align = "left",
                     style = list(fontFamily = "monospace", whiteSpace = "pre")),
+    Popularity = colDef(aggregate = "mean",
+                    align = "left",
+                    filterable = FALSE,
+                    cell = function(value){
+                     width <- paste0(value / max(table_data$Popularity) * 100, "%")
+                     value <- format(value, width = 5, justify = "right")
+                     bar_chart(value, width = width,
+                               background = "#e1e1e1",
+                               fill = "#DF1313")
+                  }, header = with_tooltip("Popularity", "Updates hourly"),
+                    style = list(fontFamily = "monospace", whiteSpace = "pre"),
+                    footer = JS("function(colInfo) {
+                      var total = 0
+                      var number_obsv = 0
+                      colInfo.data.forEach(function(row) {
+                      total += row[colInfo.column.id]
+                      number_obsv += 1
+                      })
+                      var avg_value = total / number_obsv
+                      return avg_value.toFixed(2)
+                      }")),
     Length = colDef(aggregate = "mean",
                     align = "left",
                     filterable = FALSE,
@@ -131,7 +153,7 @@ tbl <- reactable(
                      value <- format(value, width = 5, justify = "right")
                      bar_chart(value, width = width,
                                background = "#e1e1e1",
-                               fill = "#000000")
+                               fill = "#BD2637")
                   }, header = with_tooltip("Length", "Minutes in decimal form"),
                     style = list(fontFamily = "monospace", whiteSpace = "pre"),
                     footer = JS("function(colInfo) {
@@ -153,7 +175,7 @@ tbl <- reactable(
                      value <- format(value, width = 5, justify = "right")
                      bar_chart(value, width = width,
                                background = "#e1e1e1",
-                               fill = "#264653")
+                               fill = "#9A395B")
                   },
                    header = with_tooltip("Tempo", "Take with a grain of salt"),
                    style = list(fontFamily = "monospace", whiteSpace = "pre"),
@@ -176,7 +198,7 @@ tbl <- reactable(
                            value <- format(value, width = 5, justify = "right")
                            bar_chart(value, width = width,
                                             background = "#e1e1e1",
-                                            fill = "#2a9d8f")
+                                            fill = "#784C7F")
                           }, style = list(fontFamily = "monospace", whiteSpace = "pre"),
                           footer = JS("function(colInfo) {
                             var total = 0
@@ -197,7 +219,7 @@ tbl <- reactable(
                      value <- format(value, width = 5, justify = "right")
                      bar_chart(value, width = width,
                                       background = "#e1e1e1",
-                                      fill = "#e9c46a")
+                                      fill = "#565FA2")
                   }, style = list(fontFamily = "monospace", whiteSpace = "pre"),
                     footer = JS("function(colInfo) {
                       var total = 0
@@ -218,7 +240,7 @@ tbl <- reactable(
                        value <- format(value, width = 5, justify = "right")
                        bar_chart(value, width = width,
                                         background = "#e1e1e1",
-                                        fill = "#f4a261")
+                                        fill = "#3372C6")
                   }, style = list(fontFamily = "monospace", whiteSpace = "pre"),
                       footer = JS("function(colInfo) {
                         var total = 0
@@ -239,7 +261,7 @@ tbl <- reactable(
                        value <- format(value, width = 5, justify = "right")
                        bar_chart(value, width = width,
                                  background = "#e1e1e1",
-                                 fill = "#e76f51")
+                                 fill = "#1185EA")
                   }, style = list(fontFamily = "monospace", whiteSpace = "pre"),
                       footer = JS("function(colInfo) {
                         var total = 0

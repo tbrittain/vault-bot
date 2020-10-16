@@ -15,8 +15,9 @@ load_dotenv()
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 
 bot = discord.Client()
+curr_time = time.strftime("%H:%M:%S", time.gmtime())
 
-# TODO: append release date of song to new db column
+
 # TODO: make bot ignore messages from other bots
 # TODO: consider rewriting main.py according to @bot.command() rather than on message for all events
 # https://github.com/Rapptz/discord.py <- look at examples
@@ -24,6 +25,7 @@ bot = discord.Client()
 # https://stackoverflow.com/questions/47500214/how-to-get-discord-py-bot-to-dm-a-specific-user
 # TODO: check if message contains papa, then send the papa elton john video
 # maybe also get rid of $random
+
 
 @bot.event
 async def on_ready():
@@ -37,6 +39,11 @@ async def on_ready():
     print(f"VaultBot is in {guild_count} guilds.")
     print(f"VaultBot is fully loaded and online.")
     await bot.change_presence(activity=discord.Game('$help'))  # sets discord activity to $help
+
+    # tri-daily scheduled tasks
+    sql_backup.start()
+
+    # hourly scheduled tasks
     song_time_check.start()
 
 
@@ -45,7 +52,7 @@ async def on_message(message):
     if message.content[0] == "$":  # $ dollar sign will be the default bot command
         user_input = str(message.content)
 
-        print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) + f' User {message.author} invoked = {user_input}')
+        print(curr_time + f' User {message.author} invoked = {user_input}')
 
         user_input = user_input.replace("$", "")  # bot already called, removing $ for parsing user message
         first_word = user_input.split(' ', 1)[0]  # first word corresponds to command
@@ -126,7 +133,7 @@ async def on_message(message):
                             db.db_song_add(song_id=selected_track_id, user=str(message.author))
                             await message.channel.send(random.choice(emoji_responses))
                             await message.channel.send('Track has been added to the community playlists!')
-                            print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) +
+                            print(curr_time +
                                   f' Song of ID {selected_track_id} added to playlists by {message.author}')
                         except FileExistsError:
                             await message.channel.send(f"Track already exists in dynamic playlist, "
@@ -153,7 +160,7 @@ async def on_message(message):
                 db.db_song_add(song_id=converted_song_id, user=str(message.author))
                 await message.channel.send(random.choice(emoji_responses))
                 await message.channel.send('Track has been added to the community playlists!')
-                print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) +
+                print(curr_time +
                       f' Song of ID {converted_song_id} added to playlists by {message.author}')
 
             except IndexError:
@@ -211,33 +218,20 @@ async def on_message(message):
             except IndexError:
                 pass
 
-        elif first_word.lower() == 'random':
-            number = random.randint(1, 8)
+        elif first_word.lower() == 'suggestion':
+            message_body = str(message_body)
+            message_body = message_body.replace('[', "")
+            message_body = message_body.replace(']', "")
+            message_body = message_body.replace("'", "")
 
-            if number == 1:
-                file = discord.File("embeds/gato.jpg", filename="gato.jpg")
-                await message.channel.send(file=file)
-            elif number == 2:
-                file = discord.File("embeds/necky.mp4", filename="necky.mp4")
-                await message.channel.send(file=file)
-            elif number == 3:
-                file = discord.File("embeds/flip.mp4", filename="flip.mp4")
-                await message.channel.send(file=file)
-            elif number == 4:
-                file = discord.File("embeds/kyle.mp3", filename="kyle.mp3")
-                await message.channel.send(file=file)
-            elif number == 5:
-                file = discord.File("embeds/lasana.jpg", filename="lasana.jpg")
-                await message.channel.send(file=file)
-            elif number == 6:
-                file = discord.File("embeds/nuggy.jpg", filename="nuggy.jpg")
-                await message.channel.send(file=file)
-            elif number == 7:
-                file = discord.File("embeds/hit.jpg", filename="hit.jpg")
-                await message.channel.send(file=file)
-            elif number == 8:
-                file = discord.File("embeds/kyle2.mp3", filename="kyle2.mp3")
-                await message.channel.send(file=file)
+            if not message_body:
+                await message.channel.send(f"Please include something in your suggestion, {message.author.mention}!")
+            else:
+                benevolent_dictator = bot.get_user(177260855308713985)
+                await discord.Member.send(benevolent_dictator,
+                                          content=f'User {message.author} submitted suggestion: {message_body}')
+                await message.channel.send(f'Thanks, your suggestion has been relayed to my '
+                                           f'master, {message.author.mention}')
 
         # help documentation
         elif first_word.lower() == 'help':
@@ -315,6 +309,7 @@ async def on_message(message):
                     help_embed.add_field(name='$playlists', value='Links to the Spotify playlists', inline=False)
                     help_embed.add_field(name='$stats', value='General statistics for the songs '
                                                               'and users of the playlists', inline=False)
+                    help_embed.add_field(name='$suggestion', value='Send a suggestion to threesquared', inline=False)
 
                     await message.channel.send(embed=help_embed)
                 except IndexError:
@@ -344,19 +339,25 @@ async def song_time_check():
             track_list.append(track_dict)
 
     # iterates over tracks pulled from spotify and for each one, determines whether it needs to be removed from
-    for track in track_list:
-        for key, value in track.items():
-            date_split = value.split('-')
-            time_difference = datetime.now() - datetime(year=int(date_split[0]),
-                                                        month=int(date_split[1]),
-                                                        day=int(date_split[2]))
-            if time_difference > timedelta(days=14):  # set 2 weeks threshold for track removal
-                spotify_commands.sp.playlist_remove_all_occurrences_of_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs',
-                                                                             items=[key])
-                db.db_purge_stats(song_id=[key])
+    if len(track_list) > 0:
+        print(curr_time + ' Preparing to update track popularities and check for expired songs.\n'
+                          'Please do not exit the program during this time.')
+        for track in track_list:
+            # key is the track id
+            for key, value in track.items():
+                # updates popularity of tracks in dynamic playlist db
+                db.popularity_update(track_id=key)
+                date_split = value.split('-')
+                time_difference = datetime.now() - datetime(year=int(date_split[0]),
+                                                            month=int(date_split[1]),
+                                                            day=int(date_split[2]))
+                if time_difference > timedelta(days=14):  # set 2 weeks threshold for track removal
+                    spotify_commands.sp.playlist_remove_all_occurrences_of_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs',
+                                                                                 items=[key])
+                    db.db_purge_stats(song_id=[key])
 
-                print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) + f' Song {key} removed from playlist')
-
+                    print(curr_time + f' Song {key} removed from playlist')
+    print(curr_time + ' Track popularities updated and expired songs checked.')
     # updates playlist descriptions based on genres present
     spotify_commands.playlist_description_update(playlist_id="5YQHb5wt9d0hmShWNxjsTs", playlist_name='dynamic')
     # TODO: figure out why it can only update description of one of the two playlists, but not both
@@ -370,15 +371,17 @@ async def song_time_check():
     # upload interactive table to Google Cloud through batch file
     subprocess.call([r"D:/Github/vault-bot/cloudsync.bat"])
 
-    print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) + ' Hourly playlist cleanup complete')
+    print(curr_time + ' Hourly playlist cleanup complete')
 
 
-# TODO: create separate python script that executes a batch file to backup the vaultbot SQL file
-# https://www.youtube.com/watch?v=kH3XKCbwsHU
-# https://aticleworld.com/pass-parameters-batch-file-script/
 @tasks.loop(hours=8)
 async def sql_backup():
-    print("tri-daily backup complete homie")
+    await bot.wait_until_ready()
+    # https://wiki.postgresql.org/wiki/Automated_Backup_on_Windows
+    timestamp = time.strftime("%m-%d-%Y_T%H-%M", time.gmtime())
+    # can set a custom backup name prefix here, then concat to timestamp
+    backup_name = "vaultbot_db_backup_" + timestamp
+    subprocess.call([r"D:/Github/vault-bot/sql-backup.bat", f"{backup_name}"])
 
 
 if __name__ == "__main__":
