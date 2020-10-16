@@ -1,4 +1,4 @@
-#!C:\Program Files\R\R-3.5.1\bin\Rscript.exe --vanilla --default-packages=RPostgres,tibble,data.table,GGally,ggplot2,dplyr,DBI
+#!C:\Program Files\R\R-4.0.3\bin\Rscript.exe --vanilla --default-packages=RPostgres,tibble,data.table,GGally,ggplot2,dplyr,DBI
 # important that the path above is added to system path
 library(tibble)
 library(data.table)

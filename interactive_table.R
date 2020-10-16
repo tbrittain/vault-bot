@@ -1,4 +1,4 @@
-#!C:\Program Files\R\R-3.5.1\bin\Rscript.exe --vanilla --default-packages=RPostgres,tibble,reactable,htmltools,dplyr,DBI
+#!C:\Program Files\R\R-4.0.3\bin\Rscript.exe --vanilla --default-packages=RPostgres,tibble,reactable,htmltools,dplyr,DBI
 
 library(tibble)
 library(reactable)
@@ -18,7 +18,6 @@ library(DBI)
 # https://bookdown.org/yihui/rmarkdown/html-document.html
 
 # TODO: create new date column with only day dates
-# TODO: mess around with R markdown documents for formatting + HTML editing
 # TODO: remove 2nd decimal place on loudness column if loudness =< -10
 
 readRenviron(".env")

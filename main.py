@@ -19,13 +19,16 @@ curr_time = time.strftime("%H:%M:%S", time.gmtime())
 
 
 # TODO: make bot ignore messages from other bots
-# TODO: consider rewriting main.py according to @bot.command() rather than on message for all events
-# https://github.com/Rapptz/discord.py <- look at examples
-# TODO: create a $suggestion command that PMs me a user suggestion
-# https://stackoverflow.com/questions/47500214/how-to-get-discord-py-bot-to-dm-a-specific-user
-# TODO: check if message contains papa, then send the papa elton john video
-# maybe also get rid of $random
 
+# IMPORTANT BELOW
+# TODO: consider rewriting main.py according to @bot.command() rather than on message for all events
+# i wrote main.py a bit haphazardly compared to how it probably should be written
+# discord.py offers @bot.command events that handle individual bot commands
+# the way that i have it currently written essentially makes it so that EVERY message to the channel is parsed by
+# the bot, which actually causes some problems (namely IndexErrors) that tend to spam the console
+# these don't break the program thankfully, but they definitely are annoying and rewriting main.py has
+# been on my radar for some time
+# https://github.com/Rapptz/discord.py <- look at examples
 
 @bot.event
 async def on_ready():
@@ -49,6 +52,7 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
+    papa_check = str(message.content)
     if message.content[0] == "$":  # $ dollar sign will be the default bot command
         user_input = str(message.content)
 
@@ -191,7 +195,7 @@ async def on_message(message):
             if message_body == 'advanced':
                 # had to use the absolute paths due to R and Rscript.exe not understanding relative paths
                 subprocess.call(
-                    ["C:/Program Files/R/R-3.5.1/bin/Rscript.exe", "D:/Github/vault-bot/stats_graphics.R"])
+                    ["C:/Program Files/R/R-4.0.3/bin/Rscript.exe", "D:/Github/vault-bot/stats_graphics.R"])
                 file = discord.File("embeds/dynamic_plot.jpg", filename="dynamic_plot.jpg")
                 await message.channel.send(file=file)
             else:
@@ -316,6 +320,9 @@ async def on_message(message):
                     pass
         else:
             await message.channel.send(f'Unrecognized command "{first_word}", {message.author.mention}!')
+    elif papa_check.lower().__contains__('papa'):
+        file = discord.File("embeds/papa.MOV", filename="papa.mov")
+        await message.channel.send(file=file)
 
 
 @tasks.loop(minutes=60)
@@ -366,7 +373,7 @@ async def song_time_check():
 
     # produce new interactive HTML table
     subprocess.call(
-        ["C:/Program Files/R/R-3.5.1/bin/Rscript.exe", "D:/Github/vault-bot/interactive_table.R"])
+        ["C:/Program Files/R/R-4.0.3/bin/Rscript.exe", "D:/Github/vault-bot/interactive_table.R"])
 
     # upload interactive table to Google Cloud through batch file
     subprocess.call([r"D:/Github/vault-bot/cloudsync.bat"])
