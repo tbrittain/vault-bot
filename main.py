@@ -373,7 +373,7 @@ async def song_time_check():
 
     # produce new interactive HTML table
     subprocess.call(
-        ["C:/Program Files/R/R-4.0.3/bin/Rscript.exe", "D:/Github/vault-bot/interactive_table.R"])
+        ["C:/Program Files/R/R-4.0.3/bin/Rscript.exe", "D:/Github/vault-bot/render_rmd.R"])
 
     # upload interactive table to Google Cloud through batch file
     subprocess.call([r"D:/Github/vault-bot/cloudsync.bat"])
