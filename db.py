@@ -108,6 +108,54 @@ def json_transfer():
     con.close()
 
 
+# run this function once for a given spotify song attribute to add it to dynamic and archive tables
+# once column has been created with null values
+# works properly for now since archive and dynamic playlists are identical, but once turn over begins
+# then it will need to be modified to separately pull song_id from both tables independently
+def db_retroactive_attribute_sync():
+    con = psycopg2.connect(
+        database=db_name,
+        user=db_user,
+        password=db_pass,
+        port=5432)
+
+    cur = con.cursor()
+
+    cur.execute("SELECT artist_id FROM dyn_artists")
+    rows = cur.fetchall()
+
+    unique_artist_ids = []
+    for r in rows:
+        if r[0] not in unique_artist_ids:
+            unique_artist_ids.append(r[0])
+
+    # use song_id as unique identifier to append new attribute to in sql
+    id_attribute_list = []
+    for artist_id in unique_artist_ids:
+        artist_genres = {}
+
+        # gotta reformat genres because some genres have apostrophes or are quotation strings vs apostrophe strings
+        # and sql can only accept apostrophe varchars
+        genres = spotify_commands.sp.artist(artist_id)['genres']
+        genres = str(genres)
+        genres = genres.replace("'", "")
+        genres = genres.replace('"', "")
+        genres = genres.replace('[', "")
+        genres = genres.replace(']', "")
+        genres = genres.split(', ')
+
+        artist_genres[artist_id] = genres
+        id_attribute_list.append(artist_genres)
+
+    for artist_genre_dict in id_attribute_list:
+        for artist_id, genre_array in artist_genre_dict.items():
+            cur.execute(f"""UPDATE dyn_artists SET artist_genres = ARRAY{genre_array} WHERE artist_id = '{artist_id}'""")
+
+    con.commit()
+    cur.close()
+    con.close()
+
+
 def db_song_add(song_id, user):
     con = psycopg2.connect(
         database=db_name,
@@ -134,6 +182,7 @@ def db_song_add(song_id, user):
     instrument = song_dict['instrumentalness']
     liveness = song_dict['liveness']
     valence = song_dict['valence']
+    artist_id = song_dict['artist_id']
 
     if album.__contains__("'"):
         album = album.replace("'", "''")
@@ -142,17 +191,22 @@ def db_song_add(song_id, user):
     if song.__contains__("'"):
         song = song.replace("'", "''")
 
-    # inserting string into db dynamic
+    # inserting string into table dynamic
     cur.execute(f"""INSERT INTO dynamic (song_id, artist, song, album, added_by, added_at, song_length, tempo,
-    danceability, energy, loudness, acousticness, instrumentalness, liveness, valence) VALUES ('{song_id}', '{artist}',
+    danceability, energy, loudness, acousticness, instrumentalness, liveness, valence, artist_id) VALUES ('{song_id}', '{artist}',
     '{song}', '{album}', '{added_by}', '{added_at}', {song_length}, {tempo}, {dance}, {energy}, {loudness}, {acoustic},
-    {instrument}, {liveness}, {valence})""")
+    {instrument}, {liveness}, {valence}, '{artist_id}')""")
 
-    # inserting string into db archive
+    genres = spotify_commands.artist_genres(artist_id=artist_id)
+    # also add values to dyn_artists table
+    cur.execute(f"""INSERT INTO dyn_artists (song_id, song, artist_id, artist, added_by, artist_genres) VALUES 
+    ('{song_id}', '{song}', '{artist_id}', '{artist}', '{added_by}', ARRAY{genres})""")
+
+    # inserting string into table archive
     cur.execute(f"""INSERT INTO archive (song_id, artist, song, album, added_by, added_at, song_length, tempo,
-    danceability, energy, loudness, acousticness, instrumentalness, liveness, valence) VALUES ('{song_id}', '{artist}',
+    danceability, energy, loudness, acousticness, instrumentalness, liveness, valence, artist_id) VALUES ('{song_id}', '{artist}',
     '{song}', '{album}', '{added_by}', '{added_at}', {song_length}, {tempo}, {dance}, {energy}, {loudness}, {acoustic},
-    {instrument}, {liveness}, {valence})""")
+    {instrument}, {liveness}, {valence}, '{artist_id}')""")
 
     con.commit()
 
@@ -171,6 +225,7 @@ def db_purge_stats(song_id):
     cur = con.cursor()
 
     cur.execute(f"DELETE FROM dynamic WHERE song_id = '{song_id}'")
+    cur.execute(f"DELETE FROM dyn_artists WHERE song_id = '{song_id}'")
 
     con.commit()
 
@@ -197,4 +252,4 @@ def popularity_update(track_id):
 
 
 if __name__ == "__main__":
-    popularity_update("6be1c0AWyPxxSS0qiYzoUC")
+    pass

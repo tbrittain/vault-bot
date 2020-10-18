@@ -15,11 +15,12 @@ load_dotenv()
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 
 bot = discord.Client()
-curr_time = time.strftime("%H:%M:%S", time.gmtime())
+curr_time = time.strftime("%H:%M:%S", time.localtime())
 
 
 # TODO: make bot ignore messages from other bots
-
+# TODO: add header metadata for rmd HTML output
+# TODO: add highscores tab in the Rmd file that shows different metrics (current top artists, top users)
 # IMPORTANT BELOW
 # TODO: consider rewriting main.py according to @bot.command() rather than on message for all events
 # i wrote main.py a bit haphazardly compared to how it probably should be written
@@ -385,7 +386,7 @@ async def song_time_check():
 async def sql_backup():
     await bot.wait_until_ready()
     # https://wiki.postgresql.org/wiki/Automated_Backup_on_Windows
-    timestamp = time.strftime("%m-%d-%Y_T%H-%M", time.gmtime())
+    timestamp = time.strftime("%m-%d-%Y_T%H-%M", time.localtime())
     # can set a custom backup name prefix here, then concat to timestamp
     backup_name = "vaultbot_db_backup_" + timestamp
     subprocess.call([r"D:/Github/vault-bot/sql-backup.bat", f"{backup_name}"])

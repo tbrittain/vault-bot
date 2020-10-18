@@ -91,7 +91,8 @@ def get_track_info(track_id, user):
                       'album': (song['album']['name']),
                       'added_by': user,
                       'added_at': str(datetime.now()),
-                      'song_length': (float(song['duration_ms']) / 60000)}
+                      'song_length': (float(song['duration_ms']) / 60000),
+                      'artist_id': song['artists'][0]['id']}
 
         audio_analysis = sp.audio_features(song['id'])[0]
 
@@ -119,6 +120,21 @@ async def validate_song(track_id):
     # never reached bc handled prior to reaching this function
     except SpotifyException:  # catch if user tries to add podcast episode to playlist
         raise ValueError('Cannot add podcast episode to playlist!')
+
+
+def artist_genres(artist_id):
+
+    # gotta reformat genres because some genres have apostrophes or are quotation strings vs apostrophe strings
+    # and sql can only accept apostrophe varchars
+    genres = sp.artist(artist_id)['genres']
+    genres = str(genres)
+    genres = genres.replace("'", "")
+    genres = genres.replace('"', "")
+    genres = genres.replace('[', "")
+    genres = genres.replace(']', "")
+    genres = genres.split(', ')
+
+    return genres
 
 
 # likely once a song added/songs purged
@@ -188,5 +204,5 @@ def playlist_description_update(playlist_id, playlist_name):
 
 
 if __name__ == "__main__":
-    playlist_description_update(playlist_id="5YQHb5wt9d0hmShWNxjsTs", playlist_name='dynamic')
-    playlist_description_update(playlist_id="4C6pU7YmbBUG8sFFk4eSXj", playlist_name='archive')
+    print(artist_genres('4AGwPDdh1y8hochNzHy5HC'))
+    print(artist_genres('18H0sAptzdwid08XGg1Lcj'))

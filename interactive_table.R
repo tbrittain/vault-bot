@@ -80,7 +80,14 @@ table_data <- total_df[, c("User", "Artist", "Album", "Tracks",
 
 # round df values
 table_data$Length <- round(table_data$Length, digits = 2)
-table_data$Loudness <- round(table_data$Loudness, digits = 2)
+# ensure loudnesses < -10dB rounded to 1 decimal place rather than 2
+
+#table_data$Loudness <- round(table_data$Loudness, digits = 2)
+
+table_data$Loudness <- ifelse(table_data$Loudness <= -10,
+                              round(table_data$Loudness, digits = 1),
+                              round(table_data$Loudness, digits = 2))
+
 table_data$Tempo <- round(table_data$Tempo, digits = 1)
 table_data$Danceability <- round(table_data$Danceability, digits = 3)
 table_data$Energy <- round(table_data$Energy, digits = 3)
@@ -290,6 +297,10 @@ tbl <- reactable(
     searchInputStyle = list(width = "100%")
   )
 )
+
+# not rendering these fully to HTML, just using this file to experiment with reactable
+tbl
+stop()
 
 # generate HTML
 webpage <- div(class = "playlist-statistics",
