@@ -271,10 +271,10 @@ def arts_for_website():
         if r[0] not in unique_artist_ids:
             unique_artist_ids.append(r[0])
     try:
-        os.mkdir('artist_images')  # tries to make new album art directory
+        os.mkdir('vaultbot_stats_table/artist_images')  # tries to make new album art directory
     except FileExistsError:  # fails because already exists
         pass
-    os.chdir('artist_images')
+    os.chdir('vaultbot_stats_table/artist_images')
 
     print(f'Downloading new artist arts to {os.getcwd()}')
 
