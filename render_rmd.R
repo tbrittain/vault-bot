@@ -10,7 +10,14 @@ library(rmarkdown)
 # had to use external pandoc installation instead of one that comes with RStudio
 # also have to use absolute paths here
 Sys.setenv(RSTUDIO_PANDOC='C:/Users/Trey/AppData/Local/Pandoc')
+
+# index.html - interactive table
 rmarkdown::render(input = "D:/Github/vault-bot/interactive_table.Rmd",
                   output_format = "html_document",
                   quiet = TRUE,
                   output_file = "D:/Github/vault-bot/vaultbot_stats_table/index.html" )
+
+rmarkdown::render(input = "D:/Github/vault-bot/highscores.Rmd",
+                  output_format = "html_document",
+                  quiet = TRUE,
+                  output_file = "D:/Github/vault-bot/vaultbot_stats_table/highscores.html" )

@@ -71,9 +71,6 @@ library(htmltools)
 library(dplyr)
 library(RPostgres)
 library(DBI)
-
-# TODO: create new date column with only day dates
-# TODO: remove 2nd decimal place on loudness column if loudness =< -10
 ```
 
 ```{r, include=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
@@ -152,6 +149,8 @@ with_tooltip <- function(value, tooltip) {
 `r plot_title`
 To listen to the dynamic playlist, <a class="navlink" href="spotify:playlist:5YQHb5wt9d0hmShWNxjsTs">click here</a>.
 
+**New**: To view highscores, <a class="navlink" href="http://vaultbot.tbrittain.com/highscores.html">click here</a>.
+
 
 ```{r, include=TRUE, echo=FALSE}
 options(width = 2000)
@@ -172,7 +171,7 @@ reactable(
                 cell = function(value) {
                 url <- paste0("spotify:track:", value)
                 tags$a(href = url, target = "_blank", paste0(value))
-                },header = with_tooltip("ID", "Click to open track in Spotify")),
+                }, header = with_tooltip("ID", "Click to open track in Spotify")),
     Date = colDef(align = "left",
                   style = list(fontFamily = "monospace", whiteSpace = "pre")),
     Tracks = colDef(aggregate = "count",

@@ -1,24 +1,248 @@
 ---
-title: "R Notebook"
-author: Trey
-date: 10/18/2020
-output: html_notebook
+title: Vaultbot Current Highscores
+output:
+  html_document:
+    theme: flatly
+    highlight: pygments
+    self_contained: true
+assets:
+  css:
+    - "https://fonts.googleapis.com/css?family=Rubik"
+fig_width: 10
+fig_height: 4
 ---
 
-The [R plugin](https://www.jetbrains.com/help/pycharm/r-plugin-support.html) for IntelliJ-based IDEs provides
-handy capabilities to work with the [R Markdown](https://www.jetbrains.com/help/pycharm/r-markdown.html) files.
-To [add](https://www.jetbrains.com/help/pycharm/r-markdown.html#add-code-chunk) a new R chunk,
-position the caret at any line or the code chunk, then click "+".
+<style>
+html{
+    min-height: 100%;
+}
+body .main-container {
+    max-width: 1250px;
+}
+body {
+    background: -webkit-linear-gradient(top, #FBFFF5, #C6DBF0);
+    background: -o-linear-gradient(top, #FBFFF5, #C6DBF0);
+    background: -moz-linear-gradient(top, #FBFFF5, #C6DBF0);
+    background: linear-gradient(to bottom, #FBFFF5, #C6DBF0);
+    background-color: #FBFFF5;
+    font-family: 'Rubik', sans-serif;
+    font-size: 16px;
+    line-height: 24px;
+}
 
-The code chunk appears:
-```{r}
+div {
+  text-align: center;
+}
+
+
+h1,h2,h3,h4 {
+  font-family: 'Rubik', sans-serif;
+}
+
+.container { width: 1000px; }
+h3 {
+  background-color: #D4DAEC;
+  text-indent: 100px;
+}
+
+h4 {
+  text-indent: 100px;
+}
+
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 25%;
+}
+
+.bar-sort-header:hover {
+  background-color: #eee;
+}
+</style>
+
+```{r setup, include=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+library(rmarkdown)
+library(reactable)
+library(tibble)
+library(htmltools)
+library(dplyr)
+library(RPostgres)
+library(DBI)
+
+# TODO: create new date column with only day dates
 ```
 
-Type any R code in the chunk, for example:
-```{r}
-mycars <- within(mtcars, { cyl <- ordered(cyl) })
-mycars
+
+```{r, include=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+setwd("D:/Github/vault-bot/")
+Sys.setenv(RSTUDIO_PANDOC="C:/Users/Trey/AppData/Local/Pandoc")
+readRenviron(".env")
+db_user <- Sys.getenv("DB_USER")
+db_pass <- Sys.getenv("DB_PASS")
+db <- 'vaultbot'
+db_port <- 5432
+db_host <- 'localhost'
+
+con<-dbConnect(RPostgres::Postgres(), dbname=db, host=db_host, port=db_port, user=db_user, password=db_pass)
+
+total_df <- RPostgres::dbReadTable(con, "dyn_artists")
+
+# disconnect from db
+RPostgres::dbDisconnect(con)
+
+# variables for use in title
+title_today <- format(Sys.time(), "%c")
+song_count <- nrow(total_df)
+plot_title <- sprintf("Takes into account %d songs as of %s. Updates every hour!",
+                      song_count, title_today)
+
+# bar chart function for use in reactable colDef function
+bar_chart <- function(label, width = "100%", height = "16px", fill = "#00bfc4", background = NULL) {
+  bar <- div(style = list(background = fill, width = width, height = height))
+  chart <- div(style = list(flexGrow = 1, marginLeft = "8px", background = background), bar)
+  div(style = list(display = "flex", alignItems = "center"), label, chart)
+}
+# tooltip function
+with_tooltip <- function(value, tooltip) {
+  tags$abbr(style = "text-decoration: underline; text-decoration-style: dotted; cursor: help",
+            title = tooltip, value)
+}
+
+names(total_df)[1] <- "SongID"
+names(total_df)[2] <- "Song"
+names(total_df)[3] <- "ArtistID"
+names(total_df)[4] <- "Artist"
+names(total_df)[5] <- "User"
+names(total_df)[6] <- "Genres"
+
 ```
 
-Now, click the **Run** button on the chunk toolbar to [execute](https://www.jetbrains.com/help/pycharm/r-markdown.html#run-r-code) the chunk code. The result should be placed under the chunk.
-Click the **Knit and Open Document** to built and preview an output.
+
+<img src="D:/Github/vault-bot/embeds/vaultbotheader.png" alt="Vaultbot Playlist Song Statistics" class="center">
+
+Some highscores for different aspects of the dynamic playlist. `r plot_title`
+To listen to the dynamic playlist, <a class="navlink" href="spotify:playlist:5YQHb5wt9d0hmShWNxjsTs">click here</a>.
+
+To view overall playlist statistics, <a class="navlink" href="http://vaultbot.tbrittain.com/">click here</a>.
+
+## Genres
+Top Spotify-assigned genres currently in the dynamic playlist. Artists may belong to more than one genre (and some none at all if they are really underground).
+```{r, include=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+genre_df <- read.csv("genre_output.csv")
+reactable(genre_df,groupBy = c("Genre", "Artist"), columns = list(
+    Genre = colDef(
+        align = "left"
+    ),
+    Artist = colDef(
+        aggregate = "count",
+        format = list(aggregated = colFormat(suffix = " artists")),
+        align = "center",
+    ), Song = colDef(
+        align = "center",
+        aggregate = "unique"
+
+    ), SongID = colDef(
+        cell = function(value) {
+                url <- paste0("spotify:track:", value)
+                tags$a(href = url, target = "_blank", paste0(value))
+                },
+        header = with_tooltip("ID", "Click to open track in Spotify"),
+        style = list(fontFamily = "monospace", whiteSpace = "pre", fontSize = "14px")
+  )
+), defaultSorted = list(Artist = "desc"),
+          wrap = FALSE,
+          compact = TRUE,
+          highlight = TRUE,
+          striped = TRUE,
+          defaultPageSize = 20,
+          searchable = TRUE,
+          theme = reactableTheme(
+            borderColor = "#000000",
+            stripedColor = "#F6F6F6",
+            highlightColor = "#CFE8EF",
+            cellPadding = "8px 12px",
+            style = list(fontFamily = "-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif"),
+            searchInputStyle = list(width = "100%"))
+          )
+```
+
+## Artists
+Top 25 artists whose songs are currently in the dynamic playlist.
+```{r, include=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+raw_artist_data <- total_df[, c("User", "Artist", "Song")]
+artist_counts <- aggregate(data.frame(count = raw_artist_data$Artist), list(value = raw_artist_data$Artist), length)
+
+
+artist_ids <- total_df[, c("Artist", "ArtistID", "Song")]
+artist_ids <- artist_ids[row.names(unique(artist_ids[, c("Artist", "ArtistID")])),]
+
+names(artist_counts)[1] <- "Artist"
+names(artist_counts)[2] <- "Songs"
+
+# merge artist_ids with artist_counts
+total_artists <- merge(x=artist_counts, y=artist_ids, by="Artist")
+artist_counts <- total_artists[, c("Artist", "ArtistID", "Songs")]
+
+artist_counts <- dplyr::arrange(artist_counts, desc(Songs))
+
+reactable(artist_counts[1:25,],
+          columns = list(
+            Artist = colDef(cell = function(value) {
+            image <- img(src = sprintf("artist_images/%s.jpg", value), height = "100px", alt = value)
+            tagList(
+            div(style = list(display = "inline-block", width = "100px"), image), value)
+            }),
+            ArtistID = colDef(align = "left",
+            style = list(fontFamily = "monospace", whiteSpace = "pre"),
+            cell = function(value) {
+            url <- paste0("spotify:artist:", value)
+            tags$a(href = url, target = "_blank", paste0(value))
+            },header = with_tooltip("ID", "Click to open artist in Spotify")),
+            Songs = colDef(cell = function(value){
+                     width <- paste0(value / max(artist_counts$Songs) * 100, "%")
+                     value <- format(value, width = 5, justify = "right")
+                     bar_chart(value, width = width,
+                               background = "#e1e1e1",
+                               fill = "#DF1313")},
+            style = list(fontFamily = "monospace", whiteSpace = "pre", fontSize = "14px"),
+          sortable = TRUE)),
+          highlight = TRUE,
+          striped = TRUE,
+          theme = reactableTheme(
+            borderColor = "#000000",
+            stripedColor = "#F6F6F6",
+            highlightColor = "#CFE8EF",
+            cellPadding = "8px 12px",
+            style = list(fontFamily = "-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif"),
+            searchInputStyle = list(width = "100%")))
+```
+
+## User Contributions
+```{r, include=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+user_counts <- aggregate(data.frame(count = raw_artist_data$User), list(value = raw_artist_data$User), length)
+names(user_counts)[1] <- "User"
+names(user_counts)[2] <- "Songs"
+
+user_counts <- dplyr::arrange(user_counts, desc(Songs))
+
+reactable(user_counts,
+          columns = list(
+            Songs = colDef(cell = function(value){
+                     width <- paste0(value / max(user_counts$Songs) * 100, "%")
+                     value <- format(value, width = 5, justify = "right")
+                     bar_chart(value, width = width,
+                               background = "#e1e1e1",
+                               fill = "#DF1313")},
+          style = list(fontFamily = "monospace", whiteSpace = "pre", fontSize = "14px"),
+          sortable = FALSE)),
+          highlight = TRUE,
+          striped = TRUE,
+          theme = reactableTheme(
+            borderColor = "#000000",
+            stripedColor = "#F6F6F6",
+            highlightColor = "#CFE8EF",
+            cellPadding = "8px 12px",
+            style = list(fontFamily = "-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif"),
+            searchInputStyle = list(width = "100%")))
+```

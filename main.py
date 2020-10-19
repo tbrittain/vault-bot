@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 import random
 import subprocess
 import db
+import io_functions
 
 load_dotenv()
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
@@ -21,6 +22,8 @@ curr_time = time.strftime("%H:%M:%S", time.localtime())
 # TODO: make bot ignore messages from other bots
 # TODO: add header metadata for rmd HTML output
 # TODO: add highscores tab in the Rmd file that shows different metrics (current top artists, top users)
+# TODO: see how program responds to songs being re-added to dyn playlist once expired when it comes to archive
+
 # IMPORTANT BELOW
 # TODO: consider rewriting main.py according to @bot.command() rather than on message for all events
 # i wrote main.py a bit haphazardly compared to how it probably should be written
@@ -362,7 +365,7 @@ async def song_time_check():
                 if time_difference > timedelta(days=14):  # set 2 weeks threshold for track removal
                     spotify_commands.sp.playlist_remove_all_occurrences_of_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs',
                                                                                  items=[key])
-                    db.db_purge_stats(song_id=[key])
+                    db.db_purge_stats(song_id=key)
 
                     print(curr_time + f' Song {key} removed from playlist')
     print(curr_time + ' Track popularities updated and expired songs checked.')
@@ -372,7 +375,11 @@ async def song_time_check():
     # time.sleep(2)  # may need to take a little bit of time in between the playlist description updates
     # spotify_commands.playlist_description_update(playlist_id="4C6pU7YmbBUG8sFFk4eSXj", playlist_name='archive')
 
-    # produce new interactive HTML table
+    # prep data for highscores website output
+    db.arts_for_website()
+    io_functions.dyn_artists_write_df()
+
+    # produce html from Rmarkdown files
     subprocess.call(
         ["C:/Program Files/R/R-4.0.3/bin/Rscript.exe", "D:/Github/vault-bot/render_rmd.R"])
 

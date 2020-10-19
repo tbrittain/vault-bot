@@ -4,6 +4,7 @@ import os
 import json
 import spotify_commands
 import config
+import io_functions
 
 load_dotenv()
 db_user = os.getenv("DB_USER")
@@ -251,5 +252,58 @@ def popularity_update(track_id):
     con.close()
 
 
+def arts_for_website():
+    con = psycopg2.connect(
+        database=db_name,
+        user=db_user,
+        password=db_pass,
+        port=5432)
+
+    cur = con.cursor()
+
+    cur.execute("SELECT artist_id FROM dyn_artists")
+    rows = cur.fetchall()
+
+    path = os.getcwd()
+
+    unique_artist_ids = []
+    for r in rows:
+        if r[0] not in unique_artist_ids:
+            unique_artist_ids.append(r[0])
+    try:
+        os.mkdir('artist_images')  # tries to make new album art directory
+    except FileExistsError:  # fails because already exists
+        pass
+    os.chdir('artist_images')
+
+    print(f'Downloading new artist arts to {os.getcwd()}')
+
+    for artist_id in unique_artist_ids:
+        io_functions.artist_arts(artist_id=artist_id)
+
+    print(f'Artist arts finished downloading')
+    os.chdir(path)
+    cur.close()
+    con.close()
+
+
+def dyn_artists_genre_retrieve():
+    con = psycopg2.connect(
+        database=db_name,
+        user=db_user,
+        password=db_pass,
+        port=5432)
+
+    cur = con.cursor()
+
+    cur.execute("SELECT song_id, song, artist_id, artist, artist_genres FROM dyn_artists")
+    rows = cur.fetchall()
+
+    cur.close()
+    con.close()
+
+    return rows
+
+
 if __name__ == "__main__":
-    pass
+    print(dyn_artists_genre_retrieve())
