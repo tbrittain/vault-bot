@@ -19,10 +19,10 @@ html{
 body .main-container {
     max-width: 4000px;
 }
+
 body {
-    background-image: url('artist_images/background1.jpg');
-    background-attachment: fixed;
-    background-size: cover;
+    background-image: url('artist_images/background2.jpg');
+     background-repeat: repeat;
     font-family: 'Rubik', sans-serif;
     font-size: 16px;
     line-height: 24px;
@@ -32,15 +32,14 @@ div {
   text-align: center;
 }
 
-
 h1,h2,h3,h4 {
     font-family: Arial, Helvetica, sans-serif;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.75);
     font-weight: bold;
 }
 
 p {
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.75);
     font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -62,7 +61,7 @@ h4 {
 }
 
 .bar-sort-header:hover {
-  background-color: #eee;
+  background-color: #373845;
 }
 </style>
 
@@ -120,11 +119,11 @@ plot_title <- sprintf("Overall view of every song present in the playlist (%d so
 # set reactable theme
 options(reactable.theme = reactableTheme(
   color = "hsl(233, 9%, 87%)",
-  backgroundColor = "hsl(233, 9%, 19%)",
-  borderColor = "hsl(233, 9%, 22%)",
-  stripedColor = "hsl(233, 12%, 22%)",
+  backgroundColor = "hsl(233, 9%, 10%)",
+  borderColor = "hsl(233, 9%, 0%)",
+  stripedColor = "hsl(233, 12%, 13%)",
   highlightColor = "hsl(233, 12%, 24%)",
-  inputStyle = list(backgroundColor = "hsl(233, 9%, 25%)"),
+  inputStyle = list(backgroundColor = "hsl(233, 9%, 12%)"),
   selectStyle = list(backgroundColor = "hsl(233, 9%, 25%)"),
   pageButtonHoverStyle = list(backgroundColor = "hsl(233, 9%, 25%)"),
   pageButtonActiveStyle = list(backgroundColor = "hsl(233, 9%, 28%)"),
@@ -176,11 +175,11 @@ reactable(
                   style = list(fontFamily = "monospace", whiteSpace = "pre"),
                   footer = "Average"),
     Artist = colDef(align = "left",
-                    style = list(fontFamily = "monospace", whiteSpace = "pre")),
+                    style = list(fontFamily = "Arial, Helvetica", whiteSpace = "pre")),
     Album = colDef(align = "left",
-                    style = list(fontFamily = "monospace", whiteSpace = "pre")),
+                    style = list(fontFamily = "Arial, Helvetica", whiteSpace = "pre")),
     Tracks = colDef(align = "left",
-                    style = list(fontFamily = "monospace", whiteSpace = "pre")),
+                    style = list(fontFamily = "Arial, Helvetica", whiteSpace = "pre")),
     ID = colDef(align = "left",
                 style = list(fontFamily = "monospace", whiteSpace = "pre"),
                 cell = function(value) {
@@ -199,8 +198,8 @@ reactable(
                      width <- paste0(value / max(table_data$Popularity) * 100, "%")
                      value <- format(value, width = 5, justify = "right")
                      bar_chart(value, width = width,
-                               background = "#e1e1e1",
-                               fill = "#DF1313")
+                               background = "#2b2b2b",
+                               fill = "#0CE3AC")
                   }, header = with_tooltip("Popularity", "Updates hourly"),
                     style = list(fontFamily = "monospace", whiteSpace = "pre"),
                     footer = JS("function(colInfo) {
@@ -220,8 +219,8 @@ reactable(
                      width <- paste0(value / max(table_data$Length) * 100, "%")
                      value <- format(value, width = 5, justify = "right")
                      bar_chart(value, width = width,
-                               background = "#e1e1e1",
-                               fill = "#BD2637")
+                               background = "#2b2b2b",
+                               fill = "#0CE3AC")
                   }, header = with_tooltip("Length", "Minutes in decimal form"),
                     style = list(fontFamily = "monospace", whiteSpace = "pre"),
                     footer = JS("function(colInfo) {
@@ -242,8 +241,8 @@ reactable(
                      width <- paste0(value / max(table_data$Tempo) * 100, "%")
                      value <- format(value, width = 5, justify = "right")
                      bar_chart(value, width = width,
-                               background = "#e1e1e1",
-                               fill = "#9A395B")
+                               background = "#2b2b2b",
+                               fill = "#0CE3AC")
                   },
                    header = with_tooltip("Tempo", "Take with a grain of salt"),
                    style = list(fontFamily = "monospace", whiteSpace = "pre"),
@@ -265,8 +264,8 @@ reactable(
                            width <- paste0(value / max(table_data$Danceability) * 100, "%")
                            value <- format(value, width = 5, justify = "right")
                            bar_chart(value, width = width,
-                                            background = "#e1e1e1",
-                                            fill = "#784C7F")
+                                            background = "#2b2b2b",
+                                            fill = "#0CE3AC")
                           }, style = list(fontFamily = "monospace", whiteSpace = "pre"),
                           footer = JS("function(colInfo) {
                             var total = 0
@@ -286,8 +285,8 @@ reactable(
                      width <- paste0(value / max(table_data$Energy) * 100, "%")
                      value <- format(value, width = 5, justify = "right")
                      bar_chart(value, width = width,
-                                      background = "#e1e1e1",
-                                      fill = "#565FA2")
+                                      background = "#2b2b2b",
+                                      fill = "#0CE3AC")
                   }, style = list(fontFamily = "monospace", whiteSpace = "pre"),
                     footer = JS("function(colInfo) {
                       var total = 0
@@ -307,8 +306,8 @@ reactable(
                        width <- paste0(3/(value/median(table_data$Loudness)) * 15, "%")
                        value <- format(value, width = 5, justify = "right")
                        bar_chart(value, width = width,
-                                        background = "#e1e1e1",
-                                        fill = "#3372C6")
+                                        background = "#2b2b2b",
+                                        fill = "#0CE3AC")
                   }, style = list(fontFamily = "monospace", whiteSpace = "pre"),
                       footer = JS("function(colInfo) {
                         var total = 0
@@ -328,8 +327,8 @@ reactable(
                        width <- paste0(value / max(table_data$Valence) * 100, "%")
                        value <- format(value, width = 5, justify = "right")
                        bar_chart(value, width = width,
-                                 background = "#e1e1e1",
-                                 fill = "#1185EA")
+                                 background = "#2b2b2b",
+                                 fill = "#0CE3AC")
                   }, style = list(fontFamily = "monospace", whiteSpace = "pre"),
                       footer = JS("function(colInfo) {
                         var total = 0
