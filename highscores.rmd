@@ -2,7 +2,7 @@
 title: Vaultbot Current Highscores
 output:
   html_document:
-    theme: flatly
+    theme: darkly
     highlight: pygments
     self_contained: true
 assets:
@@ -20,11 +20,9 @@ body .main-container {
     max-width: 1250px;
 }
 body {
-    background: -webkit-linear-gradient(top, #FBFFF5, #C6DBF0);
-    background: -o-linear-gradient(top, #FBFFF5, #C6DBF0);
-    background: -moz-linear-gradient(top, #FBFFF5, #C6DBF0);
-    background: linear-gradient(to bottom, #FBFFF5, #C6DBF0);
-    background-color: #FBFFF5;
+    background-image: url('artist_images/background1.jpg');
+    background-attachment: fixed;
+    background-size: cover;
     font-family: 'Rubik', sans-serif;
     font-size: 16px;
     line-height: 24px;
@@ -34,12 +32,19 @@ div {
   text-align: center;
 }
 
-
 h1,h2,h3,h4 {
-  font-family: 'Rubik', sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: rgba(0, 0, 0, 0.5);
+    font-weight: bold;
+}
+
+p {
+    background-color: rgba(0, 0, 0, 0.5);
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .container { width: 1000px; }
+
 h3 {
   background-color: #D4DAEC;
   text-indent: 100px;
@@ -60,6 +65,8 @@ h4 {
   background-color: #eee;
 }
 </style>
+
+
 
 ```{r setup, include=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
 library(rmarkdown)
@@ -84,7 +91,7 @@ db <- 'vaultbot'
 db_port <- 5432
 db_host <- 'localhost'
 
-con<-dbConnect(RPostgres::Postgres(), dbname=db, host=db_host, port=db_port, user=db_user, password=db_pass)
+con<-RPostgres::dbConnect(RPostgres::Postgres(), dbname=db, host=db_host, port=db_port, user=db_user, password=db_pass)
 
 total_df <- RPostgres::dbReadTable(con, "dyn_artists")
 
@@ -99,15 +106,28 @@ plot_title <- sprintf("Takes into account %d songs as of %s. Updates every hour!
 
 # bar chart function for use in reactable colDef function
 bar_chart <- function(label, width = "100%", height = "16px", fill = "#00bfc4", background = NULL) {
-  bar <- div(style = list(background = fill, width = width, height = height))
-  chart <- div(style = list(flexGrow = 1, marginLeft = "8px", background = background), bar)
-  div(style = list(display = "flex", alignItems = "center"), label, chart)
+  bar <- htmltools::div(style = list(background = fill, width = width, height = height))
+  chart <- htmltools::div(style = list(flexGrow = 1, marginLeft = "8px", background = background), bar)
+  htmltools::div(style = list(display = "flex", alignItems = "center"), label, chart)
 }
 # tooltip function
 with_tooltip <- function(value, tooltip) {
   tags$abbr(style = "text-decoration: underline; text-decoration-style: dotted; cursor: help",
             title = tooltip, value)
 }
+
+options(reactable.theme = reactableTheme(
+  color = "hsl(233, 9%, 87%)",
+  backgroundColor = "hsl(233, 9%, 19%)",
+  borderColor = "hsl(233, 9%, 22%)",
+  stripedColor = "hsl(233, 12%, 22%)",
+  highlightColor = "hsl(233, 12%, 24%)",
+  inputStyle = list(backgroundColor = "hsl(233, 9%, 25%)"),
+  selectStyle = list(backgroundColor = "hsl(233, 9%, 25%)"),
+  pageButtonHoverStyle = list(backgroundColor = "hsl(233, 9%, 25%)"),
+  pageButtonActiveStyle = list(backgroundColor = "hsl(233, 9%, 28%)"),
+  searchInputStyle = list(width = "100%")
+))
 
 names(total_df)[1] <- "SongID"
 names(total_df)[2] <- "Song"
@@ -130,7 +150,7 @@ To view overall playlist statistics, <a class="navlink" href="http://vaultbot.tb
 Top Spotify-assigned genres currently in the dynamic playlist. Artists may belong to more than one genre (and some none at all if they are really underground).
 ```{r, include=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
 genre_df <- read.csv("genre_output.csv")
-reactable(genre_df,groupBy = c("Genre", "Artist"), columns = list(
+reactable::reactable(genre_df,groupBy = c("Genre", "Artist"), columns = list(
     Genre = colDef(
         align = "left"
     ),
@@ -155,16 +175,16 @@ reactable(genre_df,groupBy = c("Genre", "Artist"), columns = list(
           compact = TRUE,
           highlight = TRUE,
           striped = TRUE,
+          outlined = TRUE,
+          showSortIcon = TRUE,
           defaultPageSize = 20,
           searchable = TRUE,
-          theme = reactableTheme(
-            borderColor = "#000000",
-            stripedColor = "#F6F6F6",
-            highlightColor = "#CFE8EF",
-            cellPadding = "8px 12px",
-            style = list(fontFamily = "-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif"),
-            searchInputStyle = list(width = "100%"))
-          )
+          defaultColDef = colDef(headerClass = "bar-sort-header"),
+)
+
+# maybe add some plots here
+genre_analysis <- aggregate(data.frame(count = genre_df$Genre), list(value = genre_df$Genre), length)
+#hist(genre_analysis$count, breaks = 15)
 ```
 
 ## Artists
@@ -205,17 +225,12 @@ reactable(artist_counts[1:25,],
                      bar_chart(value, width = width,
                                background = "#e1e1e1",
                                fill = "#DF1313")},
-            style = list(fontFamily = "monospace", whiteSpace = "pre", fontSize = "14px"),
-          sortable = TRUE)),
+            style = list(fontFamily = "monospace", whiteSpace = "pre", fontSize = "14px"))),
           highlight = TRUE,
+          sortable = FALSE,
           striped = TRUE,
-          theme = reactableTheme(
-            borderColor = "#000000",
-            stripedColor = "#F6F6F6",
-            highlightColor = "#CFE8EF",
-            cellPadding = "8px 12px",
-            style = list(fontFamily = "-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif"),
-            searchInputStyle = list(width = "100%")))
+          outlined = TRUE,
+)
 ```
 
 ## User Contributions
@@ -237,12 +252,9 @@ reactable(user_counts,
           style = list(fontFamily = "monospace", whiteSpace = "pre", fontSize = "14px"),
           sortable = FALSE)),
           highlight = TRUE,
+          sortable = FALSE,
+          outlined = TRUE,
           striped = TRUE,
-          theme = reactableTheme(
-            borderColor = "#000000",
-            stripedColor = "#F6F6F6",
-            highlightColor = "#CFE8EF",
-            cellPadding = "8px 12px",
-            style = list(fontFamily = "-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif"),
-            searchInputStyle = list(width = "100%")))
+)
 ```
+Vaultbot is maintained by <a class="navlink" href="https://tbrittain.com">Trey Brittain</a>.

@@ -2,15 +2,14 @@
 title: Vaultbot Playlist Stats
 output:
   html_document:
-    theme: flatly
+    theme: darkly
     highlight: pygments
     self_contained: true
 assets:
   css:
     - "https://fonts.googleapis.com/css?family=Rubik"
 fig_width: 10 
-fig_height: 4 
-
+fig_height: 4
 ---
 
 <style>
@@ -21,11 +20,9 @@ body .main-container {
     max-width: 4000px;
 }
 body {
-    background: -webkit-linear-gradient(top, #FBFFF5, #C6DBF0); 
-    background: -o-linear-gradient(top, #FBFFF5, #C6DBF0);
-    background: -moz-linear-gradient(top, #FBFFF5, #C6DBF0); 
-    background: linear-gradient(to bottom, #FBFFF5, #C6DBF0); 
-    background-color: #FBFFF5; 
+    background-image: url('artist_images/background1.jpg');
+    background-attachment: fixed;
+    background-size: cover;
     font-family: 'Rubik', sans-serif;
     font-size: 16px;
     line-height: 24px;
@@ -37,7 +34,14 @@ div {
 
 
 h1,h2,h3,h4 {
-  font-family: 'Rubik', sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: rgba(0, 0, 0, 0.5);
+    font-weight: bold;
+}
+
+p {
+    background-color: rgba(0, 0, 0, 0.5);
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .container { width: 1000px; }
@@ -113,8 +117,19 @@ song_count <- nrow(total_df)
 plot_title <- sprintf("Overall view of every song present in the playlist (%d songs as of %s). Updates every hour!",
                       song_count, title_today)
 
-# set reactable theme here optionally
-
+# set reactable theme
+options(reactable.theme = reactableTheme(
+  color = "hsl(233, 9%, 87%)",
+  backgroundColor = "hsl(233, 9%, 19%)",
+  borderColor = "hsl(233, 9%, 22%)",
+  stripedColor = "hsl(233, 12%, 22%)",
+  highlightColor = "hsl(233, 12%, 24%)",
+  inputStyle = list(backgroundColor = "hsl(233, 9%, 25%)"),
+  selectStyle = list(backgroundColor = "hsl(233, 9%, 25%)"),
+  pageButtonHoverStyle = list(backgroundColor = "hsl(233, 9%, 25%)"),
+  pageButtonActiveStyle = list(backgroundColor = "hsl(233, 9%, 28%)"),
+  searchInputStyle = list(width = "100%")
+))
 
 # copy data from original df
 table_data <- total_df[, c("User", "Artist", "Album", "Tracks", "ID",
@@ -149,7 +164,7 @@ with_tooltip <- function(value, tooltip) {
 `r plot_title`
 To listen to the dynamic playlist, <a class="navlink" href="spotify:playlist:5YQHb5wt9d0hmShWNxjsTs">click here</a>.
 
-**New**: To view highscores, <a class="navlink" href="http://vaultbot.tbrittain.com/highscores.html">click here</a>.
+**New:** To view highscores, <a class="navlink" href="http://vaultbot.tbrittain.com/highscores.html">click here</a>.
 
 
 ```{r, include=TRUE, echo=FALSE}
@@ -333,6 +348,7 @@ reactable(
   highlight = TRUE,
   compact = TRUE,
   striped = TRUE,
+  outlined = TRUE,
   searchable = TRUE,
   filterable = TRUE,
   wrap = FALSE,
@@ -341,14 +357,6 @@ reactable(
   defaultPageSize = 25,
   showPageSizeOptions = TRUE,
   pageSizeOptions = c(25, 50, 100, 200),
-  theme = reactableTheme(
-    borderColor = "#000000",
-    stripedColor = "#F6F6F6",
-    highlightColor = "#CFE8EF",
-    cellPadding = "8px 12px",
-    style = list(fontFamily = "-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif"),
-    searchInputStyle = list(width = "100%")
-  )
 )
 
 ```
