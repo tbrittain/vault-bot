@@ -15,14 +15,17 @@ fig_height: 4
 <style>
 html{
     min-height: 100%;
+    scroll-behavior: smooth;
+    overflow: auto;
 }
+
 body .main-container {
-    max-width: 1250px;
+    max-width: 4000px;
 }
 
 body {
     background-image: url('artist_images/background2.jpg');
-     background-repeat: repeat;
+    background-repeat: repeat;
     font-family: 'Rubik', sans-serif;
     font-size: 16px;
     line-height: 24px;
@@ -43,7 +46,14 @@ p {
     font-family: Arial, Helvetica, sans-serif;
 }
 
-.container { width: 1000px; }
+.container {
+    width: 1000px;
+}
+
+.tbl {
+    margin-left: auto;
+    margin-right: auto;
+}
 
 h3 {
   background-color: #D4DAEC;
@@ -58,12 +68,54 @@ h4 {
   display: block;
   margin-left: auto;
   margin-right: auto;
-  width: 25%;
+  width: 40%;
+}
+
+.centersmall {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 12%;
 }
 
 .bar-sort-header:hover {
   background-color: #373845;
 }
+
+/**
+ * Navigation bar CSS
+ */
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333;
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+
+li {
+  float: left;
+}
+
+li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 20px 16px;
+  text-decoration: none;
+}
+
+li a:hover {
+  background-color: #111;
+}
+
+.active {
+  background-color: #0CE3AC;
+}
+
 </style>
 
 
@@ -138,13 +190,16 @@ names(total_df)[6] <- "Genres"
 
 ```
 
-
-<img src="D:/Github/vault-bot/embeds/vaultbotheader.png" alt="Vaultbot Playlist Song Statistics" class="center">
+ <ul>
+    <li><a href="index.html">Stats</a></li>
+    <li><a class="active" href="highscores.html">Highscores</a></li>
+    <li><a href="spotify:playlist:5YQHb5wt9d0hmShWNxjsTs">Dynamic Playlist</a></li>
+    <li><a href="spotify:playlist:4C6pU7YmbBUG8sFFk4eSXj">Archive Playlist</a></li>
+    <li style="float:right"><a href="https://tbrittain.com/">Trey's homepage</a></li>
+</ul>
+<img src="D:/Github/vault-bot/embeds/vaultbotheader.png" alt="Vaultbot Playlist Song Statistics" class="center" width="1250">
 
 Some highscores for different aspects of the dynamic playlist. `r plot_title`
-To listen to the dynamic playlist, <a class="navlink" href="spotify:playlist:5YQHb5wt9d0hmShWNxjsTs">click here</a>.
-
-To view overall playlist statistics, <a class="navlink" href="http://vaultbot.tbrittain.com/">click here</a>.
 
 ## Genres
 Top Spotify-assigned genres currently in the dynamic playlist. Artists may belong to more than one genre (and some none at all if they are really underground).
@@ -179,7 +234,9 @@ reactable::reactable(genre_df,groupBy = c("Genre", "Artist"), columns = list(
           showSortIcon = TRUE,
           defaultPageSize = 20,
           searchable = TRUE,
+          style = list(maxWidth = 1500),
           defaultColDef = colDef(headerClass = "bar-sort-header"),
+          class = "tbl"
 )
 
 # maybe add some plots here
@@ -229,7 +286,9 @@ reactable(artist_counts[1:25,],
           highlight = TRUE,
           sortable = FALSE,
           striped = TRUE,
+          style = list(maxWidth = 750),
           outlined = TRUE,
+          class = "tbl"
 )
 ```
 
@@ -254,7 +313,10 @@ reactable(user_counts,
           highlight = TRUE,
           sortable = FALSE,
           outlined = TRUE,
+          style = list(maxWidth = 750),
           striped = TRUE,
+          class = "tbl"
 )
 ```
 Vaultbot is maintained by <a class="navlink" href="https://tbrittain.com">Trey Brittain</a>.
+<img src="D:/Github/vault-bot/embeds/signature.png" alt="Vaultbot Playlist Song Statistics" class="centersmall" width="250">

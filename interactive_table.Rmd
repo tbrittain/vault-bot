@@ -15,6 +15,7 @@ fig_height: 4
 <style>
 html{
     min-height: 100%;
+    scroll-behavior: smooth;
 }
 body .main-container {
     max-width: 4000px;
@@ -26,6 +27,7 @@ body {
     font-family: 'Rubik', sans-serif;
     font-size: 16px;
     line-height: 24px;
+    overflow: auto;
 }
 
 div {
@@ -57,11 +59,52 @@ h4 {
   display: block;
   margin-left: auto;
   margin-right: auto;
-  width: 25%;
+  width: 40%;
+}
+
+.centersmall {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 12%;
 }
 
 .bar-sort-header:hover {
   background-color: #373845;
+}
+
+/**
+ * Navigation bar CSS
+ */
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333;
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+
+li {
+  float: left;
+}
+
+li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 20px 16px;
+  text-decoration: none;
+}
+
+li a:hover {
+  background-color: #111;
+}
+
+.active {
+  background-color: #0CE3AC;
 }
 </style>
 
@@ -157,13 +200,16 @@ with_tooltip <- function(value, tooltip) {
             title = tooltip, value)
 }
 ```
-
-<img src="D:/Github/vault-bot/embeds/vaultbotheader.png" alt="Vaultbot Playlist Song Statistics" class="center">
+ <ul>
+    <li><a class="active" href="index.html">Stats</a></li>
+    <li><a href="highscores.html">Highscores</a></li>
+    <li><a href="spotify:playlist:5YQHb5wt9d0hmShWNxjsTs">Dynamic Playlist</a></li>
+    <li><a href="spotify:playlist:4C6pU7YmbBUG8sFFk4eSXj">Archive Playlist</a></li>
+    <li style="float:right"><a href="https://tbrittain.com">Trey's homepage</a></li>
+</ul>
+<img src="D:/Github/vault-bot/embeds/vaultbotheader.png" alt="Vaultbot Playlist Song Statistics" class="center" width="1250">
 
 `r plot_title`
-To listen to the dynamic playlist, <a class="navlink" href="spotify:playlist:5YQHb5wt9d0hmShWNxjsTs">click here</a>.
-
-**New:** To view highscores, <a class="navlink" href="http://vaultbot.tbrittain.com/highscores.html">click here</a>.
 
 
 ```{r, include=TRUE, echo=FALSE}
@@ -360,3 +406,4 @@ reactable(
 
 ```
 Vaultbot is maintained by <a class="navlink" href="https://tbrittain.com">Trey Brittain</a>.
+<img src="D:/Github/vault-bot/embeds/signature.png" alt="Vaultbot Playlist Song Statistics" class="centersmall" width="250">
