@@ -60,7 +60,7 @@ async def on_message(message):
     if message.content[0] == "$":  # $ dollar sign will be the default bot command
         user_input = str(message.content)
 
-        print(curr_time + f' User {message.author} invoked = {user_input}')
+        print(curr_time + f' User {message.author} invoked: {user_input}')
 
         user_input = user_input.replace("$", "")  # bot already called, removing $ for parsing user message
         first_word = user_input.split(' ', 1)[0]  # first word corresponds to command
@@ -327,6 +327,12 @@ async def on_message(message):
     elif papa_check.lower().__contains__('papa'):
         file = discord.File("embeds/papa.MOV", filename="papa.mov")
         await message.channel.send(file=file)
+
+    elif papa_check.lower().__contains__('-play'):
+        alert_check = random.randint(1, 10)
+        if alert_check == 1:
+            await message.channel.send(f'I see you are playing some music there, {message.author.mention}')
+            await message.channel.send(f'How about you share some tunes to the community playlist? :wink:')
 
 
 @tasks.loop(minutes=60)

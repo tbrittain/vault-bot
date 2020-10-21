@@ -202,12 +202,29 @@ names(total_df)[6] <- "Genres"
 Some highscores for different aspects of the dynamic playlist. `r plot_title`
 
 ## Genres
-Top Spotify-assigned genres currently in the dynamic playlist. Artists may belong to more than one genre (and some none at all if they are really underground).
+Top Spotify-assigned genres currently in the dynamic playlist. Artists may belong to more than one genre (and some none at all if they are really underground). For more info on Spotify genres, check out <a href="http://everynoise.com">EveryNoise</a>.
 ```{r, include=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
 genre_df <- read.csv("genre_output.csv")
-reactable::reactable(genre_df,groupBy = c("Genre", "Artist"), columns = list(
+# it appears that a limitation of the groupBy function of reactable is that you cannot apply
+# cell functions to the value, so i unfortunately had to make a separate GenreLink column
+# that contains a direct link to the genre in EveryNoise
+genre_df$GenreLink <- genre_df$Genre
+reactable::reactable(genre_df, groupBy = c("Genre", "Artist"), columns = list(
     Genre = colDef(
-        align = "left"
+        align = "center",
+    ),
+    GenreLink = colDef(
+        align = "left",
+        html = TRUE,
+        cell = function(value) {
+    # Render as a link
+    fixed_value <- gsub("/[&]/", "", value)
+    # God I hate regex patterns. can't get space as " " nor \s to work
+    fixed_value <- gsub("-", "", fixed_value)
+    fixed_value <- gsub(" ", "", fixed_value)
+    url <- sprintf("http://everynoise.com/engenremap-%s.html", fixed_value)
+    htmltools::tags$a(href = url, target = "_blank", as.character(value))
+    }
     ),
     Artist = colDef(
         aggregate = "count",
@@ -218,6 +235,7 @@ reactable::reactable(genre_df,groupBy = c("Genre", "Artist"), columns = list(
         aggregate = "unique"
 
     ), SongID = colDef(
+        align = "center",
         cell = function(value) {
                 url <- paste0("spotify:track:", value)
                 tags$a(href = url, target = "_blank", paste0(value))
