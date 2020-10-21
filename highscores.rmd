@@ -218,7 +218,7 @@ reactable::reactable(genre_df, groupBy = c("Genre", "Artist"), columns = list(
         html = TRUE,
         cell = function(value) {
     # Render as a link
-    fixed_value <- gsub("/[&]/", "", value)
+    fixed_value <- gsub("&", "", value)
     # God I hate regex patterns. can't get space as " " nor \s to work
     fixed_value <- gsub("-", "", fixed_value)
     fixed_value <- gsub(" ", "", fixed_value)
@@ -304,7 +304,7 @@ reactable(artist_counts[1:25,],
           highlight = TRUE,
           sortable = FALSE,
           striped = TRUE,
-          style = list(maxWidth = 750),
+          style = list(maxWidth = 1000),
           outlined = TRUE,
           class = "tbl"
 )
