@@ -9,7 +9,12 @@ import io.github.cdimascio.dotenv.*;
 // This class requires Gephi Toolkit
 // https://gephi.org/toolkit/
 // https://www.slideshare.net/gephi/gephi-toolkit-tutorialtoolkit
+
 // see slide 9 for edge/node import from RDBMS
+// https://image.slidesharecdn.com/gephi-tutorial-toolkit-100714030229-phpapp01/95/gephi-toolkit-tutorial-9-728.jpg?cb=1318800795
+// before continuing, need to generate Nodes and Edges tables for the dynamic playlist
+// May be preferable to adapt some of previously-used code from the Spotify Netviz project
+// https://github.com/tbrittain/spotify-netviz
 
 public class networkViz{
     public static void main(String[] args){

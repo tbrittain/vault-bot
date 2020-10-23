@@ -11,6 +11,7 @@ import random
 import subprocess
 import db
 import io_functions
+from network_visualization import network_coordinator
 
 load_dotenv()
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
@@ -57,7 +58,7 @@ async def on_ready():
 @bot.event
 async def on_message(message):
     papa_check = str(message.content)
-    if message.content[0] == "$":  # $ dollar sign will be the default bot command
+    if str(message.content[0]) == "$":  # $ dollar sign will be the default bot command
         user_input = str(message.content)
 
         print(curr_time + f' User {message.author} invoked: {user_input}')

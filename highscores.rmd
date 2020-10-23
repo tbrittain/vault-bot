@@ -188,6 +188,13 @@ names(total_df)[4] <- "Artist"
 names(total_df)[5] <- "User"
 names(total_df)[6] <- "Genres"
 
+# load genre_df here to calculate some stats for the description of the table
+genre_df <- read.csv("genre_output.csv")
+# TODO: song as hyperlink to song, same with artist, check out reactable examples (especially the wikipedia example)
+# leaving out artist_id column for later
+genre_df <- genre_df[, c("Genre", "Artist", "Song", "SongID")]
+avg_genres <- length(unique(genre_df$Genre)) / length(unique(genre_df$Artist))
+avg_genres <- round(avg_genres, 2)
 ```
 
  <ul>
@@ -202,9 +209,9 @@ names(total_df)[6] <- "Genres"
 Some highscores for different aspects of the dynamic playlist. `r plot_title`
 
 ## Genres
-Top Spotify-assigned genres currently in the dynamic playlist. Artists may belong to more than one genre (and some none at all if they are really underground). For more info on Spotify genres, check out <a href="http://everynoise.com">EveryNoise</a>.
+Top Spotify-assigned genres currently in the dynamic playlist. Artists may belong to more than one genre (and some none at all if they are really underground). On average, each artist belongs to `r avg_genres` genres.
+For more info on Spotify genres, check out <a href="http://everynoise.com">EveryNoise</a>, or click the link directly to the genre under the GenreLink column.
 ```{r, include=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
-genre_df <- read.csv("genre_output.csv")
 # it appears that a limitation of the groupBy function of reactable is that you cannot apply
 # cell functions to the value, so i unfortunately had to make a separate GenreLink column
 # that contains a direct link to the genre in EveryNoise
@@ -242,10 +249,13 @@ reactable::reactable(genre_df, groupBy = c("Genre", "Artist"), columns = list(
                 },
         header = with_tooltip("ID", "Click to open track in Spotify"),
         style = list(fontFamily = "monospace", whiteSpace = "pre", fontSize = "14px")
-  )
+    ), GenreLink = colDef(
+        align = "center"
+    )
 ), defaultSorted = list(Artist = "desc"),
           wrap = FALSE,
           compact = TRUE,
+          bordered = TRUE,
           highlight = TRUE,
           striped = TRUE,
           outlined = TRUE,
