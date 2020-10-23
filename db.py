@@ -287,7 +287,7 @@ def arts_for_website():
     con.close()
 
 
-def dyn_artists_genre_retrieve():
+def dyn_artists_column_retrieve():
     con = psycopg2.connect(
         database=db_name,
         user=db_user,
@@ -305,5 +305,23 @@ def dyn_artists_genre_retrieve():
     return rows
 
 
+def dyn_artists_artist_retrieve():
+    con = psycopg2.connect(
+        database=db_name,
+        user=db_user,
+        password=db_pass,
+        port=5432)
+
+    cur = con.cursor()
+
+    cur.execute("SELECT artist_id FROM dyn_artists")
+    rows = cur.fetchall()
+
+    cur.close()
+    con.close()
+
+    return rows
+
+
 if __name__ == "__main__":
-    print(dyn_artists_genre_retrieve())
+    print(dyn_artists_column_retrieve())

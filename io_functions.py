@@ -53,7 +53,7 @@ def dyn_artists_write_df():
     global song_name
     global artist_id
     global artist_name
-    genre_data = db.dyn_artists_genre_retrieve()
+    genre_data = db.dyn_artists_column_retrieve()
 
     df_columns = ['Genre', 'Artist', 'ArtistID', 'Song', 'SongID']
     total_playlist_array = pd.DataFrame(columns=df_columns)

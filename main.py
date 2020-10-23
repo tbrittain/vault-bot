@@ -11,7 +11,8 @@ import random
 import subprocess
 import db
 import io_functions
-from network_visualization import network_coordinator
+import pandas as pd
+# from network_visualization import network_coordinator
 
 load_dotenv()
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
@@ -211,21 +212,43 @@ async def on_message(message):
                 await message.channel.send(embed=playlist_embed)
 
         elif first_word.lower() == 'playlists' or first_word.lower() == 'playlist':
-            try:
-                playlist_embed = discord.Embed(title='$playlists',
-                                               description='Links to the playlists. Paste the URI in your browser to '
-                                                           'open the playlist on your desktop client! Be sure to '
-                                                           'follow the playlist for easy access :grinning:',
-                                               color=random.randint(0, 0xffffff))
-                playlist_embed.add_field(name='Main playlist', value='https://spoti.fi/33AnPqd', inline=False)
-                playlist_embed.add_field(name='Archive playlist', value='https://spoti.fi/3iGBNeE', inline=False)
-                playlist_embed.add_field(name='Main Spotify URI',
-                                         value='spotify:playlist:5YQHb5wt9d0hmShWNxjsTs', inline=False)
-                playlist_embed.add_field(name='Archive Spotify URI',
-                                         value='spotify:playlist:4C6pU7YmbBUG8sFFk4eSXj', inline=False)
-                await message.channel.send(embed=playlist_embed)
-            except IndexError:
-                pass
+            playlist_embed = discord.Embed(title='$playlists',
+                                           description='Links to the playlists. Paste the URI in your browser to '
+                                                       'open the playlist on your desktop client! Be sure to '
+                                                       'follow the playlist for easy access :grinning:',
+                                           color=random.randint(0, 0xffffff))
+            playlist_embed.add_field(name='Main playlist', value='https://spoti.fi/33AnPqd', inline=False)
+            playlist_embed.add_field(name='Archive playlist', value='https://spoti.fi/3iGBNeE', inline=False)
+            playlist_embed.add_field(name='Main Spotify URI',
+                                     value='spotify:playlist:5YQHb5wt9d0hmShWNxjsTs', inline=False)
+            playlist_embed.add_field(name='Archive Spotify URI',
+                                     value='spotify:playlist:4C6pU7YmbBUG8sFFk4eSXj', inline=False)
+            await message.channel.send(embed=playlist_embed)
+
+        elif first_word.lower() == 'recommend':
+            song_recommendations = spotify_commands.recommend_songs()
+            choice = random.randint(0, 9)
+
+            row = song_recommendations.loc[choice]
+            genres = spotify_commands.artist_genres(row['artist_id'])
+
+            playlist_embed = discord.Embed(title='$recommend',
+                                           description='A song recommendation based on the current contents of the '
+                                                       'dynamic playlist',
+                                           color=random.randint(0, 0xffffff))
+            playlist_embed.set_image(url=row['album_art'])
+            playlist_embed.add_field(name='Song', value=row['song'], inline=False)
+            playlist_embed.add_field(name='Artist', value=row['artist'], inline=False)
+            playlist_embed.add_field(name='URL', value=row['song_url'])
+            playlist_embed.add_field(name='URI', value=row['song_uri'])
+
+            if len(genres) > 0:
+                playlist_embed.add_field(name='Genres', value=genres, inline=False)
+
+            # check if preview url present, which is of type str, NaN is float
+            if isinstance(row['preview_url'], str):
+                playlist_embed.add_field(name='Song preview', value=row['preview_url'])
+            await message.channel.send(embed=playlist_embed)
 
         elif first_word.lower() == 'suggestion':
             message_body = str(message_body)
@@ -243,6 +266,7 @@ async def on_message(message):
                                            f'master, {message.author.mention}')
 
         # help documentation
+        # TODO: add recommend documentation
         elif first_word.lower() == 'help':
             command_names = ['search', 'add', 'stats', 'playlists']
             message_body = str(message_body)
@@ -330,7 +354,7 @@ async def on_message(message):
         await message.channel.send(file=file)
 
     elif papa_check.lower().__contains__('-play'):
-        alert_check = random.randint(1, 10)
+        alert_check = random.randint(1, 5)
         if alert_check == 1:
             await message.channel.send(f'I see you are playing some music there, {message.author.mention}')
             await message.channel.send(f'How about you share some tunes to the community playlist? :wink:')

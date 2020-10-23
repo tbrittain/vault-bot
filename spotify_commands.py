@@ -4,6 +4,9 @@ from dotenv import load_dotenv
 import os
 from datetime import datetime
 from spotipy import SpotifyException
+import db
+import pandas as pd
+import random
 
 load_dotenv()
 CLIENT_ID = os.getenv("SPOTIPY_CLIENT_ID")
@@ -123,7 +126,6 @@ async def validate_song(track_id):
 
 
 def artist_genres(artist_id):
-
     # gotta reformat genres because some genres have apostrophes or are quotation strings vs apostrophe strings
     # and sql can only accept apostrophe varchars
     genres = sp.artist(artist_id)['genres']
@@ -203,6 +205,63 @@ def playlist_description_update(playlist_id, playlist_name):
         print(f'Description too long. Not updating {playlist_name} playlist description.')
 
 
+def recommend_songs():
+    artists = db.dyn_artists_artist_retrieve()
+    artist_count = {}
+
+    for artist in artists:
+        if artist[0] not in artist_count:
+            artist_count[artist[0]] = 1
+        else:
+            artist_count[artist[0]] += 1
+
+    # this sorts by top artists for recommendations, but i think its better to seed random artists from the playlist
+    # artist_count = {key: value for key, value in
+    #                 sorted(artist_count.items(), key=lambda item: item[1], reverse=True)}
+    # top_artists = [k for k in list(artist_count)[:5]]
+
+    random_artists = []
+    while len(random_artists) < 5:
+        artist = random.choice(list(artist_count))
+        if artist not in random_artists:
+            random_artists.append(artist)
+
+    # inherent problem with spotipy recommendations: if you keep song limit = 1, it appears that the
+    # probability of the recommended song being from one of the random artist is VERY high
+    # the higher the song limit, the more variability in the recommendation, which seems more ideal
+    # ie some artists who are not currently on the playlist are recommended
+
+    song_info_columns = ['song_uri', 'artist', 'artist_id', 'song', 'song_url', 'preview_url', 'album_art']
+    total_song_df = pd.DataFrame(columns=song_info_columns)
+
+    while len(total_song_df) < 10:
+        recommended_tracks = sp.recommendations(seed_artists=random_artists, limit=20)
+        for track in recommended_tracks['tracks']:
+            if track['artists'][0]['id'] not in artist_count:
+                song_info = {
+                    'song_uri': track['uri'],
+                    'artist': track['artists'][0]['name'],
+                    'artist_id': track['artists'][0]['id'],
+                    'song': track['name'],
+                    'song_url': track['external_urls']['spotify'],
+                    'album_art': track['album']['images'][1]['url']
+                }
+                if track['preview_url'] is not None:
+                    song_info['preview_url'] = track['preview_url']
+
+                song_df = pd.DataFrame(song_info, index=[0])
+                total_song_df = pd.concat([total_song_df, song_df], ignore_index=True)
+
+    return total_song_df
+
+
 if __name__ == "__main__":
-    print(artist_genres('4AGwPDdh1y8hochNzHy5HC'))
-    print(artist_genres('18H0sAptzdwid08XGg1Lcj'))
+    song_recommendations = recommend_songs()
+    choice = random.randint(0, 9)
+
+    row = song_recommendations.loc[choice]
+    print(row)
+
+    print(row['preview_url'])
+    print(type(row['preview_url']))
+    print(isinstance(row['preview_url'], str))
