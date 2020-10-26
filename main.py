@@ -11,14 +11,16 @@ import random
 import subprocess
 import db
 import io_functions
-import pandas as pd
 
 # from network_visualization import network_coordinator
 
 load_dotenv()
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 bot = commands.Bot(command_prefix='$', case_insensitive=True, help_command=None)
-curr_time = time.strftime("%H:%M:%S", time.localtime())
+
+# TODO: make bot ignore messages from other bots
+# TODO: add header metadata for rmd HTML output
+# TODO: add highscores tab in the Rmd file that shows different metrics (current top artists, top users)
 
 
 @bot.event
@@ -32,15 +34,17 @@ async def on_ready():
     await bot.change_presence(activity=discord.Game('$help'))  # sets discord activity to $help
 
     # tri-daily scheduled tasks
-    # sql_backup.start()
+    sql_backup.start()
 
     # hourly scheduled tasks
-    # hourly_cleanup.start()
+    hourly_cleanup.start()
 
 
 @tasks.loop(minutes=60)
 async def hourly_cleanup():
     await bot.wait_until_ready()
+    # TODO: consider moving these blocks of code into a separate function and use this function to control all
+    # cleanup functions
     results = spotify_commands.sp.playlist_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs')
     tracks = results['items']
     while results['next']:
@@ -60,8 +64,9 @@ async def hourly_cleanup():
 
     # iterates over tracks pulled from spotify and for each one, determines whether it needs to be removed from
     if len(track_list) > 0:
-        print(curr_time + ': Preparing to update track popularities and check for expired songs.\n'
-                          'Please do not exit the program during this time.')
+        print(time.strftime("%H:%M:%S", time.localtime()) +
+              ': Preparing to update track popularities and check for expired songs.\n'
+              'Please do not exit the program during this time.')
         for track in track_list:
             # key is the track id
             for key, value in track.items():
@@ -71,31 +76,33 @@ async def hourly_cleanup():
                 time_difference = datetime.now() - datetime(year=int(date_split[0]),
                                                             month=int(date_split[1]),
                                                             day=int(date_split[2]))
+                # song removal from dynamic playlist
                 if time_difference > timedelta(days=14):  # set 2 weeks threshold for track removal
                     spotify_commands.sp.playlist_remove_all_occurrences_of_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs',
                                                                                  items=[key])
                     db.db_purge_stats(song_id=key)
 
-                    print(curr_time + f': Song {key} removed from playlist')
-    print(curr_time + ': Track popularities updated and expired songs checked.')
+                    print(time.strftime("%H:%M:%S", time.localtime()) + f': Song {key} removed from playlist')
+    print(time.strftime("%H:%M:%S", time.localtime()) + ': Track popularities updated and expired songs checked.')
+
     # updates playlist descriptions based on genres present
     spotify_commands.playlist_description_update(playlist_id="5YQHb5wt9d0hmShWNxjsTs", playlist_name='dynamic')
+
     # TODO: figure out why it can only update description of one of the two playlists, but not both
-    # time.sleep(2)  # may need to take a little bit of time in between the playlist description updates
     # spotify_commands.playlist_description_update(playlist_id="4C6pU7YmbBUG8sFFk4eSXj", playlist_name='archive')
 
-    # prep data for highscores website output
+    # prep data for website output
     db.arts_for_website()
     io_functions.dyn_artists_write_df()
 
-    # produce html from Rmarkdown files
+    print(time.strftime("%H:%M:%S", time.localtime()) + ': Rendering .rmd into their HTML outputs.')
     subprocess.call(
         ["C:/Program Files/R/R-4.0.3/bin/Rscript.exe", "D:/Github/vault-bot/render_rmd.R"])
 
-    # upload interactive table to Google Cloud through batch file
+    print(time.strftime("%H:%M:%S", time.localtime()) + ': Uploading HTML files to Google Cloud.')
     subprocess.call([r"D:/Github/vault-bot/cloudsync.bat"])
 
-    print(curr_time + ' Hourly playlist cleanup complete')
+    print(time.strftime("%H:%M:%S", time.localtime()) + ': Hourly playlist cleanup complete!')
 
 
 @tasks.loop(hours=8)
@@ -116,8 +123,6 @@ async def on_command_error(ctx, error):
 
 @bot.event
 async def on_message(ctx):
-    print(f'{curr_time}: User {ctx.author} sent message:')
-    print(curr_time + ': ' + ctx.content)
     message = ctx.content.lower()
     if message.__contains__('papa'):
         file = discord.File("embeds/papa.MOV", filename="papa.mov")
@@ -205,7 +210,7 @@ async def search(ctx, *, song_query):
             db.db_song_add(song_id=selected_track_id, user=str(ctx.author))
             await ctx.channel.send(random.choice(emoji_responses))
             await ctx.channel.send('Track has been added to the community playlists!')
-            print(curr_time +
+            print(time.strftime("%H:%M:%S", time.localtime()) +
                   f': Song of ID {selected_track_id} added to playlists by {ctx.author}')
         except FileExistsError:
             await ctx.channel.send(f"Track already exists in dynamic playlist, "
@@ -235,7 +240,7 @@ async def add(ctx, song_url_or_id: str):
         db.db_song_add(song_id=converted_song_id, user=str(ctx.author))
         await ctx.send(random.choice(emoji_responses))
         await ctx.send('Track has been added to the community playlists!')
-        print(curr_time +
+        print(time.strftime("%H:%M:%S", time.localtime()) +
               f': Song of ID {converted_song_id} added to playlists by {ctx.author}')
 
     except IndexError:
@@ -326,7 +331,7 @@ async def recommend(ctx):
     await discord.Member.send(ctx.author, embed=playlist_embed)
 
 
-@bot.command()
+@bot.command(aliases=['suggest', 'idea'])
 async def suggestion(ctx, *, suggested_idea):
     benevolent_dictator = bot.get_user(177260855308713985)
     await discord.Member.send(benevolent_dictator,
@@ -369,7 +374,7 @@ async def help(ctx, section=''):
         await ctx.send(embed=help_embed)
         file = discord.File("embeds/addmobile.gif", filename="addmobile.gif")
         await ctx.send('You can even PM me a song directly to add it to the playlist!',
-                                   file=file)
+                       file=file)
 
     elif section.lower().__contains__('stats'):
         help_embed = discord.Embed(title='$help stats', color=random.randint(0, 0xffffff))
@@ -415,4 +420,4 @@ async def help(ctx, section=''):
 
 
 if __name__ == "__main__":
-    bot.run(DISCORD_TOKEN)  # statement is blocking, needs to be final in execution
+    bot.run(DISCORD_TOKEN)
