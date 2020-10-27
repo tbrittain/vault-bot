@@ -43,47 +43,8 @@ async def on_ready():
 @tasks.loop(minutes=60)
 async def hourly_cleanup():
     await bot.wait_until_ready()
-    # TODO: consider moving these blocks of code into a separate function and use this function to control all
-    # cleanup functions
-    results = spotify_commands.sp.playlist_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs')
-    tracks = results['items']
-    while results['next']:
-        results = spotify_commands.sp.next(results)
-        tracks.extend(results['items'])
 
-    track_list = []
-    if len(tracks) > 0:
-        for track in tracks:
-            # date in YYYY-MM-DD format by default from Spotify
-            added_at = track['added_at']
-            added_at = added_at.split('T', 1)  # precision of the track removal is to the day, not to the hour
-            added_at = added_at[0]
-            track_dict = {track['track']['id']: added_at}
-
-            track_list.append(track_dict)
-
-    # iterates over tracks pulled from spotify and for each one, determines whether it needs to be removed from
-    if len(track_list) > 0:
-        print(time.strftime("%H:%M:%S", time.localtime()) +
-              ': Preparing to update track popularities and check for expired songs.\n'
-              'Please do not exit the program during this time.')
-        for track in track_list:
-            # key is the track id
-            for key, value in track.items():
-                # updates popularity of tracks in dynamic playlist db
-                db.popularity_update(track_id=key)
-                date_split = value.split('-')
-                time_difference = datetime.now() - datetime(year=int(date_split[0]),
-                                                            month=int(date_split[1]),
-                                                            day=int(date_split[2]))
-                # song removal from dynamic playlist
-                if time_difference > timedelta(days=14):  # set 2 weeks threshold for track removal
-                    spotify_commands.sp.playlist_remove_all_occurrences_of_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs',
-                                                                                 items=[key])
-                    db.db_purge_stats(song_id=key)
-
-                    print(time.strftime("%H:%M:%S", time.localtime()) + f': Song {key} removed from playlist')
-    print(time.strftime("%H:%M:%S", time.localtime()) + ': Track popularities updated and expired songs checked.')
+    await spotify_commands.expired_track_removal()
 
     # updates playlist descriptions based on genres present
     spotify_commands.playlist_description_update(playlist_id="5YQHb5wt9d0hmShWNxjsTs", playlist_name='dynamic')
@@ -91,8 +52,9 @@ async def hourly_cleanup():
     # TODO: figure out why it can only update description of one of the two playlists, but not both
     # spotify_commands.playlist_description_update(playlist_id="4C6pU7YmbBUG8sFFk4eSXj", playlist_name='archive')
 
-    # prep data for website output
-    db.arts_for_website()
+    # TODO: problem with this function that causes hourly update to hang
+    # db.arts_for_website()
+
     io_functions.dyn_artists_write_df()
 
     print(time.strftime("%H:%M:%S", time.localtime()) + ': Rendering .rmd into their HTML outputs.')
@@ -119,6 +81,7 @@ async def sql_backup():
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
         await ctx.send(f'Unrecognized command, {ctx.author.mention}!')
+        await ctx.send(f'Try $help for a full list of my fantastic, very useful features!')
 
 
 @bot.event
@@ -138,6 +101,7 @@ async def on_message(ctx):
 @bot.command()
 async def search(ctx, *, song_query):
     # TODO: see if all exceptions can be moved to search_errors
+    print(time.strftime("%H:%M:%S", time.localtime()) + f': User {ctx.author} invoked $search with query {song_query}')
     global track_selection
 
     raw_results = await asyncio.gather(spotify_commands.song_search(song_query))
@@ -232,6 +196,7 @@ async def search_error(ctx, error):
 
 @bot.command()
 async def add(ctx, song_url_or_id: str):
+    print(time.strftime("%H:%M:%S", time.localtime()) + f': User {ctx.author} invoked $add with input {song_url_or_id}')
     emoji_responses = ['👌', '👍', '🤘', '🤙', '🤝']
     try:
         converted_song_id = await spotify_commands.convert_to_track_id(song_url_or_id)
@@ -271,6 +236,7 @@ async def add_error(ctx, error):
 
 @bot.command()
 async def stats(ctx, advanced=''):
+    print(time.strftime("%H:%M:%S", time.localtime()) + f': User {ctx.author} invoked $stats')
     if advanced.lower() == 'advanced':
         # had to use the absolute paths due to R and Rscript.exe not understanding relative paths
         subprocess.call(
@@ -287,6 +253,7 @@ async def stats(ctx, advanced=''):
 
 @bot.command(aliases=['playlist'])
 async def playlists(ctx):
+    print(time.strftime("%H:%M:%S", time.localtime()) + f': User {ctx.author} invoked $playlists')
     playlist_embed = discord.Embed(title='$playlists',
                                    description='Links to the playlists. Paste the URI in your browser to '
                                                'open the playlist on your desktop client! Be sure to '
@@ -302,12 +269,22 @@ async def playlists(ctx):
 
 
 @bot.command(aliases=['recommendation'])
-async def recommend(ctx):
-    song_recommendations = spotify_commands.recommend_songs()
+async def recommend(ctx, weighted=''):
+    if weighted == 'weighted':
+        print(time.strftime("%H:%M:%S", time.localtime()) + f': User {ctx.author} invoked weighted $recommend')
+        song_recommendations = spotify_commands.recommend_songs(weighted=True)
+    else:
+        print(time.strftime("%H:%M:%S", time.localtime()) + f': User {ctx.author} invoked $recommend')
+        song_recommendations = spotify_commands.recommend_songs()
+
     choice = random.randint(0, 9)
 
     row = song_recommendations.loc[choice]
     genres = spotify_commands.artist_genres(row['artist_id'])
+    genres = str(genres)
+    genres = genres.replace("[", "")
+    genres = genres.replace("]", "")
+    genres = genres.replace("'", "")
 
     playlist_embed = discord.Embed(title='$recommend',
                                    description='A song recommendation based on the current contents of the '
@@ -334,6 +311,7 @@ async def recommend(ctx):
 @bot.command(aliases=['suggest', 'idea'])
 async def suggestion(ctx, *, suggested_idea):
     benevolent_dictator = bot.get_user(177260855308713985)
+    print(time.strftime("%H:%M:%S", time.localtime()) + f': User {ctx.author} suggested {suggested_idea}')
     await discord.Member.send(benevolent_dictator,
                               content=f'User {ctx.author} submitted suggestion: {suggested_idea}')
     await ctx.send(f'Thanks, your suggestion has been relayed to my '
@@ -349,6 +327,7 @@ async def suggestion_error(ctx, error):
 
 @bot.command()
 async def help(ctx, section=''):
+    print(time.strftime("%H:%M:%S", time.localtime()) + f': User {ctx.author} invoked $help')
     if section.lower().__contains__('search'):
         help_embed = discord.Embed(title='$help search', color=random.randint(0, 0xffffff))
         help_embed.add_field(name="Function information",
@@ -402,6 +381,23 @@ async def help(ctx, section=''):
                                    'desktop client', inline=False)
         await ctx.send(embed=help_embed)
 
+    elif section.lower().__contains__('recommend'):
+        help_embed = discord.Embed(title='$help recommend', color=random.randint(0, 0xffffff))
+        help_embed.add_field(name="Function information",
+                             value='Provides a song recommendation based on the current state of the '
+                                   'dynamic playlist. Can be a weighted or unweighted recommendation.',
+                             inline=False)
+        help_embed.add_field(name="$recommend",
+                             value='By default, provides an unweighted recommendation, meaning that the recommendation '
+                                   'takes into account only unique artists in the playlist regardless of the amount of '
+                                   'occurrences of each artist.',
+                             inline=False)
+        help_embed.add_field(name="$recommend weighted",
+                             value='The optional weighted argument makes it so that there is a higher likelihood of '
+                                   'recommendations of similar music to the most prominent artists in the playlist',
+                             inline=False)
+        await ctx.send(embed=help_embed)
+
     else:
         help_embed = discord.Embed(title='$help',
                                    description='Get specific function help with $help FUNCTION (ex. $help '
@@ -414,6 +410,8 @@ async def help(ctx, section=''):
         help_embed.add_field(name='$playlists', value='Links to the Spotify playlists', inline=False)
         help_embed.add_field(name='$stats', value='General statistics for the songs '
                                                   'and users of the playlists', inline=False)
+        help_embed.add_field(name='$recommend', value='Recommends a song to check out based on the '
+                                                      'contents of the dynamic playlist', inline=False)
         help_embed.add_field(name='$suggestion', value='Send a suggestion to threesquared', inline=False)
 
         await ctx.send(embed=help_embed)

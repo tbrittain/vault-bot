@@ -2,7 +2,8 @@ import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 from dotenv import load_dotenv
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
+import time
 from spotipy import SpotifyException
 import db
 import pandas as pd
@@ -205,24 +206,23 @@ def playlist_description_update(playlist_id, playlist_name):
         print(f'Description too long. Not updating {playlist_name} playlist description.')
 
 
-def recommend_songs():
+def recommend_songs(weighted=False):
     artists = db.dyn_artists_artist_retrieve()
-    artist_count = {}
+    artist_list = []
 
-    for artist in artists:
-        if artist[0] not in artist_count:
-            artist_count[artist[0]] = 1
-        else:
-            artist_count[artist[0]] += 1
-
-    # this sorts by top artists for recommendations, but i think its better to seed random artists from the playlist
-    # artist_count = {key: value for key, value in
-    #                 sorted(artist_count.items(), key=lambda item: item[1], reverse=True)}
-    # top_artists = [k for k in list(artist_count)[:5]]
+    # weighted in the sense that more probability of drawing random artists when artist list is not unique artists
+    # but rather the artist to every corresponding song
+    if not weighted:
+        for artist in artists:
+            if artist[0] not in artist_list:
+                artist_list.append(artist[0])
+    else:
+        for artist in artists:
+            artist_list.append(artist[0])
 
     random_artists = []
     while len(random_artists) < 5:
-        artist = random.choice(list(artist_count))
+        artist = random.choice(list(artist_list))
         if artist not in random_artists:
             random_artists.append(artist)
 
@@ -237,7 +237,7 @@ def recommend_songs():
     while len(total_song_df) < 10:
         recommended_tracks = sp.recommendations(seed_artists=random_artists, limit=20)
         for track in recommended_tracks['tracks']:
-            if track['artists'][0]['id'] not in artist_count:
+            if track['artists'][0]['id'] not in artist_list:
                 song_info = {
                     'song_uri': track['uri'],
                     'artist': track['artists'][0]['name'],
@@ -255,13 +255,51 @@ def recommend_songs():
     return total_song_df
 
 
+async def expired_track_removal():
+    results = sp.playlist_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs')
+    tracks = results['items']
+    while results['next']:
+        results = sp.next(results)
+        tracks.extend(results['items'])
+
+    track_list = []
+    if len(tracks) > 0:
+        for track in tracks:
+            # date in YYYY-MM-DD format by default from Spotify
+            added_at = track['added_at']
+            added_at = added_at.split('T', 1)  # precision of the track removal is to the day, not to the hour
+            added_at = added_at[0]
+            track_dict = {track['track']['id']: added_at}
+
+            track_list.append(track_dict)
+
+    # iterates over tracks pulled from spotify and for each one, determines whether it needs to be removed from
+    if len(track_list) > 0:
+        print(time.strftime("%H:%M:%S", time.localtime()) +
+              ': Preparing to update track popularities and check for expired songs.\n'
+              'Please do not exit the program during this time.')
+        for track in track_list:
+            # key is the track id
+            for key, value in track.items():
+                # updates popularity of tracks in dynamic playlist db
+                db.popularity_update(track_id=key)
+                date_split = value.split('-')
+                time_difference = datetime.now() - datetime(year=int(date_split[0]),
+                                                            month=int(date_split[1]),
+                                                            day=int(date_split[2]))
+                # song removal from dynamic playlist
+                if time_difference > timedelta(days=14):  # set 2 weeks threshold for track removal
+                    sp.playlist_remove_all_occurrences_of_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs',
+                                                                                 items=[key])
+                    db.db_purge_stats(song_id=key)
+
+                    print(time.strftime("%H:%M:%S", time.localtime()) + f': Song {key} removed from playlist')
+    print(time.strftime("%H:%M:%S", time.localtime()) + ': Track popularities updated and expired songs checked.')
+
+
 if __name__ == "__main__":
     song_recommendations = recommend_songs()
     choice = random.randint(0, 9)
 
     row = song_recommendations.loc[choice]
     print(row)
-
-    print(row['preview_url'])
-    print(type(row['preview_url']))
-    print(isinstance(row['preview_url'], str))

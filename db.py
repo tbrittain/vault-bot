@@ -279,6 +279,7 @@ def arts_for_website():
     print(f'Downloading new artist arts to {os.getcwd()}')
 
     for artist_id in unique_artist_ids:
+        print(f'Downloading art for artist ID {artist_id}')
         io_functions.artist_arts(artist_id=artist_id)
 
     print(f'Artist arts finished downloading')
