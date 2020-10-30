@@ -11,16 +11,16 @@ import random
 import subprocess
 import db
 import io_functions
+import config
 
 # from network_visualization import network_coordinator
 
 load_dotenv()
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
-bot = commands.Bot(command_prefix='$', case_insensitive=True, help_command=None)
+bot = commands.Bot(command_prefix=config.bot_command_prefix, case_insensitive=True, help_command=None)
 
 # TODO: make bot ignore messages from other bots
 # TODO: add header metadata for rmd HTML output
-# TODO: add highscores tab in the Rmd file that shows different metrics (current top artists, top users)
 
 
 @bot.event
@@ -89,12 +89,12 @@ async def on_message(ctx):
     message = ctx.content.lower()
     if message.__contains__('papa'):
         file = discord.File("embeds/papa.MOV", filename="papa.mov")
-        await ctx.send(file=file)
+        await ctx.channel.send(file=file)
     elif message.__contains__('-play'):
         alert_check = random.randint(1, 5)
         if alert_check == 1:
-            await ctx.send(f'I see you are playing some music there, {message.author.mention}')
-            await ctx.send(f'How about you share some tunes to the community playlist? :wink:')
+            await ctx.channel.send(f'I see you are playing some music there, {ctx.author.mention}')
+            await ctx.channel.send(f'How about you share some tunes to the community playlist? :wink:')
     await bot.process_commands(ctx)
 
 
@@ -286,10 +286,16 @@ async def recommend(ctx, weighted=''):
     genres = genres.replace("]", "")
     genres = genres.replace("'", "")
 
-    playlist_embed = discord.Embed(title='$recommend',
-                                   description='A song recommendation based on the current contents of the '
-                                               'dynamic playlist',
-                                   color=random.randint(0, 0xffffff))
+    if weighted == 'weighted':
+        playlist_embed = discord.Embed(title='$recommend weighted',
+                                    description='A weighted song recommendation based on the current contents of the '
+                                                'dynamic playlist',
+                                    color=random.randint(0, 0xffffff))
+    else:
+                playlist_embed = discord.Embed(title='$recommend',
+                                    description='A song recommendation based on the current contents of the '
+                                                'dynamic playlist',
+                                    color=random.randint(0, 0xffffff))
     playlist_embed.set_image(url=row['album_art'])
     playlist_embed.add_field(name='Song', value=row['song'], inline=False)
     playlist_embed.add_field(name='Artist', value=row['artist'], inline=False)
