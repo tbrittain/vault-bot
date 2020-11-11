@@ -13,10 +13,12 @@ fig_height: 4
 ---
 
 <style>
+
 html{
     min-height: 100%;
     scroll-behavior: smooth;
 }
+
 body .main-container {
     max-width: 4000px;
 }
@@ -79,7 +81,7 @@ h4 {
 }
 
 /**
- * Navigation bar CSS
+Navigation bar CSS
  */
 
 ul {
@@ -123,7 +125,7 @@ li a:hover {
 }
 
 /*
- * Container for holding interactive charts
+Container for holding interactive charts
  */
 
 .plot-content-container {
@@ -139,7 +141,6 @@ li a:hover {
 
 </style>
 
-
 ```{r setup, include=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
 library(rmarkdown)
 library(reactable)
@@ -151,6 +152,7 @@ library(DBI)
 library(plotly)
 library(viridis)
 ```
+
 
 ```{r, include=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
 setwd("D:/Github/vault-bot/")
@@ -200,6 +202,7 @@ table_data <- total_df[, c("User", "Artist", "Album", "Tracks", "ID",
 
 
 ```
+
 
 ```{r echo=FALSE, results='hide',message=FALSE}
 table_data %>% mutate(Log_popularity = ifelse(Popularity == 0, 0, log10(Popularity)))

@@ -8,6 +8,7 @@ from spotipy import SpotifyException
 import db
 import pandas as pd
 import random
+import math
 
 load_dotenv()
 CLIENT_ID = os.getenv("SPOTIPY_CLIENT_ID")
@@ -295,6 +296,67 @@ async def expired_track_removal():
 
                     print(time.strftime("%H:%M:%S", time.localtime()) + f': Song {key} removed from playlist')
     print(time.strftime("%H:%M:%S", time.localtime()) + ': Track popularities updated and expired songs checked.')
+
+
+def playlist_diversity_index(playlist_id):
+    results = sp.playlist_items(playlist_id)
+    tracks = results['items']
+    while results['next']:
+        results = sp.next(results)
+        tracks.extend(results['items'])
+
+    song_artists = []  # gather artists from songs
+    for track in tracks:
+        individual_song_artists = {}
+        for artist in track['track']['artists']:
+            individual_song_artists[artist['id']] = artist['name']
+        song_artists.append(individual_song_artists)
+
+    artist_song_tracker = {}  # count occurrences of each artist
+    for song in song_artists:
+        for artist_id, artist_name in song.items():
+            if artist_id not in artist_song_tracker:
+                artist_song_tracker[artist_id] = 1
+            else:
+                artist_song_tracker[artist_id] += 1
+
+    df_list = []
+    for artist, count in artist_song_tracker.items():
+        artist_reformatted = {'artist_id': artist, 'count': count}
+        df_list.append(artist_reformatted)
+
+    total_artist_array = pd.DataFrame(df_list)
+    # apply genres to each artist
+
+    try:
+        total_artist_array['genres'] = total_artist_array.apply(lambda row: sp.artist(row.artist_id)['genres'], axis=1)
+    except AttributeError:
+        raise PermissionError(f'Insufficient permission with playlist {playlist_id}')
+
+    # sum each artist count to each of the genres they belong to
+    genre_count_tracker = {}
+    for index, row in total_artist_array.iterrows():
+        for genre in row['genres']:
+            if genre not in genre_count_tracker:
+                genre_count_tracker[genre] = row['count']
+            else:
+                genre_count_tracker[genre] += row['count']
+
+    if len(genre_count_tracker) > 0:
+        genre_count_tracker = {key: value for key, value in
+                               sorted(genre_count_tracker.items(), key=lambda item: item[1], reverse=True)}
+        # begin math part
+        pdi_sum = 0
+        for genre, count in genre_count_tracker.items():
+            genre_calc = 1 + ((math.log(1 / count)) / 5)
+            pdi_sum += genre_calc
+        # below for diagnostics
+        print(f'Raw PDI sum before correcting for number of genres: {pdi_sum}')
+        print(f'Number of genres in of playlist: {len(genre_count_tracker)}')
+        pdi_sum = pdi_sum / len(genre_count_tracker)
+        return pdi_sum
+    else:
+        raise ValueError('Playlist contains no genres, therefore PDI cannot be calculated.')
 
 
 if __name__ == "__main__":
