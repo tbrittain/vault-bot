@@ -20,7 +20,6 @@ DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 bot = commands.Bot(command_prefix=config.bot_command_prefix, case_insensitive=True, help_command=None)
 
 # TODO: make bot ignore messages from other bots
-# TODO: add header metadata for rmd HTML output
 
 
 @bot.event
@@ -41,6 +40,11 @@ async def on_ready():
 
 
 @tasks.loop(minutes=60)
+async def arts_downloader():
+    db.arts_for_website()
+
+
+@tasks.loop(minutes=60)
 async def hourly_cleanup():
     await bot.wait_until_ready()
 
@@ -51,9 +55,6 @@ async def hourly_cleanup():
 
     # TODO: figure out why it can only update description of one of the two playlists, but not both
     # spotify_commands.playlist_description_update(playlist_id="4C6pU7YmbBUG8sFFk4eSXj", playlist_name='archive')
-
-    # TODO: problem with this function that causes hourly update to hang
-    # db.arts_for_website()
 
     io_functions.dyn_artists_write_df()
 

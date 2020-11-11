@@ -21,3 +21,8 @@ rmarkdown::render(input = "D:/Github/vault-bot/highscores.Rmd",
                   output_format = "html_document",
                   quiet = TRUE,
                   output_file = "D:/Github/vault-bot/vaultbot_stats_table/highscores.html" )
+
+rmarkdown::render(input = "D:/Github/vault-bot/advanced_stats.Rmd",
+                  output_format = "html_document",
+                  quiet = TRUE,
+                  output_file = "D:/Github/vault-bot/vaultbot_stats_table/advanced.html" )

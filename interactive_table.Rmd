@@ -76,6 +76,7 @@ h4 {
 /**
  * Navigation bar CSS
  */
+
 ul {
   list-style-type: none;
   margin: 0;
@@ -85,6 +86,8 @@ ul {
   position: fixed;
   top: 0;
   width: 100%;
+  box-sizing: border-box;
+  z-index: 10;
 }
 
 li {
@@ -97,14 +100,21 @@ li a {
   text-align: center;
   padding: 20px 16px;
   text-decoration: none;
+  transition: 0.3s;
 }
 
 li a:hover {
   background-color: #111;
+  text-decoration: none;
+  cursor: pointer;
+  outline: 2px solid #FFF;
+  outline-offset: 2px;
+  font-size: 105%;
 }
 
 .active {
   background-color: #0CE3AC;
+  padding: 20px 16px;
 }
 </style>
 
@@ -202,6 +212,7 @@ with_tooltip <- function(value, tooltip) {
 ```
  <ul>
     <li><a class="active" href="index.html">Stats</a></li>
+    <li><a href="advanced.html">Advanced Stats</a></li>
     <li><a href="highscores.html">Highscores</a></li>
     <li><a href="spotify:playlist:5YQHb5wt9d0hmShWNxjsTs">Dynamic Playlist</a></li>
     <li><a href="spotify:playlist:4C6pU7YmbBUG8sFFk4eSXj">Archive Playlist</a></li>
@@ -406,4 +417,4 @@ reactable(
 
 ```
 Vaultbot is maintained by <a class="navlink" href="https://tbrittain.com">Trey Brittain</a>.
-<img src="D:/Github/vault-bot/embeds/signature.png" alt="Vaultbot Playlist Song Statistics" class="centersmall" width="250">
+

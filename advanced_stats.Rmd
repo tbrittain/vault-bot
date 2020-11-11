@@ -1,0 +1,292 @@
+---
+title: Vaultbot Playlist Advanced Stats
+output:
+  html_document:
+    theme: darkly
+    highlight: pygments
+    self_contained: true
+assets:
+  css:
+    - "https://fonts.googleapis.com/css?family=Rubik"
+fig_width: 10 
+fig_height: 4
+---
+
+<style>
+html{
+    min-height: 100%;
+    scroll-behavior: smooth;
+}
+body .main-container {
+    max-width: 4000px;
+}
+
+body {
+    background-image: url('artist_images/background2.jpg');
+     background-repeat: repeat;
+    font-family: 'Rubik', sans-serif;
+    font-size: 16px;
+    line-height: 24px;
+    overflow: auto;
+}
+
+div {
+  text-align: center;
+}
+
+h1,h2,h3,h4 {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: rgba(0, 0, 0, 0.75);
+    font-weight: bold;
+}
+
+p {
+    background-color: rgba(0, 0, 0, 0.75);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.container { width: 1000px; }
+
+h3 {
+  background-color: #D4DAEC;
+  text-indent: 100px; 
+}
+
+h4 {
+  text-indent: 100px;
+}
+
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 40%;
+}
+
+.centersmall {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 12%;
+}
+
+.bar-sort-header:hover {
+  background-color: #373845;
+}
+
+.title {
+    visibility: hidden;
+}
+
+/**
+ * Navigation bar CSS
+ */
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  box-sizing: border-box;
+  z-index: 10;
+}
+
+li {
+  float: left;
+}
+
+li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 20px 16px;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+li a:hover {
+  background-color: #111;
+  text-decoration: none;
+  cursor: pointer;
+  outline: 2px solid #FFF;
+  outline-offset: 2px;
+  font-size: 105%;
+}
+
+.active {
+  background-color: #0CE3AC;
+  padding: 20px 16px;
+}
+
+/*
+ * Container for holding interactive charts
+ */
+
+.plot-content-container {
+    display: flex;
+    flex-flow: row wrap;
+    margin-left: auto;
+    margin-right: auto;
+    justify-content: center;
+    max-width: 100%;
+    max-height: 2000px;
+    align-items: center;
+}
+
+</style>
+
+
+```{r setup, include=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+library(rmarkdown)
+library(reactable)
+library(tibble)
+library(htmltools)
+library(dplyr)
+library(RPostgres)
+library(DBI)
+library(plotly)
+library(viridis)
+```
+
+```{r, include=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+setwd("D:/Github/vault-bot/")
+Sys.setenv(RSTUDIO_PANDOC="C:/Users/Trey/AppData/Local/Pandoc")
+readRenviron(".env")
+db_user <- Sys.getenv("DB_USER")
+db_pass <- Sys.getenv("DB_PASS")
+db <- 'vaultbot'
+db_port <- 5432
+db_host <- 'localhost'
+
+con<-dbConnect(RPostgres::Postgres(), dbname=db, host=db_host, port=db_port, user=db_user, password=db_pass)
+
+total_df <- RPostgres::dbReadTable(con, "dynamic")
+
+# disconnect from db
+RPostgres::dbDisconnect(con)
+# rename columns
+names(total_df)[1] <- "ID"
+names(total_df)[2] <- "Artist"
+names(total_df)[3] <- "Album"
+names(total_df)[4] <- "User"
+names(total_df)[5] <- "Date"
+names(total_df)[6] <- "Length"
+names(total_df)[7] <- "Tempo"
+names(total_df)[8] <- "Danceability"
+names(total_df)[9] <- "Energy"
+names(total_df)[10] <- "Loudness"
+names(total_df)[11] <- "Acousticness"
+names(total_df)[12] <- "Instrumentalness"
+names(total_df)[13] <- "Liveness"
+names(total_df)[14] <- "Valence"
+names(total_df)[15] <- "Tracks"
+names(total_df)[16] <- "Popularity"
+
+# variables for use in title
+title_today <- format(Sys.time(), "%c")
+song_count <- nrow(total_df)
+plot_title <- sprintf("Some advanced views of the music in the dynamic playlist (%d songs as of %s). Updates every hour!",
+                      song_count, title_today)
+
+# copy data from original df
+table_data <- total_df[, c("User", "Artist", "Album", "Tracks", "ID",
+                           "Date", "Popularity","Length", "Tempo", "Danceability",
+                           "Energy", "Loudness", "Valence")]
+
+
+
+```
+
+```{r echo=FALSE, results='hide',message=FALSE}
+table_data %>% mutate(Log_popularity = ifelse(Popularity == 0, 0, log10(Popularity)))
+```
+<ul>
+    <li><a href="index.html">Stats</a></li>
+    <li><a class="active" href="advanced.html">Advanced Stats</a></li>
+    <li><a href="highscores.html">Highscores</a></li>
+    <li><a href="spotify:playlist:5YQHb5wt9d0hmShWNxjsTs">Dynamic Playlist</a></li>
+    <li><a href="spotify:playlist:4C6pU7YmbBUG8sFFk4eSXj">Archive Playlist</a></li>
+    <li style="float:right"><a href="https://tbrittain.com">Trey's homepage</a></li>
+</ul>
+<img src="D:/Github/vault-bot/embeds/vaultbotheader.png" alt="Vaultbot Playlist Song Statistics" class="center" width="1250">
+
+`r plot_title`
+
+
+```{r, include=TRUE, echo=FALSE}
+
+loudness_energy <- ggplot(data=table_data, aes(x=Loudness, y=Energy, size=Popularity, color=User, key= Tracks)) +
+  geom_point(alpha=0.75) +
+  scale_size(range = c(1, 2.5)) +
+  theme_gray() +
+  theme(legend.position="bottom")
+
+loudness_valence <- ggplot(data=table_data, aes(x=Loudness, y=Valence, size=Popularity, color=User, key= Tracks)) +
+  geom_point(alpha=0.75) +
+  scale_size(range = c(1, 2.5)) +
+  theme_gray() +
+  theme(legend.position="bottom")
+
+loudness_dance <- ggplot(data=table_data, aes(x=Loudness, y=Danceability, size=Popularity, color=User, key= Tracks)) +
+  geom_point(alpha=0.75) +
+  scale_size(range = c(1, 2.5)) +
+  theme_gray() +
+  theme(legend.position="bottom")
+
+dance_valence <- ggplot(data=table_data, aes(x=Danceability, y=Valence, size=Popularity, color=User, key= Tracks)) +
+  geom_point(alpha=0.75) +
+  scale_size(range = c(1, 2.5)) +
+  theme_gray() +
+  theme(legend.position="bottom")
+
+dance_energy <- ggplot(data=table_data, aes(x=Danceability, y=Energy, size=Popularity, color=User, key= Tracks)) +
+  geom_point(alpha=0.75) +
+  scale_size(range = c(1, 2.5)) +
+  theme_gray() +
+  theme(legend.position="bottom")
+
+valence_energy <- ggplot(data=table_data, aes(x=Valence, y=Energy, size=Popularity, color=User, key= Tracks)) +
+  geom_point(alpha=0.75) +
+  scale_size(range = c(1, 2.5)) +
+  theme_gray() +
+  theme(legend.position="bottom")
+
+```
+
+<div class="plot-content-container">
+
+```{r echo=FALSE, message=FALSE}
+plot_1 <- ggplotly(loudness_energy, dynamicTicks = TRUE, tooltip = c("Tracks", "User", "Popularity"), width=750, height=500)
+plot_1 <- plot_1 %>% layout(legend = list(x = 100, y = 0.5))
+plot_1
+
+plot_2 <- ggplotly(loudness_valence, dynamicTicks = TRUE, tooltip = c("Tracks", "User", "Popularity"), width=750, height=500)
+plot_2 <- plot_2 %>% layout(legend = list(x = 100, y = 0.5))
+plot_2
+
+plot_3 <- ggplotly(loudness_dance, dynamicTicks = TRUE, tooltip = c("Tracks", "User", "Popularity"), width=750, height=500)
+plot_3 <- plot_3 %>% layout(legend = list(x = 100, y = 0.5))
+plot_3
+
+plot_4 <- ggplotly(dance_valence, dynamicTicks = TRUE, tooltip = c("Tracks", "User", "Popularity"), width=750, height=500)
+plot_4 <- plot_4 %>% layout(legend = list(x = 100, y = 0.5))
+plot_4
+
+plot_5 <- ggplotly(dance_energy, dynamicTicks = TRUE, tooltip = c("Tracks", "User", "Popularity"), width=750, height=500)
+plot_5 <- plot_5 %>% layout(legend = list(x = 100, y = 0.5))
+plot_5
+
+plot_6 <- ggplotly(valence_energy, dynamicTicks = TRUE, tooltip = c("Tracks", "User", "Popularity"), width=750, height=500)
+plot_6 <- plot_6 %>% layout(legend = list(x = 100, y = 0.5))
+plot_6
+
+```
+
+</div>
+
+
+Vaultbot is maintained by <a class="navlink" href="https://tbrittain.com">Trey Brittain</a>.
