@@ -5,14 +5,29 @@ output:
     theme: darkly
     highlight: pygments
     self_contained: true
-assets:
-  css:
-    - "https://fonts.googleapis.com/css?family=Rubik"
 fig_width: 10 
 fig_height: 4
 ---
 
 <style>
+
+@import url("https://fonts.googleapis.com/css?family=Rubik");
+@import url("https://fonts.googleapis.com/css?family=Monofett");
+
+* {
+    font-family: Rubik, Arial, Helvetica, sans-serif;
+}
+
+::-moz-selection {
+    background-color: #0CE3AC;
+    color: black;
+}
+
+::selection {
+    background-color: #0CE3AC;
+    color: black;
+}
+
 html{
     min-height: 100%;
     scroll-behavior: smooth;
@@ -23,8 +38,7 @@ body .main-container {
 
 body {
     background-image: url('artist_images/background2.jpg');
-     background-repeat: repeat;
-    font-family: 'Rubik', sans-serif;
+    background-repeat: repeat;
     font-size: 16px;
     line-height: 24px;
     overflow: auto;
@@ -35,14 +49,12 @@ div {
 }
 
 h1,h2,h3,h4 {
-    font-family: Arial, Helvetica, sans-serif;
     background-color: rgba(0, 0, 0, 0.75);
     font-weight: bold;
 }
 
 p {
     background-color: rgba(0, 0, 0, 0.75);
-    font-family: Arial, Helvetica, sans-serif;
 }
 
 .container { width: 1000px; }
@@ -78,16 +90,22 @@ h4 {
  */
 
 ul {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
   list-style-type: none;
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background-color: #333;
+  background-color: rgba(53, 53, 53, 0.9);
   position: fixed;
   top: 0;
   width: 100%;
   box-sizing: border-box;
   z-index: 10;
+  border-radius: 10px;
+  border: 2px solid #000;
+  text-shadow: 1px 1px 1.5px #000;
 }
 
 li {
@@ -98,7 +116,7 @@ li a {
   display: block;
   color: white;
   text-align: center;
-  padding: 20px 16px;
+  padding: 10px 16px;
   text-decoration: none;
   transition: 0.3s;
 }
@@ -114,8 +132,63 @@ li a:hover {
 
 .active {
   background-color: #0CE3AC;
-  padding: 20px 16px;
+  padding: 10px 16px;
 }
+
+.title {
+    visibility: hidden;
+}
+
+
+/*
+Vaultbot title
+*/
+
+.vaultbot-title {
+    font-family: Monofett, sans-serif;
+    background-color: transparent;
+    font-size: 8vw;
+    max-width: 65%;
+    text-align: center;
+    margin: auto auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-wrap: normal;
+    display: block;
+}
+
+.gradient-text {
+    background-color: #0CE3AC;
+    background-image: linear-gradient(to right, hsla(165, 90%, 47%, 1) 0%, hsla(103, 100%, 71%, 1) 50%, hsla(165, 90%, 47%, 1) 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -moz-background-clip: text;
+
+    text-fill-color: transparent;
+    -webkit-text-fill-color: transparent;
+    -moz-text-fill-color: transparent;
+
+    transition: 0.2s ease-in-out;
+    -moz-transition: 0.2s ease-in-out;
+    -webkit-transition: 0.2s ease-in-out;
+    animation: hoveranimation 5s linear infinite;
+}
+
+@keyframes hoveranimation {
+	to {
+		background-position: 200% center;
+	}
+}
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+
 </style>
 
 
@@ -218,7 +291,8 @@ with_tooltip <- function(value, tooltip) {
     <li><a href="spotify:playlist:4C6pU7YmbBUG8sFFk4eSXj">Archive Playlist</a></li>
     <li style="float:right"><a href="https://tbrittain.com">Trey's homepage</a></li>
 </ul>
-<img src="D:/Github/vault-bot/embeds/vaultbotheader.png" alt="Vaultbot Playlist Song Statistics" class="center" width="1250">
+
+<h1 class="vaultbot-title noselect gradient-text">Vaultbot</h1>
 
 `r plot_title`
 

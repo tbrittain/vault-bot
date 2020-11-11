@@ -288,6 +288,7 @@ def arts_for_website():
     con.close()
 
 
+# will replace with a default retrieve
 def dyn_artists_column_retrieve():
     con = psycopg2.connect(
         database=db_name,
@@ -306,6 +307,7 @@ def dyn_artists_column_retrieve():
     return rows
 
 
+# will replace with a default retrieve
 def dyn_artists_artist_retrieve():
     con = psycopg2.connect(
         database=db_name,
@@ -322,6 +324,27 @@ def dyn_artists_artist_retrieve():
     con.close()
 
     return rows
+
+
+def generic_retrieve(query_request, table):
+    con = psycopg2.connect(
+        database=db_name,
+        user=db_user,
+        password=db_pass,
+        port=5432)
+
+    cur = con.cursor()
+
+    cur.execute(f"""SELECT {query_request} FROM {table}""")
+    rows = cur.fetchall()
+
+    cur.close()
+    con.close()
+
+    return rows
+
+
+
 
 
 if __name__ == "__main__":

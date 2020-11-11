@@ -367,7 +367,7 @@ async def help(ctx, section=''):
         help_embed.add_field(name="Function information",
                              value='Retrieve some interesting statistics for a playlist/user', inline=False)
         help_embed.add_field(name="Spotify track attributes",
-                             value='See https://bit.ly/3d9Z9bm for more info on Spotify track attributes',
+                             value='See https://bit.ly/audiofeatures for more info on Spotify track attributes',
                              inline=False)
         help_embed.add_field(name="Playlist (gives browser link)",
                              value='$stats', inline=False)
