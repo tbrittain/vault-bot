@@ -38,7 +38,9 @@ body .main-container {
 }
 
 body {
-    background-image: url('artist_images/background2.jpg');
+    background-image: url('artist_images/background2.jpg'), linear-gradient(to right, hsla(165, 40%, 47%, 1) 0%, hsla(103, 40%, 71%, 1) 50%, hsla(165, 40%, 47%, 1) 100%);
+    background-blend-mode: overlay;
+    background-size: 1000px 1000px;
     background-repeat: repeat;
     font-size: 16px;
     line-height: 24px;
@@ -276,7 +278,7 @@ table_data <- total_df[, c("User", "Artist", "Album", "Tracks", "ID",
 ```
 
 
-```{r echo=FALSE, results='hide',message=FALSE}
+```{r echo=FALSE, results='hide', message=FALSE}
 table_data %>% mutate(Log_popularity = ifelse(Popularity == 0, 0, log10(Popularity)))
 ```
 <ul>
@@ -293,49 +295,123 @@ table_data %>% mutate(Log_popularity = ifelse(Popularity == 0, 0, log10(Populari
 `r plot_title`
 
 
-```{r, include=TRUE, echo=FALSE}
+```{r, include=TRUE, echo=FALSE, message=FALSE}
+
+theme_custom <- function (base_size = 11, base_family = "Rubik")
+{
+ half_line <- base_size/2
+theme(
+  line = element_line(colour = "black", size = 0.5,
+                      linetype = 1, lineend = "butt"),
+  rect = element_rect(fill = "white", colour = "black",
+                      size = 0.5, linetype = 1),
+  text = element_text(family = base_family, face = "plain",
+                      colour = "white", size = base_size,
+                      lineheight = 0.9,  hjust = 0.5,
+                      vjust = 0.5, angle = 0,
+                      margin = margin(), debug = FALSE),
+
+  axis.line = element_blank(),
+  axis.text = element_text(size = rel(0.8), colour = "grey90"),
+  axis.text.x = element_text(margin = margin(t = 0.8*half_line/2),
+                             vjust = 1),
+  axis.text.y = element_text(margin = margin(r = 0.8*half_line/2),
+                             hjust = 1),
+  axis.ticks = element_line(colour = "grey90"),
+  axis.ticks.length = unit(half_line/2, "pt"),
+  axis.title.x = element_text(margin = margin(t = 0.8 * half_line,
+                                          b = 0.8 * half_line/2)),
+  axis.title.y = element_text(angle = 90,
+                              margin = margin(r = 0.8 * half_line,
+                                          l = 0.8 * half_line/2)),
+
+  legend.background = element_rect(fill = "grey10", colour = NA),
+  legend.spacing = unit(0.2, "cm"),
+  legend.key = element_rect(fill = "grey10", colour = "white"),
+  legend.key.size = unit(1.2, "lines"),
+  legend.key.height = NULL,
+  legend.key.width = NULL,
+  legend.text = element_text(size = rel(0.8)),
+  legend.text.align = NULL,
+  legend.title = element_text(hjust = 0),
+  legend.title.align = NULL,
+  legend.position = "right",
+  legend.direction = NULL,
+  legend.justification = "center",
+  legend.box = NULL,
+
+  panel.background = element_rect(fill = "grey15", colour = NA),
+  panel.border = element_blank(),
+  panel.grid.major = element_line(colour = "grey70"),
+  panel.grid.minor = element_line(colour = "grey50", size = 0.25),
+  panel.spacing = unit(half_line, "pt"), panel.spacing.x = NULL,
+  panel.spacing.y = NULL, panel.ontop = FALSE,
+
+  strip.background = element_rect(fill = "grey85", colour = NA),
+  strip.text = element_text(colour = "grey10", size = rel(0.8)),
+  strip.text.x = element_text(margin = margin(t = half_line,
+                                              b = half_line)),
+  strip.text.y = element_text(angle = -90,
+                              margin = margin(l = half_line,
+                                              r = half_line)),
+  strip.switch.pad.grid = unit(0.1, "cm"),
+  strip.switch.pad.wrap = unit(0.1, "cm"),
+
+  plot.background = element_rect(fill = "grey10",colour = NA),
+  plot.title = element_text(size = rel(1.2),
+                            margin = margin(b = half_line * 1.2)),
+  plot.margin = margin(half_line, half_line, half_line, half_line),
+  complete = TRUE)
+}
+
 
 loudness_energy <- ggplot(data=table_data, aes(x=Loudness, y=Energy, size=Popularity, color=User, key= Tracks)) +
   geom_point(alpha=0.75) +
   scale_size(range = c(1, 2.5)) +
-  theme_gray() +
+  theme_custom() +
   theme(legend.position="bottom") +
-  ggtitle("Energy vs. Loudness (dB)")
+  ggtitle("Energy vs. Loudness (dB)") +
+  scale_color_brewer(palette = "Dark2")
 
 loudness_valence <- ggplot(data=table_data, aes(x=Loudness, y=Valence, size=Popularity, color=User, key= Tracks)) +
   geom_point(alpha=0.75) +
   scale_size(range = c(1, 2.5)) +
-  theme_gray() +
+  theme_custom() +
   theme(legend.position="bottom") +
-  ggtitle("Valence vs. Loudness (dB)")
+  ggtitle("Valence vs. Loudness (dB)")+
+  scale_color_brewer(palette = "Dark2")
 
 loudness_dance <- ggplot(data=table_data, aes(x=Loudness, y=Danceability, size=Popularity, color=User, key= Tracks)) +
   geom_point(alpha=0.75) +
   scale_size(range = c(1, 2.5)) +
-  theme_gray() +
+  theme_custom() +
   theme(legend.position="bottom") +
-  ggtitle("Danceability vs. Loudness (dB)")
+  ggtitle("Danceability vs. Loudness (dB)")+
+  scale_color_brewer(palette = "Dark2")
 
 dance_valence <- ggplot(data=table_data, aes(x=Danceability, y=Valence, size=Popularity, color=User, key= Tracks)) +
   geom_point(alpha=0.75) +
   scale_size(range = c(1, 2.5)) +
-  theme_gray() +
+  theme_custom() +
   theme(legend.position="bottom") +
-  ggtitle("Valence vs. Danceability")
+  ggtitle("Valence vs. Danceability")+
+  scale_color_brewer(palette = "Dark2")
 
 dance_energy <- ggplot(data=table_data, aes(x=Danceability, y=Energy, size=Popularity, color=User, key= Tracks)) +
   geom_point(alpha=0.75) +
   scale_size(range = c(1, 2.5)) +
-  theme_gray() +
+  theme_custom() +
   theme(legend.position="bottom") +
-  ggtitle("Energy vs. Danceability")
+  ggtitle("Energy vs. Danceability")+
+  scale_color_brewer(palette = "Dark2")
 
 valence_energy <- ggplot(data=table_data, aes(x=Valence, y=Energy, size=Popularity, color=User, key= Tracks)) +
   geom_point(alpha=0.75) +
   scale_size(range = c(1, 2.5)) +
-  theme_gray() +
+  theme_custom() +
   theme(legend.position="bottom") +
-  ggtitle("Energy vs. Valence (dB)")
+  ggtitle("Energy vs. Valence (dB)")+
+  scale_color_brewer(palette = "Dark2")
 
 ```
 
