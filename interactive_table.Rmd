@@ -14,10 +14,6 @@ fig_height: 4
 @import url("https://fonts.googleapis.com/css?family=Rubik");
 @import url("https://fonts.googleapis.com/css?family=Monofett");
 
-* {
-    font-family: Rubik, Arial, Helvetica, sans-serif;
-}
-
 ::-moz-selection {
     background-color: #0CE3AC;
     color: black;
@@ -32,6 +28,7 @@ html{
     min-height: 100%;
     scroll-behavior: smooth;
 }
+
 body .main-container {
     max-width: 4000px;
 }
@@ -51,13 +48,16 @@ div {
 h1,h2,h3,h4 {
     background-color: rgba(0, 0, 0, 0.75);
     font-weight: bold;
+    font-family: Rubik, Arial, Helvetica, sans-serif;
 }
 
 p {
     background-color: rgba(0, 0, 0, 0.75);
+    font-family: Rubik, Arial, Helvetica, sans-serif;
 }
 
 .container { width: 1000px; }
+
 h3 {
   background-color: #D4DAEC;
   text-indent: 100px; 
@@ -487,6 +487,7 @@ reactable(
   defaultPageSize = 25,
   showPageSizeOptions = TRUE,
   pageSizeOptions = c(25, 50, 100, 200),
+  class = "tbl"
 )
 
 ```
