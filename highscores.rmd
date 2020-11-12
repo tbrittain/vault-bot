@@ -171,7 +171,7 @@ Vaultbot title
 
 .gradient-text {
     background-color: #0CE3AC;
-    background-image: linear-gradient(to right, hsla(165, 90%, 47%, 1) 0%, hsla(103, 100%, 71%, 1) 50%, hsla(165, 90%, 47%, 1) 100%);
+    background-image: linear-gradient(45deg, hsla(165, 90%, 47%, 1) 0%, hsla(103, 100%, 71%, 1) 50%, hsla(165, 90%, 47%, 1) 100%);
     background-size: 200% auto;
     -webkit-background-clip: text;
     -moz-background-clip: text;
@@ -185,6 +185,7 @@ Vaultbot title
     -webkit-transition: 0.2s ease-in-out;
     animation: hoveranimation 5s linear infinite;
 }
+
 
 @keyframes hoveranimation {
 	to {
@@ -296,7 +297,7 @@ avg_genres <- round(avg_genres, 2)
 
 Some highscores for different aspects of the dynamic playlist. `r plot_title`
 
-<h2 id="genres"><a href="#artists">Genres</a></h2>
+<h2 id="genres"><a href="#genres">Genres</a></h2>
 Top Spotify-assigned genres currently in the dynamic playlist. Artists may belong to more than one genre (and some none at all if they are really underground). On average, each artist belongs to `r avg_genres` genres.
 For more info on Spotify genres, check out <a href="http://everynoise.com" target=_blank>EveryNoise</a>, or click the link directly to the genre under the GenreLink column.
 ```{r, include=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
@@ -360,7 +361,7 @@ genre_analysis <- aggregate(data.frame(count = genre_df$Genre), list(value = gen
 #hist(genre_analysis$count, breaks = 15)
 ```
 
-<h2 id="artists"><a href="#users">Artists</a></h2>
+<h2 id="artists"><a href="#artists">Artists</a></h2>
 Top 25 artists whose songs are currently in the dynamic playlist.
 ```{r, include=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
 raw_artist_data <- total_df[, c("User", "Artist", "Song")]
@@ -408,7 +409,7 @@ reactable(artist_counts[1:25,],
 )
 ```
 
-<h2 id="users"><a href="#genres">User Contributions</a></h2>
+<h2 id="users"><a href="#users">User Contributions</a></h2>
 ```{r, include=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
 user_counts <- aggregate(data.frame(count = raw_artist_data$User), list(value = raw_artist_data$User), length)
 names(user_counts)[1] <- "User"
@@ -434,5 +435,5 @@ reactable(user_counts,
           class = "tbl"
 )
 ```
-Vaultbot is maintained by <a class="navlink" href="https://tbrittain.com">Trey Brittain</a>.
+Vaultbot is maintained by <a class="navlink" href="https://tbrittain.com" target=_blank>Trey Brittain</a>.
 

@@ -38,7 +38,7 @@ body .main-container {
 }
 
 body {
-    background-image: url('artist_images/background2.jpg'), linear-gradient(to right, hsla(165, 40%, 47%, 1) 0%, hsla(103, 40%, 71%, 1) 50%, hsla(165, 40%, 47%, 1) 100%);
+    background-image: url('artist_images/background2.jpg'), linear-gradient(45deg, hsla(165, 40%, 47%, 1) 0%, hsla(103, 40%, 71%, 1) 50%, hsla(165, 40%, 47%, 1) 100%);
     background-blend-mode: overlay;
     background-size: 1000px 1000px;
     background-repeat: repeat;
@@ -225,6 +225,7 @@ library(RPostgres)
 library(DBI)
 library(plotly)
 library(viridis)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 ```
 
 
@@ -241,6 +242,8 @@ db_host <- 'localhost'
 con<-dbConnect(RPostgres::Postgres(), dbname=db, host=db_host, port=db_port, user=db_user, password=db_pass)
 
 total_df <- RPostgres::dbReadTable(con, "dynamic")
+time_attribute_df <- RPostgres::dbReadTable(con, "historical_tracking")
+time_genre_df <- RPostgres::dbReadTable(con, "historical_genres")
 
 # disconnect from db
 RPostgres::dbDisconnect(con)
@@ -415,7 +418,7 @@ valence_energy <- ggplot(data=table_data, aes(x=Valence, y=Energy, size=Populari
 
 ```
 
-<h2 id="features"><a href="#history">Audio Feature Plots</a></h2>
+<h2 id="features"><a href="#features">Audio Feature Plots</a></h2>
 Comparisons of several Spotify-assigned song attributes colored by user. For more information on Spotify song attributes, <a href="https://bit.ly/audiofeatures" target=_blank>click here</a>.
 
 <div class="plot-content-container">
@@ -449,11 +452,118 @@ plot_6
 
 </div>
 
-<h2 id="history"><a href="#features">Historical Data</a></h2>
-Trends of the dynamic playlist over time.
+<h2 id="history"><a href="#history">Historical Data</a></h2>
+Trends of the dynamic playlist over time. VaultBot logs this data every 3 hours!
+
+```{r, include=TRUE, echo=FALSE, message=FALSE, results='hide'}
+
+names(time_attribute_df)[1] <- "Date"
+names(time_attribute_df)[2] <- "PDI"
+names(time_attribute_df)[3] <- "Popularity"
+names(time_attribute_df)[4] <- "Danceability"
+names(time_attribute_df)[5] <- "Energy"
+names(time_attribute_df)[6] <- "Valence"
+names(time_attribute_df)[7] <- "SongLength"
+names(time_attribute_df)[8] <- "Tempo"
+
+
+song_length_plot <- ggplot(data=time_attribute_df, aes(x=Date, y=SongLength)) +
+        geom_line(color="grey90") +
+        geom_point(shape=21, color="black", fill="#0CE3AC", size=5) +
+        theme_custom() +
+        ggtitle("Average Song Length")
+
+pop_plot <- ggplot(data=time_attribute_df, aes(x=Date, y=Popularity)) +
+        geom_line(color="grey90") +
+        geom_point(shape=21, color="black", fill="#0CE3AC", size=5) +
+        theme_custom() +
+        ggtitle("Average Song Popularity")
+
+tempo_plot <- ggplot(data=time_attribute_df, aes(x=Date, y=Tempo)) +
+        geom_line(color="grey90") +
+        geom_point(shape=21, color="black", fill="#0CE3AC", size=5) +
+        theme_custom() +
+        ggtitle("Average Song Tempo")
+
+pdi_plot <- ggplot(data=time_attribute_df, aes(x=Date, y=PDI)) +
+        geom_line(color="grey90") +
+        geom_point(shape=21, color="black", fill="#0CE3AC", size=5) +
+        theme_custom() +
+        ggtitle("Average Playlist Diversity Index (PDI)")
+
+dance_plot <- ggplot(data=time_attribute_df, aes(x=Date, y=Danceability)) +
+        geom_line(color="grey90") +
+        geom_point(shape=21, color="black", fill="#0CE3AC", size=5) +
+        theme_custom() +
+        ggtitle("Average Song Danceability")
+
+energy_plot <- ggplot(data=time_attribute_df, aes(x=Date, y=Energy)) +
+        geom_line(color="grey90") +
+        geom_point(shape=21, color="black", fill="#0CE3AC", size=5) +
+        theme_custom() +
+        ggtitle("Average Song Energy")
+
+valence_plot <- ggplot(data=time_attribute_df, aes(x=Date, y=Valence)) +
+        geom_line(color="grey90") +
+        geom_point(shape=21, color="black", fill="#0CE3AC", size=5) +
+        theme_custom() +
+        ggtitle("Average Song Valence")
+
+names(time_genre_df)[1] <- "Date"
+names(time_genre_df)[2] <- "Genre"
+names(time_genre_df)[3] <- "ArtistCount"
+
+song_count_data <- filter(time_genre_df, Genre == "total")
+genre_data <- filter(time_genre_df, Genre != "total")
+
+song_count <- ggplot(data=song_count_data, aes(x=Date, y=ArtistCount)) +
+        geom_line(color="grey90") +
+        geom_point(shape=21, color="black", fill="#0CE3AC", size=5) +
+        theme_custom() +
+        ggtitle("Total Song Count")
+
+genre_count <- ggplot(data=genre_data, aes(x=Date, y=ArtistCount, group=Genre, color=Genre)) +
+        geom_line(color="grey90") +
+        geom_point(shape=21, fill="black", size=5) +
+        theme_custom() +
+        ggtitle("Top 10 Genres") +
+        theme(legend.position="none")
+
+```
 
 <div class="plot-content-container">
-In the works!
+
+```{r, include=TRUE, echo=FALSE, message=FALSE}
+
+song_count_plot <- ggplotly(song_count, dynamicTicks = TRUE, width=750, height=500)
+song_count_plot
+
+genre_plot <- ggplotly(genre_count, dynamicTicks = TRUE, width=750, height=500)
+genre_plot
+
+time_plot_1 <- ggplotly(song_length_plot, dynamicTicks = TRUE, width=750, height=500)
+time_plot_1
+
+time_plot_2 <- ggplotly(pop_plot, dynamicTicks = TRUE, width=750, height=500)
+time_plot_2
+
+time_plot_3 <- ggplotly(tempo_plot, dynamicTicks = TRUE, width=750, height=500)
+time_plot_3
+
+time_plot_4 <- ggplotly(pdi_plot, dynamicTicks = TRUE, width=750, height=500)
+time_plot_4
+
+time_plot_5 <- ggplotly(dance_plot, dynamicTicks = TRUE, width=750, height=500)
+time_plot_5
+
+time_plot_6 <- ggplotly(energy_plot, dynamicTicks = TRUE, width=750, height=500)
+time_plot_6
+
+time_plot_7 <- ggplotly(valence_plot, dynamicTicks = TRUE, width=750, height=500)
+time_plot_7
+
+```
+
 </div>
 
-Vaultbot is maintained by <a class="navlink" href="https://tbrittain.com">Trey Brittain</a>.
+Vaultbot is maintained by <a class="navlink" href="https://tbrittain.com" target=_blank>Trey Brittain</a>.
