@@ -14,11 +14,10 @@ def playlist_snapshot_coordinator():
 
     # check to ensure update only occurs every n hours
     if (datetime.now() - most_recent_time) > timedelta(hours=4):
-        # values to pass to historical_tracking: updated_at (timestamp), song_length (numeric), tempo (numeric),
-        # pdi (numeric), popularity (numeric), danceability (numeric), energy (numeric), valence (numeric)
+        print("Historical data preparing to be updated...")
 
         pdi = spotify_commands.playlist_diversity_index("5YQHb5wt9d0hmShWNxjsTs")
-        # TODO: should include playlist_len with GENRE data so that you can overlay genre counts with the total playlist count
+        print(f"Current playlist PDI: {pdi}")
 
         playlist_len, song_len, tempo, pop, dance, energy, valence = historical_average_features()
 
@@ -27,6 +26,14 @@ def playlist_snapshot_coordinator():
 
         db.db_historical_add(timestamp=timestamp_now, pdi=pdi, song_len=song_len, tempo=tempo, pop=pop, dance=dance,
                              energy=energy, valence=valence)
+
+        top_10_genres = get_top_genres()
+
+        # adds total as a genre
+        db.db_historical_genre_add(timestamp=timestamp_now, genre="total", count=playlist_len)
+
+        for genre, count in top_10_genres.items():
+            db.db_historical_genre_add(timestamp=timestamp_now, genre=genre, count=count)
 
 
 # this function should also update the number of tracks since that data will be easily available to it
@@ -61,11 +68,14 @@ def historical_average_features():
            playlist_df["energy"].mean(), playlist_df["valence"].mean()
 
 
-# TODO: complete genre update
-def top_genre_update():
+def get_top_genres():
     # https://www.r-graph-gallery.com/stacked-area-graph.html
-    pass
+
+    genres = spotify_commands.playlist_genres("5YQHb5wt9d0hmShWNxjsTs")
+    top_10_pairs = {k: genres[k] for k in list(genres)[:10]}
+
+    return top_10_pairs
 
 
 if __name__ == "__main__":
-    pass
+    playlist_snapshot_coordinator()

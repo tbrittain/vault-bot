@@ -381,6 +381,26 @@ song_length, tempo) VALUES ('{timestamp}', {pdi}, {pop}, {dance}, {energy}, {val
     con.close()
 
 
+def db_historical_genre_add(timestamp, genre, count):
+    con = psycopg2.connect(
+        database=db_name,
+        user=db_user,
+        password=db_pass,
+        port=5432)
+
+    # database query as cur
+    cur = con.cursor()
+
+    # inserting string into table dynamic
+    cur.execute(f"""INSERT INTO historical_genres (updated_at, genre, count) VALUES 
+('{timestamp}', '{genre}', {count})""")
+
+    con.commit()
+
+    cur.close()
+    con.close()
+
+
 if __name__ == "__main__":
     playlist_data = dynamic_playlist_data()
     for song in playlist_data:

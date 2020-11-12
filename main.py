@@ -12,6 +12,7 @@ import subprocess
 import db
 import io_functions
 import config
+import historical_tracking
 
 # from network_visualization import network_coordinator
 
@@ -57,6 +58,10 @@ async def hourly_cleanup():
     # spotify_commands.playlist_description_update(playlist_id="4C6pU7YmbBUG8sFFk4eSXj", playlist_name='archive')
 
     io_functions.dyn_artists_write_df()
+
+    print(time.strftime("%H:%M:%S", time.localtime()) + ': Checking history update')
+    historical_tracking.playlist_snapshot_coordinator()
+    print(time.strftime("%H:%M:%S", time.localtime()) + ': History update complete!')
 
     print(time.strftime("%H:%M:%S", time.localtime()) + ': Rendering .rmd into their HTML outputs.')
     subprocess.call(
