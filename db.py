@@ -288,7 +288,6 @@ def arts_for_website():
     con.close()
 
 
-# will replace with a default retrieve
 def dyn_artists_column_retrieve():
     con = psycopg2.connect(
         database=db_name,
@@ -307,7 +306,6 @@ def dyn_artists_column_retrieve():
     return rows
 
 
-# will replace with a default retrieve
 def dyn_artists_artist_retrieve():
     con = psycopg2.connect(
         database=db_name,
@@ -326,7 +324,7 @@ def dyn_artists_artist_retrieve():
     return rows
 
 
-def generic_retrieve(query_request, table):
+def get_most_recent_historical_update():
     con = psycopg2.connect(
         database=db_name,
         user=db_user,
@@ -335,7 +333,7 @@ def generic_retrieve(query_request, table):
 
     cur = con.cursor()
 
-    cur.execute(f"""SELECT {query_request} FROM {table}""")
+    cur.execute(f"""SELECT * FROM historical_tracking ORDER BY updated_at desc LIMIT 1""")
     rows = cur.fetchall()
 
     cur.close()
@@ -344,8 +342,47 @@ def generic_retrieve(query_request, table):
     return rows
 
 
+# for creating history of playlist
+def dynamic_playlist_data():
+    con = psycopg2.connect(
+        database=db_name,
+        user=db_user,
+        password=db_pass,
+        port=5432)
 
+    cur = con.cursor()
+
+    cur.execute("SELECT song_length, tempo, popularity, danceability, energy, valence FROM dynamic")
+    rows = cur.fetchall()
+
+    cur.close()
+    con.close()
+
+    return rows
+
+
+def db_historical_add(timestamp, pdi, song_len, tempo, pop, dance, energy, valence):
+    con = psycopg2.connect(
+        database=db_name,
+        user=db_user,
+        password=db_pass,
+        port=5432)
+
+    # database query as cur
+    cur = con.cursor()
+
+    # inserting string into table dynamic
+    cur.execute(f"""INSERT INTO historical_tracking (updated_at, pdi, popularity, danceability, energy, valence, 
+song_length, tempo) VALUES ('{timestamp}', {pdi}, {pop}, {dance}, {energy}, {valence}, {song_len}, {tempo})""")
+
+    con.commit()
+
+    cur.close()
+    con.close()
 
 
 if __name__ == "__main__":
-    print(dyn_artists_column_retrieve())
+    playlist_data = dynamic_playlist_data()
+    for song in playlist_data:
+        print(song)
+

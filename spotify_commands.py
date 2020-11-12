@@ -291,7 +291,7 @@ async def expired_track_removal():
                 # song removal from dynamic playlist
                 if time_difference > timedelta(days=14):  # set 2 weeks threshold for track removal
                     sp.playlist_remove_all_occurrences_of_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs',
-                                                                                 items=[key])
+                                                                items=[key])
                     db.db_purge_stats(song_id=key)
 
                     print(time.strftime("%H:%M:%S", time.localtime()) + f': Song {key} removed from playlist')
@@ -345,18 +345,21 @@ def playlist_diversity_index(playlist_id):
     if len(genre_count_tracker) > 0:
         genre_count_tracker = {key: value for key, value in
                                sorted(genre_count_tracker.items(), key=lambda item: item[1], reverse=True)}
+
         # begin math part
         pdi_sum = 0
         for genre, count in genre_count_tracker.items():
             genre_calc = 1 + ((math.log(1 / count)) / 5)
             pdi_sum += genre_calc
+
         # below for diagnostics
-        print(f'Raw PDI sum before correcting for number of genres: {pdi_sum}')
-        print(f'Number of genres in of playlist: {len(genre_count_tracker)}')
+        # print(f'Raw PDI sum before correcting for number of genres: {pdi_sum}')
+        # print(f'Number of genres in of playlist: {len(genre_count_tracker)}')
+
         pdi_sum = pdi_sum / len(genre_count_tracker)
         return pdi_sum
     else:
-        raise ValueError('Playlist contains no genres, therefore PDI cannot be calculated.')
+        return 0
 
 
 if __name__ == "__main__":
