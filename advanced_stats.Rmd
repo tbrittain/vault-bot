@@ -40,7 +40,6 @@ body .main-container {
 body {
     background-image: url('artist_images/background2.jpg'), linear-gradient(45deg, hsla(165, 40%, 47%, 1) 0%, hsla(103, 40%, 71%, 1) 50%, hsla(165, 40%, 47%, 1) 100%);
     background-blend-mode: overlay;
-    background-size: 1000px 1000px;
     background-repeat: repeat;
     font-size: 16px;
     line-height: 24px;
@@ -453,7 +452,7 @@ plot_6
 </div>
 
 <h2 id="history"><a href="#history">Historical Data</a></h2>
-Trends of the dynamic playlist over time. VaultBot logs this data every 3 hours!
+Trends of the dynamic playlist over time. VaultBot logs this data every two hours!
 
 ```{r, include=TRUE, echo=FALSE, message=FALSE, results='hide'}
 
@@ -469,43 +468,43 @@ names(time_attribute_df)[8] <- "Tempo"
 
 song_length_plot <- ggplot(data=time_attribute_df, aes(x=Date, y=SongLength)) +
         geom_line(color="grey90") +
-        geom_point(shape=21, color="black", fill="#0CE3AC", size=5) +
+        geom_point(shape=21, color="black", fill="#0CE3AC", size=3) +
         theme_custom() +
         ggtitle("Average Song Length")
 
 pop_plot <- ggplot(data=time_attribute_df, aes(x=Date, y=Popularity)) +
         geom_line(color="grey90") +
-        geom_point(shape=21, color="black", fill="#0CE3AC", size=5) +
+        geom_point(shape=21, color="black", fill="#0CE3AC", size=3) +
         theme_custom() +
         ggtitle("Average Song Popularity")
 
 tempo_plot <- ggplot(data=time_attribute_df, aes(x=Date, y=Tempo)) +
         geom_line(color="grey90") +
-        geom_point(shape=21, color="black", fill="#0CE3AC", size=5) +
+        geom_point(shape=21, color="black", fill="#0CE3AC", size=3) +
         theme_custom() +
         ggtitle("Average Song Tempo")
 
 pdi_plot <- ggplot(data=time_attribute_df, aes(x=Date, y=PDI)) +
         geom_line(color="grey90") +
-        geom_point(shape=21, color="black", fill="#0CE3AC", size=5) +
+        geom_point(shape=21, color="black", fill="#0CE3AC", size=3) +
         theme_custom() +
         ggtitle("Average Playlist Diversity Index (PDI)")
 
 dance_plot <- ggplot(data=time_attribute_df, aes(x=Date, y=Danceability)) +
         geom_line(color="grey90") +
-        geom_point(shape=21, color="black", fill="#0CE3AC", size=5) +
+        geom_point(shape=21, color="black", fill="#0CE3AC", size=3) +
         theme_custom() +
         ggtitle("Average Song Danceability")
 
 energy_plot <- ggplot(data=time_attribute_df, aes(x=Date, y=Energy)) +
         geom_line(color="grey90") +
-        geom_point(shape=21, color="black", fill="#0CE3AC", size=5) +
+        geom_point(shape=21, color="black", fill="#0CE3AC", size=3) +
         theme_custom() +
         ggtitle("Average Song Energy")
 
 valence_plot <- ggplot(data=time_attribute_df, aes(x=Date, y=Valence)) +
         geom_line(color="grey90") +
-        geom_point(shape=21, color="black", fill="#0CE3AC", size=5) +
+        geom_point(shape=21, color="black", fill="#0CE3AC", size=3) +
         theme_custom() +
         ggtitle("Average Song Valence")
 
@@ -516,15 +515,17 @@ names(time_genre_df)[3] <- "ArtistCount"
 song_count_data <- filter(time_genre_df, Genre == "total")
 genre_data <- filter(time_genre_df, Genre != "total")
 
-song_count <- ggplot(data=song_count_data, aes(x=Date, y=ArtistCount)) +
+names(song_count_data)[3] <- "SongCount"
+
+song_count <- ggplot(data=song_count_data, aes(x=Date, y=SongCount)) +
         geom_line(color="grey90") +
-        geom_point(shape=21, color="black", fill="#0CE3AC", size=5) +
+        geom_point(shape=21, color="black", fill="#0CE3AC", size=3) +
         theme_custom() +
         ggtitle("Total Song Count")
 
 genre_count <- ggplot(data=genre_data, aes(x=Date, y=ArtistCount, group=Genre, color=Genre)) +
         geom_line(color="grey90") +
-        geom_point(shape=21, fill="black", size=5) +
+        geom_point(shape=21, fill="black", size=3) +
         theme_custom() +
         ggtitle("Top 10 Genres") +
         theme(legend.position="none")

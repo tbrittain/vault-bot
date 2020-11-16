@@ -41,7 +41,6 @@ body .main-container {
 body {
     background-image: url('artist_images/background2.jpg'), linear-gradient(to right, hsla(165, 40%, 47%, 1) 0%, hsla(103, 40%, 71%, 1) 50%, hsla(165, 40%, 47%, 1) 100%);
     background-blend-mode: overlay;
-    background-size: 1000px 1000px;
     background-repeat: repeat;
     font-size: 16px;
     line-height: 24px;

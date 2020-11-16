@@ -21,6 +21,8 @@ DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 bot = commands.Bot(command_prefix=config.bot_command_prefix, case_insensitive=True, help_command=None)
 
 # TODO: make bot ignore messages from other bots
+# TODO: store external css for rmarkdowns
+# https://stackoverflow.com/questions/29291633/adding-custom-css-tags-to-an-rmarkdown-html-document
 
 
 @bot.event
@@ -59,7 +61,7 @@ async def hourly_cleanup():
 
     io_functions.dyn_artists_write_df()
 
-    print(time.strftime("%H:%M:%S", time.localtime()) + ': Checking history update')
+    print(time.strftime("%H:%M:%S", time.localtime()) + ': Preparing to log track data')
     historical_tracking.playlist_snapshot_coordinator()
     print(time.strftime("%H:%M:%S", time.localtime()) + ': History update complete!')
 

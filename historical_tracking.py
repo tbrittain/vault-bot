@@ -13,7 +13,7 @@ def playlist_snapshot_coordinator():
     most_recent_time = most_recent[0][0]
 
     # check to ensure update only occurs every n hours
-    if (datetime.now() - most_recent_time) >= timedelta(hours=3):
+    if (datetime.now() - most_recent_time) >= timedelta(hours=2):
         print("Historical data preparing to be updated...")
 
         pdi = spotify_commands.playlist_diversity_index("5YQHb5wt9d0hmShWNxjsTs")
