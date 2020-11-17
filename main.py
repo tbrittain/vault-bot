@@ -22,6 +22,7 @@ bot = commands.Bot(command_prefix=config.bot_command_prefix, case_insensitive=Tr
 
 # TODO: make bot ignore messages from other bots
 # TODO: store external css for rmarkdowns
+# TODO: convert normal functions to asynchronous
 # https://stackoverflow.com/questions/29291633/adding-custom-css-tags-to-an-rmarkdown-html-document
 
 
@@ -56,15 +57,16 @@ async def hourly_cleanup():
     # updates playlist descriptions based on genres present
     spotify_commands.playlist_description_update(playlist_id="5YQHb5wt9d0hmShWNxjsTs", playlist_name='dynamic')
 
-    # TODO: figure out why it can only update description of one of the two playlists, but not both
-    # spotify_commands.playlist_description_update(playlist_id="4C6pU7YmbBUG8sFFk4eSXj", playlist_name='archive')
-
     io_functions.dyn_artists_write_df()
 
-    print(time.strftime("%H:%M:%S", time.localtime()) + ': Preparing to log track data')
+    # logs current playlist data
+    print(time.strftime("%H:%M:%S", time.localtime()) + ': Checking whether to log current playlist data...')
+
     historical_tracking.playlist_snapshot_coordinator()
+
     print(time.strftime("%H:%M:%S", time.localtime()) + ': History update complete!')
 
+    # render rmarkdown to html and sync with google cloud bucket
     print(time.strftime("%H:%M:%S", time.localtime()) + ': Rendering .rmd into their HTML outputs.')
     subprocess.call(
         ["C:/Program Files/R/R-4.0.3/bin/Rscript.exe", "D:/Github/vault-bot/render_rmd.R"])
