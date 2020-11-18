@@ -54,10 +54,19 @@ div {
 h1,h2,h3,h4 {
     background-color: rgba(0, 0, 0, 0.75);
     font-weight: bold;
+    font-size: 4rem;
+    width: max-content;
+    padding: 10px 10px;
+    border-radius: 15px;
+    margin: auto;
 }
 
 p {
     background-color: rgba(0, 0, 0, 0.75);
+    margin: auto auto 10.5px;
+    width: max-content;
+    padding: 10px 10px;
+    border-radius: 15px;
 }
 
 .container {
@@ -333,7 +342,7 @@ reactable::reactable(genre_df, groupBy = c("Genre", "Artist"), columns = list(
         align = "center",
         cell = function(value) {
                 url <- paste0("spotify:track:", value)
-                tags$a(href = url, target = "_blank", paste0(value))
+                tags$a(href = url, paste0(value))
                 },
         header = with_tooltip("ID", "Click to open track in Spotify"),
         style = list(fontFamily = "monospace", whiteSpace = "pre", fontSize = "14px")

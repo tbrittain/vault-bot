@@ -150,6 +150,8 @@ async def search(ctx, *, song_query):
         except asyncio.TimeoutError:
             await ctx.channel.send(f'Never mind, {ctx.author.mention}. '
                                    f'You took too long. Please try again.')
+        
+        # TODO: add 'x' emoji if none of the results were the desired track
         else:  # song added to playlist here
             if reaction.emoji == '1️⃣':
                 track_selection = 0

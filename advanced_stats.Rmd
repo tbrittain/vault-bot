@@ -53,10 +53,23 @@ div {
 h1,h2,h3,h4 {
     background-color: rgba(0, 0, 0, 0.75);
     font-weight: bold;
+    font-size: 4rem;
+    width: max-content;
+    padding: 10px 10px;
+    border-radius: 15px;
+    margin: auto;
 }
 
 p {
     background-color: rgba(0, 0, 0, 0.75);
+    margin: auto auto 10.5px;
+    width: max-content;
+    padding: 10px 10px;
+    border-radius: 15px;
+}
+
+.plot-content-container p {
+    display: none;
 }
 
 .container { width: 1000px; }
@@ -429,7 +442,6 @@ valence_energy <- ggplot(data=table_data, aes(x=Valence, y=Energy, size=Populari
 Comparisons of several Spotify-assigned song attributes colored by user. For more information on Spotify song attributes, <a href="https://bit.ly/audiofeatures" target=_blank>click here</a>.
 
 <div class="plot-content-container">
-
 ```{r echo=FALSE, message=FALSE}
 plot_1 <- ggplotly(loudness_energy, dynamicTicks = TRUE, tooltip = c("Tracks", "User", "Popularity"))
 plot_1 <- plot_1 %>% layout(legend = list(x = 100, y = 0.5))
@@ -456,7 +468,6 @@ plot_6 <- plot_6 %>% layout(legend = list(x = 100, y = 0.5))
 plot_6
 
 ```
-
 </div>
 
 <h2 id="history"><a href="#history">Historical Data</a></h2>
@@ -549,7 +560,6 @@ genre_count <- ggplot(data=genre_data, aes(x=Date, y=ArtistCount, group=Genre, c
 ```
 
 <div class="plot-content-container">
-
 ```{r, include=TRUE, echo=FALSE, message=FALSE}
 
 song_count_plot <- ggplotly(song_count, dynamicTicks = TRUE)
@@ -578,9 +588,7 @@ time_plot_6
 
 time_plot_7 <- ggplotly(valence_plot, dynamicTicks = TRUE)
 time_plot_7
-
 ```
-
 </div>
 
 Vaultbot is maintained by <a class="navlink" href="https://tbrittain.com" target=_blank>Trey Brittain</a>.

@@ -274,6 +274,7 @@ async def expired_track_removal():
 
             track_list.append(track_dict)
 
+    # TODO: consider creating list of tracks that were removed, then printing out that list rather than each one individually
     # iterates over tracks pulled from spotify and for each one, determines whether it needs to be removed from
     if len(track_list) > 0:
         print(time.strftime("%H:%M:%S", time.localtime()) +

@@ -13,6 +13,7 @@ fig_height: 4
 
 @import url("https://fonts.googleapis.com/css?family=Rubik");
 @import url("https://fonts.googleapis.com/css?family=Monofett");
+@import url("https://fonts.googleapis.com/css?family=Roboto Mono");
 
 ::-moz-selection {
     background-color: #0CE3AC;
@@ -50,11 +51,20 @@ h1,h2,h3,h4 {
     background-color: rgba(0, 0, 0, 0.75);
     font-weight: bold;
     font-family: Rubik, Arial, Helvetica, sans-serif;
+    font-size: 4rem;
+    width: max-content;
+    padding: 10px 10px;
+    border-radius: 15px;
+    margin: auto;
 }
 
 p {
     background-color: rgba(0, 0, 0, 0.75);
     font-family: Rubik, Arial, Helvetica, sans-serif;
+    margin: auto auto 10.5px;
+    width: max-content;
+    padding: 10px 10px;
+    border-radius: 15px;
 }
 
 .container { width: 1000px; }
@@ -305,25 +315,25 @@ reactable(
   table_data,
   columns = list(
     User = colDef(align = "left",
-                  style = list(fontFamily = "monospace", whiteSpace = "pre"),
+                  style = list(fontFamily = "Roboto Mono, monospace", whiteSpace = "pre"),
                   footer = "Average"),
     Artist = colDef(align = "left",
-                    style = list(fontFamily = "Arial, Helvetica", whiteSpace = "pre")),
+                    style = list(fontFamily = "Rubik, Arial, Helvetica, sans-serif", whiteSpace = "pre")),
     Album = colDef(align = "left",
-                    style = list(fontFamily = "Arial, Helvetica", whiteSpace = "pre")),
+                    style = list(fontFamily = "Rubik, Arial, Helvetica, sans-serif", whiteSpace = "pre")),
     Tracks = colDef(align = "left",
-                    style = list(fontFamily = "Arial, Helvetica", whiteSpace = "pre")),
+                    style = list(fontFamily = "Rubik, Arial, Helvetica, sans-serif", whiteSpace = "pre")),
     ID = colDef(align = "left",
-                style = list(fontFamily = "monospace", whiteSpace = "pre"),
+                style = list(fontFamily = "Roboto Mono, monospace", whiteSpace = "pre"),
                 cell = function(value) {
                 url <- paste0("spotify:track:", value)
-                tags$a(href = url, target = "_blank", paste0(value))
+                tags$a(href = url, paste0(value))
                 }, header = with_tooltip("ID", "Click to open track in Spotify")),
     Date = colDef(align = "left",
-                  style = list(fontFamily = "monospace", whiteSpace = "pre")),
+                  style = list(fontFamily = "Roboto Mono, monospace", whiteSpace = "pre")),
     Tracks = colDef(aggregate = "count",
                     align = "left",
-                    style = list(fontFamily = "monospace", whiteSpace = "pre")),
+                    style = list(fontFamily = "Roboto Mono, monospace", whiteSpace = "pre")),
     Popularity = colDef(aggregate = "mean",
                     align = "left",
                     filterable = FALSE,
@@ -334,7 +344,7 @@ reactable(
                                background = "#2b2b2b",
                                fill = "#0CE3AC")
                   }, header = with_tooltip("Popularity", "Updates hourly"),
-                    style = list(fontFamily = "monospace", whiteSpace = "pre"),
+                    style = list(fontFamily = "Roboto Mono, monospace", whiteSpace = "pre"),
                     footer = JS("function(colInfo) {
                       var total = 0
                       var number_obsv = 0
@@ -355,7 +365,7 @@ reactable(
                                background = "#2b2b2b",
                                fill = "#0CE3AC")
                   }, header = with_tooltip("Length", "Minutes in decimal form"),
-                    style = list(fontFamily = "monospace", whiteSpace = "pre"),
+                    style = list(fontFamily = "Roboto Mono, monospace", whiteSpace = "pre"),
                     footer = JS("function(colInfo) {
                       var total = 0
                       var number_obsv = 0
@@ -378,7 +388,7 @@ reactable(
                                fill = "#0CE3AC")
                   },
                    header = with_tooltip("Tempo", "Take with a grain of salt"),
-                   style = list(fontFamily = "monospace", whiteSpace = "pre"),
+                   style = list(fontFamily = "Roboto Mono, monospace", whiteSpace = "pre"),
                    footer = JS("function(colInfo) {
                     var total = 0
                     var number_obsv = 0
@@ -399,7 +409,7 @@ reactable(
                            bar_chart(value, width = width,
                                             background = "#2b2b2b",
                                             fill = "#0CE3AC")
-                          }, style = list(fontFamily = "monospace", whiteSpace = "pre"),
+                          }, style = list(fontFamily = "Roboto Mono, monospace", whiteSpace = "pre"),
                           footer = JS("function(colInfo) {
                             var total = 0
                             var number_obsv = 0
@@ -420,7 +430,7 @@ reactable(
                      bar_chart(value, width = width,
                                       background = "#2b2b2b",
                                       fill = "#0CE3AC")
-                  }, style = list(fontFamily = "monospace", whiteSpace = "pre"),
+                  }, style = list(fontFamily = "Roboto Mono, monospace", whiteSpace = "pre"),
                     footer = JS("function(colInfo) {
                       var total = 0
                       var number_obsv = 0
@@ -441,7 +451,7 @@ reactable(
                        bar_chart(value, width = width,
                                         background = "#2b2b2b",
                                         fill = "#0CE3AC")
-                  }, style = list(fontFamily = "monospace", whiteSpace = "pre"),
+                  }, style = list(fontFamily = "Roboto Mono, monospace", whiteSpace = "pre"),
                       footer = JS("function(colInfo) {
                         var total = 0
                         var number_obsv = 0
@@ -462,7 +472,7 @@ reactable(
                        bar_chart(value, width = width,
                                  background = "#2b2b2b",
                                  fill = "#0CE3AC")
-                  }, style = list(fontFamily = "monospace", whiteSpace = "pre"),
+                  }, style = list(fontFamily = "Roboto Mono, monospace", whiteSpace = "pre"),
                       footer = JS("function(colInfo) {
                         var total = 0
                         var number_obsv = 0
@@ -474,7 +484,7 @@ reactable(
                         return avg_value.toFixed(2)
                         }"))
   ),
-  style = list(fontFamily = "monospace", whiteSpace = "pre", fontSize = "14px"),
+  style = list(fontFamily = "Roboto Mono, monospace", whiteSpace = "pre", fontSize = "14px"),
   defaultSorted = list(Date = "desc"),
   defaultColDef = colDef(headerClass = "bar-sort-header"),
   highlight = TRUE,
