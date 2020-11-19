@@ -96,55 +96,85 @@ h4 {
   background-color: #373845;
 }
 
-/**
- * Navigation bar CSS
- */
+/*Navigation bar CSS*/
 
-ul {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  background-color: rgba(53, 53, 53, 0.9);
+.sidenav {
+  height: 100%;
+  width: 0;
   position: fixed;
+  z-index: 100;
   top: 0;
-  width: 100%;
-  box-sizing: border-box;
-  z-index: 10;
-  border-radius: 10px;
-  border: 2px solid #000;
-  text-shadow: 1px 1px 1.5px #000;
+  left: 0;
+  background-color: rgb(17, 17, 17);
+  overflow-x: hidden;
+  text-overflow: clip;
+  white-space: nowrap; 
+  transition: 0.5s;
+  padding-top: 60px;
+  text-align: left;
 }
 
-li {
-  float: left;
+.sidenav a {
   font-family: Rubik, Arial, Helvetica, sans-serif;
-}
-
-li a {
-  display: block;
-  color: white;
-  text-align: center;
-  padding: 10px 16px;
+  padding: 15px 32px 15px 32px;
   text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
   transition: 0.3s;
 }
 
-li a:hover {
-  background-color: #111;
-  text-decoration: none;
-  cursor: pointer;
-  outline: 2px solid #FFF;
-  outline-offset: 2px;
-  font-size: 105%;
+.sidenav a:hover {
+  color:#0CE3AC;
 }
 
-.active {
+.sidenav .closebtn {
+  position: absolute;
+  padding: 10px 10px;
+  top: 0;
+  right: 0;
+  font-size: 40px;
+}
+
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
+}
+
+.openbtn {
+    font-size: 30px;
+    cursor: pointer;
+    color: white;
+    position: fixed;
+    left: 0;
+    background-color:  #0ce3ad;
+    text-shadow: 0px 0px 5px #000;
+    padding: 15px 15px;
+    border-radius: 100%;
+    box-shadow: 0px 0px 10px #000;
+    border: 2px solid black;
+    left: 0;
+    top: 0;
+    margin: 20px 20px;
+}
+
+hr {
+    border: 1px solid #0CE3AC;
+}
+
+#active {
   background-color: #0CE3AC;
-  padding: 10px 16px;
+  color: #111;
+  transition: 0.3s;
+}
+
+#active:hover {
+    color: #FFF;
+}
+
+#homepage {
+    position: absolute;
+    bottom: 10px;
 }
 
 .title {
@@ -152,9 +182,7 @@ li a:hover {
 }
 
 
-/*
-Vaultbot title
-*/
+/*Vaultbot title*/
 
 .vaultbot-title {
     font-family: Monofett, sans-serif;
@@ -295,14 +323,22 @@ with_tooltip <- function(value, tooltip) {
             title = tooltip, value)
 }
 ```
- <ul>
-    <li><a class="active" href="index.html">Stats</a></li>
-    <li><a href="advanced.html">Advanced Stats</a></li>
-    <li><a href="highscores.html">Highscores</a></li>
-    <li><a href="spotify:playlist:5YQHb5wt9d0hmShWNxjsTs">Dynamic Playlist</a></li>
-    <li><a href="spotify:playlist:4C6pU7YmbBUG8sFFk4eSXj">Archive Playlist</a></li>
-    <li style="float:right"><a href="https://tbrittain.com">Trey's homepage</a></li>
-</ul>
+
+<div id="mySidenav" class="sidenav">
+<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+<a href="about.html">About</a>
+<hr>
+<a href="index.html" id="active">Stats</a>
+<a href="advanced.html">Advanced Stats</a>
+<a href="highscores.html">Highscores</a>
+<hr>
+<a href="spotify:playlist:5YQHb5wt9d0hmShWNxjsTs">Dynamic Playlist</a>
+<a href="spotify:playlist:4C6pU7YmbBUG8sFFk4eSXj">Archive Playlist</a>
+<a id="homepage" href="https://tbrittain.com">Trey's homepage</a>
+</div>
+
+
+<span class="openbtn" onclick="openNav()">&#9776;</span>
 
 <h1 class="vaultbot-title noselect gradient-text">Vaultbot</h1>
 
@@ -505,3 +541,12 @@ reactable(
 ```
 Vaultbot is maintained by <a class="navlink" href="https://tbrittain.com" target=_blank>Trey Brittain</a>.
 
+```{js echo=FALSE, results='hide', message=FALSE}
+function openNav() {
+  document.getElementById("mySidenav").style.width = "250px";
+}
+
+function closeNav() {
+  document.getElementById("mySidenav").style.width = "0";
+}
+```
