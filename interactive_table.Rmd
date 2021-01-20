@@ -53,6 +53,7 @@ h1,h2,h3,h4 {
     font-family: Rubik, Arial, Helvetica, sans-serif;
     font-size: 4rem;
     width: max-content;
+    max-width: 100vw;
     padding: 10px 10px;
     border-radius: 15px;
     margin: auto;
@@ -63,6 +64,7 @@ p {
     font-family: Rubik, Arial, Helvetica, sans-serif;
     margin: auto auto 10.5px;
     width: max-content;
+    max-width: 100vw;
     padding: 10px 10px;
     border-radius: 15px;
 }
@@ -156,6 +158,7 @@ h4 {
     left: 0;
     top: 0;
     margin: 20px 20px;
+    z-index: 99;
 }
 
 hr {
@@ -336,15 +339,9 @@ with_tooltip <- function(value, tooltip) {
 <a href="spotify:playlist:4C6pU7YmbBUG8sFFk4eSXj">Archive Playlist</a>
 <a id="homepage" href="https://tbrittain.com">Trey's homepage</a>
 </div>
-
-
 <span class="openbtn" onclick="openNav()">&#9776;</span>
-
 <h1 class="vaultbot-title noselect gradient-text">Vaultbot</h1>
-
-`r plot_title`
-
-
+<p>`r plot_title`</p>
 ```{r, include=TRUE, echo=FALSE}
 options(width = 2000)
 reactable(
@@ -539,8 +536,7 @@ reactable(
 )
 
 ```
-Vaultbot is maintained by <a class="navlink" href="https://tbrittain.com" target=_blank>Trey Brittain</a>.
-
+<p>Vaultbot is maintained by <a class="navlink" href="https://tbrittain.com" target=_blank>Trey Brittain</a>.</p>
 ```{js echo=FALSE, results='hide', message=FALSE}
 function openNav() {
   document.getElementById("mySidenav").style.width = "250px";

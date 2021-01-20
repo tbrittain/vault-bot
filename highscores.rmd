@@ -56,6 +56,7 @@ h1,h2,h3,h4 {
     font-weight: bold;
     font-size: 4rem;
     width: max-content;
+    max-width: 100vw;
     padding: 10px 10px;
     border-radius: 15px;
     margin: auto;
@@ -65,6 +66,7 @@ p {
     background-color: rgba(0, 0, 0, 0.75);
     margin: auto auto 10.5px;
     width: max-content;
+    max-width: 100vw;
     padding: 10px 10px;
     border-radius: 15px;
 }
@@ -165,6 +167,7 @@ h4 {
     left: 0;
     top: 0;
     margin: 20px 20px;
+    z-index: 99;
 }
 
 hr {
@@ -321,24 +324,20 @@ avg_genres <- round(avg_genres, 2)
 <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
 <a href="about.html">About</a>
 <hr>
-<a href="index.html" id="active">Stats</a>
+<a href="index.html">Stats</a>
 <a href="advanced.html">Advanced Stats</a>
-<a href="highscores.html">Highscores</a>
+<a href="highscores.html" id="active">Highscores</a>
 <hr>
 <a href="spotify:playlist:5YQHb5wt9d0hmShWNxjsTs">Dynamic Playlist</a>
 <a href="spotify:playlist:4C6pU7YmbBUG8sFFk4eSXj">Archive Playlist</a>
 <a id="homepage" href="https://tbrittain.com">Trey's homepage</a>
 </div>
-
 <span class="openbtn" onclick="openNav()">&#9776;</span>
-
 <h1 class="vaultbot-title noselect gradient-text">Vaultbot</h1>
-
-Some highscores for different aspects of the dynamic playlist. `r plot_title`
-
+<p>Some highscores for different aspects of the dynamic playlist. `r plot_title`</p>
 <h2 id="genres"><a href="#genres">Genres</a></h2>
-Top Spotify-assigned genres currently in the dynamic playlist. Artists may belong to more than one genre (and some none at all if they are really underground). On average, each artist belongs to `r avg_genres` genres.
-For more info on Spotify genres, check out <a href="http://everynoise.com" target=_blank>EveryNoise</a>, or click the link directly to the genre under the GenreLink column.
+<p>Top Spotify-assigned genres currently in the dynamic playlist. Artists may belong to more than one genre (and some none at all if they are really underground). On average, each artist belongs to `r avg_genres` genres.
+For more info on Spotify genres, check out <a href="http://everynoise.com" target=_blank>EveryNoise</a>, or click the link directly to the genre under the GenreLink column.</p>
 ```{r, include=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
 # it appears that a limitation of the groupBy function of reactable is that you cannot apply
 # cell functions to the value, so i unfortunately had to make a separate GenreLink column
@@ -399,9 +398,8 @@ reactable::reactable(genre_df, groupBy = c("Genre", "Artist"), columns = list(
 genre_analysis <- aggregate(data.frame(count = genre_df$Genre), list(value = genre_df$Genre), length)
 #hist(genre_analysis$count, breaks = 15)
 ```
-
 <h2 id="artists"><a href="#artists">Artists</a></h2>
-Top 25 artists whose songs are currently in the dynamic playlist.
+<p>Top 25 artists whose songs are currently in the dynamic playlist.</p>
 ```{r, include=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
 raw_artist_data <- total_df[, c("User", "Artist", "Song")]
 artist_counts <- aggregate(data.frame(count = raw_artist_data$Artist), list(value = raw_artist_data$Artist), length)
@@ -447,7 +445,6 @@ reactable(artist_counts[1:25,],
           class = "tbl"
 )
 ```
-
 <h2 id="users"><a href="#users">User Contributions</a></h2>
 ```{r, include=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
 user_counts <- aggregate(data.frame(count = raw_artist_data$User), list(value = raw_artist_data$User), length)
@@ -474,8 +471,7 @@ reactable(user_counts,
           class = "tbl"
 )
 ```
-Vaultbot is maintained by <a class="navlink" href="https://tbrittain.com" target=_blank>Trey Brittain</a>.
-
+<p>Vaultbot is maintained by <a class="navlink" href="https://tbrittain.com" target=_blank>Trey Brittain</a>.</p>
 ```{js echo=FALSE, results='hide', message=FALSE}
 function openNav() {
   document.getElementById("mySidenav").style.width = "250px";

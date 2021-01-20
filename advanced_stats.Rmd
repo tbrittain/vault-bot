@@ -55,6 +55,7 @@ h1,h2,h3,h4 {
     font-weight: bold;
     font-size: 4rem;
     width: max-content;
+    max-width: 100vw;
     padding: 10px 10px;
     border-radius: 15px;
     margin: auto;
@@ -64,6 +65,7 @@ p {
     background-color: rgba(0, 0, 0, 0.75);
     margin: auto auto 10.5px;
     width: max-content;
+    max-width: 100vw;
     padding: 10px 10px;
     border-radius: 15px;
 }
@@ -161,6 +163,7 @@ h4 {
     left: 0;
     top: 0;
     margin: 20px 20px;
+    z-index: 99;
 }
 
 hr {
@@ -335,22 +338,17 @@ table_data %>% mutate(Log_popularity = ifelse(Popularity == 0, 0, log10(Populari
 <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
 <a href="about.html">About</a>
 <hr>
-<a href="index.html" id="active">Stats</a>
-<a href="advanced.html">Advanced Stats</a>
+<a href="index.html">Stats</a>
+<a href="advanced.html" id="active">Advanced Stats</a>
 <a href="highscores.html">Highscores</a>
 <hr>
 <a href="spotify:playlist:5YQHb5wt9d0hmShWNxjsTs">Dynamic Playlist</a>
 <a href="spotify:playlist:4C6pU7YmbBUG8sFFk4eSXj">Archive Playlist</a>
 <a id="homepage" href="https://tbrittain.com">Trey's homepage</a>
 </div>
-
 <span class="openbtn" onclick="openNav()">&#9776;</span>
-
 <h1 class="vaultbot-title noselect gradient-text">Vaultbot</h1>
-
-`r plot_title`
-
-
+<p>`r plot_title`</p>
 ```{r, include=TRUE, echo=FALSE, message=FALSE}
 
 theme_custom <- function (base_size = 11, base_family = "Rubik")
@@ -470,10 +468,8 @@ valence_energy <- ggplot(data=table_data, aes(x=Valence, y=Energy, size=Populari
   scale_color_brewer(palette = "Dark2")
 
 ```
-
 <h2 id="features"><a href="#features">Audio Feature Plots</a></h2>
-Comparisons of several Spotify-assigned song attributes colored by user. For more information on Spotify song attributes, <a href="https://bit.ly/audiofeatures" target=_blank>click here</a>.
-
+<p>Comparisons of several Spotify-assigned song attributes colored by user. For more information on Spotify song attributes, <a href="https://bit.ly/audiofeatures" target=_blank>click here</a>.</p>
 <div class="plot-content-container">
 ```{r echo=FALSE, message=FALSE}
 plot_1 <- ggplotly(loudness_energy, dynamicTicks = TRUE, tooltip = c("Tracks", "User", "Popularity"))
@@ -502,10 +498,8 @@ plot_6
 
 ```
 </div>
-
 <h2 id="history"><a href="#history">Historical Data</a></h2>
-Trends of the dynamic playlist over time. VaultBot logs this data every two hours!
-
+<p>Trends of the dynamic playlist over time. VaultBot logs this data every two hours!</p>
 ```{r, include=TRUE, echo=FALSE, message=FALSE, results='hide'}
 
 names(time_attribute_df)[1] <- "Date"
@@ -520,49 +514,49 @@ names(time_attribute_df)[8] <- "Tempo"
 
 song_length_plot <- ggplot(data=time_attribute_df, aes(x=Date, y=SongLength)) +
         geom_line(color="grey90") +
-        geom_point(shape=21, color="black", fill="#0CE3AC", size=3) +
+        geom_point(shape=21, color="black", fill="#0CE3AC", size=2) +
         geom_smooth(method = "gam", color="black", size=0.5, alpha=0.2) +
         theme_custom() +
         ggtitle("Average Song Length")
 
 pop_plot <- ggplot(data=time_attribute_df, aes(x=Date, y=Popularity)) +
         geom_line(color="grey90") +
-        geom_point(shape=21, color="black", fill="#0CE3AC", size=3) +
+        geom_point(shape=21, color="black", fill="#0CE3AC", size=2) +
         geom_smooth(method = "gam", color="black", size=0.5, alpha=0.2) +
         theme_custom() +
         ggtitle("Average Song Popularity")
 
 tempo_plot <- ggplot(data=time_attribute_df, aes(x=Date, y=Tempo)) +
         geom_line(color="grey90") +
-        geom_point(shape=21, color="black", fill="#0CE3AC", size=3) +
+        geom_point(shape=21, color="black", fill="#0CE3AC", size=2) +
         geom_smooth(method = "gam", color="black", size=0.5, alpha=0.2) +
         theme_custom() +
         ggtitle("Average Song Tempo")
 
 pdi_plot <- ggplot(data=time_attribute_df, aes(x=Date, y=PDI)) +
         geom_line(color="grey90") +
-        geom_point(shape=21, color="black", fill="#0CE3AC", size=3) +
+        geom_point(shape=21, color="black", fill="#0CE3AC", size=2) +
         geom_smooth(method = "gam", color="black", size=0.5, alpha=0.2) +
         theme_custom() +
         ggtitle("Average Playlist Diversity Index (PDI)")
 
 dance_plot <- ggplot(data=time_attribute_df, aes(x=Date, y=Danceability)) +
         geom_line(color="grey90") +
-        geom_point(shape=21, color="black", fill="#0CE3AC", size=3) +
+        geom_point(shape=21, color="black", fill="#0CE3AC", size=2) +
         geom_smooth(method = "gam", color="black", size=0.5, alpha=0.2) +
         theme_custom() +
         ggtitle("Average Song Danceability")
 
 energy_plot <- ggplot(data=time_attribute_df, aes(x=Date, y=Energy)) +
         geom_line(color="grey90") +
-        geom_point(shape=21, color="black", fill="#0CE3AC", size=3) +
+        geom_point(shape=21, color="black", fill="#0CE3AC", size=2) +
         geom_smooth(method = "gam", color="black", size=0.5, alpha=0.2) +
         theme_custom() +
         ggtitle("Average Song Energy")
 
 valence_plot <- ggplot(data=time_attribute_df, aes(x=Date, y=Valence)) +
         geom_line(color="grey90") +
-        geom_point(shape=21, color="black", fill="#0CE3AC", size=3) +
+        geom_point(shape=21, color="black", fill="#0CE3AC", size=2) +
         geom_smooth(method = "gam", color="black", size=0.5, alpha=0.2) +
         theme_custom() +
         ggtitle("Average Song Valence")
@@ -578,14 +572,14 @@ names(song_count_data)[3] <- "SongCount"
 
 song_count <- ggplot(data=song_count_data, aes(x=Date, y=SongCount)) +
         geom_line(color="grey90") +
-        geom_point(shape=21, color="black", fill="#0CE3AC", size=3) +
+        geom_point(shape=21, color="black", fill="#0CE3AC", size=2) +
         geom_smooth(method = "gam", color="black", size=0.5, alpha=0.2) +
         theme_custom() +
         ggtitle("Total Song Count")
 
 genre_count <- ggplot(data=genre_data, aes(x=Date, y=ArtistCount, group=Genre, color=Genre)) +
         geom_line() +
-        geom_point(shape=21, fill="black", size=2.5) +
+        geom_point(shape=21, fill="black", size=1.5) +
         theme_custom() +
         ggtitle("Top 10 Genres") +
         theme(legend.position="none")
@@ -623,9 +617,7 @@ time_plot_7 <- ggplotly(valence_plot, dynamicTicks = TRUE)
 time_plot_7
 ```
 </div>
-
-Vaultbot is maintained by <a class="navlink" href="https://tbrittain.com" target=_blank>Trey Brittain</a>.
-
+<p>Vaultbot is maintained by <a class="navlink" href="https://tbrittain.com" target=_blank>Trey Brittain</a>.</p>
 ```{js echo=FALSE, results='hide', message=FALSE}
 function openNav() {
   document.getElementById("mySidenav").style.width = "250px";

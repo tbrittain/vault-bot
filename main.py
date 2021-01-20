@@ -101,7 +101,7 @@ async def on_message(ctx):
         file = discord.File("embeds/papa.MOV", filename="papa.mov")
         await ctx.channel.send(file=file)
     elif message.__contains__('-play'):
-        alert_check = random.randint(1, 5)
+        alert_check = random.randint(1, 20)
         if alert_check == 1:
             await ctx.channel.send(f'I see you are playing some music there, {ctx.author.mention}')
             await ctx.channel.send(f'How about you share some tunes to the community playlist? :wink:')

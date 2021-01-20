@@ -182,7 +182,7 @@ def playlist_genres(playlist_id):
 def playlist_description_update(playlist_id, playlist_name):
     global desc
     genre_count_dict = playlist_genres(playlist_id)
-    top_genres = {k: genre_count_dict[k] for k in list(genre_count_dict)[:10]}
+    top_genres = {k: genre_count_dict[k] for k in list(genre_count_dict)[:5]}
     if playlist_name == 'dynamic':
         desc = 'This is a dynamic playlist, meaning that the songs ' \
                'are automagically purged by VaultBot after two weeks. '
@@ -194,7 +194,7 @@ def playlist_description_update(playlist_id, playlist_name):
         desc += 'Prominent genres include: '
         for genre, count in top_genres.items():
             desc += f'{genre}, '
-        desc += 'and more!'
+        desc += 'and more! More info at vaultbot.tbrittain.com'
 
     # print(desc)
     description_length = len(desc)
