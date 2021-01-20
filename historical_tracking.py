@@ -3,6 +3,7 @@ import db
 from datetime import time, date, datetime, timedelta
 import spotify_commands
 import pandas as pd
+from project_logging import logger
 
 # store format for standardization
 iso_format = "%Y-%m-%d %H:%M"
@@ -14,10 +15,10 @@ def playlist_snapshot_coordinator():
 
     # check to ensure update only occurs every n hours
     if (datetime.now() - most_recent_time) >= timedelta(hours=2):
-        print("Historical data preparing to be updated...")
+        logger.debug("Historical data preparing to be updated...")
 
         pdi = spotify_commands.playlist_diversity_index("5YQHb5wt9d0hmShWNxjsTs")
-        print(f"Current playlist PDI: {pdi}")
+        logger.debug(f"Current playlist PDI: {pdi}")
 
         playlist_len, song_len, tempo, pop, dance, energy, valence = historical_average_features()
 

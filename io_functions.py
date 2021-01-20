@@ -6,7 +6,7 @@ import db
 import pandas as pd
 from datetime import datetime, timedelta
 import time
-# import feather
+from project_logging import logger
 
 
 def get_artist_art(artist_id):
@@ -56,7 +56,7 @@ def dyn_artists_write_df():
     global artist_id
     global artist_name
     genre_data = db.dyn_artists_column_retrieve()
-    print(time.strftime("%H:%M:%S", time.localtime()) + f': Writing artist genres to genre_output.csv')
+    logger.debug(f': Writing artist genres to genre_output.csv')
 
     df_columns = ['Genre', 'Artist', 'ArtistID', 'Song', 'SongID']
     total_playlist_array = pd.DataFrame(columns=df_columns)

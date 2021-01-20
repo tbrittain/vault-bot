@@ -13,12 +13,12 @@ import db
 import io_functions
 import config
 import historical_tracking
-
-# from network_visualization import network_coordinator
+from project_logging import logger
 
 load_dotenv()
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 bot = commands.Bot(command_prefix=config.bot_command_prefix, case_insensitive=True, help_command=None)
+
 
 # TODO: make bot ignore messages from other bots
 # TODO: store external css for rmarkdowns
@@ -30,10 +30,10 @@ bot = commands.Bot(command_prefix=config.bot_command_prefix, case_insensitive=Tr
 async def on_ready():
     guild_count = 0
     for guild in bot.guilds:
-        print(f"- {guild.id} (name: {guild.name})")
+        logger.debug(f"{guild.id} (name: {guild.name})")
         guild_count = guild_count + 1
-    print(f"VaultBot is in {guild_count} guilds.")
-    print(f"VaultBot is fully loaded and online.")
+    logger.info(f"VaultBot is in {guild_count} guilds.")
+    logger.info(f"VaultBot is fully loaded and online.")
     await bot.change_presence(activity=discord.Game('$help'))  # sets discord activity to $help
 
     # tri-daily scheduled tasks
@@ -60,21 +60,21 @@ async def hourly_cleanup():
     io_functions.dyn_artists_write_df()
 
     # logs current playlist data
-    print(time.strftime("%H:%M:%S", time.localtime()) + ': Checking whether to log current playlist data...')
+    logger.debug('Checking whether to log current playlist data...')
 
     historical_tracking.playlist_snapshot_coordinator()
 
-    print(time.strftime("%H:%M:%S", time.localtime()) + ': History update complete!')
+    logger.info('Playlist stats logging complete')
 
     # render rmarkdown to html and sync with google cloud bucket
-    print(time.strftime("%H:%M:%S", time.localtime()) + ': Rendering .rmd into their HTML outputs.')
+    logger.info('Rendering .rmd into their HTML outputs')
     subprocess.call(
         ["C:/Program Files/R/R-4.0.3/bin/Rscript.exe", "D:/Github/vault-bot/render_rmd.R"])
 
-    print(time.strftime("%H:%M:%S", time.localtime()) + ': Uploading HTML files to Google Cloud.')
+    logger.info('Uploading HTML files to Google Cloud.')
     subprocess.call([r"D:/Github/vault-bot/cloudsync.bat"])
 
-    print(time.strftime("%H:%M:%S", time.localtime()) + ': Hourly playlist cleanup complete!')
+    logger.info('Hourly playlist cleanup complete!')
 
 
 @tasks.loop(hours=8)
@@ -111,7 +111,7 @@ async def on_message(ctx):
 @bot.command()
 async def search(ctx, *, song_query):
     # TODO: see if all exceptions can be moved to search_errors
-    print(time.strftime("%H:%M:%S", time.localtime()) + f': User {ctx.author} invoked $search with query {song_query}')
+    logger.debug(f'User {ctx.author} invoked $search with query {song_query}')
     global track_selection
 
     raw_results = await asyncio.gather(spotify_commands.song_search(song_query))
@@ -150,7 +150,7 @@ async def search(ctx, *, song_query):
         except asyncio.TimeoutError:
             await ctx.channel.send(f'Never mind, {ctx.author.mention}. '
                                    f'You took too long. Please try again.')
-        
+
         # TODO: add 'x' emoji if none of the results were the desired track
         else:  # song added to playlist here
             if reaction.emoji == '1️⃣':
@@ -186,8 +186,7 @@ async def search(ctx, *, song_query):
             db.db_song_add(song_id=selected_track_id, user=str(ctx.author))
             await ctx.channel.send(random.choice(emoji_responses))
             await ctx.channel.send('Track has been added to the community playlists!')
-            print(time.strftime("%H:%M:%S", time.localtime()) +
-                  f': Song of ID {selected_track_id} added to playlists by {ctx.author}')
+            logger.debug(f'Song of ID {selected_track_id} added to playlists by {ctx.author}')
         except FileExistsError:
             await ctx.channel.send(f"Track already exists in dynamic playlist, "
                                    f"{ctx.author.mention}! I'm not gonna re-add it!")
@@ -208,7 +207,7 @@ async def search_error(ctx, error):
 
 @bot.command()
 async def add(ctx, song_url_or_id: str):
-    print(time.strftime("%H:%M:%S", time.localtime()) + f': User {ctx.author} invoked $add with input {song_url_or_id}')
+    logger.debug(f'User {ctx.author} invoked $add with input {song_url_or_id}')
     emoji_responses = ['👌', '👍', '🤘', '🤙', '🤝']
     try:
         converted_song_id = await spotify_commands.convert_to_track_id(song_url_or_id)
@@ -217,8 +216,7 @@ async def add(ctx, song_url_or_id: str):
         db.db_song_add(song_id=converted_song_id, user=str(ctx.author))
         await ctx.send(random.choice(emoji_responses))
         await ctx.send('Track has been added to the community playlists!')
-        print(time.strftime("%H:%M:%S", time.localtime()) +
-              f': Song of ID {converted_song_id} added to playlists by {ctx.author}')
+        logger.debug(f'Song of ID {converted_song_id} added to playlists by {ctx.author}')
 
     except IndexError:
         await ctx.send(f'Please enter a Spotify track ID, {ctx.author.mention}')
@@ -248,7 +246,7 @@ async def add_error(ctx, error):
 
 @bot.command()
 async def stats(ctx, advanced=''):
-    print(time.strftime("%H:%M:%S", time.localtime()) + f': User {ctx.author} invoked $stats')
+    logger.debug(f'User {ctx.author} invoked $stats')
     if advanced.lower() == 'advanced':
         # had to use the absolute paths due to R and Rscript.exe not understanding relative paths
         subprocess.call(
@@ -265,7 +263,7 @@ async def stats(ctx, advanced=''):
 
 @bot.command(aliases=['playlist'])
 async def playlists(ctx):
-    print(time.strftime("%H:%M:%S", time.localtime()) + f': User {ctx.author} invoked $playlists')
+    logger.debug(f'User {ctx.author} invoked $playlists')
     playlist_embed = discord.Embed(title='$playlists',
                                    description='Links to the playlists. Paste the URI in your browser to '
                                                'open the playlist on your desktop client! Be sure to '
@@ -283,10 +281,10 @@ async def playlists(ctx):
 @bot.command(aliases=['recommendation'])
 async def recommend(ctx, weighted=''):
     if weighted == 'weighted':
-        print(time.strftime("%H:%M:%S", time.localtime()) + f': User {ctx.author} invoked weighted $recommend')
+        logger.debug(f'User {ctx.author} invoked weighted $recommend')
         song_recommendations = spotify_commands.recommend_songs(weighted=True)
     else:
-        print(time.strftime("%H:%M:%S", time.localtime()) + f': User {ctx.author} invoked $recommend')
+        logger.debug(f'User {ctx.author} invoked $recommend')
         song_recommendations = spotify_commands.recommend_songs()
 
     choice = random.randint(0, 9)
@@ -300,14 +298,14 @@ async def recommend(ctx, weighted=''):
 
     if weighted == 'weighted':
         playlist_embed = discord.Embed(title='$recommend weighted',
-                                    description='A weighted song recommendation based on the current contents of the '
-                                                'dynamic playlist',
-                                    color=random.randint(0, 0xffffff))
+                                       description='A weighted song recommendation based on the '
+                                                   'current contents of the dynamic playlist',
+                                       color=random.randint(0, 0xffffff))
     else:
-                playlist_embed = discord.Embed(title='$recommend',
-                                    description='A song recommendation based on the current contents of the '
-                                                'dynamic playlist',
-                                    color=random.randint(0, 0xffffff))
+        playlist_embed = discord.Embed(title='$recommend',
+                                       description='A song recommendation based on the current contents of the '
+                                                   'dynamic playlist',
+                                       color=random.randint(0, 0xffffff))
     playlist_embed.set_image(url=row['album_art'])
     playlist_embed.add_field(name='Song', value=row['song'], inline=False)
     playlist_embed.add_field(name='Artist', value=row['artist'], inline=False)
@@ -329,7 +327,7 @@ async def recommend(ctx, weighted=''):
 @bot.command(aliases=['suggest', 'idea'])
 async def suggestion(ctx, *, suggested_idea):
     benevolent_dictator = bot.get_user(177260855308713985)
-    print(time.strftime("%H:%M:%S", time.localtime()) + f': User {ctx.author} suggested {suggested_idea}')
+    logger.debug(f'User {ctx.author} suggested {suggested_idea}')
     await discord.Member.send(benevolent_dictator,
                               content=f'User {ctx.author} submitted suggestion: {suggested_idea}')
     await ctx.send(f'Thanks, your suggestion has been relayed to my '
@@ -345,7 +343,7 @@ async def suggestion_error(ctx, error):
 
 @bot.command()
 async def help(ctx, section=''):
-    print(time.strftime("%H:%M:%S", time.localtime()) + f': User {ctx.author} invoked $help')
+    logger.debug(f'User {ctx.author} invoked $help')
     if section.lower().__contains__('search'):
         help_embed = discord.Embed(title='$help search', color=random.randint(0, 0xffffff))
         help_embed.add_field(name="Function information",

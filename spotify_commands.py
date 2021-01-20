@@ -9,6 +9,7 @@ import db
 import pandas as pd
 import random
 import math
+from project_logging import logger
 
 load_dotenv()
 CLIENT_ID = os.getenv("SPOTIPY_CLIENT_ID")
@@ -80,7 +81,7 @@ async def songs_in_dyn_playlist():
 
 async def convert_to_track_id(song_input):
     song = sp.track(track_id=song_input)
-    print(f'Converted input {song_input} to {song["id"]}')
+    logger.debug(f'Converted input {song_input} to {song["id"]}')
 
     return song['id']
 
@@ -196,15 +197,14 @@ def playlist_description_update(playlist_id, playlist_name):
             desc += f'{genre}, '
         desc += 'and more!'
 
-    # print(desc)
     description_length = len(desc)
-    print(f'Updated length of playlist {playlist_name} description: {description_length}')
+    logger.debug(f'Updated length of playlist {playlist_name} description: {description_length}')
 
     if len(desc) < 300:  # need to ensure playlist description is 300 characters or fewer
-        print(f'Playlist description length within valid range. Updating description of {playlist_name} playlist.')
+        logger.debug(f'Playlist description length within valid range. Updating description of {playlist_name} playlist.')
         sp.playlist_change_details(playlist_id=playlist_id, description=desc)
     else:
-        print(f'Description too long. Not updating {playlist_name} playlist description.')
+        logger.warning(f'Description too long. Not updating {playlist_name} playlist description.')
 
 
 def recommend_songs(weighted=False):
@@ -277,9 +277,8 @@ async def expired_track_removal():
     # TODO: consider creating list of tracks that were removed, then printing out that list rather than each one individually
     # iterates over tracks pulled from spotify and for each one, determines whether it needs to be removed from
     if len(track_list) > 0:
-        print(time.strftime("%H:%M:%S", time.localtime()) +
-              ': Preparing to update track popularities and check for expired songs.\n'
-              'Please do not exit the program during this time.')
+        logger.warning('Preparing to update track popularities and check for expired songs. '
+                       'Please do not exit the program during this time.')
         for track in track_list:
             # key is the track id
             for key, value in track.items():
@@ -295,8 +294,8 @@ async def expired_track_removal():
                                                                 items=[key])
                     db.db_purge_stats(song_id=key)
 
-                    print(time.strftime("%H:%M:%S", time.localtime()) + f': Song {key} removed from playlist')
-    print(time.strftime("%H:%M:%S", time.localtime()) + ': Track popularities updated and expired songs checked.')
+                    logger.debug(f'Song {key} removed from playlist')
+    logger.info('Track popularities updated and expired songs checked.')
 
 
 def playlist_diversity_index(playlist_id):
@@ -332,7 +331,7 @@ def playlist_diversity_index(playlist_id):
     try:
         total_artist_array['genres'] = total_artist_array.apply(lambda row: sp.artist(row.artist_id)['genres'], axis=1)
     except AttributeError:
-        raise PermissionError(f'Insufficient permission with playlist {playlist_id}')
+        logger.error("Playlist could not be accessed for PDI")
 
     # sum each artist count to each of the genres they belong to
     genre_count_tracker = {}
