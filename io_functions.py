@@ -6,7 +6,7 @@ import db
 import pandas as pd
 from datetime import datetime, timedelta
 import time
-from project_logging import logger
+from vb_utils import logger
 
 
 def get_artist_art(artist_id):

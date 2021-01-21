@@ -3,7 +3,7 @@ import db
 from datetime import time, date, datetime, timedelta
 import spotify_commands
 import pandas as pd
-from project_logging import logger
+from vb_utils import logger
 
 # store format for standardization
 iso_format = "%Y-%m-%d %H:%M"
