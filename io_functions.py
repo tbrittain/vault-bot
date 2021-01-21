@@ -33,7 +33,6 @@ def art_download(artist_name, url):
 
 
 def artist_arts(artist_id):
-
     artist_info = get_artist_art(artist_id=artist_id)
 
     artist_results = []
@@ -56,7 +55,7 @@ def dyn_artists_write_df():
     global artist_id
     global artist_name
     genre_data = db.dyn_artists_column_retrieve()
-    logger.debug(f': Writing artist genres to genre_output.csv')
+    logger.debug(f'Writing artist genres to genre_output.csv')
 
     df_columns = ['Genre', 'Artist', 'ArtistID', 'Song', 'SongID']
     total_playlist_array = pd.DataFrame(columns=df_columns)
@@ -97,4 +96,3 @@ def dyn_artists_write_df():
 
 if __name__ == "__main__":
     dyn_artists_write_df()
-

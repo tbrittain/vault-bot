@@ -9,7 +9,7 @@ import db
 import pandas as pd
 import random
 import math
-from vb_utils import logger, color_text, TerminalColors
+from vb_utils import color_text, TerminalColors, logger
 
 load_dotenv()
 CLIENT_ID = os.getenv("SPOTIPY_CLIENT_ID")
@@ -81,7 +81,7 @@ async def songs_in_dyn_playlist():
 
 async def convert_to_track_id(song_input):
     song = sp.track(track_id=song_input)
-    logger.debug(f'Converted input {song_input} to {song["id"]}')
+    logger.debug(color_text(message=f'Converted input {song_input} to {song["id"]}', color=TerminalColors.MAGENTA))
 
     return song['id']
 

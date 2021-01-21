@@ -12,16 +12,18 @@ import db
 import io_functions
 import config
 import historical_tracking
-from vb_utils import logger, color_text, TerminalColors
+from datetime import datetime
+from vb_utils import color_text, TerminalColors, logger
 from alive_progress import alive_bar, config_handler
 
 load_dotenv()
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 bot = commands.Bot(command_prefix=config.bot_command_prefix, case_insensitive=True, help_command=None)
 
-
 # TODO: store external css for RMarkdowns
 # TODO: convert normal functions to asynchronous
+# TODO: check raw message for spotify link rather than add
+# TODO: for website, add novelty % (% of new songs in playlist)
 # https://stackoverflow.com/questions/29291633/adding-custom-css-tags-to-an-rmarkdown-html-document
 
 
@@ -53,6 +55,7 @@ async def arts_downloader():
 @tasks.loop(minutes=60)
 async def hourly_cleanup():
     await bot.wait_until_ready()
+    logger.info(f"Beginning hourly cleanup at {datetime.now()}")
     with alive_bar(total=5, title='Hourly cleanup...') as bar:
         await spotify_commands.expired_track_removal()
         bar()
@@ -98,15 +101,7 @@ async def on_command_error(ctx, error):
 
 @bot.event
 async def on_message(ctx):
-    message = ctx.content.lower()
-    if message.__contains__('papa'):
-        file = discord.File("embeds/papa.MOV", filename="papa.mov")
-        await ctx.channel.send(file=file)
-    elif message.__contains__('-play'):
-        alert_check = random.randint(1, 5)
-        if alert_check == 1:
-            await ctx.channel.send(f'I see you are playing some music there, {ctx.author.mention}')
-            await ctx.channel.send(f'How about you share some tunes to the community playlist? :wink:')
+    # message = ctx.content
     await bot.process_commands(ctx)
 
 
