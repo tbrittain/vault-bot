@@ -4,7 +4,7 @@ ECHO Preparing to backup Vaultbot PostgreSQL database
 ECHO ------------------------------------------------
 
 SET file_name=%1
-SET PGPASSWORD=GoberPrime
+SET PGPASSWORD=**PASSWORD**
 
 ECHO SQL database backing up to %file_name% directory in D:\Github\vault-bot\sql_backups\
 
