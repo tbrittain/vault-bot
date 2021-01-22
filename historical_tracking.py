@@ -3,7 +3,7 @@ import db
 from datetime import time, date, datetime, timedelta
 import spotify_commands
 import pandas as pd
-from vb_utils import logger
+from vb_utils import logger, color_text, TerminalColors
 
 # store format for standardization
 iso_format = "%Y-%m-%d %H:%M"
@@ -18,15 +18,18 @@ def playlist_snapshot_coordinator():
         logger.debug("Historical data preparing to be updated...")
 
         pdi = spotify_commands.playlist_diversity_index("5YQHb5wt9d0hmShWNxjsTs")
-        logger.debug(f"Current playlist PDI: {pdi}")
+        logger.debug(f"Current playlist PDI: {round(pdi, 3)}")
 
         playlist_len, song_len, tempo, pop, dance, energy, valence = historical_average_features()
 
         now = datetime.now()
         timestamp_now = now.strftime(iso_format)
 
+        novelty = dynamic_playlist_novelty()
+        logger.debug(f"Current playlist novelty: {round(novelty, 3)}")
+
         db.db_historical_add(timestamp=timestamp_now, pdi=pdi, song_len=song_len, tempo=tempo, pop=pop, dance=dance,
-                             energy=energy, valence=valence)
+                             energy=energy, valence=valence, novelty=novelty)
 
         top_10_genres = get_top_genres()
 
@@ -69,9 +72,45 @@ def historical_average_features():
            playlist_df["energy"].mean(), playlist_df["valence"].mean()
 
 
-def get_top_genres():
-    # https://www.r-graph-gallery.com/stacked-area-graph.html
+def dynamic_playlist_novelty():
+    dyn_song_ids, arc_song_ids = db.dyn_arc_song_retrieve()
+    dyn_songs = []
+    arc_songs = []
+    novel_songs = 0
 
+    dyn_track_count = len(dyn_song_ids)
+
+    for song in dyn_song_ids:
+        song_dict = {
+            "id": song[0],
+            "timestamp": song[1]
+        }
+        dyn_songs.append(song_dict)
+
+    for song in arc_song_ids:
+        song_dict = {
+            "id": song[0],
+            "timestamp": song[1]
+        }
+        arc_songs.append(song_dict)
+
+    for item in dyn_songs:
+        del arc_songs[arc_songs.index(item)]
+
+    for item in dyn_songs:
+        if item['timestamp'] in [i['timestamp'] for i in arc_songs]:
+            logger.error(color_text(message=f"Error removing song {item['id']} from count"
+                                            "for playlist novelty calculation",
+                                    color=TerminalColors.FAIL))
+
+    for song in [i['id'] for i in dyn_songs]:
+        if song not in [i['id'] for i in arc_songs]:
+            novel_songs += 1
+
+    return novel_songs / dyn_track_count
+
+
+def get_top_genres():
     genres = spotify_commands.playlist_genres("5YQHb5wt9d0hmShWNxjsTs")
     top_10_pairs = {k: genres[k] for k in list(genres)[:10]}
 
@@ -79,4 +118,4 @@ def get_top_genres():
 
 
 if __name__ == "__main__":
-    playlist_snapshot_coordinator()
+    print(dynamic_playlist_novelty())

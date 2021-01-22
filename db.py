@@ -20,8 +20,10 @@ db_name = config.database_name
 
 # TODO: add release date attribute to each track, and append db_song_add() to include release date
 
-# one-time use to transfer the json to postgresql
 def json_transfer():
+    """
+    One-time use to transfer the json to postgresql
+    """
     con = psycopg2.connect(
         database=db_name,
         user=db_user,
@@ -109,11 +111,13 @@ def json_transfer():
     con.close()
 
 
-# run this function once for a given spotify song attribute to add it to dynamic and archive tables
-# once column has been created with null values
-# works properly for now since archive and dynamic playlists are identical, but once turn over begins
-# then it will need to be modified to separately pull song_id from both tables independently
 def db_retroactive_attribute_sync():
+    """
+    run this function once for a given spotify song attribute to add it to dynamic and archive tables
+    once column has been created with null values
+    works properly for now since archive and dynamic playlists are identical, but once turn over begins
+    then it will need to be modified to separately pull song_id from both tables independently
+    """
     con = psycopg2.connect(
         database=db_name,
         user=db_user,
@@ -150,7 +154,8 @@ def db_retroactive_attribute_sync():
 
     for artist_genre_dict in id_attribute_list:
         for artist_id, genre_array in artist_genre_dict.items():
-            cur.execute(f"""UPDATE dyn_artists SET artist_genres = ARRAY{genre_array} WHERE artist_id = '{artist_id}'""")
+            cur.execute(
+                f"""UPDATE dyn_artists SET artist_genres = ARRAY{genre_array} WHERE artist_id = '{artist_id}'""")
 
     con.commit()
     cur.close()
@@ -306,6 +311,27 @@ def dyn_artists_column_retrieve():
     return rows
 
 
+def dyn_arc_song_retrieve():
+    con = psycopg2.connect(
+        database=db_name,
+        user=db_user,
+        password=db_pass,
+        port=5432)
+
+    cur = con.cursor()
+
+    cur.execute("SELECT song_id, added_at FROM dynamic")
+    dyn_rows = cur.fetchall()
+
+    cur.execute("SELECT song_id, added_at FROM archive")
+    arc_rows = cur.fetchall()
+
+    cur.close()
+    con.close()
+
+    return dyn_rows, arc_rows
+
+
 def dyn_artists_artist_retrieve():
     con = psycopg2.connect(
         database=db_name,
@@ -361,7 +387,7 @@ def dynamic_playlist_data():
     return rows
 
 
-def db_historical_add(timestamp, pdi, song_len, tempo, pop, dance, energy, valence):
+def db_historical_add(timestamp, pdi, song_len, tempo, pop, dance, energy, valence, novelty):
     con = psycopg2.connect(
         database=db_name,
         user=db_user,
@@ -373,7 +399,8 @@ def db_historical_add(timestamp, pdi, song_len, tempo, pop, dance, energy, valen
 
     # inserting string into table dynamic
     cur.execute(f"""INSERT INTO historical_tracking (updated_at, pdi, popularity, danceability, energy, valence, 
-song_length, tempo) VALUES ('{timestamp}', {pdi}, {pop}, {dance}, {energy}, {valence}, {song_len}, {tempo})""")
+song_length, tempo, novelty) VALUES ('{timestamp}', {pdi}, {pop}, {dance}, {energy}, {valence}, 
+{song_len}, {tempo}, {novelty})""")
 
     con.commit()
 
@@ -405,4 +432,3 @@ if __name__ == "__main__":
     playlist_data = dynamic_playlist_data()
     for song in playlist_data:
         print(song)
-

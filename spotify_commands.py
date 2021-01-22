@@ -86,6 +86,12 @@ async def convert_to_track_id(song_input):
     return song['id']
 
 
+async def convert_to_album_id(album_input):
+    album = sp.album(album_id=album_input)
+    print(album)
+    logger.debug(color_text(message=f'Converted input {album_input} to {album["id"]}', color=TerminalColors.MAGENTA))
+
+
 # cannot await this function since used with updating the json
 def get_track_info(track_id, user):
     global track_info

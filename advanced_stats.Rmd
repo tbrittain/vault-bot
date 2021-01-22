@@ -420,88 +420,7 @@ theme(
   complete = TRUE)
 }
 
-
-loudness_energy <- ggplot(data=table_data, aes(x=Loudness, y=Energy, size=Popularity, color=User, key= Tracks)) +
-  geom_point(alpha=0.75) +
-  scale_size(range = c(1, 2.5)) +
-  theme_custom() +
-  theme(legend.position="bottom") +
-  ggtitle("Energy vs. Loudness (dB)") +
-  scale_color_brewer(palette = "Dark2")
-
-loudness_valence <- ggplot(data=table_data, aes(x=Loudness, y=Valence, size=Popularity, color=User, key= Tracks)) +
-  geom_point(alpha=0.75) +
-  scale_size(range = c(1, 2.5)) +
-  theme_custom() +
-  theme(legend.position="bottom") +
-  ggtitle("Valence vs. Loudness (dB)")+
-  scale_color_brewer(palette = "Dark2")
-
-loudness_dance <- ggplot(data=table_data, aes(x=Loudness, y=Danceability, size=Popularity, color=User, key= Tracks)) +
-  geom_point(alpha=0.75) +
-  scale_size(range = c(1, 2.5)) +
-  theme_custom() +
-  theme(legend.position="bottom") +
-  ggtitle("Danceability vs. Loudness (dB)")+
-  scale_color_brewer(palette = "Dark2")
-
-dance_valence <- ggplot(data=table_data, aes(x=Danceability, y=Valence, size=Popularity, color=User, key= Tracks)) +
-  geom_point(alpha=0.75) +
-  scale_size(range = c(1, 2.5)) +
-  theme_custom() +
-  theme(legend.position="bottom") +
-  ggtitle("Valence vs. Danceability")+
-  scale_color_brewer(palette = "Dark2")
-
-dance_energy <- ggplot(data=table_data, aes(x=Danceability, y=Energy, size=Popularity, color=User, key= Tracks)) +
-  geom_point(alpha=0.75) +
-  scale_size(range = c(1, 2.5)) +
-  theme_custom() +
-  theme(legend.position="bottom") +
-  ggtitle("Energy vs. Danceability")+
-  scale_color_brewer(palette = "Dark2")
-
-valence_energy <- ggplot(data=table_data, aes(x=Valence, y=Energy, size=Popularity, color=User, key= Tracks)) +
-  geom_point(alpha=0.75) +
-  scale_size(range = c(1, 2.5)) +
-  theme_custom() +
-  theme(legend.position="bottom") +
-  ggtitle("Energy vs. Valence (dB)")+
-  scale_color_brewer(palette = "Dark2")
-
 ```
-
-<h2 id="features"><a href="#features">Audio Feature Plots</a></h2>
-Comparisons of several Spotify-assigned song attributes colored by user. For more information on Spotify song attributes, <a href="https://bit.ly/audiofeatures" target=_blank>click here</a>.
-
-<div class="plot-content-container">
-```{r echo=FALSE, message=FALSE}
-plot_1 <- ggplotly(loudness_energy, dynamicTicks = TRUE, tooltip = c("Tracks", "User", "Popularity"))
-plot_1 <- plot_1 %>% layout(legend = list(x = 100, y = 0.5))
-plot_1
-
-plot_2 <- ggplotly(loudness_valence, dynamicTicks = TRUE, tooltip = c("Tracks", "User", "Popularity"))
-plot_2 <- plot_2 %>% layout(legend = list(x = 100, y = 0.5))
-plot_2
-
-plot_3 <- ggplotly(loudness_dance, dynamicTicks = TRUE, tooltip = c("Tracks", "User", "Popularity"))
-plot_3 <- plot_3 %>% layout(legend = list(x = 100, y = 0.5))
-plot_3
-
-plot_4 <- ggplotly(dance_valence, dynamicTicks = TRUE, tooltip = c("Tracks", "User", "Popularity"))
-plot_4 <- plot_4 %>% layout(legend = list(x = 100, y = 0.5))
-plot_4
-
-plot_5 <- ggplotly(dance_energy, dynamicTicks = TRUE, tooltip = c("Tracks", "User", "Popularity"))
-plot_5 <- plot_5 %>% layout(legend = list(x = 100, y = 0.5))
-plot_5
-
-plot_6 <- ggplotly(valence_energy, dynamicTicks = TRUE, tooltip = c("Tracks", "User", "Popularity"))
-plot_6 <- plot_6 %>% layout(legend = list(x = 100, y = 0.5))
-plot_6
-
-```
-</div>
 
 <h2 id="history"><a href="#history">Historical Data</a></h2>
 Trends of the dynamic playlist over time. VaultBot logs this data every two hours!
@@ -516,56 +435,66 @@ names(time_attribute_df)[5] <- "Energy"
 names(time_attribute_df)[6] <- "Valence"
 names(time_attribute_df)[7] <- "SongLength"
 names(time_attribute_df)[8] <- "Tempo"
+names(time_attribute_df)[9] <- "Novelty"
 
+novelty_data <- time_attribute_df[, c("Date", "Novelty")]
+novelty_data <- na.omit(novelty_data)
 
 song_length_plot <- ggplot(data=time_attribute_df, aes(x=Date, y=SongLength)) +
         geom_line(color="grey90") +
-        geom_point(shape=21, color="black", fill="#0CE3AC", size=3) +
+        geom_point(shape=21, color="black", fill="#0CE3AC", size=1.5) +
         geom_smooth(method = "gam", color="black", size=0.5, alpha=0.2) +
         theme_custom() +
         ggtitle("Average Song Length")
 
 pop_plot <- ggplot(data=time_attribute_df, aes(x=Date, y=Popularity)) +
         geom_line(color="grey90") +
-        geom_point(shape=21, color="black", fill="#0CE3AC", size=3) +
+        geom_point(shape=21, color="black", fill="#0CE3AC", size=1.5) +
         geom_smooth(method = "gam", color="black", size=0.5, alpha=0.2) +
         theme_custom() +
         ggtitle("Average Song Popularity")
 
 tempo_plot <- ggplot(data=time_attribute_df, aes(x=Date, y=Tempo)) +
         geom_line(color="grey90") +
-        geom_point(shape=21, color="black", fill="#0CE3AC", size=3) +
+        geom_point(shape=21, color="black", fill="#0CE3AC", size=1.5) +
         geom_smooth(method = "gam", color="black", size=0.5, alpha=0.2) +
         theme_custom() +
         ggtitle("Average Song Tempo")
 
 pdi_plot <- ggplot(data=time_attribute_df, aes(x=Date, y=PDI)) +
         geom_line(color="grey90") +
-        geom_point(shape=21, color="black", fill="#0CE3AC", size=3) +
+        geom_point(shape=21, color="black", fill="#0CE3AC", size=1.5) +
         geom_smooth(method = "gam", color="black", size=0.5, alpha=0.2) +
         theme_custom() +
         ggtitle("Average Playlist Diversity Index (PDI)")
 
 dance_plot <- ggplot(data=time_attribute_df, aes(x=Date, y=Danceability)) +
         geom_line(color="grey90") +
-        geom_point(shape=21, color="black", fill="#0CE3AC", size=3) +
+        geom_point(shape=21, color="black", fill="#0CE3AC", size=1.5) +
         geom_smooth(method = "gam", color="black", size=0.5, alpha=0.2) +
         theme_custom() +
         ggtitle("Average Song Danceability")
 
 energy_plot <- ggplot(data=time_attribute_df, aes(x=Date, y=Energy)) +
         geom_line(color="grey90") +
-        geom_point(shape=21, color="black", fill="#0CE3AC", size=3) +
+        geom_point(shape=21, color="black", fill="#0CE3AC", size=1.5) +
         geom_smooth(method = "gam", color="black", size=0.5, alpha=0.2) +
         theme_custom() +
         ggtitle("Average Song Energy")
 
 valence_plot <- ggplot(data=time_attribute_df, aes(x=Date, y=Valence)) +
         geom_line(color="grey90") +
-        geom_point(shape=21, color="black", fill="#0CE3AC", size=3) +
+        geom_point(shape=21, color="black", fill="#0CE3AC", size=1.5) +
         geom_smooth(method = "gam", color="black", size=0.5, alpha=0.2) +
         theme_custom() +
         ggtitle("Average Song Valence")
+
+novelty_plot <- ggplot(data=novelty_data, aes(x=Date, y=Novelty)) +
+        geom_line(color="grey90") +
+        geom_point(shape=21, color="black", fill="#0CE3AC", size=1.5) +
+        geom_smooth(method = "gam", color="black", size=0.5, alpha=0.2) +
+        theme_custom() +
+        ggtitle("Average Playlist Novelty")
 
 names(time_genre_df)[1] <- "Date"
 names(time_genre_df)[2] <- "Genre"
@@ -578,14 +507,14 @@ names(song_count_data)[3] <- "SongCount"
 
 song_count <- ggplot(data=song_count_data, aes(x=Date, y=SongCount)) +
         geom_line(color="grey90") +
-        geom_point(shape=21, color="black", fill="#0CE3AC", size=3) +
+        geom_point(shape=21, color="black", fill="#0CE3AC", size=1.5) +
         geom_smooth(method = "gam", color="black", size=0.5, alpha=0.2) +
         theme_custom() +
         ggtitle("Total Song Count")
 
 genre_count <- ggplot(data=genre_data, aes(x=Date, y=ArtistCount, group=Genre, color=Genre)) +
-        geom_line() +
-        geom_point(shape=21, fill="black", size=2.5) +
+        geom_line(aes(linetype=Genre)) +
+        geom_point(shape=21, fill="black", size=1.5) +
         theme_custom() +
         ggtitle("Top 10 Genres") +
         theme(legend.position="none")
@@ -597,6 +526,9 @@ genre_count <- ggplot(data=genre_data, aes(x=Date, y=ArtistCount, group=Genre, c
 
 song_count_plot <- ggplotly(song_count, dynamicTicks = TRUE)
 song_count_plot
+
+novelty_plot <- ggplotly(novelty_plot, dynamicTicks = TRUE)
+novelty_plot
 
 genre_plot <- ggplotly(genre_count, dynamicTicks = TRUE)
 genre_plot

@@ -20,6 +20,7 @@ load_dotenv()
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 bot = commands.Bot(command_prefix=config.bot_command_prefix, case_insensitive=True, help_command=None)
 
+# TODO: store more variables in config
 # TODO: store external css for RMarkdowns
 # TODO: convert normal functions to asynchronous
 # TODO: check raw message for spotify link rather than add
@@ -374,9 +375,6 @@ async def help(ctx, section=''):
         help_embed.add_field(name="ID",
                              value='$add 7tFiyTwD0nx5a1eklYtX2J', inline=False)
         await ctx.send(embed=help_embed)
-        file = discord.File("embeds/addmobile.gif", filename="addmobile.gif")
-        await ctx.send('You can even PM me a song directly to add it to the playlist!',
-                       file=file)
 
     elif section.lower().__contains__('stats'):
         help_embed = discord.Embed(title='$help stats', color=random.randint(0, 0xffffff))
