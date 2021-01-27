@@ -25,6 +25,7 @@ bot = commands.Bot(command_prefix=config.bot_command_prefix, case_insensitive=Tr
 # TODO: convert normal functions to asynchronous
 # TODO: check raw message for spotify link rather than add
 # TODO: for website, add novelty % (% of new songs in playlist)
+# TODO: work on folder reorganization
 # https://stackoverflow.com/questions/29291633/adding-custom-css-tags-to-an-rmarkdown-html-document
 
 
