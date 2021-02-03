@@ -284,6 +284,7 @@ async def playlists(ctx):
 
 
 @bot.command(aliases=['recommendation'])
+# FIXME the recommend function occasionally gets stuck in an infinite loop of spotify requests
 async def recommend(ctx, weighted=''):
     if weighted == 'weighted':
         logger.debug(color_text(message=f'User {ctx.author} invoked weighted $recommend',

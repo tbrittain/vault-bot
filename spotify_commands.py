@@ -282,8 +282,6 @@ async def expired_track_removal():
 
             track_list.append(track_dict)
 
-    # TODO: consider creating list of tracks that were removed,
-    #  then printing out that list rather than each one individually
     # iterates over tracks pulled from spotify and for each one, determines whether it needs to be removed from
     if len(track_list) > 0:
         logger.warning(color_text(message='Preparing to update track popularities and check for expired songs. '
@@ -308,6 +306,7 @@ async def expired_track_removal():
     logger.info('Track popularities updated and expired songs checked.')
 
 
+# depreciated
 def playlist_diversity_index(playlist_id):
     results = sp.playlist_items(playlist_id)
     tracks = results['items']
@@ -373,8 +372,4 @@ def playlist_diversity_index(playlist_id):
 
 
 if __name__ == "__main__":
-    song_recommendations = recommend_songs()
-    choice = random.randint(0, 9)
-
-    row = song_recommendations.loc[choice]
-    print(row)
+    pass

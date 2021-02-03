@@ -4,6 +4,7 @@ from datetime import time, date, datetime, timedelta
 import spotify_commands
 import pandas as pd
 from vb_utils import logger, color_text, TerminalColors
+import math
 
 # store format for standardization
 iso_format = "%Y-%m-%d %H:%M"
@@ -17,7 +18,7 @@ def playlist_snapshot_coordinator():
     if (datetime.now() - most_recent_time) >= timedelta(hours=2):
         logger.debug("Historical data preparing to be updated...")
 
-        pdi = spotify_commands.playlist_diversity_index("5YQHb5wt9d0hmShWNxjsTs")
+        pdi = new_pdi()
         logger.debug(f"Current playlist PDI: {round(pdi, 3)}")
 
         playlist_len, song_len, tempo, pop, dance, energy, valence = historical_average_features()
@@ -117,5 +118,36 @@ def get_top_genres():
     return top_10_pairs
 
 
+def new_pdi():
+    dyn_playlist_data = db.dyn_artists_column_retrieve()
+
+    # song[2] = artist ID, song[4] = artist genres
+    # sum of occurrences of song[2] = number of songs per artist
+    cleaned_data = [{song[2]: song[4]} for song in dyn_playlist_data]
+
+    # need: sum occurrences of each GENRE as the sum of counts of each artist that falls under that genre
+
+    genre_counts = {}
+    for artist_occurrence in cleaned_data:
+        for genres in artist_occurrence.values():
+            for genre in genres:
+                if genre:  # gets rid of empty genre if present
+                    if genre not in genre_counts:
+                        genre_counts[genre] = 1
+                    else:
+                        genre_counts[genre] += 1
+
+    if len(genre_counts) > 0:
+        pdi_sum = 0
+        for genre_count in genre_counts.values():
+            genre_calc = 1 + ((math.log(1 / genre_count)) / 5)
+            pdi_sum += genre_calc
+        pdi_sum = pdi_sum / len(genre_counts)
+
+        return pdi_sum
+    else:
+        return 0
+
+
 if __name__ == "__main__":
-    print(dynamic_playlist_novelty())
+    print(new_pdi())
