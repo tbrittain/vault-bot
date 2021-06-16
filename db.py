@@ -1,165 +1,35 @@
+from io import StringIO
+import pandas as pd
 import psycopg2
+import psycopg2.errors
 from dotenv import load_dotenv
 import os
-import json
 import spotify_commands
 import config
 import io_functions
 
-load_dotenv()
+base_dir = os.getcwd()
+if config.environment == "dev":
+    load_dotenv(f'{base_dir}/dev.env')
+elif config.environment == "prod":
+    test_db_user = os.getenv("DB_USER")
+    test_db_pass = os.getenv("DB_PASS")
+    test_db_host = os.getenv("DB_HOST")
+    test_db_port = os.getenv("DB_PORT")
+    test_db_name = os.getenv("DB_NAME")
+    if None in [test_db_user, test_db_pass, test_db_host, test_db_port, test_db_name]:
+        print("Invalid environment setting in docker-compose.yml, exiting")
+        exit()
+elif config.environment == "prod_local":
+    load_dotenv(f'{base_dir}/prod_local.env')
+else:
+    print("Invalid environment setting, exiting")
+    exit()
 db_user = os.getenv("DB_USER")
 db_pass = os.getenv("DB_PASS")
-db_name = config.database_name
-
-
-# Note: the functions that interact directly with the PostgreSQL synchronously, even though the majority of
-# discord.py probably prefers asynchronous functioning. This is due to asynchronous queries of the database
-# through the psycopg2 package to auto-commit changes to the db, which could cause incomplete changes to be applied
-# to the entirety of the database, such as when iterating over it
-# https://www.psycopg.org/docs/advanced.html#asynchronous-support
-
-# TODO: add release date attribute to each track, and append db_song_add() to include release date
-
-def json_transfer():
-    """
-    One-time use to transfer the json to postgresql
-    """
-    con = psycopg2.connect(
-        database=db_name,
-        user=db_user,
-        password=db_pass,
-        port=5432)
-
-    # database query as cur
-    cur = con.cursor()
-
-    # json as data
-    with open('stats-copy.json') as f:
-        data = json.load(f)
-
-    # iterate over dynamic fields first
-    track_dict = data['playlists']['dynamic']['tracks']
-
-    for track, values in track_dict.items():
-
-        artist = values['artist']
-        song = values['song']
-        album = values['album']
-        added_by = values['added_by']
-        added_at = values['added_at']
-        song_length = values['song_length']
-        tempo = values['tempo']
-        dance = values['danceability']
-        energy = values['energy']
-        loudness = values['loudness']
-        acoustic = values['acousticness']
-        instrument = values['instrumentalness']
-        liveness = values['liveness']
-        valence = values['valence']
-
-        # handle when single apostrophes present by doubling them up for SQL
-        if album.__contains__("'"):
-            album = album.replace("'", "''")
-        if artist.__contains__("'"):
-            artist = artist.replace("'", "''")
-        if song.__contains__("'"):
-            song = song.replace("'", "''")
-
-            # inserting string into db dynamic
-        cur.execute(f"""INSERT INTO dynamic (song_id, artist, song, album, added_by, added_at, song_length, tempo,
-    danceability, energy, loudness, acousticness, instrumentalness, liveness, valence) VALUES ('{track}', '{artist}', 
-    '{song}', '{album}', '{added_by}', '{added_at}', {song_length}, {tempo}, {dance}, {energy}, {loudness}, {acoustic},
-    {instrument}, {liveness}, {valence})""")
-
-    # transfer archive data
-    track_dict = data['playlists']['archive']['tracks']
-
-    for track, values in track_dict.items():
-
-        artist = values['artist']
-        song = values['song']
-        album = values['album']
-        added_by = values['added_by']
-        added_at = values['added_at']
-        song_length = values['song_length']
-        tempo = values['tempo']
-        dance = values['danceability']
-        energy = values['energy']
-        loudness = values['loudness']
-        acoustic = values['acousticness']
-        instrument = values['instrumentalness']
-        liveness = values['liveness']
-        valence = values['valence']
-
-        # handle when single apostrophes present by doubling them up for SQL
-        if album.__contains__("'"):
-            album = album.replace("'", "''")
-        if artist.__contains__("'"):
-            artist = artist.replace("'", "''")
-        if song.__contains__("'"):
-            song = song.replace("'", "''")
-
-            # inserting string into db archive
-        cur.execute(f"""INSERT INTO archive (song_id, artist, song, album, added_by, added_at, song_length, tempo,
-    danceability, energy, loudness, acousticness, instrumentalness, liveness, valence) VALUES ('{track}', '{artist}', 
-    '{song}', '{album}', '{added_by}', '{added_at}', {song_length}, {tempo}, {dance}, {energy}, {loudness}, {acoustic},
-    {instrument}, {liveness}, {valence})""")
-
-    con.commit()
-
-    cur.close()
-    con.close()
-
-
-def db_retroactive_attribute_sync():
-    """
-    run this function once for a given spotify song attribute to add it to dynamic and archive tables
-    once column has been created with null values
-    works properly for now since archive and dynamic playlists are identical, but once turn over begins
-    then it will need to be modified to separately pull song_id from both tables independently
-    """
-    con = psycopg2.connect(
-        database=db_name,
-        user=db_user,
-        password=db_pass,
-        port=5432)
-
-    cur = con.cursor()
-
-    cur.execute("SELECT artist_id FROM dyn_artists")
-    rows = cur.fetchall()
-
-    unique_artist_ids = []
-    for r in rows:
-        if r[0] not in unique_artist_ids:
-            unique_artist_ids.append(r[0])
-
-    # use song_id as unique identifier to append new attribute to in sql
-    id_attribute_list = []
-    for artist_id in unique_artist_ids:
-        artist_genres = {}
-
-        # gotta reformat genres because some genres have apostrophes or are quotation strings vs apostrophe strings
-        # and sql can only accept apostrophe varchars
-        genres = spotify_commands.sp.artist(artist_id)['genres']
-        genres = str(genres)
-        genres = genres.replace("'", "")
-        genres = genres.replace('"', "")
-        genres = genres.replace('[', "")
-        genres = genres.replace(']', "")
-        genres = genres.split(', ')
-
-        artist_genres[artist_id] = genres
-        id_attribute_list.append(artist_genres)
-
-    for artist_genre_dict in id_attribute_list:
-        for artist_id, genre_array in artist_genre_dict.items():
-            cur.execute(
-                f"""UPDATE dyn_artists SET artist_genres = ARRAY{genre_array} WHERE artist_id = '{artist_id}'""")
-
-    con.commit()
-    cur.close()
-    con.close()
+db_port = os.getenv("DB_PORT")
+db_name = os.getenv("DB_NAME")
+db_host = os.getenv("DB_HOST")
 
 
 def db_song_add(song_id, user):
@@ -428,7 +298,83 @@ def db_historical_genre_add(timestamp, genre, count):
     con.close()
 
 
+class DatabaseConnection:
+    def __init__(self):
+        self.conn = psycopg2.connect(dbname=db_name,
+                                     user=db_user,
+                                     password=db_pass,
+                                     host=db_host,
+                                     port=db_port)
+
+    def terminate(self):
+        self.conn.close()
+
+    def commit(self):
+        self.conn.commit()
+
+    def rollback(self):
+        self.conn.rollback()
+
+    def select_query(self, query_literal: str, table: str) -> list:
+        """Executing literals not recommended as query parameterization is better,
+        but this method will not be exposed to any end users"""
+        if len(query_literal) == 0:
+            raise ValueError('Query must not be empty')
+        elif len(table) == 0:
+            raise ValueError('Table must not be empty')
+
+        cur = self.conn.cursor()
+        try:
+            cur.execute(f"SELECT {query_literal} FROM {table}")
+            rows = cur.fetchall()
+        except Exception as e:
+            error_code = psycopg2.errors.lookup(e.pgcode)
+            raise error_code
+        finally:
+            cur.close()
+
+        return rows
+
+    def insert_copy_bulk_data(self, table: str, df: pd.DataFrame, columns: tuple) -> int:
+        cur = self.conn.cursor()
+
+        buffer = StringIO()
+        df.to_csv(path_or_buf=buffer, header=False, index=False)
+        # print(df.to_csv(header=False, index=False))
+        buffer.seek(0)
+
+        try:
+            cur.copy_from(file=buffer, table=table, sep=",", columns=columns, null="")
+        except Exception as e:
+            error_code = psycopg2.errors.lookup(e.pgcode)
+            raise error_code
+        finally:
+            cur.close()
+        return df.count()[0]
+
+    def insert_single_row(self, table: str, columns: tuple, row: tuple) -> bool:
+        cur = self.conn.cursor()
+
+        num_params = len(row)
+        params = ""
+        if num_params == 1:
+            params += ""
+        elif num_params == 2:
+            params += "(%s,%s)"
+        else:
+            params += "(%s," + ((num_params - 2) * "%s,") + "%s)"
+
+        formatted_columns = str(columns).replace("'", "").replace('"', '')
+
+        try:
+            cur.execute(f"""INSERT INTO {table} {formatted_columns} VALUES {params}""", row)
+        except Exception as e:
+            error_code = psycopg2.errors.lookup(e.pgcode)
+            raise error_code
+        finally:
+            cur.close()
+        return True
+
+
 if __name__ == "__main__":
-    playlist_data = dynamic_playlist_data()
-    for song in playlist_data:
-        print(song)
+    pass
