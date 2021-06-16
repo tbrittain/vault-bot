@@ -1,4 +1,4 @@
-import db
+from db import DatabaseConnection, dyn_arc_song_retrieve
 from datetime import datetime, timedelta
 import spotify_commands
 import pandas as pd
@@ -10,8 +10,8 @@ iso_format = "%Y-%m-%d %H:%M"
 
 
 def playlist_snapshot_coordinator():
-    most_recent = db.get_most_recent_historical_update()
-    most_recent_time = most_recent[0][0]
+    conn = DatabaseConnection()
+    most_recent_time = conn.get_most_recent_historical_update()
 
     # check to ensure update only occurs every n hours
     if (datetime.now() - most_recent_time) >= timedelta(hours=2):
@@ -28,16 +28,26 @@ def playlist_snapshot_coordinator():
         novelty = dynamic_playlist_novelty()
         logger.debug(f"Current playlist novelty: {round(novelty, 3)}")
 
-        db.db_historical_add(timestamp=timestamp_now, pdi=pdi, song_len=song_len, tempo=tempo, pop=pop, dance=dance,
-                             energy=energy, valence=valence, novelty=novelty)
+        # add historical tracking data
+        historical_columns = ('updated_at', 'pdi', 'popularity', 'danceability', 'energy', 'valence', 'song_length',
+                              'tempo', 'novelty')
+        historical_values = (timestamp_now, pdi, song_len, tempo, pop, dance, energy, valence, novelty)
+        conn.insert_single_row(table='historical_tracking', columns=historical_columns, row=historical_values)
 
         top_10_genres = get_top_genres()
 
         # adds total as a genre
-        db.db_historical_genre_add(timestamp=timestamp_now, genre="total", count=playlist_len)
+        total_genre_columns = ('timestamp', 'genre', 'count')
+        total_genre_values = (timestamp_now, 'total', playlist_len)
+        conn.insert_single_row(table='historical_genres', columns=total_genre_columns, row=total_genre_values)
 
+        # add each genre
         for genre, count in top_10_genres.items():
-            db.db_historical_genre_add(timestamp=timestamp_now, genre=genre, count=count)
+            individual_genre_values = (timestamp_now, genre, count)
+            conn.insert_single_row(table='historical_genres', columns=total_genre_columns, row=individual_genre_values)
+        conn.commit()
+    # terminate connection after (if) data committed
+    conn.terminate()
 
 
 # this function should also update the number of tracks since that data will be easily available to it
@@ -73,7 +83,7 @@ def historical_average_features():
 
 
 def dynamic_playlist_novelty():
-    dyn_song_ids, arc_song_ids = db.dyn_arc_song_retrieve()
+    dyn_song_ids, arc_song_ids = dyn_arc_song_retrieve()
     dyn_songs = []
     arc_songs = []
     novel_songs = 0
@@ -110,6 +120,7 @@ def dynamic_playlist_novelty():
     return novel_songs / dyn_track_count
 
 
+# TODO: this will need to be refactored for the normalized db
 def get_top_genres():
     genres = spotify_commands.playlist_genres("5YQHb5wt9d0hmShWNxjsTs")
     top_10_pairs = {k: genres[k] for k in list(genres)[:10]}
@@ -117,6 +128,7 @@ def get_top_genres():
     return top_10_pairs
 
 
+# TODO: this will need to be refactored for the normalized db
 def new_pdi():
     dyn_playlist_data = db.dyn_artists_column_retrieve()
 

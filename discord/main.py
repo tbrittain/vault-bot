@@ -30,8 +30,11 @@ elif config.environment == "prod_local":
 else:
     print("Invalid environment setting, exiting")
     exit()
+
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
-bot = commands.Bot(command_prefix=config.bot_command_prefix, case_insensitive=True, help_command=None)
+intents = discord.Intents.default()
+intents.members = True
+bot = commands.Bot(command_prefix=config.bot_command_prefix, case_insensitive=True, help_command=None, intents=intents)
 
 
 @bot.event
@@ -62,10 +65,10 @@ async def hourly_cleanup():
         spotify_commands.playlist_description_update(playlist_id="5YQHb5wt9d0hmShWNxjsTs", playlist_name='dynamic')
         bar()
 
-        # logs current playlist data
         logger.debug('Checking whether to log current playlist data...')
 
-        historical_tracking.playlist_snapshot_coordinator()
+        # TODO: temporarily disabled while main functionality is re-established
+        # historical_tracking.playlist_snapshot_coordinator()
         bar()
         logger.info('Playlist stats logging complete')
 
@@ -88,7 +91,8 @@ async def on_message(ctx):
 @bot.command()
 async def search(ctx, *, song_query):
     logger.debug(f'User {ctx.author} invoked $search with query {song_query}')
-    global track_selection
+    global track_selection  # making this global has the side effect of multiple searches being triggered
+    # by the same track selection
 
     raw_results = await asyncio.gather(spotify_commands.song_search(song_query))
     search_results = raw_results[0]
@@ -158,8 +162,7 @@ async def search(ctx, *, song_query):
             await spotify_commands.validate_song(track_id=selected_track_id)  # check if valid track
             await spotify_commands.add_to_playlist(song_id=selected_track_id)
 
-            # cannot await the JSON serializable stats_song_add()
-            db.db_song_add(song_id=selected_track_id, user=str(ctx.author))
+            spotify_commands.song_add_to_db(song_id=selected_track_id, user=str(ctx.author))
             await ctx.channel.send(random.choice(emoji_responses))
             await ctx.channel.send('Track has been added to the community playlists!')
             logger.debug(f'Song of ID {selected_track_id} added to playlists by {ctx.author}')
@@ -189,7 +192,7 @@ async def add(ctx, song_url_or_id: str):
         converted_song_id = await spotify_commands.convert_to_track_id(song_url_or_id)
         await spotify_commands.validate_song(track_id=converted_song_id)  # check if valid track
         await spotify_commands.add_to_playlist(song_id=converted_song_id)
-        db.db_song_add(song_id=converted_song_id, user=str(ctx.author))
+        spotify_commands.song_add_to_db(song_id=converted_song_id, user=str(ctx.author))
         await ctx.send(random.choice(emoji_responses))
         await ctx.send('Track has been added to the community playlists!')
         logger.debug(message=f'Song of ID {converted_song_id} added to playlists by {ctx.author}')

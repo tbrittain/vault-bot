@@ -1,6 +1,8 @@
 # Vaultbot things
 */node_modules
 */package-lock.json
+*.csv
+*.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -134,3 +136,4 @@ dmypy.json
 # Pyre type checker
 .pyre/
 /embeds/
+/discord/archive.csv

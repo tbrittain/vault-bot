@@ -1,10 +1,11 @@
+import json
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 from dotenv import load_dotenv
 import os
 from datetime import datetime, timedelta
 from spotipy import SpotifyException
-import db
+from db import DatabaseConnection
 from vb_utils import logger
 import config
 
@@ -99,51 +100,116 @@ async def convert_to_track_id(song_input):
     return song['id']
 
 
-# cannot await this function since used with updating the json
 def get_track_info(track_id, user):
-    global track_info
     song = sp.track(track_id=track_id)
 
-    try:
-        track_info = {'artist': (song['artists'][0]['name']),
-                      'song': (song['name']),
-                      'album': (song['album']['name']),
-                      'added_by': user,
-                      'added_at': str(datetime.now()),
-                      'song_length': (float(song['duration_ms']) / 60000),
-                      'artist_id': song['artists'][0]['id']}
+    # TODO: this may throw an error, handle it if it does
+    # get overall track info
+    track_info = {'artist': (song['artists'][0]['name']),
+                  'song': (song['name']),
+                  'album': (song['album']['name']),
+                  'added_by': user,
+                  'added_at': str(datetime.now()),
+                  'song_length': (float(song['duration_ms']) / 60000),
+                  'artist_id': song['artists'][0]['id'],
+                  'album_art': song['album']['images'][0]['url']
+    }
 
-        audio_analysis = sp.audio_features(song['id'])[0]
+    # add preview url if present
+    if song['preview_url']:
+        track_info['preview_url'] = song['preview_url']
 
-        track_info['tempo'] = (audio_analysis['tempo'])
-        track_info['danceability'] = (audio_analysis['danceability'])
-        track_info['energy'] = (audio_analysis['energy'])
-        track_info['loudness'] = (audio_analysis['loudness'])
-        track_info['acousticness'] = (audio_analysis['acousticness'])
-        track_info['instrumentalness'] = (audio_analysis['instrumentalness'])
-        track_info['liveness'] = (audio_analysis['liveness'])
-        track_info['valence'] = (audio_analysis['valence'])
+    # get artist art
+    artist_info = sp.artist(song['artists'][0]['name'])
+    artist_art = artist_info['images'][0]['url']
+    track_info['artist_art'] = artist_art
 
-    except IndexError:  # a track attribute did not exist, then just skip. happens occasionally when no artist found.
-        pass
+    # get audio features of song
+    audio_analysis = sp.audio_features(song['id'])[0]
+
+    track_info['tempo'] = (audio_analysis['tempo'])
+    track_info['danceability'] = (audio_analysis['danceability'])
+    track_info['energy'] = (audio_analysis['energy'])
+    track_info['loudness'] = (audio_analysis['loudness'])
+    track_info['acousticness'] = (audio_analysis['acousticness'])
+    track_info['instrumentalness'] = (audio_analysis['instrumentalness'])
+    track_info['liveness'] = (audio_analysis['liveness'])
+    track_info['valence'] = (audio_analysis['valence'])
 
     return track_info
 
 
-async def validate_song(track_id):
-    try:
-        song = sp.track(track_id=track_id)
-        if int(song['duration_ms']) > 600000:  # catch if song greater than 600k ms (10 min)
-            raise OverflowError('Track too long!')
+def song_add_to_db(song_id, user):
+    conn = DatabaseConnection()
 
-    # never reached bc handled prior to reaching this function
-    except SpotifyException:  # catch if user tries to add podcast episode to playlist
-        raise ValueError('Cannot add podcast episode to playlist!')
+    song_dict = get_track_info(track_id=song_id, user=user)
+
+    artist = song_dict['artist']
+    song = song_dict['song']
+    album = song_dict['album']
+    added_by = song_dict['added_by']
+    added_at = song_dict['added_at']
+    song_length = song_dict['song_length']
+    tempo = song_dict['tempo']
+    dance = song_dict['danceability']
+    energy = song_dict['energy']
+    loudness = song_dict['loudness']
+    acoustic = song_dict['acousticness']
+    instrument = song_dict['instrumentalness']
+    liveness = song_dict['liveness']
+    valence = song_dict['valence']
+    artist_id = song_dict['artist_id']
+
+    if album.__contains__("'"):
+        album = album.replace("'", "''")
+    if artist.__contains__("'"):
+        artist = artist.replace("'", "''")
+    if song.__contains__("'"):
+        song = song.replace("'", "''")
+
+    # insert artist info into artists table
+    # TODO: handle cannot insert due to primary key constraint
+    conn.insert_single_row(table='artists', columns=('id', 'name'), row=(artist_id, artist))
+
+    # insert song info into songs table
+    # TODO: handle cannot insert due to primary key constraint
+    table_songs_columns = ('id', 'artist_id', 'name', 'length', 'tempo', 'danceability', 'energy', 'loudness',
+                           'acousticness', 'instrumentalness', 'liveness', 'valence')
+    table_songs_row = (song_id, artist_id, song, song_length, tempo, dance, energy, loudness, acoustic, instrument,
+                       liveness, valence)
+    conn.insert_single_row(table='songs', columns=table_songs_columns, row=table_songs_row)
+
+    # # insert song info into dynamic and archive tables
+    # conn.insert_single_row(table='dynamic')
+
+    # # inserting string into table dynamic
+    # cur.execute(f"""INSERT INTO dynamic (song_id, artist, song, album, added_by, added_at, song_length, tempo,
+    # danceability, energy, loudness, acousticness, instrumentalness, liveness, valence, artist_id) VALUES ('{song_id}', '{artist}',
+    # '{song}', '{album}', '{added_by}', '{added_at}', {song_length}, {tempo}, {dance}, {energy}, {loudness}, {acoustic},
+    # {instrument}, {liveness}, {valence}, '{artist_id}')""")
+    #
+    # genres = artist_genres(artist_id=artist_id)
+    # # also add values to dyn_artists table
+    # cur.execute(f"""INSERT INTO dyn_artists (song_id, song, artist_id, artist, added_by, artist_genres) VALUES
+    # ('{song_id}', '{song}', '{artist_id}', '{artist}', '{added_by}', ARRAY{genres})""")
+    #
+    # # inserting string into table archive
+    # cur.execute(f"""INSERT INTO archive (song_id, artist, song, album, added_by, added_at, song_length, tempo,
+    # danceability, energy, loudness, acousticness, instrumentalness, liveness, valence, artist_id) VALUES ('{song_id}', '{artist}',
+    # '{song}', '{album}', '{added_by}', '{added_at}', {song_length}, {tempo}, {dance}, {energy}, {loudness}, {acoustic},
+    # {instrument}, {liveness}, {valence}, '{artist_id}')""")
+
+    conn.commit()
+    conn.terminate()
+
+
+async def validate_song(track_id):
+    song = sp.track(track_id=track_id)
+    if int(song['duration_ms']) > 600000:  # catch if song greater than 600k ms (10 min)
+        raise OverflowError('Track too long!')
 
 
 def artist_genres(artist_id):
-    # gotta reformat genres because some genres have apostrophes or are quotation strings vs apostrophe strings
-    # and sql can only accept apostrophe varchars
     genres = sp.artist(artist_id)['genres']
     genres = str(genres)
     genres = genres.replace("'", "")
@@ -156,6 +222,7 @@ def artist_genres(artist_id):
 
 
 # likely once a song added/songs purged
+# TODO: this will need to be refactored for the normalized db
 def playlist_genres(playlist_id):
     results = sp.playlist_items(playlist_id)  # dynamic playlist ID
     tracks = results['items']
@@ -193,6 +260,7 @@ def playlist_genres(playlist_id):
     return genre_count
 
 
+# TODO: this will need to be refactored for the normalized db
 def playlist_description_update(playlist_id, playlist_name):
     genre_count_dict = playlist_genres(playlist_id)
     top_genres = {k: genre_count_dict[k] for k in list(genre_count_dict)[:10]}
@@ -242,11 +310,18 @@ async def expired_track_removal():
     if len(track_list) > 0:
         logger.warning('Preparing to update track popularities and check for expired songs. '
                        'Please do not exit the program during this time.')
+        conn = DatabaseConnection()
         for track in track_list:
             # key is the track id
             for key, value in track.items():
                 # updates popularity of tracks in dynamic playlist db
-                db.popularity_update(track_id=key)
+                raw_popularity_results = sp.track(track_id=key)
+                popularity = raw_popularity_results['popularity']
+
+                # update track popularity
+                conn.update_query(table='dynamic', column_to_change='popularity', value=popularity,
+                                  column_to_match='song_id', condition=key)
+
                 date_split = value.split('-')
                 time_difference = datetime.now() - datetime(year=int(date_split[0]),
                                                             month=int(date_split[1]),
@@ -255,11 +330,12 @@ async def expired_track_removal():
                 if time_difference > timedelta(days=14):  # set 2 weeks threshold for track removal
                     sp.playlist_remove_all_occurrences_of_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs',
                                                                 items=[key])
-                    db.db_purge_stats(song_id=key)
-
+                    conn.delete_query(table='dynamic', column_to_match='song_id', condition=key)
                     logger.debug(f'Song {key} removed from playlist')
+        conn.commit()
+        conn.terminate()
     logger.info('Track popularities updated and expired songs checked.')
 
 
 if __name__ == "__main__":
-    pass
+    print(artist_genres('3S4d3YRNGg2OhnNm3QvfhA'))
