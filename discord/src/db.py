@@ -6,9 +6,8 @@ from dotenv import load_dotenv
 import os
 import spotify_commands
 import config
-import io_functions
 
-base_dir = os.getcwd()
+base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if config.environment == "dev":
     load_dotenv(f'{base_dir}/dev.env')
 elif config.environment == "prod":
@@ -123,42 +122,6 @@ def popularity_update(track_id):
     cur.execute(f"UPDATE dynamic SET popularity = {popularity} WHERE song_id = '{track_id}'")
 
     con.commit()
-    cur.close()
-    con.close()
-
-
-def arts_for_website():
-    con = psycopg2.connect(
-        database=db_name,
-        user=db_user,
-        password=db_pass,
-        port=5432)
-
-    cur = con.cursor()
-
-    cur.execute("SELECT artist_id FROM dyn_artists")
-    rows = cur.fetchall()
-
-    path = os.getcwd()
-
-    unique_artist_ids = []
-    for r in rows:
-        if r[0] not in unique_artist_ids:
-            unique_artist_ids.append(r[0])
-    try:
-        os.mkdir('vaultbot_stats_table/artist_images')  # tries to make new album art directory
-    except FileExistsError:  # fails because already exists
-        pass
-    os.chdir('vaultbot_stats_table/artist_images')
-
-    print(f'Downloading new artist arts to {os.getcwd()}')
-
-    for artist_id in unique_artist_ids:
-        print(f'Downloading art for artist ID {artist_id}')
-        io_functions.artist_arts(artist_id=artist_id)
-
-    print(f'Artist arts finished downloading')
-    os.chdir(path)
     cur.close()
     con.close()
 
@@ -377,4 +340,4 @@ class DatabaseConnection:
 
 
 if __name__ == "__main__":
-    pass
+    print(base_dir)

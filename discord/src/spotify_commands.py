@@ -3,15 +3,28 @@ from spotipy.oauth2 import SpotifyOAuth
 from dotenv import load_dotenv
 import os
 from datetime import datetime, timedelta
-import time
 from spotipy import SpotifyException
 import db
-import pandas as pd
-import random
-import math
-from vb_utils import color_text, TerminalColors, logger
+from vb_utils import logger
+import config
 
-load_dotenv()
+base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if config.environment == "dev":
+    load_dotenv(f'{base_dir}/dev.env')
+elif config.environment == "prod":
+    test_db_user = os.getenv("DB_USER")
+    test_db_pass = os.getenv("DB_PASS")
+    test_db_host = os.getenv("DB_HOST")
+    test_db_port = os.getenv("DB_PORT")
+    test_db_name = os.getenv("DB_NAME")
+    if None in [test_db_user, test_db_pass, test_db_host, test_db_port, test_db_name]:
+        print("Invalid environment setting in docker-compose.yml, exiting")
+        exit()
+elif config.environment == "prod_local":
+    load_dotenv(f'{base_dir}/prod_local.env')
+else:
+    print("Invalid environment setting, exiting")
+    exit()
 CLIENT_ID = os.getenv("SPOTIPY_CLIENT_ID")
 CLIENT_SECRET = os.getenv("SPOTIPY_CLIENT_SECRET")
 REDIRECT_URI = os.getenv("SPOTIPY_REDIRECT_URI")
@@ -81,15 +94,9 @@ async def songs_in_dyn_playlist():
 
 async def convert_to_track_id(song_input):
     song = sp.track(track_id=song_input)
-    logger.debug(color_text(message=f'Converted input {song_input} to {song["id"]}', color=TerminalColors.MAGENTA))
+    logger.debug(f'Converted input {song_input} to {song["id"]}')
 
     return song['id']
-
-
-async def convert_to_album_id(album_input):
-    album = sp.album(album_id=album_input)
-    print(album)
-    logger.debug(color_text(message=f'Converted input {album_input} to {album["id"]}', color=TerminalColors.MAGENTA))
 
 
 # cannot await this function since used with updating the json
@@ -187,12 +194,11 @@ def playlist_genres(playlist_id):
 
 
 def playlist_description_update(playlist_id, playlist_name):
-    global desc
     genre_count_dict = playlist_genres(playlist_id)
     top_genres = {k: genre_count_dict[k] for k in list(genre_count_dict)[:10]}
+    desc = ''
     if playlist_name == 'dynamic':
-        desc = 'This is a dynamic playlist, meaning that the songs ' \
-               'are automagically purged by VaultBot after two weeks. '
+        desc = 'The playlist with guaranteed freshness. '
     elif playlist_name == 'archive':
         desc = 'This playlist keeps all of the tracks that were added ' \
                'in the original Vault Community Playlist. '
@@ -211,57 +217,7 @@ def playlist_description_update(playlist_id, playlist_name):
             f'Playlist description length within valid range. Updating description of {playlist_name} playlist.')
         sp.playlist_change_details(playlist_id=playlist_id, description=desc)
     else:
-        logger.warning(color_text(message=f'Description too long. Not updating {playlist_name} playlist description.',
-                                  color=TerminalColors.FAIL))
-
-
-def recommend_songs(weighted=False):
-    artists = db.dyn_artists_artist_retrieve()
-    artist_list = []
-
-    # weighted in the sense that more probability of drawing random artists when artist list is not unique artists
-    # but rather the artist to every corresponding song
-    if not weighted:
-        for artist in artists:
-            if artist[0] not in artist_list:
-                artist_list.append(artist[0])
-    else:
-        for artist in artists:
-            artist_list.append(artist[0])
-
-    random_artists = []
-    while len(random_artists) < 5:
-        artist = random.choice(list(artist_list))
-        if artist not in random_artists:
-            random_artists.append(artist)
-
-    # inherent problem with spotipy recommendations: if you keep song limit = 1, it appears that the
-    # probability of the recommended song being from one of the random artist is VERY high
-    # the higher the song limit, the more variability in the recommendation, which seems more ideal
-    # ie some artists who are not currently on the playlist are recommended
-
-    song_info_columns = ['song_uri', 'artist', 'artist_id', 'song', 'song_url', 'preview_url', 'album_art']
-    total_song_df = pd.DataFrame(columns=song_info_columns)
-
-    while len(total_song_df) < 10:
-        recommended_tracks = sp.recommendations(seed_artists=random_artists, limit=20)
-        for track in recommended_tracks['tracks']:
-            if track['artists'][0]['id'] not in artist_list:
-                song_info = {
-                    'song_uri': track['uri'],
-                    'artist': track['artists'][0]['name'],
-                    'artist_id': track['artists'][0]['id'],
-                    'song': track['name'],
-                    'song_url': track['external_urls']['spotify'],
-                    'album_art': track['album']['images'][1]['url']
-                }
-                if track['preview_url'] is not None:
-                    song_info['preview_url'] = track['preview_url']
-
-                song_df = pd.DataFrame(song_info, index=[0])
-                total_song_df = pd.concat([total_song_df, song_df], ignore_index=True)
-
-    return total_song_df
+        logger.warning(f'Description too long. Not updating {playlist_name} playlist description.')
 
 
 async def expired_track_removal():
@@ -284,9 +240,8 @@ async def expired_track_removal():
 
     # iterates over tracks pulled from spotify and for each one, determines whether it needs to be removed from
     if len(track_list) > 0:
-        logger.warning(color_text(message='Preparing to update track popularities and check for expired songs. '
-                                          'Please do not exit the program during this time.',
-                                  color=TerminalColors.FAIL))
+        logger.warning('Preparing to update track popularities and check for expired songs. '
+                       'Please do not exit the program during this time.')
         for track in track_list:
             # key is the track id
             for key, value in track.items():
@@ -302,73 +257,8 @@ async def expired_track_removal():
                                                                 items=[key])
                     db.db_purge_stats(song_id=key)
 
-                    logger.debug(color_text(message=f'Song {key} removed from playlist', color=TerminalColors.MAGENTA))
+                    logger.debug(f'Song {key} removed from playlist')
     logger.info('Track popularities updated and expired songs checked.')
-
-
-# depreciated
-def playlist_diversity_index(playlist_id):
-    results = sp.playlist_items(playlist_id)
-    tracks = results['items']
-    while results['next']:
-        results = sp.next(results)
-        tracks.extend(results['items'])
-
-    song_artists = []  # gather artists from songs
-    for track in tracks:
-        individual_song_artists = {}
-        for artist in track['track']['artists']:
-            individual_song_artists[artist['id']] = artist['name']
-        song_artists.append(individual_song_artists)
-
-    artist_song_tracker = {}  # count occurrences of each artist
-    for song in song_artists:
-        for artist_id, artist_name in song.items():
-            if artist_id not in artist_song_tracker:
-                artist_song_tracker[artist_id] = 1
-            else:
-                artist_song_tracker[artist_id] += 1
-
-    df_list = []
-    for artist, count in artist_song_tracker.items():
-        artist_reformatted = {'artist_id': artist, 'count': count}
-        df_list.append(artist_reformatted)
-
-    total_artist_array = pd.DataFrame(df_list)
-    # apply genres to each artist
-
-    try:
-        total_artist_array['genres'] = total_artist_array.apply(lambda row: sp.artist(row.artist_id)['genres'], axis=1)
-    except AttributeError:
-        logger.error(color_text(message="Playlist could not be accessed for PDI", color=TerminalColors.FAIL))
-
-    # sum each artist count to each of the genres they belong to
-    genre_count_tracker = {}
-    for index, row in total_artist_array.iterrows():
-        for genre in row['genres']:
-            if genre not in genre_count_tracker:
-                genre_count_tracker[genre] = row['count']
-            else:
-                genre_count_tracker[genre] += row['count']
-
-    if len(genre_count_tracker) > 0:
-        genre_count_tracker = {key: value for key, value in
-                               sorted(genre_count_tracker.items(), key=lambda item: item[1], reverse=True)}
-
-        # begin math part
-        pdi_sum = 0
-        for genre, count in genre_count_tracker.items():
-            genre_calc = 1 + ((math.log(1 / count)) / 5)
-            pdi_sum += genre_calc
-
-        # below for diagnostics
-        # print(f'Raw PDI sum before correcting for number of genres: {pdi_sum}')
-        # print(f'Number of genres in of playlist: {len(genre_count_tracker)}')
-
-        pdi_sum = pdi_sum / len(genre_count_tracker)
-        return pdi_sum
-    else:
-        return 0
 
 
 if __name__ == "__main__":

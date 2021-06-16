@@ -3,15 +3,14 @@ from discord.ext import tasks, commands
 import os
 from dotenv import load_dotenv
 import asyncio
-import spotify_commands
+import src.spotify_commands as spotify_commands
 from spotipy import SpotifyException
 import random
-import db
-import io_functions
-import config
-import historical_tracking
+import src.db as db
+import src.config as config
+import src.historical_tracking as historical_tracking
 from datetime import datetime
-from vb_utils import logger
+from src.vb_utils import logger
 from alive_progress import alive_bar, config_handler
 
 base_dir = os.getcwd()
@@ -62,7 +61,6 @@ async def hourly_cleanup():
         # updates playlist descriptions based on genres present
         spotify_commands.playlist_description_update(playlist_id="5YQHb5wt9d0hmShWNxjsTs", playlist_name='dynamic')
         bar()
-        io_functions.dyn_artists_write_df()
 
         # logs current playlist data
         logger.debug('Checking whether to log current playlist data...')
