@@ -1,0 +1,14 @@
+{
+  "name": "vaultbot-express-backend",
+  "version": "1.0.0",
+  "description": "Backend REST API for server-server communication",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Trey Brittain",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
