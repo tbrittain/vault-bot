@@ -9,7 +9,7 @@ from src import spotify_commands
 from src import config
 from src import historical_tracking
 from src import vb_utils
-from datetime import datetime
+from src import spotify_selects
 from alive_progress import alive_bar, config_handler
 
 base_dir = os.getcwd()
@@ -53,11 +53,14 @@ async def on_ready():
     # hourly scheduled tasks
     hourly_cleanup.start()
 
+    # aggregate playlist generation
+    generate_aggregate_playlists.start()
+
 
 @tasks.loop(minutes=60)
 async def hourly_cleanup():
     await bot.wait_until_ready()
-    logger.info(f"Beginning hourly cleanup at {datetime.now()}")
+    logger.info(f"Beginning hourly cleanup")
     with alive_bar(total=3, title='Hourly cleanup...') as bar:
         await spotify_commands.expired_track_removal()
         bar()
@@ -72,6 +75,14 @@ async def hourly_cleanup():
         logger.info('Playlist stats logging complete')
 
     logger.info('Hourly playlist cleanup complete!')
+
+
+@tasks.loop(hours=24)
+async def generate_aggregate_playlists():
+    await bot.wait_until_ready()
+    logger.info("Beginning generation of aggregate playlists")
+    spotify_selects.selects_playlists_coordinator()
+    logger.info("Daily aggregate playlist generation complete!")
 
 
 @bot.event
