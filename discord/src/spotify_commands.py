@@ -120,7 +120,7 @@ def get_track_info(track_id, user):
         track_info['preview_url'] = song['preview_url']
 
     # get artist art
-    artist_info = sp.artist(song['artists'][0]['name'])
+    artist_info = sp.artist(track_info['artist_id'])
     artist_art = artist_info['images'][0]['url']
     track_info['artist_art'] = artist_art
 
@@ -139,6 +139,7 @@ def get_track_info(track_id, user):
     return track_info
 
 
+# TODO rework this
 def song_add_to_db(song_id, user):
     conn = DatabaseConnection()
 
@@ -338,4 +339,4 @@ async def expired_track_removal():
 
 
 if __name__ == "__main__":
-    print(artist_genres('3S4d3YRNGg2OhnNm3QvfhA'))
+    print(get_track_info(track_id='2OKpV0BwfrTDR0afe4mDxA', user=None))

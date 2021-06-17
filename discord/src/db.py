@@ -143,7 +143,7 @@ class DatabaseConnection:
     def update_query(self, column_to_change: str, column_to_match: str, value: str, condition: str, table: str) -> bool:
         cur = self.conn.cursor()
         try:
-            cur.execute(f"""UPDATE {table} SET {column_to_change} = {value} WHERE {column_to_match} = '{condition}'""")
+            cur.execute(f"""UPDATE {table} SET {column_to_change} = '{value}' WHERE {column_to_match} = '{condition}'""")
         except Exception as e:
             error_code = psycopg2.errors.lookup(e.pgcode)
             raise error_code
@@ -164,16 +164,18 @@ class DatabaseConnection:
 
         return True
 
-    def insert_copy_bulk_data(self, table: str, df: pd.DataFrame, columns: tuple) -> int:
+    def insert_copy_bulk_data(self, table: str, df: pd.DataFrame) -> int:
         cur = self.conn.cursor()
 
         buffer = StringIO()
         df.to_csv(path_or_buf=buffer, header=False, index=False)
-        # print(df.to_csv(header=False, index=False))
         buffer.seek(0)
 
         try:
-            cur.copy_from(file=buffer, table=table, sep=",", columns=columns, null="")
+            # cur.copy_from(file=buffer, table=table, sep=",", columns=columns, null="")
+            # testing copy_expert, as copy_from does not handle escaping commas in strings...
+            # https://stackoverflow.com/questions/27055634/psycopg2-copy-from-command-possible-to-ignore-delimiter-in-quote-getting-err
+            cur.copy_expert(f"""COPY {table} FROM STDIN WITH (FORMAT CSV)""", buffer)
         except Exception as e:
             error_code = psycopg2.errors.lookup(e.pgcode)
             raise error_code
