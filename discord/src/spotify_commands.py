@@ -3,15 +3,14 @@ from spotipy.oauth2 import SpotifyOAuth
 from dotenv import load_dotenv
 import os
 from datetime import datetime, timedelta
-from db import DatabaseConnection
-from vb_utils import logger
-import config
-from psycopg2.errors import lookup
+from .db import DatabaseConnection
+from .vb_utils import logger
+from .config import environment
 
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if config.environment == "dev":
+if environment == "dev":
     load_dotenv(f'{base_dir}/dev.env')
-elif config.environment == "prod":
+elif environment == "prod":
     test_db_user = os.getenv("DB_USER")
     test_db_pass = os.getenv("DB_PASS")
     test_db_host = os.getenv("DB_HOST")
@@ -20,7 +19,7 @@ elif config.environment == "prod":
     if None in [test_db_user, test_db_pass, test_db_host, test_db_port, test_db_name]:
         print("Invalid environment setting in docker-compose.yml, exiting")
         exit()
-elif config.environment == "prod_local":
+elif environment == "prod_local":
     load_dotenv(f'{base_dir}/prod_local.env')
 else:
     print("Invalid environment setting, exiting")
@@ -171,7 +170,6 @@ def song_add_to_db(song_id, user):
     if 'artist_art' in song_keys:
         artist_art = song_dict['artist_art']
 
-    # TODO: verify transaction can proceed before continuing, otherwise throws psycopg2.errors.InFailedSqlTransaction
     # insert artist info into artists table
     artist_present = conn.select_query_with_condition(query_literal='id', table='artists',
                                                       column_to_match='id', condition=artist_id)

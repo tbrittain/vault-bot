@@ -1,9 +1,8 @@
-from db import DatabaseConnection
+from .db import DatabaseConnection
+from .spotify_commands import playlist_genres
+from .vb_utils import logger
 from datetime import datetime, timedelta
-import spotify_commands
-from vb_utils import logger
 import math
-
 
 iso_format = "%Y-%m-%d %H:%M"
 
@@ -36,7 +35,7 @@ def playlist_snapshot_coordinator():
         top_10_genres = get_top_genres()
 
         # adds total as a genre
-        total_genre_columns = ('timestamp', 'genre', 'count')
+        total_genre_columns = ('updated_at', 'genre', 'count')
         total_genre_values = (timestamp_now, 'total', playlist_len)
         conn.insert_single_row(table='historical_genres', columns=total_genre_columns, row=total_genre_values)
 
@@ -44,7 +43,7 @@ def playlist_snapshot_coordinator():
         for genre, count in top_10_genres.items():
             individual_genre_values = (timestamp_now, genre, count)
             conn.insert_single_row(table='historical_genres', columns=total_genre_columns, row=individual_genre_values)
-        conn.rollback()
+        conn.commit()
     # terminate connection after (if) data committed
     conn.terminate()
 
@@ -75,37 +74,28 @@ def dynamic_playlist_novelty():
     return len(unique_songs) / len(existing_songs)
 
 
-# TODO: this will need to be refactored for the normalized db
+# TODO: can pull genres from db rather than spotify requests
 def get_top_genres():
-    genres = spotify_commands.playlist_genres("5YQHb5wt9d0hmShWNxjsTs")
+    genres = playlist_genres("5YQHb5wt9d0hmShWNxjsTs")
     top_10_pairs = {k: genres[k] for k in list(genres)[:10]}
 
     return top_10_pairs
 
 
-# TODO: this will need to be refactored for the normalized db
 def playlist_diversity_index():
-    dyn_playlist_data = db.dyn_artists_column_retrieve()
+    conn = DatabaseConnection()
+    sql = """SELECT artists_genres.genre, COUNT(artists_genres.genre) 
+    FROM artists_genres INNER JOIN dynamic ON artists_genres.artist_id = 
+    dynamic.artist_id GROUP BY artists_genres.genre ORDER BY 
+    COUNT(artists_genres.genre) DESC;"""
+    genre_counts = conn.select_query_raw(sql=sql)
+    genre_counts = [x[1] for x in genre_counts]
 
-    # song[2] = artist ID, song[4] = artist genres
-    # sum of occurrences of song[2] = number of songs per artist
-    cleaned_data = [{song[2]: song[4]} for song in dyn_playlist_data]
-
-    # need: sum occurrences of each GENRE as the sum of counts of each artist that falls under that genre
-
-    genre_counts = {}
-    for artist_occurrence in cleaned_data:
-        for genres in artist_occurrence.values():
-            for genre in genres:
-                if genre:  # gets rid of empty genre if present
-                    if genre not in genre_counts:
-                        genre_counts[genre] = 1
-                    else:
-                        genre_counts[genre] += 1
+    conn.terminate()
 
     if len(genre_counts) > 0:
         pdi_sum = 0
-        for genre_count in genre_counts.values():
+        for genre_count in genre_counts:
             genre_calc = 1 + ((math.log(1 / genre_count)) / 5)
             pdi_sum += genre_calc
         pdi_sum = pdi_sum / len(genre_counts)
@@ -116,4 +106,4 @@ def playlist_diversity_index():
 
 
 if __name__ == "__main__":
-    pass
+    playlist_snapshot_coordinator()

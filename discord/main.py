@@ -3,13 +3,13 @@ from discord.ext import tasks, commands
 import os
 from dotenv import load_dotenv
 import asyncio
-import src.spotify_commands as spotify_commands
 from spotipy import SpotifyException
 import random
-import src.config as config
-import src.historical_tracking as historical_tracking
+from src import spotify_commands
+from src import config
+from src import historical_tracking
+from src import vb_utils
 from datetime import datetime
-from src.vb_utils import logger
 from alive_progress import alive_bar, config_handler
 
 base_dir = os.getcwd()
@@ -34,6 +34,7 @@ DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 intents = discord.Intents.default()
 intents.members = True
 bot = commands.Bot(command_prefix=config.bot_command_prefix, case_insensitive=True, help_command=None, intents=intents)
+logger = vb_utils.logger
 
 
 @bot.event
@@ -66,7 +67,6 @@ async def hourly_cleanup():
 
         logger.debug('Checking whether to log current playlist data...')
 
-        # TODO: temporarily disabled while main functionality is re-established
         historical_tracking.playlist_snapshot_coordinator()
         bar()
         logger.info('Playlist stats logging complete')

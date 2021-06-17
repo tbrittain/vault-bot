@@ -5,12 +5,12 @@ import psycopg2
 import psycopg2.errors
 from dotenv import load_dotenv
 import os
-import config
+from .config import environment
 
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if config.environment == "dev":
+if environment == "dev":
     load_dotenv(f'{base_dir}/dev.env')
-elif config.environment == "prod":
+elif environment == "prod":
     test_db_user = os.getenv("DB_USER")
     test_db_pass = os.getenv("DB_PASS")
     test_db_host = os.getenv("DB_HOST")
@@ -19,7 +19,7 @@ elif config.environment == "prod":
     if None in [test_db_user, test_db_pass, test_db_host, test_db_port, test_db_name]:
         print("Invalid environment setting in docker-compose.yml, exiting")
         exit()
-elif config.environment == "prod_local":
+elif environment == "prod_local":
     load_dotenv(f'{base_dir}/prod_local.env')
 else:
     print("Invalid environment setting, exiting")
@@ -29,38 +29,6 @@ db_pass = os.getenv("DB_PASS")
 db_port = os.getenv("DB_PORT")
 db_name = os.getenv("DB_NAME")
 db_host = os.getenv("DB_HOST")
-
-
-# TODO: work on functions to transfer the existing database information into the normalized databases
-
-# TODO: fix
-def dyn_artists_column_retrieve():
-    con = psycopg2.connect(
-        database=db_name,
-        user=db_user,
-        password=db_pass,
-        port=5432)
-
-    cur = con.cursor()
-
-    cur.execute("SELECT song_id, song, artist_id, artist, artist_genres FROM dyn_artists")
-    rows = cur.fetchall()
-
-    cur.close()
-    con.close()
-
-    return rows
-
-
-def dyn_arc_song_retrieve():
-    conn = DatabaseConnection()
-
-    dyn_rows = conn.select_query(query_literal='song_id, added_at', table='dynamic')
-    arc_rows = conn.select_query(query_literal='song_id, added_at', table='archive')
-
-    conn.terminate()
-
-    return dyn_rows, arc_rows
 
 
 class DatabaseConnection:
