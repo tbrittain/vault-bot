@@ -6,7 +6,6 @@ import asyncio
 import src.spotify_commands as spotify_commands
 from spotipy import SpotifyException
 import random
-import src.db as db
 import src.config as config
 import src.historical_tracking as historical_tracking
 from datetime import datetime
@@ -68,7 +67,7 @@ async def hourly_cleanup():
         logger.debug('Checking whether to log current playlist data...')
 
         # TODO: temporarily disabled while main functionality is re-established
-        # historical_tracking.playlist_snapshot_coordinator()
+        historical_tracking.playlist_snapshot_coordinator()
         bar()
         logger.info('Playlist stats logging complete')
 
@@ -82,6 +81,7 @@ async def on_command_error(ctx, error):
         await ctx.send(f'Try $help for a full list of my fantastic, very useful features!')
 
 
+# TODO: verify if message in a private message, and if so do not require $add to check for song link
 @bot.event
 async def on_message(ctx):
     # message = ctx.content
@@ -158,13 +158,11 @@ async def search(ctx, *, song_query):
             selected_track_id = track_ids[track_selection][track_selection + 1]
             emoji_responses = ['👌', '👍', '🤘', '🤙', '🤝']
 
-            # check_song raises exceptions if song not valid for playlist
-            await spotify_commands.validate_song(track_id=selected_track_id)  # check if valid track
+            await spotify_commands.validate_song(track_id=selected_track_id)
             await spotify_commands.add_to_playlist(song_id=selected_track_id)
 
             spotify_commands.song_add_to_db(song_id=selected_track_id, user=str(ctx.author))
-            await ctx.channel.send(random.choice(emoji_responses))
-            await ctx.channel.send('Track has been added to the community playlists!')
+            await ctx.channel.send(f'Track has been added to the community playlists! {random.choice(emoji_responses)}')
             logger.debug(f'Song of ID {selected_track_id} added to playlists by {ctx.author}')
         except FileExistsError:
             await ctx.channel.send(f"Track already exists in dynamic playlist, "
@@ -190,11 +188,10 @@ async def add(ctx, song_url_or_id: str):
     emoji_responses = ['👌', '👍', '🤘', '🤙', '🤝']
     try:
         converted_song_id = await spotify_commands.convert_to_track_id(song_url_or_id)
-        await spotify_commands.validate_song(track_id=converted_song_id)  # check if valid track
+        await spotify_commands.validate_song(track_id=converted_song_id)
         await spotify_commands.add_to_playlist(song_id=converted_song_id)
         spotify_commands.song_add_to_db(song_id=converted_song_id, user=str(ctx.author))
-        await ctx.send(random.choice(emoji_responses))
-        await ctx.send('Track has been added to the community playlists!')
+        await ctx.channel.send(f'Track has been added to the community playlists! {random.choice(emoji_responses)}')
         logger.debug(message=f'Song of ID {converted_song_id} added to playlists by {ctx.author}')
 
     except IndexError:

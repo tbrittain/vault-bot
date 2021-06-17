@@ -1,13 +1,12 @@
-import json
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 from dotenv import load_dotenv
 import os
 from datetime import datetime, timedelta
-from spotipy import SpotifyException
 from db import DatabaseConnection
 from vb_utils import logger
 import config
+from psycopg2.errors import lookup
 
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if config.environment == "dev":
@@ -79,6 +78,7 @@ async def add_to_playlist(song_id):
         sp.playlist_add_items('4C6pU7YmbBUG8sFFk4eSXj', song_id)  # archive
 
 
+# TODO: pull dynamic song results from database, not spotify playlist
 async def songs_in_dyn_playlist():
     results = sp.playlist_items('5YQHb5wt9d0hmShWNxjsTs')  # dynamic playlist ID
     tracks = results['items']
@@ -103,7 +103,6 @@ async def convert_to_track_id(song_input):
 def get_track_info(track_id, user):
     song = sp.track(track_id=track_id)
 
-    # TODO: this may throw an error, handle it if it does
     # get overall track info
     track_info = {'artist': (song['artists'][0]['name']),
                   'song': (song['name']),
@@ -113,16 +112,19 @@ def get_track_info(track_id, user):
                   'song_length': (float(song['duration_ms']) / 60000),
                   'artist_id': song['artists'][0]['id'],
                   'album_art': song['album']['images'][0]['url']
-    }
+                  }
 
     # add preview url if present
     if song['preview_url']:
         track_info['preview_url'] = song['preview_url']
 
-    # get artist art
-    artist_info = sp.artist(track_info['artist_id'])
-    artist_art = artist_info['images'][0]['url']
-    track_info['artist_art'] = artist_art
+    # get artist art, not always present
+    try:
+        artist_info = sp.artist(track_info['artist_id'])
+        artist_art = artist_info['images'][0]['url']
+        track_info['artist_art'] = artist_art
+    except IndexError:
+        pass
 
     # get audio features of song
     audio_analysis = sp.audio_features(song['id'])[0]
@@ -139,7 +141,6 @@ def get_track_info(track_id, user):
     return track_info
 
 
-# TODO rework this
 def song_add_to_db(song_id, user):
     conn = DatabaseConnection()
 
@@ -160,47 +161,61 @@ def song_add_to_db(song_id, user):
     liveness = song_dict['liveness']
     valence = song_dict['valence']
     artist_id = song_dict['artist_id']
+    album_art = song_dict['album_art']
+    preview_url = None
+    artist_art = None
 
-    if album.__contains__("'"):
-        album = album.replace("'", "''")
-    if artist.__contains__("'"):
-        artist = artist.replace("'", "''")
-    if song.__contains__("'"):
-        song = song.replace("'", "''")
+    song_keys = list(song_dict.keys())
+    if 'preview_url' in song_keys:
+        preview_url = song_dict['preview_url']
+    if 'artist_art' in song_keys:
+        artist_art = song_dict['artist_art']
 
+    # TODO: verify transaction can proceed before continuing, otherwise throws psycopg2.errors.InFailedSqlTransaction
     # insert artist info into artists table
-    # TODO: handle cannot insert due to primary key constraint
-    conn.insert_single_row(table='artists', columns=('id', 'name'), row=(artist_id, artist))
+    artist_present = conn.select_query_with_condition(query_literal='id', table='artists',
+                                                      column_to_match='id', condition=artist_id)
+    if not artist_present:
+        conn.insert_single_row(table='artists', columns=('id', 'name', 'art'), row=(artist_id, artist, artist_art))
 
     # insert song info into songs table
-    # TODO: handle cannot insert due to primary key constraint
-    table_songs_columns = ('id', 'artist_id', 'name', 'length', 'tempo', 'danceability', 'energy', 'loudness',
-                           'acousticness', 'instrumentalness', 'liveness', 'valence')
-    table_songs_row = (song_id, artist_id, song, song_length, tempo, dance, energy, loudness, acoustic, instrument,
-                       liveness, valence)
-    conn.insert_single_row(table='songs', columns=table_songs_columns, row=table_songs_row)
+    song_present = conn.select_query_with_condition(query_literal='id', table='songs',
+                                                    column_to_match='id', condition=song_id)
+    if not song_present:
+        table_songs_columns = ('id', 'artist_id', 'name', 'length', 'tempo', 'danceability', 'energy', 'loudness',
+                               'acousticness', 'instrumentalness', 'liveness', 'valence', 'art', 'preview_url', 'album')
+        table_songs_row = (song_id, artist_id, song, song_length, tempo, dance, energy, loudness, acoustic, instrument,
+                           liveness, valence, album_art, preview_url, album)
+        conn.insert_single_row(table='songs', columns=table_songs_columns, row=table_songs_row)
 
-    # # insert song info into dynamic and archive tables
-    # conn.insert_single_row(table='dynamic')
+    # insert artist and genres into artists_genres
+    artist_present_in_artists_genres = conn.select_query_with_condition(query_literal='artist_id',
+                                                                        table='artists_genres',
+                                                                        column_to_match='artist_id',
+                                                                        condition=artist_id)
+    if not artist_present_in_artists_genres:
+        artist_info = sp.artist(artist_id=artist_id)
+        genres = artist_info['genres']
+        artist_genre_columns = ('artist_id', 'genre')
+        for genre in genres:
+            artist_genre_values = (artist_id, genre)
+            conn.insert_single_row(table='artists_genres', columns=artist_genre_columns,
+                                   row=artist_genre_values)
 
-    # # inserting string into table dynamic
-    # cur.execute(f"""INSERT INTO dynamic (song_id, artist, song, album, added_by, added_at, song_length, tempo,
-    # danceability, energy, loudness, acousticness, instrumentalness, liveness, valence, artist_id) VALUES ('{song_id}', '{artist}',
-    # '{song}', '{album}', '{added_by}', '{added_at}', {song_length}, {tempo}, {dance}, {energy}, {loudness}, {acoustic},
-    # {instrument}, {liveness}, {valence}, '{artist_id}')""")
-    #
-    # genres = artist_genres(artist_id=artist_id)
-    # # also add values to dyn_artists table
-    # cur.execute(f"""INSERT INTO dyn_artists (song_id, song, artist_id, artist, added_by, artist_genres) VALUES
-    # ('{song_id}', '{song}', '{artist_id}', '{artist}', '{added_by}', ARRAY{genres})""")
-    #
-    # # inserting string into table archive
-    # cur.execute(f"""INSERT INTO archive (song_id, artist, song, album, added_by, added_at, song_length, tempo,
-    # danceability, energy, loudness, acousticness, instrumentalness, liveness, valence, artist_id) VALUES ('{song_id}', '{artist}',
-    # '{song}', '{album}', '{added_by}', '{added_at}', {song_length}, {tempo}, {dance}, {energy}, {loudness}, {acoustic},
-    # {instrument}, {liveness}, {valence}, '{artist_id}')""")
+    # insert song info into dynamic and archive tables
+    # do not insert popularity, popularity refreshed in scheduled function
+    table_dynamic_columns = ('song_id', 'artist_id', 'added_by', 'added_at')
+    table_dynamic_row = (song_id, artist_id, added_by, added_at)
+    conn.insert_single_row(table='dynamic', columns=table_dynamic_columns, row=table_dynamic_row)
 
-    conn.commit()
+    last_id = conn.select_query(query_literal="MAX(id)", table='archive')
+    last_id = last_id[0][0] + 1
+
+    table_archive_columns = ('id', 'song_id', 'artist_id', 'added_by', 'added_at')
+    table_archive_row = (last_id, song_id, artist_id, added_by, added_at)
+    conn.insert_single_row(table='archive', columns=table_archive_columns, row=table_archive_row)
+
+    conn.rollback()
     conn.terminate()
 
 
@@ -208,18 +223,6 @@ async def validate_song(track_id):
     song = sp.track(track_id=track_id)
     if int(song['duration_ms']) > 600000:  # catch if song greater than 600k ms (10 min)
         raise OverflowError('Track too long!')
-
-
-def artist_genres(artist_id):
-    genres = sp.artist(artist_id)['genres']
-    genres = str(genres)
-    genres = genres.replace("'", "")
-    genres = genres.replace('"', "")
-    genres = genres.replace('[', "")
-    genres = genres.replace(']', "")
-    genres = genres.split(', ')
-
-    return genres
 
 
 # likely once a song added/songs purged
@@ -339,4 +342,7 @@ async def expired_track_removal():
 
 
 if __name__ == "__main__":
-    print(get_track_info(track_id='2OKpV0BwfrTDR0afe4mDxA', user=None))
+    pass
+    # song_add_to_db('0WVvn1HeAGVcnMnQcKPAQg', 'Goober')
+    # song_add_to_db('2zDed3OnVeemMPSglM2Xmd', 'Goober')
+    # song_add_to_db('5qNNanYonpCwahfJGuFVRQ', 'Goober')

@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 import pandas as pd
 import numpy as np
 import spotify_commands
-from time import sleep
+from alive_progress import alive_bar
 
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if config.environment == "dev":
@@ -81,58 +81,84 @@ def update_arts_and_preview_urls():
 
     # update art and preview_url for each song
     song_ids = conn.select_query(query_literal="id", table="songs")
-    limit = 1
+    limit = 1000000  # used for testing and troubleshooting
     songs_updated = arts_updated = song_previews_updated = 0
-    for song in song_ids:
-        song_id = song[0]
-        song_info = spotify_commands.get_track_info(track_id=song_id, user=None)
+    with alive_bar(total=len(song_ids), title="Updating songs") as bar:
+        for song in song_ids:
+            song_id = song[0]
+            song_info = spotify_commands.get_track_info(track_id=song_id, user=None)
+            keys = list(song_info.keys())
 
-        song_art = song_info['album_art']
-        song_preview = None
-        if 'preview_url' in list(song_info.keys()):
-            song_preview = song_info['preview_url']
+            if 'artist_art' in keys:
+                song_art = song_info['album_art']
+                conn.update_query(table='songs', column_to_change='art', value=song_art,
+                                  column_to_match='id', condition=song_id)
+                arts_updated += 1
 
-        conn.update_query(table='songs', column_to_change='art', value=song_art,
-                          column_to_match='id', condition=song_id)
-        arts_updated += 1
-        if song_preview is not None:
-            conn.update_query(table='songs', column_to_change='preview_url', value=song_preview,
-                              column_to_match='id', condition=song_id)
-            song_previews_updated += 1
-        songs_updated += 1
+            if 'preview_url' in keys:
+                song_preview = song_info['preview_url']
+                conn.update_query(table='songs', column_to_change='preview_url', value=song_preview,
+                                  column_to_match='id', condition=song_id)
+                song_previews_updated += 1
 
-        sleep(0.5)  # rate limiting requests
-        limit -= 1
-        if limit <= 0:
-            break
+            songs_updated += 1
+            bar()
+            limit -= 1
+            if limit <= 0:
+                break
     print(f"Total songs updated: {songs_updated}\nArts updated: {arts_updated}\n"
           f"Song previews updated: {song_previews_updated}")
 
     # save artist genres for artists_genres table
-    artist_genres = {}
+    artist_genres = []
 
     # update art for each artist
-    limit = 5
+    limit = 1000000  # used for testing and troubleshooting
     artist_arts_updated = 0
     artist_ids = conn.select_query(query_literal="id", table="artists")
-    for artist in artist_ids:
-        artist_id = artist[0]
-        artist_info = spotify_commands.sp.artist(artist_id)
-        artist_art = artist_info['images'][0]['url']
+    with alive_bar(total=len(artist_ids), title="Updating artists") as bar:
+        for artist in artist_ids:
+            artist_id = artist[0]
+            artist_art = None
+            try:
+                artist_info = spotify_commands.sp.artist(artist_id)
+                artist_art = artist_info['images'][0]['url']
+            except IndexError:
+                pass
 
-        conn.update_query(table='artists', column_to_change='art', value=artist_art,
-                          column_to_match='id', condition=artist_id)
+            artist_genres.append({
+                'artist_id': artist_id,
+                'genres': artist_info['genres']
+            })
+            if artist_art is not None:
+                conn.update_query(table='artists', column_to_change='art', value=artist_art,
+                                  column_to_match='id', condition=artist_id)
 
-        artist_arts_updated += 1
-        sleep(0.5)
-        limit -= 1
-        if limit <= 0:
-            break
+            artist_arts_updated += 1
+            bar()
+            limit -= 1
+            if limit <= 0:
+                break
     print(f"Artist arts updated: {artist_arts_updated}")
 
     # generate artists_genres table data
+    artist_genre_pairs_added = 0
+    with alive_bar(total=len(artist_genres), title="Inserting data into artists_genres table") as bar:
+        for artist in artist_genres:
+            artist_id = artist['artist_id']
+            genres = artist['genres']
+            artist_genre_columns = ('artist_id', 'genre')
+            for genre in genres:
+                artist_genre_values = (artist_id, genre)
 
-    conn.rollback()
+                conn.insert_single_row(table='artists_genres', columns=artist_genre_columns,
+                                       row=artist_genre_values)
+                artist_genre_pairs_added += 1
+            bar()
+
+    print(f"Rows added to artists_genres: {artist_genre_pairs_added}")
+
+    conn.commit()
     conn.terminate()
 
 

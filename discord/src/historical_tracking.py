@@ -1,11 +1,10 @@
-from db import DatabaseConnection, dyn_arc_song_retrieve
+from db import DatabaseConnection
 from datetime import datetime, timedelta
 import spotify_commands
-import pandas as pd
-from vb_utils import logger, color_text, TerminalColors
+from vb_utils import logger
 import math
 
-# store format for standardization
+
 iso_format = "%Y-%m-%d %H:%M"
 
 
@@ -17,7 +16,7 @@ def playlist_snapshot_coordinator():
     if (datetime.now() - most_recent_time) >= timedelta(hours=2):
         logger.debug("Historical data preparing to be updated...")
 
-        pdi = new_pdi()
+        pdi = playlist_diversity_index()
         logger.debug(f"Current playlist PDI: {round(pdi, 3)}")
 
         playlist_len, song_len, tempo, pop, dance, energy, valence = historical_average_features()
@@ -45,7 +44,7 @@ def playlist_snapshot_coordinator():
         for genre, count in top_10_genres.items():
             individual_genre_values = (timestamp_now, genre, count)
             conn.insert_single_row(table='historical_genres', columns=total_genre_columns, row=individual_genre_values)
-        conn.commit()
+        conn.rollback()
     # terminate connection after (if) data committed
     conn.terminate()
 
@@ -53,71 +52,27 @@ def playlist_snapshot_coordinator():
 # this function should also update the number of tracks since that data will be easily available to it
 # idea: pull dynamic playlist data, put rows into pandas df, then calculate averages
 def historical_average_features():
-    # order of data returned:
-    columns = ["song_length", "tempo", "popularity", "danceability", "energy", "valence"]
-    playlist_df = pd.DataFrame(columns=columns)
-
-    playlist_data = db.dynamic_playlist_data()
-    for song in playlist_data:
-        try:
-            song_dict = {
-                "song_length": float(song[0]),
-                "tempo": float(song[1]),
-                "popularity": float(song[2]),
-                "danceability": float(song[3]),
-                "energy": float(song[4]),
-                "valence": float(song[5])
-            }
-            song_df = pd.DataFrame(song_dict, index=[0])
-            playlist_df = pd.concat([playlist_df, song_df])
-
-        # TypeError occurs when troubleshooting and added songs do not have their popularity assigned yet
-        # but under normal circumstances should NOT happen, as this function will be called after
-        # popularities have been added
-        except TypeError:
-            pass
-
-    return len(playlist_df), playlist_df["song_length"].mean(), playlist_df["tempo"].mean(), \
-           playlist_df["popularity"].mean(), playlist_df["danceability"].mean(), \
-           playlist_df["energy"].mean(), playlist_df["valence"].mean()
+    conn = DatabaseConnection()
+    sql_query = "COUNT(dynamic.*), AVG(songs.length), AVG(songs.tempo), AVG(dynamic.popularity), " \
+                "AVG(songs.danceability), AVG(songs.energy), AVG(songs.valence)"
+    dynamic_averages = conn.select_query_with_join(query_literal=sql_query, table='songs',
+                                                   join_type='INNER', join_table='dynamic',
+                                                   join_condition='songs.id = dynamic.song_id')
+    dynamic_averages = dynamic_averages[0]
+    conn.terminate()
+    return dynamic_averages[0], dynamic_averages[1], dynamic_averages[2], dynamic_averages[3], dynamic_averages[4], \
+           dynamic_averages[5], dynamic_averages[6]
 
 
 def dynamic_playlist_novelty():
-    dyn_song_ids, arc_song_ids = dyn_arc_song_retrieve()
-    dyn_songs = []
-    arc_songs = []
-    novel_songs = 0
+    conn = DatabaseConnection()
+    sql = """SELECT dynamic.song_id, COUNT(archive.song_id) AS count FROM dynamic INNER JOIN archive ON 
+    dynamic.song_id = archive.song_id GROUP BY dynamic.song_id HAVING COUNT(archive.song_id) = 1; """
+    unique_songs = conn.select_query_raw(sql=sql)
+    existing_songs = conn.select_query(query_literal="song_id", table="dynamic")
 
-    dyn_track_count = len(dyn_song_ids)
-
-    for song in dyn_song_ids:
-        song_dict = {
-            "id": song[0],
-            "timestamp": song[1]
-        }
-        dyn_songs.append(song_dict)
-
-    for song in arc_song_ids:
-        song_dict = {
-            "id": song[0],
-            "timestamp": song[1]
-        }
-        arc_songs.append(song_dict)
-
-    for item in dyn_songs:
-        del arc_songs[arc_songs.index(item)]
-
-    for item in dyn_songs:
-        if item['timestamp'] in [i['timestamp'] for i in arc_songs]:
-            logger.error(color_text(message=f"Error removing song {item['id']} from count"
-                                            "for playlist novelty calculation",
-                                    color=TerminalColors.FAIL))
-
-    for song in [i['id'] for i in dyn_songs]:
-        if song not in [i['id'] for i in arc_songs]:
-            novel_songs += 1
-
-    return novel_songs / dyn_track_count
+    conn.terminate()
+    return len(unique_songs) / len(existing_songs)
 
 
 # TODO: this will need to be refactored for the normalized db
@@ -129,7 +84,7 @@ def get_top_genres():
 
 
 # TODO: this will need to be refactored for the normalized db
-def new_pdi():
+def playlist_diversity_index():
     dyn_playlist_data = db.dyn_artists_column_retrieve()
 
     # song[2] = artist ID, song[4] = artist genres
@@ -161,4 +116,4 @@ def new_pdi():
 
 
 if __name__ == "__main__":
-    print(new_pdi())
+    pass

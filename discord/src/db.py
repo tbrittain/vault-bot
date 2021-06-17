@@ -33,6 +33,7 @@ db_host = os.getenv("DB_HOST")
 
 # TODO: work on functions to transfer the existing database information into the normalized databases
 
+# TODO: fix
 def dyn_artists_column_retrieve():
     con = psycopg2.connect(
         database=db_name,
@@ -62,25 +63,6 @@ def dyn_arc_song_retrieve():
     return dyn_rows, arc_rows
 
 
-# for creating history of playlist
-def dynamic_playlist_data():
-    con = psycopg2.connect(
-        database=db_name,
-        user=db_user,
-        password=db_pass,
-        port=5432)
-
-    cur = con.cursor()
-
-    cur.execute("SELECT song_length, tempo, popularity, danceability, energy, valence FROM dynamic")
-    rows = cur.fetchall()
-
-    cur.close()
-    con.close()
-
-    return rows
-
-
 class DatabaseConnection:
     def __init__(self):
         self.conn = psycopg2.connect(dbname=db_name,
@@ -107,6 +89,19 @@ class DatabaseConnection:
         cur.close()
         return rows[0][0]
 
+    def select_query_raw(self, sql: str):
+        cur = self.conn.cursor()
+        try:
+            cur.execute(sql)
+            rows = cur.fetchall()
+        except Exception as e:
+            error_code = psycopg2.errors.lookup(e.pgcode)
+            raise error_code
+        finally:
+            cur.close()
+
+        return rows
+
     def select_query(self, query_literal: str, table: str) -> list:
         """Executing literals not recommended as query parameterization is better,
         but this method will not be exposed to any end users"""
@@ -131,6 +126,21 @@ class DatabaseConnection:
         cur = self.conn.cursor()
         try:
             cur.execute(f"""SELECT {query_literal} FROM {table} WHERE {column_to_match} = '{condition}'""")
+            rows = cur.fetchall()
+        except Exception as e:
+            error_code = psycopg2.errors.lookup(e.pgcode)
+            raise error_code
+        finally:
+            cur.close()
+
+        return rows
+
+    def select_query_with_join(self, query_literal: str, table: str, join_type: str,
+                               join_table: str, join_condition: str) -> list:
+        cur = self.conn.cursor()
+        try:
+            cur.execute(f"""SELECT {query_literal} FROM {table} {join_type} 
+            JOIN {join_table} ON {join_condition}""")
             rows = cur.fetchall()
         except Exception as e:
             error_code = psycopg2.errors.lookup(e.pgcode)
