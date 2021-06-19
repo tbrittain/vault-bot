@@ -14,8 +14,8 @@ def selects_playlists_coordinator():
     party_playlist_sql = """SELECT songs.id, COUNT(archive.song_id) FROM songs JOIN archive ON songs.id = 
     archive.song_id JOIN artists ON songs.artist_id = artists.id JOIN artists_genres ON artists.id = 
     artists_genres.artist_id WHERE artists_genres.genre = ANY('{hip hop, pop rap, rap, edm, house, 
-    tropical house, uk dance, turntablism, pop, nu disco, new french touch, alternative dance, bass house, 
-    electronic trap, electro house, bass music, australian electropop}') AND songs.danceability > 0.6 
+    tropical house, uk dance, turntablism, pop, filter house, vapor twitch, alternative dance, bass house, 
+    electronic trap, electro house, bass music, australian electropop, la pop}') AND songs.danceability > 0.6 
     AND songs.energy > 0.5 AND songs.length < 4.33 AND songs.tempo > 105 GROUP BY songs.name, songs.id 
     ORDER BY COUNT(archive.song_id) DESC LIMIT 100;"""
 

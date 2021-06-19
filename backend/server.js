@@ -10,26 +10,25 @@ const app = express()
 const { typeDefs } = require('./schema/TypeDefs')
 const { resolvers } = require('./schema/Resolvers')
 
-
 const ComplexityLimitRule = createComplexityLimitRule(1500, {
   onCost: (cost) => {
-    console.log('Query cost:', cost);
+    console.log('Query cost:', cost)
   },
   formatErrorMessage: (cost) =>
-    `Query with cost ${cost} exceeds complexity limit`,
+    `Query with cost ${cost} exceeds complexity limit`
 })
 
 // apollo server
+// https://github.com/apollographql/apollo-server/issues/1142 for cors info
 const server = new ApolloServer({
   validationRules: [ComplexityLimitRule],
-  typeDefs, 
+  typeDefs,
   resolvers
 })
 
 // body parsing - only necessary for 'post'-like CRUD mutations
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
-
 
 server.applyMiddleware({ app })
 
