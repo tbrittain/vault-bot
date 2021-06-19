@@ -16,12 +16,8 @@ base_dir = os.getcwd()
 if config.environment == "dev":
     load_dotenv(f'{base_dir}/dev.env')
 elif config.environment == "prod":
-    test_db_user = os.getenv("DB_USER")
-    test_db_pass = os.getenv("DB_PASS")
-    test_db_host = os.getenv("DB_HOST")
-    test_db_port = os.getenv("DB_PORT")
-    test_db_name = os.getenv("DB_NAME")
-    if None in [test_db_user, test_db_pass, test_db_host, test_db_port, test_db_name]:
+    test_token = os.getenv("DISCORD_TOKEN")
+    if None in [test_token]:
         print("Invalid environment setting in docker-compose.yml, exiting")
         exit()
 elif config.environment == "prod_local":
@@ -65,7 +61,8 @@ async def hourly_cleanup():
         await spotify_commands.expired_track_removal()
         bar()
         # updates playlist descriptions based on genres present
-        spotify_commands.playlist_description_update(playlist_id="5YQHb5wt9d0hmShWNxjsTs", playlist_name='dynamic')
+        spotify_commands.playlist_description_update(playlist_id="5YQHb5wt9d0hmShWNxjsTs",
+                                                     initial_desc='The playlist with guaranteed freshness. ')
         bar()
 
         logger.debug('Checking whether to log current playlist data...')
@@ -77,7 +74,7 @@ async def hourly_cleanup():
     logger.info('Hourly playlist cleanup complete!')
 
 
-@tasks.loop(hours=24)
+@tasks.loop(hours=6)
 async def generate_aggregate_playlists():
     await bot.wait_until_ready()
     logger.info("Beginning generation of aggregate playlists")
@@ -99,6 +96,7 @@ async def on_message(ctx):
     await bot.process_commands(ctx)
 
 
+# FIXME adds track even if no track selected
 @bot.command()
 async def search(ctx, *, song_query):
     logger.debug(f'User {ctx.author} invoked $search with query {song_query}')
@@ -231,40 +229,25 @@ async def add_error(ctx, error):
                            f'or song ID')
 
 
-@bot.command()
-async def stats(ctx):
-    logger.debug(message=f'User {ctx.author} invoked $stats')
-
-    playlist_embed = discord.Embed(title='$stats',
-                                   description='Link to my website!',
-                                   color=random.randint(0, 0xffffff))
-    playlist_embed.add_field(name='Link', value='http://vaultbot.tbrittain.com/', inline=False)
-    await ctx.send(embed=playlist_embed)
-
-
-@bot.command(aliases=['playlist'])
+# FIXME broken command
+@bot.command(aliases=['playlist', 'links'])
 async def playlists(ctx):
-    logger.debug(f'User {ctx.author} invoked $playlists')
-    playlist_embed = discord.Embed(title='$playlists',
-                                   description='Links to the playlists. Paste the URI in your browser to '
-                                               'open the playlist on your desktop client! Be sure to '
-                                               'follow the playlist for easy access :grinning:',
+    logger.debug(f'User {ctx.author} invoked {config.bot_command_prefix}playlists')
+    playlist_embed = discord.Embed(title=f'{config.bot_command_prefix}links',
+                                   description='Links to the playlists and more. Be sure to '
+                                               'follow the playlists for easy access :grinning:',
                                    color=random.randint(0, 0xffffff))
-    playlist_embed.add_field(name='Main playlist', value='https://spoti.fi/33AnPqd', inline=False)
-    playlist_embed.add_field(name='Archive playlist', value='https://spoti.fi/3iGBNeE', inline=False)
-    playlist_embed.add_field(name='Main Spotify URI',
-                             value='spotify:playlist:5YQHb5wt9d0hmShWNxjsTs', inline=False)
-    playlist_embed.add_field(name='Archive Spotify URI',
-                             value='spotify:playlist:4C6pU7YmbBUG8sFFk4eSXj', inline=False)
+    playlist_embed.add_field(name='Links to VaultBot things', value='https://linktr.ee/tbrittain', inline=False)
     await ctx.send(embed=playlist_embed)
 
 
+# FIXME broken command
 @bot.command(aliases=['suggest', 'idea'])
 async def suggestion(ctx, *, suggested_idea):
     benevolent_dictator = bot.get_user(177260855308713985)
     logger.debug(message=f'User {ctx.author} suggested {suggested_idea}')
-    await discord.Member.send(benevolent_dictator,
-                              content=f'User {ctx.author} submitted suggestion: {suggested_idea}')
+    await discord.User.send(benevolent_dictator,
+                            content=f'User {ctx.author} submitted suggestion: {suggested_idea}')
     await ctx.send(f'Thanks, your suggestion has been relayed to my '
                    f'master, {ctx.author.mention}')
 
@@ -276,6 +259,7 @@ async def suggestion_error(ctx, error):
             await ctx.send(f'Please enter a suggestion, {ctx.author.mention}')
 
 
+# FIXME broken command
 @bot.command()
 async def help(ctx, section=''):
     logger.debug(message=f'User {ctx.author} invoked $help')
@@ -303,49 +287,6 @@ async def help(ctx, section=''):
                              value='$add 7tFiyTwD0nx5a1eklYtX2J', inline=False)
         await ctx.send(embed=help_embed)
 
-    elif section.lower().__contains__('stats'):
-        help_embed = discord.Embed(title='$help stats', color=random.randint(0, 0xffffff))
-        help_embed.add_field(name="Function information",
-                             value='Retrieve some interesting statistics for a playlist/user', inline=False)
-        help_embed.add_field(name="Spotify track attributes",
-                             value='See https://bit.ly/audiofeatures for more info on Spotify track attributes',
-                             inline=False)
-        help_embed.add_field(name="Playlist (gives browser link)",
-                             value='$stats', inline=False)
-        help_embed.add_field(name="Advanced",
-                             value='$stats advanced', inline=False)
-        await ctx.send(embed=help_embed)
-
-    elif section.lower().__contains__('playlists'):
-        help_embed = discord.Embed(title='$help playlists', color=random.randint(0, 0xffffff))
-        help_embed.add_field(name="Function information",
-                             value='Retrieve direct playlist links for easy access',
-                             inline=False)
-        help_embed.add_field(name="URLs",
-                             value='Click them to open in your browser if you prefer web Spotify',
-                             inline=False)
-        help_embed.add_field(name="URIs",
-                             value='Paste these in your browser and it will open the playlist in your '
-                                   'desktop client', inline=False)
-        await ctx.send(embed=help_embed)
-
-    elif section.lower().__contains__('recommend'):
-        help_embed = discord.Embed(title='$help recommend', color=random.randint(0, 0xffffff))
-        help_embed.add_field(name="Function information",
-                             value='Provides a song recommendation based on the current state of the '
-                                   'dynamic playlist. Can be a weighted or unweighted recommendation.',
-                             inline=False)
-        help_embed.add_field(name="$recommend",
-                             value='By default, provides an unweighted recommendation, meaning that the recommendation '
-                                   'takes into account only unique artists in the playlist regardless of the amount of '
-                                   'occurrences of each artist.',
-                             inline=False)
-        help_embed.add_field(name="$recommend weighted",
-                             value='The optional weighted argument makes it so that there is a higher likelihood of '
-                                   'recommendations of similar music to the most prominent artists in the playlist',
-                             inline=False)
-        await ctx.send(embed=help_embed)
-
     else:
         help_embed = discord.Embed(title='$help',
                                    description='Get specific function help with $help FUNCTION (ex. $help '
@@ -355,11 +296,6 @@ async def help(ctx, section=''):
                                                    'and lists the top results', inline=False)
         help_embed.add_field(name='$add', value='Input a Spotify song link/URI/ID to '
                                                 'add it directly to the playlist', inline=False)
-        help_embed.add_field(name='$playlists', value='Links to the Spotify playlists', inline=False)
-        help_embed.add_field(name='$stats', value='General statistics for the songs '
-                                                  'and users of the playlists', inline=False)
-        help_embed.add_field(name='$recommend', value='Recommends a song to check out based on the '
-                                                      'contents of the dynamic playlist', inline=False)
         help_embed.add_field(name='$suggestion', value='Send a suggestion to threesquared', inline=False)
 
         await ctx.send(embed=help_embed)

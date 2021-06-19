@@ -11,12 +11,10 @@ base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if environment == "dev":
     load_dotenv(f'{base_dir}/dev.env')
 elif environment == "prod":
-    test_db_user = os.getenv("DB_USER")
-    test_db_pass = os.getenv("DB_PASS")
-    test_db_host = os.getenv("DB_HOST")
-    test_db_port = os.getenv("DB_PORT")
-    test_db_name = os.getenv("DB_NAME")
-    if None in [test_db_user, test_db_pass, test_db_host, test_db_port, test_db_name]:
+    test_client_id = os.getenv("SPOTIPY_CLIENT_ID")
+    test_client_secret = os.getenv("SPOTIPY_CLIENT_SECRET")
+    test_redirect = os.getenv("SPOTIPY_REDIRECT_URI")
+    if None in [test_client_id, test_client_secret, test_redirect]:
         print("Invalid environment setting in docker-compose.yml, exiting")
         exit()
 elif environment == "prod_local":
@@ -31,7 +29,8 @@ REDIRECT_URI = os.getenv("SPOTIPY_REDIRECT_URI")
 scope = "playlist-modify-public user-library-read"
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID,
                                                client_secret=CLIENT_SECRET,
-                                               redirect_uri=REDIRECT_URI, scope=scope))
+                                               redirect_uri=REDIRECT_URI,
+                                               scope=scope))
 
 
 async def song_search(user_message):
@@ -39,28 +38,20 @@ async def song_search(user_message):
     original_message = original_message.replace("'", "")  # clean up user message for spotify search
     original_message = original_message.replace('"', '')
 
-    search_results = sp.search(q='track:' + original_message, type='track')
-    # print(search_results['tracks']['items'])
+    search_results = sp.search(q=original_message, type='track')
     if len(search_results['tracks']['items']) > 0:
         track_results_string = "```"
         results_list = []
-        counter = 1
-        for item in search_results['tracks']['items']:
-            artist = (item['album']['artists'][0]['name'])  # artist name
-            album = (item['album']['name'])  # album name
-            track = (item['name'])  # track name
+        for count, item in enumerate(search_results['tracks']['items']):
+            artist = (item['album']['artists'][0]['name'])
+            album = (item['album']['name'])
+            track = (item['name'])
 
             track_id = (item['id'])
-            track_id_dic = {counter: track_id}
+            track_id_dic = {count + 1: track_id}
             results_list.append(track_id_dic)
 
-            # https://stackoverflow.com/questions/44862112/how-can-i-send-an-embed-via-my-discord-bot-w-python
-            # https://support.discord.com/hc/en-us/articles/210298617-Markdown-Text-101-Chat-Formatting-Bold-Italic-Underline-
-            # artist_url = (item['album']['artists'][0]['external_urls']['spotify'])
-            # album_url = (item['album']['external_urls']['spotify'])
-
-            track_results_string += f'{counter}. "{track}" by {artist} from album "{album}"\n'
-            counter += 1
+            track_results_string += f'{count + 1}. "{track}" by {artist} from album "{album}"\n'
         track_results_string += '```'
         return [track_results_string, results_list]
     else:
@@ -68,28 +59,22 @@ async def song_search(user_message):
 
 
 async def add_to_playlist(song_id):
-    existing_songs = await songs_in_dyn_playlist()
+    existing_songs = songs_in_dyn_playlist()
     if song_id in existing_songs:
-        raise FileExistsError('Song already present in Dyn playist! Not adding duplicate ID.')
+        logger.debug(f"{song_id} already exists in dynamic playlist, not adding")
+        raise FileExistsError('Song already present in Dyn playlist! Not adding duplicate ID.')
     else:
-        song_id = [song_id, ]  # for whatever reason, spotipy input is a list
+        song_id = [song_id, ]  # input is a list
         sp.playlist_add_items('5YQHb5wt9d0hmShWNxjsTs', song_id)  # dynamic
         sp.playlist_add_items('4C6pU7YmbBUG8sFFk4eSXj', song_id)  # archive
 
 
-# TODO: pull dynamic song results from database, not spotify playlist
-async def songs_in_dyn_playlist():
-    results = sp.playlist_items('5YQHb5wt9d0hmShWNxjsTs')  # dynamic playlist ID
-    tracks = results['items']
-    while results['next']:
-        results = sp.next(results)
-        tracks.extend(results['items'])
-
-    tracks_in_playlist = {}
-    for song in tracks:
-        tracks_in_playlist[song['track']['id']] = song['track']['name']
-
-    return tracks_in_playlist
+def songs_in_dyn_playlist():
+    conn = DatabaseConnection()
+    song_ids = conn.select_query(query_literal="song_id", table="dynamic")
+    song_ids = [x[0] for x in song_ids]
+    conn.terminate()
+    return song_ids
 
 
 async def convert_to_track_id(song_input):
@@ -213,7 +198,7 @@ def song_add_to_db(song_id, user):
     table_archive_row = (last_id, song_id, artist_id, added_by, added_at)
     conn.insert_single_row(table='archive', columns=table_archive_columns, row=table_archive_row)
 
-    conn.rollback()
+    conn.commit()
     conn.terminate()
 
 
@@ -223,71 +208,42 @@ async def validate_song(track_id):
         raise OverflowError('Track too long!')
 
 
-# likely once a song added/songs purged
-# TODO: this will need to be refactored for the normalized db
-def playlist_genres(playlist_id):
-    results = sp.playlist_items(playlist_id)  # dynamic playlist ID
-    tracks = results['items']
-    while results['next']:
-        results = sp.next(results)
-        tracks.extend(results['items'])
+def dyn_playlist_genres(limit: int = None):
+    conn = DatabaseConnection()
 
-    artist_list = []
-    for song in tracks:
-        artist_list.append(song['track']['artists'][0]['id'])
+    sql = """SELECT artists_genres.genre, COUNT(artists_genres.genre) FROM dynamic JOIN artists_genres ON 
+    dynamic.artist_id = artists_genres.artist_id GROUP BY artists_genres.genre ORDER BY 
+    COUNT(artists_genres.genre) DESC"""
+    if limit is not None:
+        sql += f" LIMIT {limit}"
+    sql += ";"
 
-    artist_genres = {}
-    for artist in artist_list:
-        artist_genres[artist] = sp.artist(artist)['genres']
-
-    # make it so all genres from artists are taken into account
-    total_genre_list = []
-    for artist, artist_genres in artist_genres.items():
-        for individual_genre in artist_genres:
-            total_genre_list.append(individual_genre)
-
-    genre_count = {}
-    for genre in total_genre_list:
-        try:
-            if genre not in genre_count:
-                genre_count[genre] = 1
-            else:
-                genre_count[genre] += 1
-        except IndexError:  # some artists do not have a genre
-            pass
-
-    genre_count = {key: value for key, value in
-                   sorted(genre_count.items(), key=lambda item: item[1], reverse=True)}
-
-    return genre_count
+    result = conn.select_query_raw(sql=sql)
+    conn.terminate()
+    formatted_result = {x[0]: x[1] for x in result}
+    return formatted_result
 
 
-# TODO: this will need to be refactored for the normalized db
-def playlist_description_update(playlist_id, playlist_name):
-    genre_count_dict = playlist_genres(playlist_id)
-    top_genres = {k: genre_count_dict[k] for k in list(genre_count_dict)[:10]}
+def playlist_description_update(playlist_id: str, initial_desc: str):
+    top_genres = dyn_playlist_genres(limit=10)
     desc = ''
-    if playlist_name == 'dynamic':
-        desc = 'The playlist with guaranteed freshness. '
-    elif playlist_name == 'archive':
-        desc = 'This playlist keeps all of the tracks that were added ' \
-               'in the original Vault Community Playlist. '
+    desc += initial_desc
 
-    if len(top_genres) > 0:  # only adds genre details if there are actually artists in the playlist
+    if len(top_genres) > 0:
         desc += 'Prominent genres include: '
         for genre, count in top_genres.items():
             desc += f'{genre}, '
         desc += 'and more!'
 
     description_length = len(desc)
-    logger.debug(f'Updated length of playlist {playlist_name} description: {description_length}')
+    logger.debug(f'Updated length of playlist {playlist_id} description: {description_length}')
 
     if len(desc) < 300:  # need to ensure playlist description is 300 characters or fewer
         logger.debug(
-            f'Playlist description length within valid range. Updating description of {playlist_name} playlist.')
+            f'Playlist description length within valid range. Updating description of {playlist_id} playlist.')
         sp.playlist_change_details(playlist_id=playlist_id, description=desc)
     else:
-        logger.warning(f'Description too long. Not updating {playlist_name} playlist description.')
+        logger.warning(f'Description too long. Not updating {playlist_id} playlist description.')
 
 
 async def expired_track_removal():
@@ -341,6 +297,3 @@ async def expired_track_removal():
 
 if __name__ == "__main__":
     pass
-    # song_add_to_db('0WVvn1HeAGVcnMnQcKPAQg', 'Goober')
-    # song_add_to_db('2zDed3OnVeemMPSglM2Xmd', 'Goober')
-    # song_add_to_db('5qNNanYonpCwahfJGuFVRQ', 'Goober')

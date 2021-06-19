@@ -1,5 +1,5 @@
 from .db import DatabaseConnection
-from .spotify_commands import playlist_genres
+from .spotify_commands import dyn_playlist_genres
 from .vb_utils import logger
 from datetime import datetime, timedelta
 import math
@@ -10,6 +10,7 @@ iso_format = "%Y-%m-%d %H:%M"
 def playlist_snapshot_coordinator():
     conn = DatabaseConnection()
     most_recent_time = conn.get_most_recent_historical_update()
+    logger.debug(f"Most recent historical update: {most_recent_time}")
 
     # check to ensure update only occurs every n hours
     if (datetime.now() - most_recent_time) >= timedelta(hours=2):
@@ -32,9 +33,9 @@ def playlist_snapshot_coordinator():
         historical_values = (timestamp_now, pdi, song_len, tempo, pop, dance, energy, valence, novelty)
         conn.insert_single_row(table='historical_tracking', columns=historical_columns, row=historical_values)
 
-        top_10_genres = get_top_genres()
+        top_10_genres = dyn_playlist_genres(limit=10)
 
-        # adds total as a genre
+        # adds total number of songs as a genre
         total_genre_columns = ('updated_at', 'genre', 'count')
         total_genre_values = (timestamp_now, 'total', playlist_len)
         conn.insert_single_row(table='historical_genres', columns=total_genre_columns, row=total_genre_values)
@@ -72,14 +73,6 @@ def dynamic_playlist_novelty():
 
     conn.terminate()
     return len(unique_songs) / len(existing_songs)
-
-
-# TODO: can pull genres from db rather than spotify requests
-def get_top_genres():
-    genres = playlist_genres("5YQHb5wt9d0hmShWNxjsTs")
-    top_10_pairs = {k: genres[k] for k in list(genres)[:10]}
-
-    return top_10_pairs
 
 
 def playlist_diversity_index():

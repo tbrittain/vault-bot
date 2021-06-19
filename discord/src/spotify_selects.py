@@ -12,9 +12,12 @@ moody_playlist_id = "0jiEtmsU9wRGrAVf7O5YeT"
 # TODO: figure out how to manually order tracks in the playlist
 def selects_playlists_coordinator():
     party_playlist_sql = """SELECT songs.id, COUNT(archive.song_id) FROM songs JOIN archive ON songs.id = 
-    archive.song_id WHERE songs.energy > 0.75 AND songs.length < 5 AND songs.tempo > 140 AND songs.valence 
-    > 0.25 AND songs.acousticness < 0.25 GROUP BY songs.name, songs.id ORDER BY COUNT(archive.song_id) DESC 
-    LIMIT 100;"""
+    archive.song_id JOIN artists ON songs.artist_id = artists.id JOIN artists_genres ON artists.id = 
+    artists_genres.artist_id WHERE artists_genres.genre = ANY('{hip hop, pop rap, rap, edm, house, 
+    tropical house, uk dance, turntablism, pop, nu disco, new french touch, alternative dance, bass house, 
+    electronic trap, electro house, bass music, australian electropop}') AND songs.danceability > 0.6 
+    AND songs.energy > 0.5 AND songs.length < 4.33 AND songs.tempo > 105 GROUP BY songs.name, songs.id 
+    ORDER BY COUNT(archive.song_id) DESC LIMIT 100;"""
 
     top_50_playlist_sql = """SELECT songs.id, COUNT(archive.song_id) FROM songs JOIN archive 
     ON songs.id = archive.song_id GROUP BY songs.name, songs.id ORDER BY COUNT(archive.song_id) DESC 
@@ -71,7 +74,7 @@ def update_playlist(playlist_id: str, playlist_sql: str):
     tracks_to_remove = []
     if existing_tracks is not None:
         for track_id in existing_tracks:
-            if track_id not in existing_tracks:
+            if track_id not in aggregated_tracks:
                 tracks_to_remove.append(track_id)
 
     if len(tracks_to_remove) > 0:
