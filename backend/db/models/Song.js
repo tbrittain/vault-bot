@@ -1,6 +1,5 @@
 const { Sequelize } = require('sequelize')
 const db = require('../db')
-const Artist = require('./Artist')
 
 const Song = db.define('song', {
   id: {
@@ -54,7 +53,5 @@ const Song = db.define('song', {
   timestamps: false,
   underscored: true
 })
-
-Song.belongsTo(Artist)
 
 module.exports = Song

@@ -1,5 +1,9 @@
 const { Sequelize } = require('sequelize')
 const db = require('../db')
+const ArchiveSong = require('./ArchiveSong')
+const ArtistGenre = require('./ArtistGenre')
+const DynamicSong = require('./DynamicSong')
+const Song = require('./Song')
 
 const Artist = db.define('artist', {
   id: {
@@ -16,5 +20,10 @@ const Artist = db.define('artist', {
   tableName: 'artists',
   timestamps: false
 })
+
+Artist.hasMany(Song)
+Artist.hasMany(ArtistGenre)
+Artist.hasMany(DynamicSong)
+Artist.hasMany(ArchiveSong)
 
 module.exports = Artist
