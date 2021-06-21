@@ -1,7 +1,7 @@
 const ArchiveSong = require('../models/ArchiveSong')
 const { Sequelize } = require('sequelize')
 
-const rank = async (artistId) => {
+const artistRank = async (artistId) => {
   let artists = await ArchiveSong.findAll({
     attributes: [
       'artistId',
@@ -21,4 +21,4 @@ const rank = async (artistId) => {
   return index + 1
 }
 
-module.exports = { rank }
+module.exports = { artistRank }

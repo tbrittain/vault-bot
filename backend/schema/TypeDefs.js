@@ -1,12 +1,12 @@
 const { gql } = require('apollo-server-express')
 
 const typeDefs = gql`
-  # Types
   type Artist {
     id: String!
     name: String!
     art: String
     rank: Int!
+    genres: [Genre]
     songs: [Song!]!
   }
 
@@ -32,8 +32,15 @@ const typeDefs = gql`
     valence: Float!
   }
 
+  type Genre {
+    genre: String!
+    rank: Int!
+  }
+
   type Query {
-    getArtist(id: String!, name: String): Artist!
+    getArtist(id: String, name: String): Artist!
+    getGenres(limit: Int): [Genre!]!
+    getArtistsFromGenre(genreName: String!): [Artist!]!
   }
 `
 

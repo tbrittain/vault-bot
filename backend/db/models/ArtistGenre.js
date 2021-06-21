@@ -1,5 +1,6 @@
 const { Sequelize } = require('sequelize')
 const db = require('../db')
+const Artist = require('./Artist')
 
 const ArtistGenre = db.define('artist-genre', {
   artistId: {
@@ -15,5 +16,7 @@ const ArtistGenre = db.define('artist-genre', {
   timestamps: false,
   underscored: true
 })
+
+ArtistGenre.belongsTo(Artist)
 
 module.exports = ArtistGenre

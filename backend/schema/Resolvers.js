@@ -3,26 +3,75 @@ const Artist = require('../db/models/Artist')
 const ArtistGenre = require('../db/models/ArtistGenre')
 const DynamicSong = require('../db/models/DynamicSong')
 const Song = require('../db/models/Song')
-const { Op } = require('sequelize')
-const { rank } = require('../db/utils/ArtistRank')
+const { Op, Sequelize } = require('sequelize')
+const { artistRank } = require('../db/utils/ArtistRank')
+const { genreRank } = require('../db/utils/GenreRank')
 
 const resolvers = {
   Query: {
     async getArtist (parent, args, context, info) {
-      const artistId = args.id
+      if (!args.id && !args.name) {
+        throw new SyntaxError('Either an artist ID or artist name must be provided')
+      }
 
-      let result = await Artist.findAll({
-        where: {
+      let condition
+
+      if (args.id) {
+        const artistId = args.id
+        condition = {
           id: artistId
         }
+      } else if (args.name) {
+        const artistName = args.name
+        condition = {
+          name: artistName
+        }
+      }
+
+      let result = await Artist.findOne({
+        where: condition
       })
-        .then(data => {
-          return data
-        })
         .catch(err => console.log(err))
 
       result = JSON.parse(JSON.stringify(result))
-      return result[0]
+      console.log(result)
+      return result
+    },
+    async getGenres (parent, args, context, info) {
+      // FIXME: this query executes way more db queries than necessary
+      const result = await ArtistGenre.findAll({
+        attributes: [
+          'genre',
+          [Sequelize.fn('COUNT', Sequelize.col('genre')), 'n_genre']
+        ],
+        group: 'genre',
+        order: [
+          [Sequelize.fn('COUNT', Sequelize.col('genre')), 'DESC']
+        ]
+      })
+        .catch(err => console.log(err))
+      const genres = JSON.parse(JSON.stringify(result))
+      for (let i = 0; i < result.length; i++) {
+        genres[i].rank = i + 1
+      }
+      return genres
+    },
+    async getArtistsFromGenre (parent, args, context, info) {
+      const genreName = args.genreName
+      let result = await ArtistGenre.findAll({
+        where: {
+          genre: genreName
+        },
+        include: [
+          {
+            model: Artist
+          }
+        ]
+      })
+        .catch(err => console.log(err))
+      result = JSON.parse(JSON.stringify(result))
+      result = result.map(element => element.artist)
+      return result
     }
   },
   Artist: {
@@ -48,7 +97,21 @@ const resolvers = {
     },
     async rank (parent, args) {
       const artistId = parent.id
-      return await rank(artistId)
+      return await artistRank(artistId)
+    },
+    async genres (parent, args) {
+      const artistId = parent.id
+
+      let result = await ArtistGenre.findAll({
+        where: {
+          artistId: artistId
+        },
+        attributes: ['genre']
+      })
+        .catch(err => console.log(err))
+
+      result = JSON.parse(JSON.stringify(result))
+      return result
     }
   },
   Song: {
@@ -65,13 +128,16 @@ const resolvers = {
           'liveness', 'valence'
         ]
       })
-        .then(data => {
-          return data
-        })
         .catch(err => console.log(err))
 
       result = JSON.parse(JSON.stringify(result))
       return result[0]
+    }
+  },
+  Genre: {
+    async rank (parent, args) {
+      const genreName = parent.genre
+      return await genreRank(genreName)
     }
   }
 }
