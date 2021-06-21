@@ -33,5 +33,5 @@ app.use(express.json())
 server.applyMiddleware({ app })
 
 app.listen(port, () => {
-  console.log(`GraphQL API server listening at http://localhost:${port}/graphql/`)
+  console.log(`🚀 GraphQL API server listening at http://localhost:${port}/graphql/`)
 })

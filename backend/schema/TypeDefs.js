@@ -1,6 +1,7 @@
 const { gql } = require('apollo-server-express')
 
 const typeDefs = gql`
+
   type Artist {
     id: String!
     name: String!
@@ -13,11 +14,14 @@ const typeDefs = gql`
   type Song {
     id: String!
     artistId: String!
+    artistName: String!
     name: String!
     album: String!
     art: String
     previewUrl: String
     details: SongDetails!
+    addedBy: String
+    addedAt: String
   }
 
   type SongDetails {
@@ -41,6 +45,8 @@ const typeDefs = gql`
     getArtist(id: String, name: String): Artist!
     getGenres(limit: Int): [Genre!]!
     getArtistsFromGenre(genreName: String!): [Artist!]!
+    getArchiveTracks(startDate: String, endDate: String): [Song!]!
+    getDynamicTracks: [Song!]!
   }
 `
 

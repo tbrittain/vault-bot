@@ -34,7 +34,6 @@ const resolvers = {
         .catch(err => console.log(err))
 
       result = JSON.parse(JSON.stringify(result))
-      console.log(result)
       return result
     },
     async getGenres (parent, args, context, info) {
@@ -71,6 +70,111 @@ const resolvers = {
         .catch(err => console.log(err))
       result = JSON.parse(JSON.stringify(result))
       result = result.map(element => element.artist)
+      return result
+    },
+    async getArchiveTracks (parent, args, context, info) {
+      let startDate, endDate
+
+      // argument validation
+      if (args.startDate) {
+        startDate = new Date(args.startDate)
+        if (!(startDate instanceof Date && isFinite(startDate))) {
+          throw new SyntaxError('Invalid startDate')
+        }
+      }
+      if (args.endDate) {
+        endDate = new Date(args.endDate)
+        if (!(endDate instanceof Date && isFinite(endDate))) {
+          throw new SyntaxError('Invalid endDate')
+        }
+      }
+
+      if (startDate > endDate) {
+        throw new SyntaxError('startDate must be earlier in time than endDate')
+      }
+
+      // construct condition based on dates provided
+      let condition
+      if (startDate && endDate) {
+        condition = {
+          addedAt: {
+            [Op.between]: [startDate.toISOString(), endDate.toISOString()]
+          }
+        }
+      } else if (startDate && !endDate) {
+        condition = {
+          addedAt: {
+            [Op.gte]: startDate.toISOString()
+          }
+        }
+      } else if (!startDate && endDate) {
+        condition = {
+          addedAt: {
+            [Op.lte]: endDate.toISOString()
+          }
+        }
+      }
+
+      let result
+      if (condition) {
+        result = await ArchiveSong.findAll({
+          where: condition,
+          include: [
+            {
+              model: Song
+            }
+          ]
+        })
+          .catch(err => console.log(err))
+      } else {
+        result = await ArchiveSong.findAll({
+          include: [
+            {
+              model: Song
+            }
+          ]
+        })
+      }
+      result = JSON.parse(JSON.stringify(result))
+
+      // TODO: can filter songs by characteristics here
+      // TODO: may also want to consider filtering by genre?
+      // TODO: could also resolve SongDetails with the info retrieved here
+      result = result.map(song => {
+        return {
+          id: song.song.id,
+          artistId: song.song.artistId,
+          name: song.song.name,
+          album: song.song.album,
+          art: song.song.art,
+          previewUrl: song.song.previewUrl,
+          addedBy: song.addedBy,
+          addedAt: song.addedAt
+        }
+      })
+      return result
+    },
+    async getDynamicTracks (parent, args, context, info) {
+      let result = await DynamicSong.findAll({
+        include: [
+          {
+            model: Song
+          }
+        ]
+      })
+      result = JSON.parse(JSON.stringify(result))
+      result = result.map(song => {
+        return {
+          id: song.song.id,
+          artistId: song.song.artistId,
+          name: song.song.name,
+          album: song.song.album,
+          art: song.song.art,
+          previewUrl: song.song.previewUrl,
+          addedBy: song.addedBy,
+          addedAt: song.addedAt
+        }
+      })
       return result
     }
   },
@@ -132,6 +236,22 @@ const resolvers = {
 
       result = JSON.parse(JSON.stringify(result))
       return result[0]
+    },
+    async artistName (parent, args) {
+      const artistId = parent.artistId
+
+      let result = await Artist.findOne({
+        where: {
+          id: artistId
+        },
+        attributes: [
+          ['name', 'artistName']
+        ]
+      })
+        .catch(err => console.log(err))
+
+      result = JSON.parse(JSON.stringify(result))
+      return result.artistName
     }
   },
   Genre: {
