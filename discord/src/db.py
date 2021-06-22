@@ -60,6 +60,20 @@ class DatabaseConnection:
         cur.close()
         return rows[0][0]
 
+    def get_most_recent_historical_data(self) -> tuple:
+        most_recent_timestamp = self.get_most_recent_historical_update()
+        cur = self.conn.cursor()
+
+        cur.execute(f"""SELECT * FROM historical_genres WHERE updated_at = '{most_recent_timestamp}'""")
+        genres = cur.fetchall()
+
+        cur.execute(f"""SELECT * FROM historical_tracking WHERE updated_at = '{most_recent_timestamp}'""")
+        tracking = cur.fetchall()
+
+        cur.close()
+
+        return genres, tracking[0]
+
     def select_query_raw(self, sql: str):
         cur = self.conn.cursor()
         try:
@@ -189,4 +203,8 @@ class DatabaseConnection:
 
 
 if __name__ == "__main__":
-    print(datetime.datetime.now())
+    conn = DatabaseConnection()
+    genres, tracking = conn.get_most_recent_historical_data()
+    print(type(genres))
+    print(type(tracking))
+    conn.terminate()

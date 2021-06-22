@@ -11,6 +11,7 @@ def playlist_snapshot_coordinator():
     conn = DatabaseConnection()
     most_recent_time = conn.get_most_recent_historical_update()
     logger.debug(f"Most recent historical update: {most_recent_time}")
+    last_update_genres, last_update_tracking = conn.get_most_recent_historical_data()
 
     # check to ensure update only occurs every n hours
     if (datetime.now() - most_recent_time) >= timedelta(hours=2):
@@ -31,21 +32,35 @@ def playlist_snapshot_coordinator():
         historical_columns = ('updated_at', 'pdi', 'popularity', 'danceability', 'energy', 'valence', 'song_length',
                               'tempo', 'novelty')
         historical_values = (timestamp_now, pdi, song_len, tempo, pop, dance, energy, valence, novelty)
-        conn.insert_single_row(table='historical_tracking', columns=historical_columns, row=historical_values)
+        tracking_check_if_update_needed = []
 
-        top_10_genres = dyn_playlist_genres(limit=10)
+        # TODO: need to go back through existing historical_tracking and historical_genres data and remove
+        # redundant, duplicated data
+        for i in range(1, len(last_update_tracking)):
+            tracking_check_if_update_needed.append(
+                float(last_update_tracking[i]) == float(historical_values[i])
+            )
 
-        # adds total number of songs as a genre
-        total_genre_columns = ('updated_at', 'genre', 'count')
-        total_genre_values = (timestamp_now, 'total', playlist_len)
-        conn.insert_single_row(table='historical_genres', columns=total_genre_columns, row=total_genre_values)
+        if False in tracking_check_if_update_needed:
+            conn.insert_single_row(table='historical_tracking', columns=historical_columns, row=historical_values)
 
-        # add each genre
-        for genre, count in top_10_genres.items():
-            individual_genre_values = (timestamp_now, genre, count)
-            conn.insert_single_row(table='historical_genres', columns=total_genre_columns, row=individual_genre_values)
+            # using historical_tracking info as a proxy for whether genres need updating actually
+            top_10_genres = dyn_playlist_genres(limit=10)
+
+            # adds total number of songs as a genre
+            total_genre_columns = ('updated_at', 'genre', 'count')
+            total_genre_values = (timestamp_now, 'total', playlist_len)
+            conn.insert_single_row(table='historical_genres', columns=total_genre_columns, row=total_genre_values)
+
+            # add each genre
+            for genre, count in top_10_genres.items():
+                individual_genre_values = (timestamp_now, genre, count)
+                conn.insert_single_row(table='historical_genres', columns=total_genre_columns,
+                                       row=individual_genre_values)
+        else:
+            logger.info("Current playlist data matches last historical update, not logging")
+
         conn.commit()
-    # terminate connection after (if) data committed
     conn.terminate()
 
 
