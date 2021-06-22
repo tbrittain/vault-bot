@@ -41,12 +41,23 @@ const typeDefs = gql`
     rank: Int!
   }
 
+  type CurrentOverallStats {
+    pdi: Float!
+    novelty: Float!
+    dynamicNumTracks: Int!
+    archiveNumTracks: Int!
+    totalNumTracks: Int!
+    totalNumArtists: Int!
+    totalNumGenres: Int!
+  }
+
   type Query {
     getArtist(id: String, name: String): Artist!
     getGenres(limit: Int): [Genre!]!
     getArtistsFromGenre(genreName: String!): [Artist!]!
     getArchiveTracks(startDate: String, endDate: String): [Song!]!
     getDynamicTracks: [Song!]!
+    getCurrentOverallStats: CurrentOverallStats!
   }
 `
 

@@ -6,6 +6,7 @@ const Song = require('../db/models/Song')
 const { Op, Sequelize } = require('sequelize')
 const { artistRank } = require('../db/utils/ArtistRank')
 const { genreRank } = require('../db/utils/GenreRank')
+const { sequelize } = require('../db/models/Song')
 
 const resolvers = {
   Query: {
@@ -176,6 +177,17 @@ const resolvers = {
         }
       })
       return result
+    },
+    async getCurrentOverallStats (parent, args, context, info) {
+      let result = await DynamicSong.findAll({
+        attributes: [
+          [sequelize.fn('count', sequelize.col('song_id')), 'dynamicNumTracks']
+        ]
+      })
+        .catch(err => console.log(err))
+      result = JSON.parse(JSON.stringify(result))
+      result = result[0]
+      return result
     }
   },
   Artist: {
@@ -258,6 +270,42 @@ const resolvers = {
     async rank (parent, args) {
       const genreName = parent.genre
       return await genreRank(genreName)
+    }
+  },
+  CurrentOverallStats: {
+    async totalNumTracks (parent, args) {
+      let result = await Song.findAll({
+        attributes: [
+          [sequelize.fn('count', sequelize.col('id')), 'totalNumTracks']
+        ]
+      })
+        .catch(err => console.log(err))
+      result = JSON.parse(JSON.stringify(result))
+      return result[0].totalNumTracks
+    },
+    async archiveNumTracks (parent, args) {
+      let result = await ArchiveSong.findAll({
+        attributes: [
+          [sequelize.fn('count', sequelize.col('song_id')), 'archiveNumTracks']
+        ]
+      })
+        .catch(err => console.log(err))
+      result = JSON.parse(JSON.stringify(result))
+      return result[0].archiveNumTracks
+    },
+    async totalNumArtists (parent, args) {
+      let result = await Artist.findAll({
+        attributes: [
+          [sequelize.fn('count', sequelize.col('id')), 'totalNumArtists']
+        ]
+      })
+        .catch(err => console.log(err))
+      result = JSON.parse(JSON.stringify(result))
+      return result[0].totalNumArtists
+    },
+    async totalNumGenres (parent, args) {
+      const result = await ArtistGenre.aggregate('genre', 'count', { distinct: true })
+      return result
     }
   }
 }

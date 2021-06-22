@@ -7,6 +7,9 @@ from dotenv import load_dotenv
 import os
 from .config import environment
 
+# TODO: https://cloud.google.com/sql/docs/postgres/connect-run#console
+# consider migrating from psycopg2 to sqalchemy
+
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if environment == "dev":
     load_dotenv(f'{base_dir}/dev.env')
