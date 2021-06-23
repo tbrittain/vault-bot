@@ -11,26 +11,47 @@ from src import historical_tracking
 from src import vb_utils
 from src import spotify_selects
 from alive_progress import alive_bar, config_handler
+from google.cloud import secretmanager
+
+
+def access_secret_version(secret_id, project_id, version_id="1"):
+    client = secretmanager.SecretManagerServiceClient()
+    name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
+    response = client.access_secret_version(name=name)
+    return response.payload.data.decode('UTF-8')
+
+
+logger = vb_utils.logger  # TODO: could implement cloud logging instead of writing to stdout and the log file
 
 base_dir = os.getcwd()
 if config.environment == "dev":
     load_dotenv(f'{base_dir}/dev.env')
+    DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
+    logger.info("Running program in dev mode")
 elif config.environment == "prod":
-    test_token = os.getenv("DISCORD_TOKEN")
-    if None in [test_token]:
-        print("Invalid environment setting in docker-compose.yml, exiting")
+    project_id = os.getenv("PROJECT_ID")
+    DISCORD_TOKEN = access_secret_version(secret_id="vb-discord-token",
+                                          project_id=project_id)
+    logger.info("Running program in production mode")
+    if None in [project_id]:
+        logger.error("Invalid environment setting, exiting")
         exit()
 elif config.environment == "prod_local":
     load_dotenv(f'{base_dir}/prod_local.env')
+    project_id = os.getenv("PROJECT_ID")
+    DISCORD_TOKEN = access_secret_version(secret_id="vb-discord-token",
+                                          project_id=project_id)
+    logger.info("Running program in local production mode")
 else:
-    print("Invalid environment setting, exiting")
+    logger.error("Invalid environment setting, exiting")
     exit()
 
-DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 intents = discord.Intents.default()
 intents.members = True
-bot = commands.Bot(command_prefix=config.bot_command_prefix, case_insensitive=True, help_command=None, intents=intents)
-logger = vb_utils.logger
+bot = commands.Bot(command_prefix=config.bot_command_prefix,
+                   case_insensitive=True,
+                   help_command=None,
+                   intents=intents)
 
 
 @bot.event
@@ -58,6 +79,7 @@ async def hourly_cleanup():
     await bot.wait_until_ready()
     logger.info(f"Beginning hourly cleanup")
     with alive_bar(total=3, title='Hourly cleanup...') as bar:
+        logger.debug("Performing expired track removal (if necessary)...")
         await spotify_commands.expired_track_removal()
         bar()
         # updates playlist descriptions based on genres present

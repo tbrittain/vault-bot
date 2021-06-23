@@ -3,34 +3,46 @@ from spotipy.oauth2 import SpotifyOAuth
 from dotenv import load_dotenv
 import os
 from datetime import datetime, timedelta
-from .db import DatabaseConnection
+from .db import DatabaseConnection, access_secret_version
 from .vb_utils import logger
 from .config import environment
 
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if environment == "dev":
     load_dotenv(f'{base_dir}/dev.env')
+    CLIENT_ID = os.getenv("SPOTIPY_CLIENT_ID")
+    CLIENT_SECRET = os.getenv("SPOTIPY_CLIENT_SECRET")
+    REDIRECT_URI = os.getenv("SPOTIPY_REDIRECT_URI")
 elif environment == "prod":
-    test_client_id = os.getenv("SPOTIPY_CLIENT_ID")
-    test_client_secret = os.getenv("SPOTIPY_CLIENT_SECRET")
-    test_redirect = os.getenv("SPOTIPY_REDIRECT_URI")
-    if None in [test_client_id, test_client_secret, test_redirect]:
-        print("Invalid environment setting in docker-compose.yml, exiting")
+    project_id = os.getenv("PROJECT_ID")
+    CLIENT_ID = access_secret_version(secret_id="vb-spotify-client-id",
+                                      project_id=project_id)
+    CLIENT_SECRET = access_secret_version(secret_id="vb-spotify-client-secret",
+                                          project_id=project_id)
+    REDIRECT_URI = access_secret_version(secret_id="db-spotify-redirect-uri",
+                                         project_id=project_id)
+    if None in [project_id]:
+        print("Invalid environment setting, exiting")
         exit()
 elif environment == "prod_local":
     load_dotenv(f'{base_dir}/prod_local.env')
+    project_id = os.getenv("PROJECT_ID")
+    CLIENT_ID = access_secret_version(secret_id="vb-spotify-client-id",
+                                      project_id=project_id)
+    CLIENT_SECRET = access_secret_version(secret_id="vb-spotify-client-secret",
+                                          project_id=project_id)
+    REDIRECT_URI = access_secret_version(secret_id="db-spotify-redirect-uri",
+                                         project_id=project_id)
 else:
     print("Invalid environment setting, exiting")
     exit()
-CLIENT_ID = os.getenv("SPOTIPY_CLIENT_ID")
-CLIENT_SECRET = os.getenv("SPOTIPY_CLIENT_SECRET")
-REDIRECT_URI = os.getenv("SPOTIPY_REDIRECT_URI")
 
 scope = "playlist-modify-public user-library-read"
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID,
                                                client_secret=CLIENT_SECRET,
                                                redirect_uri=REDIRECT_URI,
-                                               scope=scope))
+                                               scope=scope,
+                                               cache_path=f"{base_dir}/src/cache.json"))
 
 
 async def song_search(user_message):
@@ -247,6 +259,11 @@ def playlist_description_update(playlist_id: str, initial_desc: str):
 
 
 async def expired_track_removal():
+    logger.debug("Fetching dynamic playlist info...")
+    logger.debug(f"Cache location: {base_dir}/src/cache.json")
+    cache_exists = os.path.isfile(f"{base_dir}/src/cache.json")
+    logger.debug(f"Cache file exists: {cache_exists}")
+
     results = sp.playlist_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs')
     tracks = results['items']
     while results['next']:

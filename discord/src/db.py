@@ -6,32 +6,59 @@ import psycopg2.errors
 from dotenv import load_dotenv
 import os
 from .config import environment
+from google.cloud import secretmanager
+
 
 # TODO: https://cloud.google.com/sql/docs/postgres/connect-run#console
 # consider migrating from psycopg2 to sqalchemy
 
+def access_secret_version(secret_id, project_id, version_id="1"):
+    client = secretmanager.SecretManagerServiceClient()
+    name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
+    response = client.access_secret_version(name=name)
+    return response.payload.data.decode('UTF-8')
+
+
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if environment == "dev":
     load_dotenv(f'{base_dir}/dev.env')
+    db_user = os.getenv("DB_USER")
+    db_pass = os.getenv("DB_PASS")
+    db_port = os.getenv("DB_PORT")
+    db_name = os.getenv("DB_NAME")
+    db_host = os.getenv("DB_HOST")
 elif environment == "prod":
-    test_db_user = os.getenv("DB_USER")
-    test_db_pass = os.getenv("DB_PASS")
-    test_db_host = os.getenv("DB_HOST")
-    test_db_port = os.getenv("DB_PORT")
-    test_db_name = os.getenv("DB_NAME")
-    if None in [test_db_user, test_db_pass, test_db_host, test_db_port, test_db_name]:
-        print("Invalid environment setting in docker-compose.yml, exiting")
+    project_id = os.getenv("PROJECT_ID")
+    db_user = access_secret_version(secret_id="vb-postgres-user",
+                                    project_id=project_id)
+    db_pass = access_secret_version(secret_id="vb-postgres-pass",
+                                    project_id=project_id)
+    db_host = access_secret_version(secret_id="vb-postgres-db-host",
+                                    project_id=project_id)
+    db_port = access_secret_version(secret_id="vb-postgres-db-port",
+                                    project_id=project_id)
+    db_name = access_secret_version(secret_id="vb-postgres-db-name",
+                                    project_id=project_id)
+    if None in [project_id]:
+        print("Invalid environment setting, exiting")
         exit()
 elif environment == "prod_local":
     load_dotenv(f'{base_dir}/prod_local.env')
+    project_id = os.getenv("PROJECT_ID")
+
+    db_user = access_secret_version(secret_id="vb-postgres-user",
+                                    project_id=project_id)
+    db_pass = access_secret_version(secret_id="vb-postgres-pass",
+                                    project_id=project_id)
+    db_host = access_secret_version(secret_id="vb-postgres-db-host",
+                                    project_id=project_id)
+    db_port = access_secret_version(secret_id="vb-postgres-db-port",
+                                    project_id=project_id)
+    db_name = access_secret_version(secret_id="vb-postgres-db-name",
+                                    project_id=project_id)
 else:
     print("Invalid environment setting, exiting")
     exit()
-db_user = os.getenv("DB_USER")
-db_pass = os.getenv("DB_PASS")
-db_port = os.getenv("DB_PORT")
-db_name = os.getenv("DB_NAME")
-db_host = os.getenv("DB_HOST")
 
 
 class DatabaseConnection:
@@ -138,7 +165,8 @@ class DatabaseConnection:
     def update_query(self, column_to_change: str, column_to_match: str, value: str, condition: str, table: str) -> bool:
         cur = self.conn.cursor()
         try:
-            cur.execute(f"""UPDATE {table} SET {column_to_change} = '{value}' WHERE {column_to_match} = '{condition}'""")
+            cur.execute(
+                f"""UPDATE {table} SET {column_to_change} = '{value}' WHERE {column_to_match} = '{condition}'""")
         except Exception as e:
             error_code = psycopg2.errors.lookup(e.pgcode)
             raise error_code
@@ -203,8 +231,4 @@ class DatabaseConnection:
 
 
 if __name__ == "__main__":
-    conn = DatabaseConnection()
-    genres, tracking = conn.get_most_recent_historical_data()
-    print(type(genres))
-    print(type(tracking))
-    conn.terminate()
+    pass
