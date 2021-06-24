@@ -7,10 +7,8 @@ from dotenv import load_dotenv
 import os
 from .config import environment
 from google.cloud import secretmanager
+import sys
 
-
-# TODO: https://cloud.google.com/sql/docs/postgres/connect-run#console
-# consider migrating from psycopg2 to sqalchemy
 
 def access_secret_version(secret_id, project_id, version_id="1"):
     client = secretmanager.SecretManagerServiceClient()
@@ -40,8 +38,8 @@ elif environment == "prod":
     db_name = access_secret_version(secret_id="vb-postgres-db-name",
                                     project_id=project_id)
     if None in [project_id]:
-        print("Invalid environment setting, exiting")
-        exit()
+        print("Invalid environment variable, exiting")
+        sys.exit(1)
 elif environment == "prod_local":
     load_dotenv(f'{base_dir}/prod_local.env')
     project_id = os.getenv("PROJECT_ID")
@@ -58,7 +56,7 @@ elif environment == "prod_local":
                                     project_id=project_id)
 else:
     print("Invalid environment setting, exiting")
-    exit()
+    sys.exit(1)
 
 
 class DatabaseConnection:
@@ -66,8 +64,7 @@ class DatabaseConnection:
         self.conn = psycopg2.connect(dbname=db_name,
                                      user=db_user,
                                      password=db_pass,
-                                     host=db_host,
-                                     port=db_port)
+                                     host=db_host)
 
     def terminate(self):
         self.conn.close()

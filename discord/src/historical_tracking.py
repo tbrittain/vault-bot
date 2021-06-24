@@ -1,10 +1,16 @@
 from .db import DatabaseConnection
 from .spotify_commands import dyn_playlist_genres
 from .vb_utils import logger
+from .config import environment
 from datetime import datetime, timedelta
 import math
 
 iso_format = "%Y-%m-%d %H:%M"
+
+if environment == "dev":
+    commit_changes = False
+elif environment == "prod" or environment == "prod_local":
+    commit_changes = True
 
 
 def playlist_snapshot_coordinator():
@@ -59,8 +65,10 @@ def playlist_snapshot_coordinator():
                                        row=individual_genre_values)
         else:
             logger.info("Current playlist data matches last historical update, not logging")
-
-        conn.commit()
+        if commit_changes:
+            conn.commit()
+        else:
+            conn.rollback()
     conn.terminate()
 
 

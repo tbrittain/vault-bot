@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from .db import DatabaseConnection, access_secret_version
 from .vb_utils import logger
 from .config import environment
+import sys
 
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if environment == "dev":
@@ -13,6 +14,7 @@ if environment == "dev":
     CLIENT_ID = os.getenv("SPOTIPY_CLIENT_ID")
     CLIENT_SECRET = os.getenv("SPOTIPY_CLIENT_SECRET")
     REDIRECT_URI = os.getenv("SPOTIPY_REDIRECT_URI")
+    commit_changes = False
 elif environment == "prod":
     project_id = os.getenv("PROJECT_ID")
     CLIENT_ID = access_secret_version(secret_id="vb-spotify-client-id",
@@ -21,9 +23,10 @@ elif environment == "prod":
                                           project_id=project_id)
     REDIRECT_URI = access_secret_version(secret_id="db-spotify-redirect-uri",
                                          project_id=project_id)
+    commit_changes = True
     if None in [project_id]:
         print("Invalid environment setting, exiting")
-        exit()
+        sys.exit(1)
 elif environment == "prod_local":
     load_dotenv(f'{base_dir}/prod_local.env')
     project_id = os.getenv("PROJECT_ID")
@@ -33,9 +36,10 @@ elif environment == "prod_local":
                                           project_id=project_id)
     REDIRECT_URI = access_secret_version(secret_id="db-spotify-redirect-uri",
                                          project_id=project_id)
+    commit_changes = True
 else:
-    print("Invalid environment setting, exiting")
-    exit()
+    print("Invalid environment variable, exiting")
+    sys.exit(1)
 
 scope = "playlist-modify-public user-library-read"
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID,
@@ -77,8 +81,11 @@ async def add_to_playlist(song_id):
         raise FileExistsError('Song already present in Dyn playlist! Not adding duplicate ID.')
     else:
         song_id = [song_id, ]  # input is a list
-        sp.playlist_add_items('5YQHb5wt9d0hmShWNxjsTs', song_id)  # dynamic
-        sp.playlist_add_items('4C6pU7YmbBUG8sFFk4eSXj', song_id)  # archive
+        if not environment == 'dev':
+            sp.playlist_add_items('5YQHb5wt9d0hmShWNxjsTs', song_id)  # dynamic
+            sp.playlist_add_items('4C6pU7YmbBUG8sFFk4eSXj', song_id)  # archive
+        else:
+            logger.debug(f"Simulated adding song with ID {song_id} to playlists")
 
 
 def songs_in_dyn_playlist():
@@ -210,7 +217,10 @@ def song_add_to_db(song_id, user):
     table_archive_row = (last_id, song_id, artist_id, added_by, added_at)
     conn.insert_single_row(table='archive', columns=table_archive_columns, row=table_archive_row)
 
-    conn.commit()
+    if commit_changes:
+        conn.commit()
+    else:
+        conn.rollback()
     conn.terminate()
 
 
@@ -307,7 +317,10 @@ async def expired_track_removal():
                                                                 items=[key])
                     conn.delete_query(table='dynamic', column_to_match='song_id', condition=key)
                     logger.debug(f'Song {key} removed from playlist')
-        conn.commit()
+        if commit_changes:
+            conn.commit()
+        else:
+            conn.rollback()
         conn.terminate()
     logger.info('Track popularities updated and expired songs checked.')
 
