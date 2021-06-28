@@ -3,6 +3,7 @@
 */package-lock.json
 *.csv
 *.txt
+discord/.idea
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -140,3 +141,4 @@ dmypy.json
 /discord/VaultBot.bat
 /discord/vibrant-sound-292320.json
 /discord/src/cache.json
+.DS_store

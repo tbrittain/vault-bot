@@ -36,7 +36,7 @@ elif environment == "prod_local":
                                           project_id=project_id)
     REDIRECT_URI = access_secret_version(secret_id="db-spotify-redirect-uri",
                                          project_id=project_id)
-    commit_changes = True
+    commit_changes = False
 else:
     print("Invalid environment variable, exiting")
     sys.exit(1)
@@ -81,7 +81,7 @@ async def add_to_playlist(song_id):
         raise FileExistsError('Song already present in Dyn playlist! Not adding duplicate ID.')
     else:
         song_id = [song_id, ]  # input is a list
-        if not environment == 'dev':
+        if not commit_changes:
             sp.playlist_add_items('5YQHb5wt9d0hmShWNxjsTs', song_id)  # dynamic
             sp.playlist_add_items('4C6pU7YmbBUG8sFFk4eSXj', song_id)  # archive
         else:

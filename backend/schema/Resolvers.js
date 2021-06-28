@@ -7,7 +7,9 @@ const { Op, Sequelize } = require('sequelize')
 const { artistRank } = require('../db/utils/ArtistRank')
 const { genreRank } = require('../db/utils/GenreRank')
 const { sequelize } = require('../db/models/Song')
+const escape = require('escape-html')
 
+// TODO: consider separating individual resolvers into their own files and merging them together
 const resolvers = {
   Query: {
     async getArtist (parent, args, context, info) {
@@ -34,8 +36,14 @@ const resolvers = {
       })
         .catch(err => console.log(err))
 
-      result = JSON.parse(JSON.stringify(result))
-      return result
+      if (result !== null) {
+        result = JSON.parse(JSON.stringify(result))
+        return result
+      } else {
+        throw new SyntaxError('No results found for artist provided')
+      }
+
+
     },
     async getGenres (parent, args, context, info) {
       // FIXME: this query executes way more db queries than necessary
@@ -50,6 +58,7 @@ const resolvers = {
         ]
       })
         .catch(err => console.log(err))
+
       const genres = JSON.parse(JSON.stringify(result))
       for (let i = 0; i < result.length; i++) {
         genres[i].rank = i + 1
@@ -69,8 +78,14 @@ const resolvers = {
         ]
       })
         .catch(err => console.log(err))
-      result = JSON.parse(JSON.stringify(result))
-      result = result.map(element => element.artist)
+      
+      if (result.length > 0) {
+        result = JSON.parse(JSON.stringify(result))
+        result = result.map(element => element.artist)
+      } else {
+        throw new SyntaxError(`No artists found matching provided genre: ${escape(genreName)}`)
+      }
+
       return result
     },
     async getArchiveTracks (parent, args, context, info) {

@@ -13,6 +13,7 @@
   "dependencies": {
     "apollo-server-express": "^2.25.1",
     "dotenv": "^10.0.0",
+    "escape-html": "^1.0.3",
     "express": "^4.17.1",
     "graphql": "^15.5.0",
     "graphql-validation-complexity": "^0.4.2",

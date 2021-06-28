@@ -16,6 +16,12 @@ from google.cloud import secretmanager
 import sys
 import re
 
+# TODO: implement discord slash commands
+# https://pypi.org/project/discord-py-slash-command/
+
+# TODO: implement a webhook to send daily statistics to myself
+# https://www.codespeedy.com/create-a-discord-webhook-in-python-for-a-bot/
+
 
 def access_secret_version(secret_id, project_id, version_id="1"):
     client = secretmanager.SecretManagerServiceClient()
