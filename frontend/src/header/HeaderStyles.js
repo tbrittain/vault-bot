@@ -1,12 +1,20 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles'
 
-const useStyles = makeStyles((theme) => ({
-    header: {
-        flexGrow: 1,
-      },
-      title: {
-        flexGrow: 1,
-      },
+const headerStyles = makeStyles((theme) => ({
+  header: {
+    flexGrow: 1
+  },
+  title: {
+    flexGrow: 1,
+    textDecoration: 'none',
+    color: '#000',
+    fontFamily: 'Rubik',
+    fontWeight: 800,
+    transition: '0.3s',
+    '&:hover': {
+      color: '#FFF'
+    }
+  }
 }))
 
-export default useStyles;
+export default headerStyles

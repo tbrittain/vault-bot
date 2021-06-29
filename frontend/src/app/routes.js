@@ -1,58 +1,44 @@
-import React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import React from 'react'
+import { Route, Switch } from 'react-router-dom'
+import SongContainer from '../song/SongContainer'
 
-const ROUTES = [
-    {
-        path: "/",
-        key: "ROOT",
-        exact: true,
-        component: () => <h1>Index</h1>
-    },
-    {
-        path: "/songs",
-        key: "SONGS",
-        exact: true,
-        component: RenderRoutes,
-        routes: [
-            {
-                path: "/songs/",
-                key: "SONGS",
-                exact: true,
-                component: () => <h1>Total songs</h1>
-            },
-            {
-                path: "/songs/:id",
-                key: "SONG",
-                exact: true,
-                component: () => <h1>Specific song</h1>
-            }
-        ]
-    }
-]
+// https://www.digitalocean.com/community/tutorials/how-to-handle-routing-in-react-apps-with-react-router
 
-/**
- * Render a route with potential sub routes
- * https://reacttraining.com/react-router/web/example/route-config
- */
- function RouteWithSubRoutes(route) {
-    return (
-      <Route
-        path={route.path}
-        exact={route.exact}
-        render={props => <route.component {...props} routes={route.routes} />}
-      />
-    );
-  }
-
-function RenderRoutes({ routes }) {
-    return (
-        <Switch>
-            {routes.map((route, i) => {
-                return <RouteWithSubRoutes key={route.key} {...route} />
-            })}
-            <Route component={() => <h1>Not found!</h1>} />
-        </Switch>
-    )
+function RouteHandler () {
+  return (
+    <Switch>
+      <Route exact path='/'>
+        <h1>Index</h1>
+      </Route>
+      <Route exact path='/songs'>
+        <h1>Songs index</h1>
+      </Route>
+      <Route path='/songs/:songId'>
+        <SongContainer />
+      </Route>
+      <Route exact path='/artists'>
+        <h1>Artists index</h1>
+      </Route>
+      <Route path='/artists/:artistId'>
+        <h1>Individual artist</h1>
+      </Route>
+      <Route exact path='/genres'>
+        <h1>Genres index</h1>
+      </Route>
+      <Route path='/genres/:genreName'>
+        <h1>Individual genre</h1>
+      </Route>
+      <Route path='/history'>
+        <h1>Historical data</h1>
+      </Route>
+      <Route path='/slicer'>
+        <h1>Song slicer!</h1>
+      </Route>
+      <Route path='*'>
+        <h1>404</h1>
+      </Route>
+    </Switch>
+  )
 }
 
-export { ROUTES, RenderRoutes }
+export default RouteHandler

@@ -42,8 +42,6 @@ const resolvers = {
       } else {
         throw new SyntaxError('No results found for artist provided')
       }
-
-
     },
     async getGenres (parent, args, context, info) {
       // FIXME: this query executes way more db queries than necessary
@@ -203,6 +201,22 @@ const resolvers = {
       result = JSON.parse(JSON.stringify(result))
       result = result[0]
       return result
+    },
+    async getTrack (parent, args, context, info) {
+      const songId = args.id
+      let result = await Song.findAll({
+        where: {
+          id: songId
+        }
+      })
+        .catch(err => console.log(err))
+      result = JSON.parse(JSON.stringify(result))[0]
+
+      if (Object.keys(result).length > 0) {
+        return result
+      } else {
+        throw new SyntaxError('Invalid song ID')
+      }
     }
   },
   Artist: {

@@ -58,6 +58,7 @@ const typeDefs = gql`
     getArchiveTracks(startDate: String, endDate: String): [Song!]!
     getDynamicTracks: [Song!]!
     getCurrentOverallStats: CurrentOverallStats!
+    getTrack(id: String!): Song!
   }
 `
 
