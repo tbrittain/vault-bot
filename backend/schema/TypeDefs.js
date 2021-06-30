@@ -14,7 +14,7 @@ const typeDefs = gql`
   type Song {
     id: String!
     artistId: String!
-    artistName: String!
+    artist: Artist!
     name: String!
     album: String!
     art: String

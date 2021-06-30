@@ -1,6 +1,9 @@
 const express = require('express')
 const { ApolloServer } = require('apollo-server-express')
 const { createComplexityLimitRule } = require('graphql-validation-complexity')
+const cors = require('cors')
+
+require('dotenv').config() // for use in non-docker development
 
 // express as middleware
 const port = process.env.port || 4001
@@ -30,7 +33,15 @@ const server = new ApolloServer({
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 
-server.applyMiddleware({ app })
+// TODO: enable cross origin requests only for frontend
+const corsSettings = {
+  origin: process.env.FRONTEND_URL,
+  credentials: true
+}
+
+// app.use(cors(corsSettings))
+
+server.applyMiddleware({ app, cors: true })
 
 app.listen(port, () => {
   console.log(`🚀 GraphQL API server listening at http://localhost:${port}/graphql/`)

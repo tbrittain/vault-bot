@@ -278,21 +278,18 @@ const resolvers = {
       result = JSON.parse(JSON.stringify(result))
       return result[0]
     },
-    async artistName (parent, args) {
+    async artist (parent, args) {
       const artistId = parent.artistId
 
       let result = await Artist.findOne({
         where: {
           id: artistId
-        },
-        attributes: [
-          ['name', 'artistName']
-        ]
+        }
       })
         .catch(err => console.log(err))
 
       result = JSON.parse(JSON.stringify(result))
-      return result.artistName
+      return result
     }
   },
   Genre: {
