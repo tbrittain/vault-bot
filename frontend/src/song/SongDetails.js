@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react'
 import { Paper, Avatar, Typography, Box } from '@material-ui/core'
-import songDetailsStyles from './SongDetailsStyles'
+import songStyles from './SongStyles'
 
 const SongDetails = (props) => {
-  const classes = songDetailsStyles()
+  const classes = songStyles()
   const playSound = () => {
     const soundFile = document.getElementById('songPreview')
     soundFile.play()
@@ -27,21 +27,24 @@ const SongDetails = (props) => {
       elevation={3}
       className={classes.container}
     >
-      <Avatar
-        id='albumArt'
-        className={props.songPreview ? classes.albumArt : classes.albumArtNoRotate}
-        alt={props.album + ' album art'}
-        src={props.art}
-        variant='circle'
-      />
+      <div className={classes.containerItem}>
+        <Avatar
+          id='albumArt'
+          className={props.songPreview ? `${classes.albumArt} ${classes.albumArtRotate}` : classes.albumArt}
+          alt={props.album + ' album art'}
+          src={props.art}
+          variant='circle'
+        />
+      </div>
       {props.songPreview &&
         <audio
           src={props.songPreview}
           id='songPreview'
+          loop
         />}
-      <div className={classes.containerItem}>
+      <div className={`${classes.containerItem} ${classes.songDescription}`}>
         <Typography variant='h4'>{props.name} <Box component='span' fontWeight='300'>by</Box> {props.artistName}</Typography>
-        <Typography variant='h6'><Box component='span' fontWeight='300'>from album</Box> {props.album}</Typography>
+        <Typography variant='h6'><Box component='span' fontWeight='300'>from the album</Box> {props.album}</Typography>
       </div>
     </Paper>
   )

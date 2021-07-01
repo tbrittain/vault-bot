@@ -7,12 +7,12 @@ const headerStyles = makeStyles((theme) => ({
   title: {
     flexGrow: 1,
     textDecoration: 'none',
-    color: '#000',
+    color: theme.palette.secondary.dark,
     fontFamily: 'Rubik',
     fontWeight: 800,
     transition: '0.3s',
     '&:hover': {
-      color: '#FFF'
+      color: theme.palette.secondary.light
     }
   }
 }))

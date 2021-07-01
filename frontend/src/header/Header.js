@@ -8,7 +8,6 @@ import {
 } from '@material-ui/core'
 import { Link } from 'react-router-dom'
 import headerStyles from './HeaderStyles'
-import './Header.css'
 
 function Header () {
   const classes = headerStyles()

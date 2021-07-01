@@ -1,9 +1,15 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
 import { useQuery, gql } from '@apollo/client'
-import { CircularProgress, Backdrop, Grid } from '@material-ui/core'
+import {
+  CircularProgress,
+  Backdrop,
+  Grid,
+  Typography
+} from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
 import SongDetails from './SongDetails'
+import SongArtist from './SongArtist'
 
 const QUERY = gql`
   query ($songId: String!) {
@@ -48,15 +54,20 @@ const SongContainer = () => {
     })
 
   let formattedData
+  let artistGenres
   if (data) {
     formattedData = data
     formattedData = data.getTrack
-    console.log(formattedData)
+    if (formattedData.artist.genres.length > 0) {
+      artistGenres = formattedData.artist.genres
+      artistGenres = artistGenres.map(genreObject => genreObject.genre)
+      console.log(artistGenres)
+    }
   }
 
   return (
     <div>
-      <h1>Song Details</h1>
+      <Typography variant='h1'>Song Details</Typography>
       {loading &&
         <Backdrop open>
           <CircularProgress />
@@ -68,7 +79,6 @@ const SongContainer = () => {
           container
           direction='column'
           justify='space-evenly'
-          alignItems='center'
         >
           <SongDetails
             album={formattedData.album}
@@ -76,6 +86,13 @@ const SongContainer = () => {
             artistName={formattedData.artist.name}
             art={formattedData.art}
             songPreview={formattedData.previewUrl}
+          />
+          <Typography variant='h2'>Artist Preview</Typography>
+          <SongArtist
+            id={formattedData.artist.id}
+            name={formattedData.artist.name}
+            art={formattedData.artist.art}
+            genres={artistGenres}
           />
         </Grid>}
     </div>
