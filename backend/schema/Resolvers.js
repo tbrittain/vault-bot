@@ -217,6 +217,25 @@ const resolvers = {
       } else {
         throw new SyntaxError('Invalid song ID')
       }
+    },
+    async getAvgTrackDetails (panent, args, context, info) {
+      // TODO: handle args.genre to filter averages by genre
+      let result = await Song.findAll({
+        attributes: [
+          [sequelize.fn('AVG', sequelize.col('acousticness')), 'acousticness'],
+          [sequelize.fn('AVG', sequelize.col('danceability')), 'danceability'],
+          [sequelize.fn('AVG', sequelize.col('energy')), 'energy'],
+          [sequelize.fn('AVG', sequelize.col('instrumentalness')), 'instrumentalness'],
+          [sequelize.fn('AVG', sequelize.col('length')), 'length'],
+          [sequelize.fn('AVG', sequelize.col('liveness')), 'liveness'],
+          [sequelize.fn('AVG', sequelize.col('loudness')), 'loudness'],
+          [sequelize.fn('AVG', sequelize.col('tempo')), 'tempo'],
+          [sequelize.fn('AVG', sequelize.col('valence')), 'valence']
+        ]
+      })
+        .catch(err => console.log(err))
+      result = JSON.parse(JSON.stringify(result))[0]
+      return result
     }
   },
   Artist: {

@@ -13,7 +13,10 @@ function Header () {
   const classes = headerStyles()
   return (
     <header className={classes.header}>
-      <AppBar position='static'>
+      <AppBar
+        position='fixed'
+        className={classes.headerContainer}
+      >
         <Toolbar>
           <Typography
             variant='h6'

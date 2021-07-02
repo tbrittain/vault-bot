@@ -9,7 +9,7 @@ const SongArtist = (props) => {
   return (
     <Paper
       elevation={3}
-      className={classes.container}
+      className={classes.artistContainer}
     >
       <div className={classes.containerItem}>
         <Avatar
@@ -26,6 +26,11 @@ const SongArtist = (props) => {
           to={`/artists/${props.id}`}
         >
           {props.name}
+        </Typography>
+        <Typography
+          variant='subtitle1'
+        >
+          Artist rank: {props.rank}
         </Typography>
       </div>
       <div className={`${classes.containerItem} ${classes.genreContainer}`}>

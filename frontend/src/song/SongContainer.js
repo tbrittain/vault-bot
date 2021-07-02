@@ -61,8 +61,8 @@ const SongContainer = () => {
     if (formattedData.artist.genres.length > 0) {
       artistGenres = formattedData.artist.genres
       artistGenres = artistGenres.map(genreObject => genreObject.genre)
-      console.log(artistGenres)
     }
+    console.log(formattedData)
   }
 
   return (
@@ -86,12 +86,14 @@ const SongContainer = () => {
             artistName={formattedData.artist.name}
             art={formattedData.art}
             songPreview={formattedData.previewUrl}
+            details={formattedData.details}
           />
           <Typography variant='h2'>Artist Preview</Typography>
           <SongArtist
             id={formattedData.artist.id}
             name={formattedData.artist.name}
             art={formattedData.artist.art}
+            rank={formattedData.artist.rank}
             genres={artistGenres}
           />
         </Grid>}

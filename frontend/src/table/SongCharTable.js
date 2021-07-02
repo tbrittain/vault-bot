@@ -8,12 +8,10 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Typography,
-  Button
+  Typography
 } from '@material-ui/core'
-import { Link } from 'react-router-dom'
 
-const GenreTable = (props) => {
+const SongCharTable = (props) => {
   const classes = tableStyles()
   return (
     <TableContainer component={Paper}>
@@ -46,13 +44,7 @@ const GenreTable = (props) => {
                   key={cell}
                   align='center'
                 >
-                  <Button
-                    color='inherit'
-                    component={Link}
-                    to={`/genres/${cell}`}
-                  >
-                    {cell}
-                  </Button>
+                  {cell}
                 </TableCell>
               ))}
             </TableRow>
@@ -63,4 +55,4 @@ const GenreTable = (props) => {
   )
 }
 
-export default GenreTable
+export default SongCharTable

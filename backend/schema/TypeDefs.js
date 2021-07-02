@@ -1,5 +1,7 @@
 const { gql } = require('apollo-server-express')
 
+// TODO: getAvgSongDetails query
+
 const typeDefs = gql`
 
   type Artist {
@@ -59,6 +61,7 @@ const typeDefs = gql`
     getDynamicTracks: [Song!]!
     getCurrentOverallStats: CurrentOverallStats!
     getTrack(id: String!): Song!
+    getAvgTrackDetails(genre: String): SongDetails!
   }
 `
 

@@ -32,7 +32,9 @@ function App () {
   return (
     <Container maxWidth='md'>
       <Header />
-      <main className={classes.app}>
+      <main
+        className={classes.app}
+      >
         <RouteHandler />
       </main>
       <footer>
