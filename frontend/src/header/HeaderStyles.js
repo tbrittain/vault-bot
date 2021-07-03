@@ -5,7 +5,8 @@ const headerStyles = makeStyles((theme) => ({
     flexGrow: 1
   },
   headerContainer: {
-    height: '4rem'
+    height: '4rem',
+    zIndex: 20
   },
   title: {
     flexGrow: 1,

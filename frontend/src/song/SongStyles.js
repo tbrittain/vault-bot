@@ -20,10 +20,10 @@ const songStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    height: '24vw',
     maxWidth: '100%',
     margin: theme.spacing(1),
-    padding: theme.spacing(2)
+    overflow: 'auto'
+    // padding: theme.spacing(2)
   },
   innerContainer: {
     justifyContent: 'center',
@@ -70,8 +70,37 @@ const songStyles = makeStyles((theme) => ({
   genreContainer: {
     width: '65%'
   },
-  navText: {
-    color: theme.palette.secondary.dark
+  navBar: {
+    zIndex: 10
+  },
+  albumGrid: {
+    display: 'flex'
+  },
+  albumSongCard: {
+    margin: 5,
+    display: 'grid',
+    gridTemplate: '1fr / 1fr',
+    placeItems: 'center',
+    flex: '1 0 auto',
+    maxWidth: '13vw'
+  },
+  albumInner: {
+    gridColumn: '1 / 1',
+    gridRow: '1 / 1',
+    height: '100%',
+    width: '100%',
+    textAlign: 'center',
+    alignContent: 'center',
+    display: 'flex'
+  },
+  albumText: {
+    margin: 'auto auto',
+    textDecoration: 'none',
+    transition: '0.3s',
+    padding: '3% 3%',
+    '&:hover': {
+      color: theme.palette.secondary.dark
+    }
   },
   '@keyframes rotate': {
     from: {

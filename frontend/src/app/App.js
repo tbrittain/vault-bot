@@ -13,7 +13,7 @@ function Copyright () {
         color='inherit'
         href='https://tbrittain.com/'
         target='_blank'
-        rel='noopener norefferer'
+        rel='noopener noreferrer'
       >
         Trey Brittain
       </Link>{' '}

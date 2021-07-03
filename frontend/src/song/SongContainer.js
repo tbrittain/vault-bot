@@ -84,6 +84,7 @@ const SongContainer = () => {
             album={formattedData.album}
             name={formattedData.name}
             artistName={formattedData.artist.name}
+            artistId={formattedData.artist.id}
             art={formattedData.art}
             songPreview={formattedData.previewUrl}
             details={formattedData.details}

@@ -220,7 +220,7 @@ const resolvers = {
       }
     },
     async getAvgTrackDetails (panent, args, context, info) {
-      // TODO: handle args.genre to filter averages by genre
+      const genre = args.genre
       const avgSongAttributes = [
         [sequelize.fn('AVG', sequelize.col('acousticness')), 'acousticness'],
         [sequelize.fn('AVG', sequelize.col('danceability')), 'danceability'],
@@ -242,7 +242,7 @@ const resolvers = {
       } else {
         let result = await ArtistGenre.findAll({
           where: {
-            genre: args.genre
+            genre: genre
           },
           include: {
             model: Artist,
@@ -296,6 +296,25 @@ const resolvers = {
 
         return calculatedResult
       }
+    },
+    async getSongsFromAlbum (parent, args, context, info) {
+      const album = args.album
+      const artistId = args.artistId
+      let result = await Song.findAll({
+        where: {
+          album: album,
+          artistId: artistId
+        }
+      })
+        .catch(err => console.log(err))
+      result = JSON.parse(JSON.stringify(result))
+      return result
+    },
+    async getArtists (parent, args, context, info) {
+      let result = await Artist.findAll()
+        .catch(err => console.log(err))
+      result = JSON.parse(JSON.stringify(result))
+      return result
     }
   },
   Artist: {
