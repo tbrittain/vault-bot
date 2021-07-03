@@ -36,7 +36,7 @@ const resolvers = {
       })
         .catch(err => console.log(err))
 
-      if (result !== null) {
+      if (result) {
         result = JSON.parse(JSON.stringify(result))
         return result
       } else {
@@ -77,7 +77,7 @@ const resolvers = {
         ]
       })
         .catch(err => console.log(err))
-      
+
       if (result.length > 0) {
         result = JSON.parse(JSON.stringify(result))
         result = result.map(element => element.artist)
@@ -221,50 +221,80 @@ const resolvers = {
     },
     async getAvgTrackDetails (panent, args, context, info) {
       // TODO: handle args.genre to filter averages by genre
+      const avgSongAttributes = [
+        [sequelize.fn('AVG', sequelize.col('acousticness')), 'acousticness'],
+        [sequelize.fn('AVG', sequelize.col('danceability')), 'danceability'],
+        [sequelize.fn('AVG', sequelize.col('energy')), 'energy'],
+        [sequelize.fn('AVG', sequelize.col('instrumentalness')), 'instrumentalness'],
+        [sequelize.fn('AVG', sequelize.col('length')), 'length'],
+        [sequelize.fn('AVG', sequelize.col('liveness')), 'liveness'],
+        [sequelize.fn('AVG', sequelize.col('loudness')), 'loudness'],
+        [sequelize.fn('AVG', sequelize.col('tempo')), 'tempo'],
+        [sequelize.fn('AVG', sequelize.col('valence')), 'valence']
+      ]
       if (!args.genre) {
         let result = await Song.findAll({
-          attributes: [
-            [sequelize.fn('AVG', sequelize.col('acousticness')), 'acousticness'],
-            [sequelize.fn('AVG', sequelize.col('danceability')), 'danceability'],
-            [sequelize.fn('AVG', sequelize.col('energy')), 'energy'],
-            [sequelize.fn('AVG', sequelize.col('instrumentalness')), 'instrumentalness'],
-            [sequelize.fn('AVG', sequelize.col('length')), 'length'],
-            [sequelize.fn('AVG', sequelize.col('liveness')), 'liveness'],
-            [sequelize.fn('AVG', sequelize.col('loudness')), 'loudness'],
-            [sequelize.fn('AVG', sequelize.col('tempo')), 'tempo'],
-            [sequelize.fn('AVG', sequelize.col('valence')), 'valence']
-          ]
+          attributes: avgSongAttributes
         })
           .catch(err => console.log(err))
         result = JSON.parse(JSON.stringify(result))[0]
         return result
       } else {
         let result = await ArtistGenre.findAll({
-          include: {
-            model: Artist,
-            include: {
-              model: Song,
-              attributes: [
-                [sequelize.fn('AVG', sequelize.col('acousticness')), 'acousticness'],
-                [sequelize.fn('AVG', sequelize.col('danceability')), 'danceability'],
-                [sequelize.fn('AVG', sequelize.col('energy')), 'energy'],
-                [sequelize.fn('AVG', sequelize.col('instrumentalness')), 'instrumentalness'],
-                [sequelize.fn('AVG', sequelize.col('length')), 'length'],
-                [sequelize.fn('AVG', sequelize.col('liveness')), 'liveness'],
-                [sequelize.fn('AVG', sequelize.col('loudness')), 'loudness'],
-                [sequelize.fn('AVG', sequelize.col('tempo')), 'tempo'],
-                [sequelize.fn('AVG', sequelize.col('valence')), 'valence']
-              ]
-            },
-            group: ['artist.id']
-          },
           where: {
             genre: args.genre
           },
-          group: ['artist-genre.artist_id', 'artist-genre.genre']
+          include: {
+            model: Artist,
+            include: {
+              model: Song
+            }
+          }
         })
-          .catch(err => console.log(err))
-        console.log(result)
+        if (!result.length > 0) {
+          throw new SyntaxError('No results found, are you sure you used a valid genre?')
+        }
+        result = JSON.parse(JSON.stringify(result))
+        result = result.map(attribute => attribute.artist.songs)
+
+        const average = (array) => array.reduce((a, b) => a + b) / array.length
+        const length = []
+        const tempo = []
+        const danceability = []
+        const energy = []
+        const loudness = []
+        const acousticness = []
+        const instrumentalness = []
+        const liveness = []
+        const valence = []
+
+        for (const artist of result) {
+          for (const song of artist) {
+            length.push(Number(song.length))
+            tempo.push(Number(song.tempo))
+            danceability.push(Number(song.danceability))
+            energy.push(Number(song.energy))
+            loudness.push(Number(song.loudness))
+            acousticness.push(Number(song.acousticness))
+            instrumentalness.push(Number(song.instrumentalness))
+            liveness.push(Number(song.liveness))
+            valence.push(Number(song.valence))
+          }
+        }
+
+        const calculatedResult = {
+          length: average(length),
+          tempo: average(tempo),
+          danceability: average(danceability),
+          energy: average(energy),
+          loudness: average(loudness),
+          acousticness: average(acousticness),
+          instrumentalness: average(instrumentalness),
+          liveness: average(liveness),
+          valence: average(valence)
+        }
+
+        return calculatedResult
       }
     }
   },
