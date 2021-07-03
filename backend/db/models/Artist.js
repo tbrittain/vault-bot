@@ -17,7 +17,8 @@ const Artist = db.define('artist', {
   }
 }, {
   tableName: 'artists',
-  timestamps: false
+  timestamps: false,
+  underscored: true
 })
 
 Artist.hasMany(Song)

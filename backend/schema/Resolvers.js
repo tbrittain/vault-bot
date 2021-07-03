@@ -45,6 +45,7 @@ const resolvers = {
     },
     async getGenres (parent, args, context, info) {
       // FIXME: this query executes way more db queries than necessary
+      // when adding rank to each genre
       const result = await ArtistGenre.findAll({
         attributes: [
           'genre',
@@ -220,22 +221,51 @@ const resolvers = {
     },
     async getAvgTrackDetails (panent, args, context, info) {
       // TODO: handle args.genre to filter averages by genre
-      let result = await Song.findAll({
-        attributes: [
-          [sequelize.fn('AVG', sequelize.col('acousticness')), 'acousticness'],
-          [sequelize.fn('AVG', sequelize.col('danceability')), 'danceability'],
-          [sequelize.fn('AVG', sequelize.col('energy')), 'energy'],
-          [sequelize.fn('AVG', sequelize.col('instrumentalness')), 'instrumentalness'],
-          [sequelize.fn('AVG', sequelize.col('length')), 'length'],
-          [sequelize.fn('AVG', sequelize.col('liveness')), 'liveness'],
-          [sequelize.fn('AVG', sequelize.col('loudness')), 'loudness'],
-          [sequelize.fn('AVG', sequelize.col('tempo')), 'tempo'],
-          [sequelize.fn('AVG', sequelize.col('valence')), 'valence']
-        ]
-      })
-        .catch(err => console.log(err))
-      result = JSON.parse(JSON.stringify(result))[0]
-      return result
+      if (!args.genre) {
+        let result = await Song.findAll({
+          attributes: [
+            [sequelize.fn('AVG', sequelize.col('acousticness')), 'acousticness'],
+            [sequelize.fn('AVG', sequelize.col('danceability')), 'danceability'],
+            [sequelize.fn('AVG', sequelize.col('energy')), 'energy'],
+            [sequelize.fn('AVG', sequelize.col('instrumentalness')), 'instrumentalness'],
+            [sequelize.fn('AVG', sequelize.col('length')), 'length'],
+            [sequelize.fn('AVG', sequelize.col('liveness')), 'liveness'],
+            [sequelize.fn('AVG', sequelize.col('loudness')), 'loudness'],
+            [sequelize.fn('AVG', sequelize.col('tempo')), 'tempo'],
+            [sequelize.fn('AVG', sequelize.col('valence')), 'valence']
+          ]
+        })
+          .catch(err => console.log(err))
+        result = JSON.parse(JSON.stringify(result))[0]
+        return result
+      } else {
+        let result = await ArtistGenre.findAll({
+          include: {
+            model: Artist,
+            include: {
+              model: Song,
+              attributes: [
+                [sequelize.fn('AVG', sequelize.col('acousticness')), 'acousticness'],
+                [sequelize.fn('AVG', sequelize.col('danceability')), 'danceability'],
+                [sequelize.fn('AVG', sequelize.col('energy')), 'energy'],
+                [sequelize.fn('AVG', sequelize.col('instrumentalness')), 'instrumentalness'],
+                [sequelize.fn('AVG', sequelize.col('length')), 'length'],
+                [sequelize.fn('AVG', sequelize.col('liveness')), 'liveness'],
+                [sequelize.fn('AVG', sequelize.col('loudness')), 'loudness'],
+                [sequelize.fn('AVG', sequelize.col('tempo')), 'tempo'],
+                [sequelize.fn('AVG', sequelize.col('valence')), 'valence']
+              ]
+            },
+            group: ['artist.id']
+          },
+          where: {
+            genre: args.genre
+          },
+          group: ['artist-genre.artist_id', 'artist-genre.genre']
+        })
+          .catch(err => console.log(err))
+        console.log(result)
+      }
     }
   },
   Artist: {
