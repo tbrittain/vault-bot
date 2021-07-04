@@ -36,7 +36,6 @@ const AlbumSongs = (props) => {
   if (data) {
     formattedData = data.getSongsFromAlbum
     formattedData = formattedData.filter(song => song.id !== songId)
-    console.log(formattedData)
   }
   return (
     <div>

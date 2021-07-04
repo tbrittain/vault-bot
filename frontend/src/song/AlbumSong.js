@@ -1,8 +1,7 @@
 import React from 'react'
 import {
   Typography,
-  Card,
-  CardContent
+  Card
 } from '@material-ui/core'
 import { Link } from 'react-router-dom'
 import songStyles from './SongStyles'

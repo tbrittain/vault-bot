@@ -62,7 +62,6 @@ const SongContainer = () => {
       artistGenres = formattedData.artist.genres
       artistGenres = artistGenres.map(genreObject => genreObject.genre)
     }
-    console.log(formattedData)
   }
 
   return (

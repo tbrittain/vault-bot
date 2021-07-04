@@ -11,6 +11,7 @@ import {
   useTheme
 } from '@material-ui/core'
 import AlbumSongs from './AlbumSongs'
+import SongChars from './SongCharacteristics'
 import songStyles from './SongStyles'
 
 // TODO: use state to switch between the song about section + song details section
@@ -134,7 +135,10 @@ const SongDetails = (props) => {
           index={1}
         >
           <div className={classes.innerContainer}>
-            Test
+            <SongChars
+              details={props.details}
+              songName={props.name}
+            />
           </div>
         </TabPanel>
       </SwipeableViews>
