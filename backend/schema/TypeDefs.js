@@ -56,14 +56,17 @@ const typeDefs = gql`
   type Query {
     getArtist(id: String, name: String): Artist!
     getGenres(limit: Int): [Genre!]!
-    getArtists: [Artist!]!
+    getArtists(limit: Int!, offset: Int!): [Artist!]!
     getArtistsFromGenre(genreName: String!): [Artist!]!
     getArchiveTracks(startDate: String, endDate: String): [Song!]!
-    getDynamicTracks: [Song!]!
+    getTracks(limit: Int!, offset: Int!): [Song!]!
     getCurrentOverallStats: CurrentOverallStats!
     getTrack(id: String!): Song!
     getAvgTrackDetails(genre: String): SongDetails!
     getSongsFromAlbum(album: String!, artistId: String!): [Song!]!
+    findTracksLike(searchQuery: String!): [Song!]!
+    findArtistsLike(searchQuery: String!): [Artist!]!
+    findGenresLike(searchQuery: String!): [Genre!]!
   }
 `
 

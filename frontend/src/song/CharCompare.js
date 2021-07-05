@@ -2,7 +2,7 @@ import React from 'react'
 import {
   Typography
 } from '@material-ui/core'
-import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
 import songStyles from './SongStyles'
 
@@ -11,12 +11,6 @@ const minTommss = (minutes) => {
   const min = Math.floor(Math.abs(minutes))
   const sec = Math.floor((Math.abs(minutes) * 60) % 60)
   return sign + (min < 10 ? '0' : '') + min + ':' + (sec < 10 ? '0' : '') + sec
-}
-
-const gridStyling = {
-  icon: {
-    height: '1.75em'
-  }
 }
 
 const CharCompare = (props) => {
@@ -28,9 +22,9 @@ const CharCompare = (props) => {
   const statLargerThanAvg = stat > avgStat
   let difference
   if (statLargerThanAvg === true) {
-    difference = `${Math.floor(100 * ((stat / avgStat) - 1))}%`
+    difference = `${Math.abs(Math.floor(100 * ((stat / avgStat) - 1)))}%`
   } else {
-    difference = `${Math.floor(100 * ((avgStat / stat) - 1))}%`
+    difference = `${Math.abs(Math.floor(100 * ((avgStat / stat) - 1)))}%`
   }
 
   if (name === 'length') {
@@ -50,7 +44,8 @@ const CharCompare = (props) => {
       <Typography
         variant='h6'
         style={{
-          textTransform: 'capitalize'
+          textTransform: 'capitalize',
+          fontWeight: 300
         }}
       >
         {name}

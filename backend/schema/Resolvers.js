@@ -169,29 +169,6 @@ const resolvers = {
       })
       return result
     },
-    async getDynamicTracks (parent, args, context, info) {
-      let result = await DynamicSong.findAll({
-        include: [
-          {
-            model: Song
-          }
-        ]
-      })
-      result = JSON.parse(JSON.stringify(result))
-      result = result.map(song => {
-        return {
-          id: song.song.id,
-          artistId: song.song.artistId,
-          name: song.song.name,
-          album: song.song.album,
-          art: song.song.art,
-          previewUrl: song.song.previewUrl,
-          addedBy: song.addedBy,
-          addedAt: song.addedAt
-        }
-      })
-      return result
-    },
     async getCurrentOverallStats (parent, args, context, info) {
       let result = await DynamicSong.findAll({
         attributes: [
@@ -311,7 +288,55 @@ const resolvers = {
       return result
     },
     async getArtists (parent, args, context, info) {
-      let result = await Artist.findAll()
+      const { limit, offset } = args
+      if (limit > 100) {
+        throw new SyntaxError('Limit must be 100 or less')
+      }
+      let result = await Artist.findAll({
+        order: [['name', 'asc']]
+      })
+        .catch(err => console.log(err))
+      result = JSON.parse(JSON.stringify(result))
+      result = result.slice(offset, offset + limit)
+      return result
+    },
+    async getTracks (parent, args, context, info) {
+      const { limit, offset } = args
+      if (limit > 100) {
+        throw new SyntaxError('Limit must be 100 or less')
+      }
+      let result = await Song.findAll({
+        order: [['name', 'asc']]
+      })
+        .catch(err => console.log(err))
+      result = JSON.parse(JSON.stringify(result))
+      result = result.slice(offset, offset + limit)
+      return result
+    },
+    async findTracksLike (parent, args, context, info) {
+      let { searchQuery } = args
+      searchQuery = escape(searchQuery)
+      let result = await Song.findAll({
+        where: {
+          name: {
+            [Op.iLike]: `%${searchQuery}%`
+          }
+        }
+      })
+        .catch(err => console.log(err))
+      result = JSON.parse(JSON.stringify(result))
+      return result
+    },
+    async findArtistsLike (parent, args, context, info) {
+      let { searchQuery } = args
+      searchQuery = escape(searchQuery)
+      let result = await Artist.findAll({
+        where: {
+          name: {
+            [Op.iLike]: `%${searchQuery}%`
+          }
+        }
+      })
         .catch(err => console.log(err))
       result = JSON.parse(JSON.stringify(result))
       return result
