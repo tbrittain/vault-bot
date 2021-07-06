@@ -57,7 +57,8 @@ const SongChars = (props) => {
             <Typography
               variant='h6'
               style={{
-                fontWeight: 300
+                fontWeight: 300,
+                lineHeight: 'inherit'
               }}
             >
               {props.songName}
@@ -111,7 +112,8 @@ const SongChars = (props) => {
             <Typography
               variant='h6'
               style={{
-                fontWeight: 300
+                fontWeight: 300,
+                lineHeight: 'inherit'
               }}
             >
               Total song average

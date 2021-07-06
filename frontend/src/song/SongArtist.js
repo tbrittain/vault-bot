@@ -24,11 +24,17 @@ const SongArtist = (props) => {
           className={classes.artistName}
           component={Link}
           to={`/artists/${props.id}`}
+          style={{
+            lineHeight: 'inherit'
+          }}
         >
           {props.name}
         </Typography>
         <Typography
           variant='subtitle1'
+          style={{
+            lineHeight: 'inherit'
+          }}
         >
           Artist rank: {props.rank}
         </Typography>

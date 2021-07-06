@@ -10,8 +10,8 @@ const songStyles = makeStyles((theme) => ({
     }
   },
   albumArt: {
-    width: '15vw',
-    height: '15vw',
+    width: 'calc(12vw + 5rem)',
+    height: 'calc(12vw + 5rem)',
     margin: theme.spacing(4),
     boxShadow: '0px 0px 4px #adadad'
   },
@@ -21,7 +21,6 @@ const songStyles = makeStyles((theme) => ({
     justifyContent: 'center',
     alignItems: 'center',
     maxWidth: '100%',
-    margin: theme.spacing(1),
     overflow: 'auto'
   },
   innerContainer: {
@@ -39,8 +38,7 @@ const songStyles = makeStyles((theme) => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    width: '100%',
-    margin: 8
+    width: '100%'
   },
   containerItem: {
     margin: 0,
@@ -92,15 +90,18 @@ const songStyles = makeStyles((theme) => ({
     height: '100%',
     width: '100%',
     textAlign: 'center',
-    alignContent: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
     display: 'flex'
   },
   albumText: {
     color: theme.palette.secondary.main,
-    margin: 'auto auto',
+    margin: 5,
     textDecoration: 'none',
     transition: '0.3s',
-    padding: '3% 3%',
+    padding: '0 3%',
+    height: 'fit-content',
+    lineHeight: 'inherit',
     '&:hover': {
       color: theme.palette.secondary.light
     }

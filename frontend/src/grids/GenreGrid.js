@@ -30,6 +30,9 @@ const GenreGrid = (props) => {
                   className={classes.button}
                   component={Link}
                   to={`/genres/${genre}`}
+                  style={{
+                    lineHeight: 'inherit'
+                  }}
                 >
                   {genre}
                   <MusicNoteIcon />

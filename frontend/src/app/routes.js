@@ -1,6 +1,7 @@
 import React from 'react'
 import { Route, Switch } from 'react-router-dom'
 import SongContainer from '../song/SongContainer'
+import SongListContainer from '../songList/SongListContainer'
 
 // https://www.digitalocean.com/community/tutorials/how-to-handle-routing-in-react-apps-with-react-router
 
@@ -11,7 +12,7 @@ function RouteHandler () {
         <h1>Index</h1>
       </Route>
       <Route exact path='/songs'>
-        <h1>Songs index</h1>
+        <SongListContainer />
       </Route>
       <Route path='/songs/:songId'>
         <SongContainer />
