@@ -46,9 +46,28 @@ const songListStyles = makeStyles((theme) => ({
     }
   },
   queryResultContainer: {
+    width: '35ch',
+    maxHeight: '35ch',
+    overflowY: 'auto',
+    background: 'none'
+  },
+  songResultItem: {
     display: 'flex',
-    flexDirection: 'column',
-    width: '40vw'
+    transition: '0.1s',
+    '&:hover': {
+      outline: `2px solid ${theme.palette.primary.main}`
+    }
+  },
+  searchResultArt: {
+    width: 60,
+    height: 60,
+    boxShadow: '0px 0px 2px #adadad'
+  },
+  totalSongResults: {
+
+  },
+  resultsController: {
+    
   }
 }))
 

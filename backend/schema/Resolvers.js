@@ -293,11 +293,12 @@ const resolvers = {
         throw new SyntaxError('Limit must be 100 or less')
       }
       let result = await Artist.findAll({
+        offset: offset,
+        limit: limit,
         order: [['name', 'asc']]
       })
         .catch(err => console.log(err))
       result = JSON.parse(JSON.stringify(result))
-      result = result.slice(offset, offset + limit)
       return result
     },
     async getTracks (parent, args, context, info) {
@@ -306,17 +307,20 @@ const resolvers = {
         throw new SyntaxError('Limit must be 100 or less')
       }
       let result = await Song.findAll({
+        offset: offset,
+        limit: limit,
         order: [['name', 'asc']]
       })
         .catch(err => console.log(err))
       result = JSON.parse(JSON.stringify(result))
-      result = result.slice(offset, offset + limit)
       return result
     },
     async findTracksLike (parent, args, context, info) {
+      // TODO: handle apostrophes in song name
       let { searchQuery } = args
       searchQuery = escape(searchQuery)
       let result = await Song.findAll({
+        limit: 25,
         where: {
           name: {
             [Op.iLike]: `%${searchQuery}%`
@@ -331,6 +335,7 @@ const resolvers = {
       let { searchQuery } = args
       searchQuery = escape(searchQuery)
       let result = await Artist.findAll({
+        limit: 25,
         where: {
           name: {
             [Op.iLike]: `%${searchQuery}%`

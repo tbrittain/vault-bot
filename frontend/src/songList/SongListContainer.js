@@ -1,13 +1,10 @@
 import React from 'react'
 import {
-  Grid,
   Typography
 } from '@material-ui/core'
 import SongViewer from './SongViewer'
-import songListStyles from './SongListStyles'
 
 const SongListContainer = () => {
-  const classes = songListStyles()
   return (
     <div>
       <Typography

@@ -1,46 +1,72 @@
-import React, { useEffect } from 'react'
-import songListStyles from './SongListStyles'
-import { useQuery, gql } from '@apollo/client'
+import React from 'react'
 import {
-  CircularProgress,
-  Typography
+  Typography,
+  Grid,
+  Avatar,
+  Paper,
+  Box
 } from '@material-ui/core'
-import { Alert } from '@material-ui/lab'
-
-const QUERY = gql`
-  query ($searchQuery: String!) {
-    findTracksLike(searchQuery: $searchQuery) {
-      name
-      id
-      art
-      artistId
-      artist {
-        name
-      }
-    }
-  }
-`
+import songListStyles from './SongListStyles'
+import { Link } from 'react-router-dom'
+import extractUnderline from '../utils/underline'
 
 const SongSearchResult = (props) => {
-  const { searchQuery } = props
-  const { loading, error, data } = useQuery(
-    QUERY,
-    {
-      variables: {
-        searchQuery
-      }
-    }
-  )
-  console.log(data)
+  const classes = songListStyles()
+  const { beginText, underline, endText } = extractUnderline(String(props.searchQuery), String(props.name))
+
   return (
-    <div>
-      {loading &&
-        <CircularProgress />}
-      {error &&
-        <Alert severity='error'>An error occurred during data retrieval :(</Alert>}
-      {data &&
-        <Typography variant='h6'>Data retrieved</Typography>}
-    </div>
+    <Grid
+      item
+      spacing={2}
+      component={Link}
+      to={`/songs/${props.id}`}
+      style={{
+        textDecoration: 'none',
+        width: '100%'
+      }}
+    >
+      <Paper
+        className={classes.songResultItem}
+      >
+        <div
+          style={{
+            padding: '0.5rem'
+          }}
+        >
+          <Avatar
+            alt={`${props.album} album art`}
+            src={props.art}
+            className={classes.searchResultArt}
+          />
+        </div>
+        <div
+          style={{
+            margin: 'auto auto',
+            textAlign: 'center',
+            padding: '0.5rem'
+          }}
+        >
+          <Typography
+            variant='subtitle1'
+            style={{
+              textDecoration: 'none',
+              lineHeight: 'inherit'
+            }}
+          >
+            {beginText}<u>{underline}</u>{endText}
+            <Box component='span' fontWeight='300'> by</Box> {props.artist}
+          </Typography>
+          <Typography
+            variant='body2'
+            style={{
+              textDecoration: 'none'
+            }}
+          >
+            <Box component='span' fontWeight='300'>from the album</Box> {props.album}
+          </Typography>
+        </div>
+      </Paper>
+    </Grid>
   )
 }
 

@@ -74,7 +74,8 @@ const songStyles = makeStyles((theme) => ({
   },
   albumGrid: {
     display: 'flex',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    flexFlow: 'wrap'
   },
   albumSongCard: {
     margin: 5,

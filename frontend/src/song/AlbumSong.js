@@ -8,7 +8,7 @@ import songStyles from './SongStyles'
 
 const AlbumSong = (props) => {
   const classes = songStyles()
-  const { art, songId, name, songPreview } = props
+  const { art, songId, name } = props
 
   const backgroundStyling = {
     backgroundImage: `url(${art})`,

@@ -3,11 +3,17 @@ import { Container, Typography, Link } from '@material-ui/core'
 import Header from '../header/Header'
 import RouteHandler from './Routes'
 import appStyles from './AppStyles'
-import './App.css'
 
 function Copyright () {
   return (
-    <Typography variant='body2' color='textSecondary' align='center'>
+    <Typography
+      variant='body2'
+      color='textSecondary'
+      align='center'
+      style={{
+        marginTop: 10
+      }}
+    >
       {'Copyright © '}
       <Link
         color='inherit'

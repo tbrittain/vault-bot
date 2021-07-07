@@ -6,12 +6,12 @@ import {
   InputBase,
   Popper,
   Fade,
-  ClickAwayListener,
-  Typography
+  ClickAwayListener
 } from '@material-ui/core'
 import SearchIcon from '@material-ui/icons/Search'
 import songListStyles from './SongListStyles'
-import SongSearchResult from './SongSearchResult'
+import SongSearchContainer from './SongSearchContainer'
+import SongList from './SongList'
 
 const SongViewer = () => {
   const classes = songListStyles()
@@ -27,8 +27,9 @@ const SongViewer = () => {
     setAnchorEl(null)
   }
 
-  const open = Boolean(anchorEl && search.length > 3)
-
+  const minSearchLength = 3
+  const open = Boolean(anchorEl && search.length >= minSearchLength)
+  
   return (
     <Paper
       elevation={3}
@@ -72,11 +73,13 @@ const SongViewer = () => {
                 {({ TransitionProps }) => (
                   <Fade {...TransitionProps} timeout={350}>
                     <Paper
-                      className={classes.queryResultContainer}
-                      elevation={8}
+                      elevation={0}
+                      style={{
+                        background: 'none'
+                      }}
                     >
-                      {search.length > 3 &&
-                        <SongSearchResult
+                      {search.length >= minSearchLength &&
+                        <SongSearchContainer
                           searchQuery={search}
                         />}
                     </Paper>
@@ -87,6 +90,7 @@ const SongViewer = () => {
           </div>
         </Toolbar>
       </AppBar>
+      <SongList />
     </Paper>
   )
 }

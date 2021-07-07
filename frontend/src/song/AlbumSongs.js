@@ -13,7 +13,6 @@ const QUERY = gql`
       name
       id
       art
-      previewUrl
     }
   }
 `
@@ -43,6 +42,9 @@ const AlbumSongs = (props) => {
         <div>
           <Typography
             variant='subtitle1'
+            style={{
+              textAlign: 'center'
+            }}
           >
             Other songs from this album tracked by VaultBot:
           </Typography>
@@ -55,7 +57,6 @@ const AlbumSongs = (props) => {
                 songId={song.id}
                 name={song.name}
                 art={song.art}
-                songPreview={song.previewUrl}
               />
             ))}
           </div>

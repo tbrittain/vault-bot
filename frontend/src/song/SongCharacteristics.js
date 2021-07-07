@@ -27,13 +27,10 @@ const SongChars = (props) => {
   const { loading, error, data } = useQuery(QUERY)
   const classes = songStyles()
 
-  console.log(props)
-
   let formattedData
   if (data) {
     formattedData = data.getAvgTrackDetails
   }
-  console.log(formattedData)
 
   return (
     <div

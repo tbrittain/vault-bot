@@ -14,10 +14,6 @@ import AlbumSongs from './AlbumSongs'
 import SongChars from './SongCharacteristics'
 import songStyles from './SongStyles'
 
-// TODO: use state to switch between the song about section + song details section
-// may want to split this return method into two separate components
-// https://material-ui.com/api/bottom-navigation/
-
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props
   return (
@@ -34,7 +30,7 @@ const TabPanel = (props) => {
         </Box>
       )}
     </div>
-  );
+  )
 }
 
 const SongDetails = (props) => {
@@ -119,8 +115,23 @@ const SongDetails = (props) => {
               />
             </div>
             <div className={`${classes.containerItem} ${classes.songDescription}`}>
-              <Typography variant='h4'>{props.name} <Box component='span' fontWeight='300'>by</Box> {props.artistName}</Typography>
-              <Typography variant='h6'><Box component='span' fontWeight='300'>from the album</Box> {props.album}</Typography>
+              <Typography
+                variant='h4'
+                style={{
+                  lineHeight: 'inherit'
+                }}
+              >
+                {props.name} <Box component='span' fontWeight='300'>by</Box> {props.artistName}
+              </Typography>
+              <Typography
+                variant='h6'
+                style={{
+                  lineHeight: 'inherit',
+                  paddingTop: 10
+                }}
+              >
+                <Box component='span' fontWeight='300'>from the album</Box> {props.album}
+              </Typography>
             </div>
           </div>
           <div className={classes.innerContainer}>
