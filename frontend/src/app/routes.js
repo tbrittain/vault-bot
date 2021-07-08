@@ -2,6 +2,7 @@ import React from 'react'
 import { Route, Switch } from 'react-router-dom'
 import SongContainer from '../song/SongContainer'
 import SongListContainer from '../songList/SongListContainer'
+import About from '../about/About'
 
 // https://www.digitalocean.com/community/tutorials/how-to-handle-routing-in-react-apps-with-react-router
 
@@ -10,6 +11,9 @@ function RouteHandler () {
     <Switch>
       <Route exact path='/'>
         <h1>Index</h1>
+      </Route>
+      <Route exact path='/about'>
+        <About />
       </Route>
       <Route exact path='/songs'>
         <SongListContainer />

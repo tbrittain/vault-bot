@@ -1,33 +1,11 @@
 import React from 'react'
-import { Container, Typography, Link } from '@material-ui/core'
+import {
+  Container
+} from '@material-ui/core'
 import Header from '../header/Header'
+import Footer from '../footer/Footer'
 import RouteHandler from './Routes'
 import appStyles from './AppStyles'
-
-function Copyright () {
-  return (
-    <Typography
-      variant='body2'
-      color='textSecondary'
-      align='center'
-      style={{
-        marginTop: 10
-      }}
-    >
-      {'Copyright © '}
-      <Link
-        color='inherit'
-        href='https://tbrittain.com/'
-        target='_blank'
-        rel='noopener noreferrer'
-      >
-        Trey Brittain
-      </Link>{' '}
-      {new Date().getFullYear()}
-      .
-    </Typography>
-  )
-}
 
 // https://blog.pshrmn.com/simple-react-router-v4-tutorial/
 // https://www.ryanjyost.com/react-routing/
@@ -44,7 +22,7 @@ function App () {
         <RouteHandler />
       </main>
       <footer>
-        <Copyright />
+        <Footer />
       </footer>
     </Container>
   )
