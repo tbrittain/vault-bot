@@ -5,13 +5,7 @@ import {
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
 import songStyles from './SongStyles'
-
-const minTommss = (minutes) => {
-  const sign = minutes < 0 ? '-' : ''
-  const min = Math.floor(Math.abs(minutes))
-  const sec = Math.floor((Math.abs(minutes) * 60) % 60)
-  return sign + (min < 10 ? '0' : '') + min + ':' + (sec < 10 ? '0' : '') + sec
-}
+import minTommss from '../utils/minTommss'
 
 const CharCompare = (props) => {
   const classes = songStyles()

@@ -64,10 +64,18 @@ const songListStyles = makeStyles((theme) => ({
     boxShadow: '0px 0px 2px #adadad'
   },
   totalSongResults: {
-
+    display: 'flex',
+    width: '100%',
+    height: 'calc(50vh + 100px)'
   },
-  resultsController: {
-    
+  songListLink: {
+    color: 'black',
+    wordBreak: 'break-all',
+    overflowWrap: 'break-word',
+    transition: '0.3s',
+    '&:hover': {
+      color: theme.palette.primary.main
+    }
   }
 }))
 

@@ -46,23 +46,29 @@ const SongDetails = (props) => {
   }
 
   const playSound = () => {
-    const soundFile = document.getElementById('songPreview')
-    soundFile.play()
+    try {
+      const soundFile = document.getElementById('songPreview')
+      soundFile.play()
+    } catch (err) { console.error(err) }
   }
 
   const stopSound = () => {
-    const soundFile = document.getElementById('songPreview')
-    soundFile.pause()
-    soundFile.currentTime = 0
+    try {
+      const soundFile = document.getElementById('songPreview')
+      soundFile.pause()
+      soundFile.currentTime = 0
+    } catch (err) { console.error(err) }
   }
 
   // FIXME: refresh adding event listeners when div is hidden and reopened
   useEffect(() => {
     if (props.songPreview) {
-      document.getElementById('albumArt')
-        .addEventListener('mouseover', playSound)
-      document.getElementById('albumArt')
-        .addEventListener('mouseout', stopSound)
+      try {
+        document.getElementById('albumArt')
+          .addEventListener('mouseover', playSound)
+        document.getElementById('albumArt')
+          .addEventListener('mouseout', stopSound)
+      } catch (err) { console.error(err) }
     }
   }, [props])
 

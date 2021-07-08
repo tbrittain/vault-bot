@@ -29,7 +29,7 @@ const SongViewer = () => {
 
   const minSearchLength = 3
   const open = Boolean(anchorEl && search.length >= minSearchLength)
-  
+
   return (
     <Paper
       elevation={3}

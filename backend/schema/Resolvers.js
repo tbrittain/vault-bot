@@ -10,6 +10,8 @@ const { sequelize } = require('../db/models/Song')
 const escape = require('escape-html')
 
 // TODO: consider separating individual resolvers into their own files and merging them together
+// https://www.graphql-tools.com/docs/introduction/
+// https://stackoverflow.com/questions/52457345/how-to-seperate-schema-and-resolvers-and-merage-them-apollo-server-express
 const resolvers = {
   Query: {
     async getArtist (parent, args, context, info) {
@@ -288,13 +290,7 @@ const resolvers = {
       return result
     },
     async getArtists (parent, args, context, info) {
-      const { limit, offset } = args
-      if (limit > 100) {
-        throw new SyntaxError('Limit must be 100 or less')
-      }
       let result = await Artist.findAll({
-        offset: offset,
-        limit: limit,
         order: [['name', 'asc']]
       })
         .catch(err => console.log(err))
@@ -302,17 +298,24 @@ const resolvers = {
       return result
     },
     async getTracks (parent, args, context, info) {
-      const { limit, offset } = args
-      if (limit > 100) {
-        throw new SyntaxError('Limit must be 100 or less')
-      }
       let result = await Song.findAll({
-        offset: offset,
-        limit: limit,
         order: [['name', 'asc']]
       })
         .catch(err => console.log(err))
       result = JSON.parse(JSON.stringify(result))
+      for (const song of result) {
+        const details = {
+          length: song.length,
+          tempo: song.tempo,
+          danceability: song.danceability,
+          energy: song.energy,
+          loudness: song.loudness,
+          acousticness: song.acousticness,
+          instrumentalness: song.instrumentalness,
+          valence: song.valence
+        }
+        song.details = details
+      }
       return result
     },
     async findTracksLike (parent, args, context, info) {
@@ -389,22 +392,18 @@ const resolvers = {
   },
   Song: {
     async details (parent, args) {
-      const songId = parent.id
-
-      let result = await Song.findAll({
-        where: {
-          id: songId
-        },
-        attributes: [
-          'length', 'tempo', 'danceability', 'energy',
-          'loudness', 'acousticness', 'instrumentalness',
-          'liveness', 'valence'
-        ]
-      })
-        .catch(err => console.log(err))
-
-      result = JSON.parse(JSON.stringify(result))
-      return result[0]
+      const details = {
+        length: parent.length,
+        tempo: parent.tempo,
+        danceability: parent.danceability,
+        energy: parent.energy,
+        loudness: parent.loudness,
+        acousticness: parent.acousticness,
+        instrumentalness: parent.instrumentalness,
+        liveness: parent.liveness,
+        valence: parent.valence
+      }
+      return details
     },
     async artist (parent, args) {
       const artistId = parent.artistId
