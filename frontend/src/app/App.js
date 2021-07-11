@@ -7,8 +7,8 @@ import Footer from '../footer/Footer'
 import RouteHandler from './Routes'
 import appStyles from './AppStyles'
 
-// https://blog.pshrmn.com/simple-react-router-v4-tutorial/
-// https://www.ryanjyost.com/react-routing/
+// TODO: consider implementing polling for some of the pages (especially the homepage)
+// https://www.apollographql.com/docs/react/data/queries/#polling
 
 function App () {
   const classes = appStyles()

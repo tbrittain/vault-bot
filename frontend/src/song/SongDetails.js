@@ -61,6 +61,7 @@ const SongDetails = (props) => {
   }
 
   // FIXME: refresh adding event listeners when div is hidden and reopened
+  // https://www.npmjs.com/package/react-event-listener
   useEffect(() => {
     if (props.songPreview) {
       try {

@@ -11,6 +11,10 @@ import { Alert } from '@material-ui/lab'
 import SongDetails from './SongDetails'
 import SongArtist from './SongArtist'
 
+// TODO: create fragments for these long queries and present
+// each fragment in their required component
+// https://www.apollographql.com/docs/react/data/fragments/#colocating-fragments
+
 const QUERY = gql`
   query ($songId: String!) {
     getTrack(id: $songId) {
@@ -23,7 +27,6 @@ const QUERY = gql`
         id
         name
         art
-        rank
         genres {
           genre
         }
@@ -53,6 +56,8 @@ const SongContainer = () => {
       }
     })
 
+  // TODO: refactor this formatted data into an onCompleted function in the useQuery hook
+  // https://www.apollographql.com/docs/react/api/react/hooks/#oncompleted
   let formattedData
   let artistGenres
   if (data) {
@@ -93,7 +98,6 @@ const SongContainer = () => {
             id={formattedData.artist.id}
             name={formattedData.artist.name}
             art={formattedData.artist.art}
-            rank={formattedData.artist.rank}
             genres={artistGenres}
           />
         </Grid>}

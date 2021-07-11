@@ -1,0 +1,45 @@
+.animateText {
+  display: block;
+  margin: 0 auto;
+}
+
+.textCopy {
+  fill: none;
+  stroke: white;
+  stroke-dasharray: 6% 29%;
+  stroke-width: 3px;
+  stroke-dashoffset: 0%;
+  animation: stroke-offset 10s infinite linear;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.textCopy:nth-child(1){
+stroke: #BCE7FD;
+animation-delay: -1;
+}
+
+.textCopy:nth-child(2){
+stroke: #94CBE7;
+animation-delay: -2s;
+}
+
+.textCopy:nth-child(3){
+stroke: #6CAFD0;
+animation-delay: -3s;
+}
+
+.textCopy:nth-child(4){
+stroke: #4392BA;
+animation-delay: -4s;
+}
+
+.textCopy:nth-child(5){
+stroke: #1B76A3;
+animation-delay: -5s;
+}
+
+@keyframes stroke-offset{
+100% {stroke-dashoffset: -35%;}
+}

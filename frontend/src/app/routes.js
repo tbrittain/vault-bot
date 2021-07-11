@@ -3,6 +3,8 @@ import { Route, Switch } from 'react-router-dom'
 import SongContainer from '../song/SongContainer'
 import SongListContainer from '../songList/SongListContainer'
 import About from '../about/About'
+import ArtistContainer from '../artist/ArtistContainer'
+import Home from '../home/Home'
 
 // https://www.digitalocean.com/community/tutorials/how-to-handle-routing-in-react-apps-with-react-router
 
@@ -10,7 +12,7 @@ function RouteHandler () {
   return (
     <Switch>
       <Route exact path='/'>
-        <h1>Index</h1>
+        <Home />
       </Route>
       <Route exact path='/about'>
         <About />
@@ -25,7 +27,7 @@ function RouteHandler () {
         <h1>Artists index</h1>
       </Route>
       <Route path='/artists/:artistId'>
-        <h1>Individual artist</h1>
+        <ArtistContainer />
       </Route>
       <Route exact path='/genres'>
         <h1>Genres index</h1>

@@ -8,7 +8,6 @@ const typeDefs = gql`
     id: String!
     name: String!
     art: String
-    rank: Int!
     genres: [Genre]
     songs: [Song!]!
   }
@@ -40,7 +39,6 @@ const typeDefs = gql`
 
   type Genre {
     genre: String!
-    rank: Int!
   }
 
   type CurrentOverallStats {

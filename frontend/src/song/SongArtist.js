@@ -30,14 +30,6 @@ const SongArtist = (props) => {
         >
           {props.name}
         </Typography>
-        <Typography
-          variant='subtitle1'
-          style={{
-            lineHeight: 'inherit'
-          }}
-        >
-          Artist rank: {props.rank}
-        </Typography>
       </div>
       <div className={`${classes.containerItem} ${classes.genreContainer}`}>
         <Typography

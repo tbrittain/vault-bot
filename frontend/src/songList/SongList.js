@@ -5,7 +5,10 @@ import {
   CircularProgress,
   Avatar
 } from '@material-ui/core'
-import { DataGrid, GridToolbar } from '@material-ui/data-grid'
+import {
+  DataGrid
+  // GridToolbar
+} from '@material-ui/data-grid'
 import { Alert } from '@material-ui/lab'
 import { Link } from 'react-router-dom'
 import minTommss from '../utils/minTommss'
@@ -143,9 +146,9 @@ const SongList = () => {
             columns={columns}
             rows={rows}
             rowHeight={35}
-            components={{
-              Toolbar: GridToolbar
-            }}
+            // components={{
+            //   Toolbar: GridToolbar
+            // }}
           />
         </div>}
     </div>

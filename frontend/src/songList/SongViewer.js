@@ -11,7 +11,7 @@ import {
 import SearchIcon from '@material-ui/icons/Search'
 import songListStyles from './SongListStyles'
 import SongSearchContainer from './SongSearchContainer'
-import SongList from './SongList'
+import SongList from './SongList' // TODO: uncomment songlist
 
 const SongViewer = () => {
   const classes = songListStyles()
@@ -25,6 +25,7 @@ const SongViewer = () => {
 
   const handleClickAway = (event) => {
     setAnchorEl(null)
+    setSearch('')
   }
 
   const minSearchLength = 3
@@ -90,7 +91,7 @@ const SongViewer = () => {
           </div>
         </Toolbar>
       </AppBar>
-      <SongList />
+      {/* <SongList /> */}
     </Paper>
   )
 }

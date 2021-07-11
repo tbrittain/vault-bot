@@ -36,7 +36,7 @@ const resolvers = {
       let result = await Artist.findOne({
         where: condition
       })
-        .catch(err => console.log(err))
+        .catch(err => console.error(err))
 
       if (result) {
         result = JSON.parse(JSON.stringify(result))
@@ -58,7 +58,7 @@ const resolvers = {
           [Sequelize.fn('COUNT', Sequelize.col('genre')), 'DESC']
         ]
       })
-        .catch(err => console.log(err))
+        .catch(err => console.error(err))
 
       const genres = JSON.parse(JSON.stringify(result))
       for (let i = 0; i < result.length; i++) {
@@ -78,7 +78,7 @@ const resolvers = {
           }
         ]
       })
-        .catch(err => console.log(err))
+        .catch(err => console.error(err))
 
       if (result.length > 0) {
         result = JSON.parse(JSON.stringify(result))
@@ -142,7 +142,7 @@ const resolvers = {
             }
           ]
         })
-          .catch(err => console.log(err))
+          .catch(err => console.error(err))
       } else {
         result = await ArchiveSong.findAll({
           include: [
@@ -177,7 +177,7 @@ const resolvers = {
           [sequelize.fn('count', sequelize.col('song_id')), 'dynamicNumTracks']
         ]
       })
-        .catch(err => console.log(err))
+        .catch(err => console.error(err))
       result = JSON.parse(JSON.stringify(result))
       result = result[0]
       return result
@@ -189,14 +189,10 @@ const resolvers = {
           id: songId
         }
       })
-        .catch(err => console.log(err))
+        .catch(err => console.error(err))
       result = JSON.parse(JSON.stringify(result))[0]
 
-      if (Object.keys(result).length > 0) {
-        return result
-      } else {
-        throw new SyntaxError('Invalid song ID')
-      }
+      return result
     },
     async getAvgTrackDetails (panent, args, context, info) {
       const genre = args.genre
@@ -215,7 +211,7 @@ const resolvers = {
         let result = await Song.findAll({
           attributes: avgSongAttributes
         })
-          .catch(err => console.log(err))
+          .catch(err => console.error(err))
         result = JSON.parse(JSON.stringify(result))[0]
         return result
       } else {
@@ -285,7 +281,7 @@ const resolvers = {
           artistId: artistId
         }
       })
-        .catch(err => console.log(err))
+        .catch(err => console.error(err))
       result = JSON.parse(JSON.stringify(result))
       return result
     },
@@ -293,7 +289,7 @@ const resolvers = {
       let result = await Artist.findAll({
         order: [['name', 'asc']]
       })
-        .catch(err => console.log(err))
+        .catch(err => console.error(err))
       result = JSON.parse(JSON.stringify(result))
       return result
     },
@@ -301,21 +297,8 @@ const resolvers = {
       let result = await Song.findAll({
         order: [['name', 'asc']]
       })
-        .catch(err => console.log(err))
+        .catch(err => console.error(err))
       result = JSON.parse(JSON.stringify(result))
-      for (const song of result) {
-        const details = {
-          length: song.length,
-          tempo: song.tempo,
-          danceability: song.danceability,
-          energy: song.energy,
-          loudness: song.loudness,
-          acousticness: song.acousticness,
-          instrumentalness: song.instrumentalness,
-          valence: song.valence
-        }
-        song.details = details
-      }
       return result
     },
     async findTracksLike (parent, args, context, info) {
@@ -330,7 +313,7 @@ const resolvers = {
           }
         }
       })
-        .catch(err => console.log(err))
+        .catch(err => console.error(err))
       result = JSON.parse(JSON.stringify(result))
       return result
     },
@@ -345,7 +328,7 @@ const resolvers = {
           }
         }
       })
-        .catch(err => console.log(err))
+        .catch(err => console.error(err))
       result = JSON.parse(JSON.stringify(result))
       return result
     }
@@ -366,14 +349,10 @@ const resolvers = {
         .then(data => {
           return data
         })
-        .catch(err => console.log(err))
+        .catch(err => console.error(err))
 
       result = JSON.parse(JSON.stringify(result))
       return result
-    },
-    async rank (parent, args) {
-      const artistId = parent.id
-      return await artistRank(artistId)
     },
     async genres (parent, args) {
       const artistId = parent.id
@@ -384,7 +363,7 @@ const resolvers = {
         },
         attributes: ['genre']
       })
-        .catch(err => console.log(err))
+        .catch(err => console.error(err))
 
       result = JSON.parse(JSON.stringify(result))
       return result
@@ -413,17 +392,13 @@ const resolvers = {
           id: artistId
         }
       })
-        .catch(err => console.log(err))
+        .catch(err => console.error(err))
 
       result = JSON.parse(JSON.stringify(result))
       return result
     }
   },
   Genre: {
-    async rank (parent, args) {
-      const genreName = parent.genre
-      return await genreRank(genreName)
-    }
   },
   CurrentOverallStats: {
     async totalNumTracks (parent, args) {
@@ -432,8 +407,10 @@ const resolvers = {
           [sequelize.fn('count', sequelize.col('id')), 'totalNumTracks']
         ]
       })
-        .catch(err => console.log(err))
+        .catch(err => console.error(err))
       result = JSON.parse(JSON.stringify(result))
+      const now = new Date()
+      console.log(now)
       return result[0].totalNumTracks
     },
     async archiveNumTracks (parent, args) {
@@ -442,7 +419,7 @@ const resolvers = {
           [sequelize.fn('count', sequelize.col('song_id')), 'archiveNumTracks']
         ]
       })
-        .catch(err => console.log(err))
+        .catch(err => console.error(err))
       result = JSON.parse(JSON.stringify(result))
       return result[0].archiveNumTracks
     },
@@ -452,7 +429,7 @@ const resolvers = {
           [sequelize.fn('count', sequelize.col('id')), 'totalNumArtists']
         ]
       })
-        .catch(err => console.log(err))
+        .catch(err => console.error(err))
       result = JSON.parse(JSON.stringify(result))
       return result[0].totalNumArtists
     },
