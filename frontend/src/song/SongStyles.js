@@ -5,8 +5,8 @@ const songStyles = makeStyles((theme) => ({
     '&:hover': {
       cursor: 'pointer',
       animation: '$rotate 4s',
-      'animation-timing-function': 'linear',
-      'animation-iteration-count': 'infinite'
+      animationTimingFunction: 'linear',
+      animationIterationCount: 'infinite'
     }
   },
   albumArt: {
