@@ -20,12 +20,18 @@ const ArtistDetails = (props) => {
           alt={`${props.name} artist art`}
           src={props.artistArt}
         />
-        <Typography
-          variant='h2'
-          className={classes.artistName}
+        <div
+          style={{
+            width: '75%'
+          }}
         >
-          <i>{props.name}</i>
-        </Typography>
+          <Typography
+            variant='h2'
+            className={classes.artistName}
+          >
+            <i>{props.name}</i>
+          </Typography>
+        </div>
         <Typography
           variant='subtitle1'
         >

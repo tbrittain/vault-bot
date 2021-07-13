@@ -5,7 +5,6 @@ import {
   Button,
   Typography
 } from '@material-ui/core'
-import MusicNoteIcon from '@material-ui/icons/MusicNote'
 import { Link } from 'react-router-dom'
 import gridStyles from './GridStyles'
 
@@ -34,8 +33,11 @@ const GenreGrid = (props) => {
                     lineHeight: 'inherit'
                   }}
                 >
-                  {genre}
-                  <MusicNoteIcon />
+                  <Typography
+                    variant='body1'
+                  >
+                    {genre}
+                  </Typography>
                 </Button>
               </div>
             </GridListTile>

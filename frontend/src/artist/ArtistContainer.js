@@ -3,11 +3,13 @@ import { useParams } from 'react-router-dom'
 import { useQuery, gql } from '@apollo/client'
 import {
   Grid,
-  Typography
+  Typography,
+  Paper
 } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
 import LoadingScreen from '../loading/LoadingScreen'
 import ArtistDetails from './ArtistDetails'
+import GenreGrid from '../grids/GenreGrid'
 
 const QUERY = gql`
   query ($artistId: String!){
@@ -93,6 +95,14 @@ const ArtistContainer = () => {
           artistArt={formattedData.art}
           numSongs={formattedData.numSongs}
         />
+        <Typography variant='h1'>Artist Genres</Typography>
+        <Paper
+          elevation={3}
+        >
+          <GenreGrid
+            genres={formattedData.genres}
+          />
+        </Paper>
       </Grid>
     </div>
   )

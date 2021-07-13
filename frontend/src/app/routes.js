@@ -5,6 +5,7 @@ import SongListContainer from '../songList/SongListContainer'
 import About from '../about/About'
 import ArtistContainer from '../artist/ArtistContainer'
 import Home from '../home/Home'
+import GenreContainer from '../genre/GenreContainer'
 
 // https://www.digitalocean.com/community/tutorials/how-to-handle-routing-in-react-apps-with-react-router
 
@@ -33,7 +34,7 @@ function RouteHandler () {
         <h1>Genres index</h1>
       </Route>
       <Route path='/genres/:genreName'>
-        <h1>Individual genre</h1>
+        <GenreContainer />
       </Route>
       <Route path='/history'>
         <h1>Historical data</h1>
