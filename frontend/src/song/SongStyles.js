@@ -97,6 +97,7 @@ const songStyles = makeStyles((theme) => ({
   },
   albumText: {
     color: theme.palette.secondary.main,
+    mixBlendMode: 'color-burn',
     margin: 5,
     textDecoration: 'none',
     transition: '0.3s',

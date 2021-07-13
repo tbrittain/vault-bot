@@ -6,6 +6,7 @@ import About from '../about/About'
 import ArtistContainer from '../artist/ArtistContainer'
 import Home from '../home/Home'
 import GenreContainer from '../genre/GenreContainer'
+import PageNotFound from '../404/404'
 
 // https://www.digitalocean.com/community/tutorials/how-to-handle-routing-in-react-apps-with-react-router
 
@@ -36,14 +37,8 @@ function RouteHandler () {
       <Route path='/genres/:genreName'>
         <GenreContainer />
       </Route>
-      <Route path='/history'>
-        <h1>Historical data</h1>
-      </Route>
-      <Route path='/slicer'>
-        <h1>Song slicer!</h1>
-      </Route>
       <Route path='*'>
-        <h1>404</h1>
+        <PageNotFound />
       </Route>
     </Switch>
   )

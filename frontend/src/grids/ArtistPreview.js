@@ -7,7 +7,7 @@ import {
 } from '@material-ui/core'
 import { Link } from 'react-router-dom'
 import gridStyles from './GridStyles'
-import { withStyles, makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 
 const darkTooltipTheme = makeStyles((theme) => ({
   tooltip: {

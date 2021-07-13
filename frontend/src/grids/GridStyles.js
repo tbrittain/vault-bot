@@ -1,5 +1,4 @@
 import { makeStyles } from '@material-ui/core/styles'
-import zIndex from '@material-ui/core/styles/zIndex'
 
 const gridStyles = makeStyles((theme) => ({
   gridList: {
@@ -17,16 +16,15 @@ const gridStyles = makeStyles((theme) => ({
     padding: theme.spacing(2)
   },
   tile: {
-    // margin: 'auto'
+    minWidth: 150,
+    height: '-moz-fit-content'
   },
   button: {
-    height: '10vw',
     width: '10vw',
-    minWidth: 150,
+    minWidth: 125,
     minHeight: 75
   },
   buttonContent: {
-    display: 'flex',
     flexDirection: 'column',
     alignItems: 'center'
   },

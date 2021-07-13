@@ -3,13 +3,16 @@ import {
   GridList,
   GridListTile,
   Button,
-  Typography
+  Typography,
+  useTheme
 } from '@material-ui/core'
 import { Link } from 'react-router-dom'
 import gridStyles from './GridStyles'
+import genreToMuiColor from '../utils/genreToMuiColor'
 
 const GenreGrid = (props) => {
   const classes = gridStyles()
+  const theme = useTheme()
   return (
     <div className={classes.gridContainer}>
       {typeof props.genres !== 'undefined' &&
@@ -21,20 +24,30 @@ const GenreGrid = (props) => {
             <GridListTile
               key={genre}
               className={classes.tile}
+              style={{
+                height: 'fit-content'
+              }}
             >
               <div className={classes.buttonContent}>
                 <Button
-                  color='secondary'
+                  // color='secondary'
                   variant='contained'
+                  size='small'
                   className={classes.button}
                   component={Link}
                   to={`/genres/${genre}`}
                   style={{
-                    lineHeight: 'inherit'
+                    backgroundColor: genreToMuiColor(genre),
+                    lineHeight: 'inherit',
+                    justifyContent: 'left'
                   }}
                 >
                   <Typography
                     variant='body1'
+                    style={{
+                      textAlign: 'left',
+                      color: theme.palette.getContrastText(genreToMuiColor(genre))
+                    }}
                   >
                     {genre}
                   </Typography>

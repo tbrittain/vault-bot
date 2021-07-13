@@ -2,12 +2,14 @@ import { makeStyles } from '@material-ui/core/styles'
 
 const genreStyles = makeStyles((theme) => ({
   title: {
-    textAlign: 'left'
+    textAlign: 'center',
+    padding: 15,
+    marginTop: 10,
+    marginBottom: 10
   },
   genreTitle: {
     textTransform: 'capitalize',
-    fontWeight: 800,
-    color: theme.palette.secondary.main
+    fontWeight: 800
   }
 }))
 

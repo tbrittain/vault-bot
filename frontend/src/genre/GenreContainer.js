@@ -3,12 +3,15 @@ import { useParams } from 'react-router-dom'
 import { useQuery, gql } from '@apollo/client'
 import { Alert } from '@material-ui/lab'
 import {
-  Typography
+  Typography,
+  Paper,
+  useTheme
 } from '@material-ui/core'
 import LoadingScreen from '../loading/LoadingScreen'
 import ArtistGrid from '../grids/ArtistGrid'
 import CountUpAnimation from '../effects/CountUpAnimation'
 import genreStyles from './GenreStyles'
+import genreToMuiColor from '../utils/genreToMuiColor'
 
 const QUERY = gql`
   query ($genreName: String!) {
@@ -22,6 +25,7 @@ const QUERY = gql`
 
 const GenreContainer = () => {
   const classes = genreStyles()
+  const theme = useTheme()
   const { genreName } = useParams()
   const { loading, error, data } = useQuery(
     QUERY,
@@ -58,17 +62,27 @@ const GenreContainer = () => {
       >
         Genre Details
       </Typography>
-      <div className={classes.title}>
+      <Paper
+        className={classes.title}
+        elevation={3}
+        style={{
+          backgroundColor: genreToMuiColor(genreName)
+        }}
+      >
         <Typography
           variant='h2'
           className={classes.genreTitle}
+          style={{
+            color: theme.palette.getContrastText(genreToMuiColor(genreName))
+          }}
         >
           <i>{genreName}</i>
         </Typography>
         <Typography
           variant='h6'
           style={{
-            fontWeight: 300
+            fontWeight: 300,
+            color: theme.palette.getContrastText(genreToMuiColor(genreName))
           }}
         >
           {formattedData &&
@@ -78,7 +92,7 @@ const GenreContainer = () => {
           {formattedData.length < 20 &&
             formattedData.length}
         </Typography>
-      </div>
+      </Paper>
       <ArtistGrid
         artists={formattedData}
       />

@@ -65,7 +65,6 @@ const ArtistContainer = () => {
     formattedData.genres = data.getArtist.genres.map(genre => genre.genre)
     formattedData.albumSongs = albumSongs
     formattedData.numSongs = data.getArtist.songs.length
-    console.log(formattedData)
     processing = false
   }
 

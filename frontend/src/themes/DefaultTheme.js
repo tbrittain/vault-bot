@@ -1,6 +1,8 @@
-import { createMuiTheme } from '@material-ui/core/styles'
+import { createTheme } from '@material-ui/core/styles'
 
-const defaultTheme = createMuiTheme({
+// TODO: custom theming that maps genres to a specifically generated color
+
+const defaultTheme = createTheme({
   palette: {
     primary: {
       main: '#BCE7FD'
