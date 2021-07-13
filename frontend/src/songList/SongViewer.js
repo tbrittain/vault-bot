@@ -11,7 +11,7 @@ import {
 import SearchIcon from '@material-ui/icons/Search'
 import songListStyles from './SongListStyles'
 import SongSearchContainer from './SongSearchContainer'
-import SongList from './SongList' // TODO: uncomment songlist
+import SongList from './SongList'
 
 const SongViewer = () => {
   const classes = songListStyles()
@@ -91,7 +91,7 @@ const SongViewer = () => {
           </div>
         </Toolbar>
       </AppBar>
-      {/* <SongList /> */}
+      <SongList />
     </Paper>
   )
 }

@@ -35,7 +35,7 @@ const TabPanel = (props) => {
 
 const SongDetails = (props) => {
   const classes = songStyles()
-  const theme = useTheme()
+  const theme = useTheme() // TODO: implement this elsewhere
 
   const [value, setValue] = useState(0)
   const handleChange = (event, newValue) => {

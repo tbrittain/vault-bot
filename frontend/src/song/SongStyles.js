@@ -54,7 +54,7 @@ const songStyles = makeStyles((theme) => ({
   },
   artistName: {
     textDecoration: 'none',
-    color: theme.palette.primary.dark,
+    color: theme.palette.secondary.main,
     transition: '0.3s',
     '&:hover': {
       color: theme.palette.primary.main

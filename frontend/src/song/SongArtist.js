@@ -25,15 +25,19 @@ const SongArtist = (props) => {
           component={Link}
           to={`/artists/${props.id}`}
           style={{
-            lineHeight: 'inherit'
+            lineHeight: 'inherit',
+            fontWeight: 800
           }}
         >
-          {props.name}
+          <i>{props.name}</i>
         </Typography>
       </div>
       <div className={`${classes.containerItem} ${classes.genreContainer}`}>
         <Typography
           variant='h6'
+          style={{
+            fontWeight: 300
+          }}
         >
           Genres
         </Typography>

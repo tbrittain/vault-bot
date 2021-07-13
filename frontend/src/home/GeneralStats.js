@@ -2,8 +2,7 @@ import React from 'react'
 import {
   Typography,
   CircularProgress,
-  Grid,
-  Backdrop
+  Grid
 } from '@material-ui/core'
 import homeStyles from './HomeStyles'
 import { useQuery, gql } from '@apollo/client'
@@ -40,25 +39,27 @@ const GeneralStats = () => {
 
   if (loading || processing) {
     return (
-      <Backdrop open>
-        <div
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          userSelect: 'none',
+          '& > * + *': {
+            margin: 'auto auto'
+          }
+        }}
+      >
+        <CircularProgress />
+        <Typography
+          variant='body2'
           style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            '& > * + *': {
-              margin: 'auto auto'
-            }
+            marginTop: 5
           }}
         >
-          <CircularProgress />
-          <Typography
-            variant='body2'
-          >
-            Loading most recent stats
-          </Typography>
-        </div>
-      </Backdrop>
+          Loading stats...
+        </Typography>
+      </div>
     )
   }
 
@@ -208,7 +209,7 @@ const GeneralStats = () => {
             item
             className={classes.animateContainer}
             style={{
-              animationDelay: '0.75s'
+              animationDelay: '1s'
             }}
           >
             <Typography

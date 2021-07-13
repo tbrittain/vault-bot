@@ -1,16 +1,15 @@
 import React from 'react'
 import { useQuery, gql } from '@apollo/client'
 import {
-  Backdrop,
-  CircularProgress,
   Avatar
 } from '@material-ui/core'
 import {
-  DataGrid
-  // GridToolbar
+  DataGrid,
+  GridToolbar
 } from '@material-ui/data-grid'
 import { Alert } from '@material-ui/lab'
 import { Link } from 'react-router-dom'
+import LoadingScreen from '../loading/LoadingScreen'
 import minTommss from '../utils/minTommss'
 import songListStyles from './SongListStyles'
 
@@ -105,13 +104,12 @@ const columns = [
 const SongList = () => {
   const classes = songListStyles()
 
-  const { error, data } = useQuery(QUERY)
+  const { loading, error, data } = useQuery(QUERY)
   let formattedData
   const rows = []
   let processing = true
   if (data) {
     formattedData = data.getTracks
-    console.log(formattedData)
     for (const track of formattedData) {
       rows.push({
         id: track.id,
@@ -128,29 +126,34 @@ const SongList = () => {
     processing = false
   }
 
+  if (loading || processing) {
+    return (
+      <LoadingScreen text='Loading songs tracked by VaultBot...' />
+    )
+  }
+
+  if (error) {
+    return (
+      <Alert severity='error'>An error occurred during data retrieval :(</Alert>
+    )
+  }
+
   return (
     <div className={classes.totalSongResults}>
-      {processing &&
-        <Backdrop open>
-          <CircularProgress />
-        </Backdrop>}
-      {error &&
-        <Alert severity='error'>An error occurred during data retrieval :(</Alert>}
-      {formattedData &&
-        <div
-          style={{
-            flexGrow: 1
+      <div
+        style={{
+          flexGrow: 1
+        }}
+      >
+        <DataGrid
+          columns={columns}
+          rows={rows}
+          rowHeight={35}
+          components={{
+            Toolbar: GridToolbar
           }}
-        >
-          <DataGrid
-            columns={columns}
-            rows={rows}
-            rowHeight={35}
-            // components={{
-            //   Toolbar: GridToolbar
-            // }}
-          />
-        </div>}
+        />
+      </div>
     </div>
   )
 }

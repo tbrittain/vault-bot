@@ -2,14 +2,13 @@ import React from 'react'
 import { useParams } from 'react-router-dom'
 import { useQuery, gql } from '@apollo/client'
 import {
-  CircularProgress,
-  Backdrop,
   Grid,
   Typography
 } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
 import SongDetails from './SongDetails'
 import SongArtist from './SongArtist'
+import LoadingScreen from '../loading/LoadingScreen'
 
 // TODO: create fragments for these long queries and present
 // each fragment in their required component
@@ -60,6 +59,7 @@ const SongContainer = () => {
   // https://www.apollographql.com/docs/react/api/react/hooks/#oncompleted
   let formattedData
   let artistGenres
+  let processing = true
   if (data) {
     formattedData = data
     formattedData = data.getTrack
@@ -67,40 +67,46 @@ const SongContainer = () => {
       artistGenres = formattedData.artist.genres
       artistGenres = artistGenres.map(genreObject => genreObject.genre)
     }
+    processing = false
+  }
+
+  if (loading || processing) {
+    return (
+      <LoadingScreen text='Loading songs...' />
+    )
+  }
+
+  if (error) {
+    return (
+      <Alert severity='error'>An error occurred during data retrieval :(</Alert>
+    )
   }
 
   return (
     <div>
-      <Typography variant='h1'>Song Details</Typography>
-      {loading &&
-        <Backdrop open>
-          <CircularProgress />
-        </Backdrop>}
-      {error &&
-        <Alert severity='error'>An error occurred during data retrieval :(</Alert>}
-      {formattedData &&
-        <Grid
-          container
-          direction='column'
-          justify='space-evenly'
-        >
-          <SongDetails
-            album={formattedData.album}
-            name={formattedData.name}
-            artistName={formattedData.artist.name}
-            artistId={formattedData.artist.id}
-            art={formattedData.art}
-            songPreview={formattedData.previewUrl}
-            details={formattedData.details}
-          />
-          <Typography variant='h2'>Artist Preview</Typography>
-          <SongArtist
-            id={formattedData.artist.id}
-            name={formattedData.artist.name}
-            art={formattedData.artist.art}
-            genres={artistGenres}
-          />
-        </Grid>}
+      <Grid
+        container
+        direction='column'
+        justify='space-evenly'
+      >
+        <Typography variant='h1'>Song Details</Typography>
+        <SongDetails
+          album={formattedData.album}
+          name={formattedData.name}
+          artistName={formattedData.artist.name}
+          artistId={formattedData.artist.id}
+          art={formattedData.art}
+          songPreview={formattedData.previewUrl}
+          details={formattedData.details}
+        />
+        <Typography variant='h2'>Artist Preview</Typography>
+        <SongArtist
+          id={formattedData.artist.id}
+          name={formattedData.artist.name}
+          art={formattedData.artist.art}
+          genres={artistGenres}
+        />
+      </Grid>
     </div>
   )
 }
