@@ -1,6 +1,6 @@
 import { alpha, makeStyles } from '@material-ui/core/styles'
 
-const songListStyles = makeStyles((theme) => ({
+const artistListStyles = makeStyles((theme) => ({
   search: {
     position: 'relative',
     borderRadius: theme.shape.borderRadius,
@@ -46,7 +46,7 @@ const songListStyles = makeStyles((theme) => ({
     overflowY: 'auto',
     background: 'none'
   },
-  songResultItem: {
+  artistResultItem: {
     display: 'flex',
     transition: '0.1s',
     '&:hover': {
@@ -54,16 +54,16 @@ const songListStyles = makeStyles((theme) => ({
     }
   },
   searchResultArt: {
-    width: 60,
-    height: 60,
+    width: 100,
+    height: 100,
     boxShadow: '0px 0px 2px #adadad'
   },
-  totalSongResults: {
+  totalArtistResults: {
     display: 'flex',
     width: '100%',
     height: 'calc(50vh + 100px)'
   },
-  songListLink: {
+  artistListLink: {
     color: 'black',
     wordBreak: 'break-all',
     overflowWrap: 'break-word',
@@ -74,4 +74,4 @@ const songListStyles = makeStyles((theme) => ({
   }
 }))
 
-export default songListStyles
+export default artistListStyles

@@ -1,15 +1,21 @@
 import React from 'react'
 import {
-  GridList,
-  GridListTile,
-  Button,
-  Typography,
-  useTheme
+  Typography
 } from '@material-ui/core'
 import pageNotFoundStyles from './404Styles'
 
 const PageNotFound = () => {
   const classes = pageNotFoundStyles()
+  return (
+    <div>
+      <Typography
+        variant='h1'
+        className={classes.title}
+      >
+        <i>404:</i> Sorry, nothing to see here
+      </Typography>
+    </div>
+  )
 }
 
 export default PageNotFound

@@ -1,5 +1,5 @@
 import React from 'react'
-import songListStyles from './SongListStyles'
+import artistListStyles from './ArtistListStyles'
 import { useQuery, gql } from '@apollo/client'
 import {
   Grid,
@@ -7,24 +7,20 @@ import {
   Paper
 } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
-import SongSearchResult from './SongSearchResult'
+import ArtistSearchResult from './ArtistSearchResult'
 
 const QUERY = gql`
   query ($searchQuery: String!) {
-    findTracksLike(searchQuery: $searchQuery) {
+    findArtistsLike(searchQuery: $searchQuery) {
       name
       id
       art
-      album
-      artist {
-        name
-      }
     }
   }
 `
 
-const SongSearchContainer = (props) => {
-  const classes = songListStyles()
+const ArtistSearchContainer = (props) => {
+  const classes = artistListStyles()
   const { searchQuery } = props
   const { error, data } = useQuery(
     QUERY,
@@ -36,7 +32,7 @@ const SongSearchContainer = (props) => {
   )
   let formattedData
   if (data) {
-    formattedData = data.findTracksLike
+    formattedData = data.findArtistsLike
   }
 
   if (error) {
@@ -52,14 +48,12 @@ const SongSearchContainer = (props) => {
       className={classes.queryResultContainer}
     >
       {formattedData &&
-        formattedData.map(song => (
-          <SongSearchResult
-            key={song.id}
-            name={song.name}
-            id={song.id}
-            art={song.art}
-            artist={song.artist.name}
-            album={song.album}
+        formattedData.map(artist => (
+          <ArtistSearchResult
+            key={artist.id}
+            name={artist.name}
+            id={artist.id}
+            art={artist.art}
             searchQuery={searchQuery}
           />
         ))}
@@ -84,4 +78,4 @@ const SongSearchContainer = (props) => {
   )
 }
 
-export default SongSearchContainer
+export default ArtistSearchContainer

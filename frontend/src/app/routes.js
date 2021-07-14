@@ -7,6 +7,7 @@ import ArtistContainer from '../artist/ArtistContainer'
 import Home from '../home/Home'
 import GenreContainer from '../genre/GenreContainer'
 import PageNotFound from '../404/404'
+import ArtistListContainer from '../artistList/ArtistListContainer'
 
 // https://www.digitalocean.com/community/tutorials/how-to-handle-routing-in-react-apps-with-react-router
 
@@ -26,7 +27,7 @@ function RouteHandler () {
         <SongContainer />
       </Route>
       <Route exact path='/artists'>
-        <h1>Artists index</h1>
+        <ArtistListContainer />
       </Route>
       <Route path='/artists/:artistId'>
         <ArtistContainer />

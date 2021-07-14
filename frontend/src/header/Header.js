@@ -56,14 +56,6 @@ function Header () {
             >
               Genres
             </Button>
-            <Button
-              color='inherit'
-              className={classes.menuButton}
-              component={Link}
-              to='/history'
-            >
-              Historical Data
-            </Button>
           </ButtonGroup>
         </Toolbar>
       </AppBar>

@@ -46,8 +46,6 @@ const resolvers = {
       }
     },
     async getGenres (parent, args, context, info) {
-      // FIXME: this query executes way more db queries than necessary
-      // when adding rank to each genre
       const result = await ArtistGenre.findAll({
         attributes: [
           'genre',

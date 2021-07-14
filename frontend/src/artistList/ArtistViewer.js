@@ -9,12 +9,12 @@ import {
   ClickAwayListener
 } from '@material-ui/core'
 import SearchIcon from '@material-ui/icons/Search'
-import songListStyles from './SongListStyles'
-import SongSearchContainer from './SongSearchContainer'
-import SongList from './SongList'
+import artistListStyles from './ArtistListStyles'
+import ArtistSearchContainer from './ArtistSearchContainer'
+import ArtistList from './ArtistList'
 
-const SongViewer = () => {
-  const classes = songListStyles()
+const ArtistViewer = () => {
+  const classes = artistListStyles()
   const [search, setSearch] = useState('')
   const [anchorEl, setAnchorEl] = useState(null)
 
@@ -44,7 +44,7 @@ const SongViewer = () => {
               <SearchIcon />
             </div>
             <InputBase
-              placeholder='Search for a song...'
+              placeholder='Search for an artist...'
               classes={{
                 root: classes.inputRoot,
                 input: classes.inputInput
@@ -78,7 +78,7 @@ const SongViewer = () => {
                       }}
                     >
                       {search.length >= minSearchLength &&
-                        <SongSearchContainer
+                        <ArtistSearchContainer
                           searchQuery={search}
                         />}
                     </Paper>
@@ -89,9 +89,9 @@ const SongViewer = () => {
           </div>
         </Toolbar>
       </AppBar>
-      <SongList />
+      <ArtistList />
     </Paper>
   )
 }
 
-export default SongViewer
+export default ArtistViewer

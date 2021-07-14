@@ -33,7 +33,6 @@ const GeneralStats = () => {
   let processing = true
   if (data) {
     formattedData = data.getCurrentOverallStats
-    console.log(formattedData)
     processing = false
   }
 

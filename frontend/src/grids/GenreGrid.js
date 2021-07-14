@@ -42,15 +42,21 @@ const GenreGrid = (props) => {
                     justifyContent: 'left'
                   }}
                 >
-                  <Typography
-                    variant='body1'
+                  <div
                     style={{
-                      textAlign: 'left',
-                      color: theme.palette.getContrastText(genreToMuiColor(genre))
+                      width: '85%'
                     }}
                   >
-                    {genre}
-                  </Typography>
+                    <Typography
+                      variant='body1'
+                      style={{
+                        textAlign: 'left',
+                        color: theme.palette.getContrastText(genreToMuiColor(genre))
+                      }}
+                    >
+                      {genre}
+                    </Typography>
+                  </div>
                 </Button>
               </div>
             </GridListTile>

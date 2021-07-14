@@ -3,7 +3,6 @@ import { makeStyles } from '@material-ui/core/styles'
 const gridStyles = makeStyles((theme) => ({
   gridList: {
     flexWrap: 'wrap',
-    // Promote the list into his own layer on Chrome. This cost memory but helps keeping high FPS.
     transform: 'translateZ(0)',
     margin: 0
   },
@@ -42,9 +41,9 @@ const gridStyles = makeStyles((theme) => ({
     minHeight: 100,
     transition: 'transform .2s',
     '&:hover': {
-      transform: 'scale(2)',
+      transform: 'scale(1.75)',
       zIndex: 10,
-      boxShadow: '0px 0px 2px #000'
+      boxShadow: '0px 0px 2px #adadad'
     }
   }
 }))
