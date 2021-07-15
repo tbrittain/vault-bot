@@ -1,5 +1,4 @@
 const genreToHsl = (genreName) => {
-  // TODO: map according to https://material-ui.com/customization/color/#color-palette
   const firstChar = genreName.slice(0, 1)
   const lastChar = genreName.slice(-1)
   const middleChar = genreName.slice(

@@ -36,6 +36,9 @@ const ArtistAlbum = (props) => {
           />
           <Paper
             elevation={3}
+            style={{
+              width: '100%'
+            }}
           >
             <Typography
               variant='subtitle1'

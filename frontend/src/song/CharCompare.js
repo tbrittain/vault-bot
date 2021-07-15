@@ -6,6 +6,15 @@ import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
 import songStyles from './SongStyles'
 import minTommss from '../utils/minTommss'
+import { withStyles } from '@material-ui/core/styles'
+
+const GlobalCss = withStyles({
+  '@global': {
+    '.MuiBox-root': {
+      padding: 0
+    }
+  }
+})(() => null)
 
 const CharCompare = (props) => {
   const classes = songStyles()
@@ -35,6 +44,7 @@ const CharCompare = (props) => {
         margin: 10
       }}
     >
+      <GlobalCss />
       <Typography
         variant='h6'
         style={{
@@ -50,7 +60,15 @@ const CharCompare = (props) => {
             gridColumn: '1 2'
           }}
         >
-          <Typography variant='h5'>{stat}</Typography>
+          <Typography
+            variant='h5'
+            className={classes.songChar}
+            style={{
+              textAlign: 'left'
+            }}
+          >
+            {stat}
+          </Typography>
         </div>
         <div
           style={{
@@ -90,7 +108,15 @@ const CharCompare = (props) => {
             gridColumn: '3 4'
           }}
         >
-          <Typography variant='h5'>{avgStat}</Typography>
+          <Typography
+            variant='h5'
+            className={classes.songChar}
+            style={{
+              textAlign: 'right'
+            }}
+          >
+            {avgStat}
+          </Typography>
         </div>
       </div>
     </div>

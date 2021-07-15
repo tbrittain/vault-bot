@@ -48,6 +48,10 @@ const SongChars = (props) => {
     return (
       <div
         className={classes.innerContainer}
+        style={{
+          flexDirection: 'column',
+          marginTop: 10
+        }}
       >
         <div
           className={classes.songComparisonSmall}
@@ -55,7 +59,8 @@ const SongChars = (props) => {
           <div
             style={{
               width: '50%',
-              margin: 'auto'
+              margin: 'auto',
+              textAlign: 'left'
             }}
           >
             <Typography
@@ -73,7 +78,8 @@ const SongChars = (props) => {
           <div
             style={{
               width: '50%',
-              margin: 'auto'
+              margin: 'auto',
+              textAlign: 'right'
             }}
           >
             <Typography

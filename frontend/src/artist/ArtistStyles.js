@@ -42,12 +42,16 @@ const artistStyles = makeStyles((theme) => ({
   },
   albumName: {
     paddingLeft: '5vw',
-    textAlign: 'center'
+    textAlign: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    margin: 'auto',
+    [theme.breakpoints.down('sm')]: {
+      paddingLeft: 0
+    }
   },
   albumText: {
-    width: '100%',
     lineHeight: 'inherit',
-    marginTop: 5,
     color: theme.palette.secondary.main,
     fontWeight: 300,
     padding: 3

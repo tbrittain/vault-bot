@@ -32,6 +32,7 @@ const songStyles = makeStyles((theme) => ({
     justifyContent: 'center',
     alignItems: 'center',
     display: 'flex',
+    overflow: 'hidden',
     [theme.breakpoints.down('sm')]: {
       flexDirection: 'column'
     }
@@ -40,6 +41,11 @@ const songStyles = makeStyles((theme) => ({
     width: '100%',
     display: 'grid',
     gridTemplateColumns: '1fr 1fr 1fr'
+  },
+  songChar: {
+    [theme.breakpoints.down('sm')]: {
+      fontSize: '3ch'
+    }
   },
   artistContainer: {
     display: 'flex',
@@ -141,17 +147,16 @@ const songStyles = makeStyles((theme) => ({
     margin: 'auto auto',
     textAlign: 'center',
     [theme.breakpoints.down('sm')]: {
-      visibility: 'hidden'
+      display: 'none'
     }
   },
   songComparisonSmall: {
-    visibility: 'hidden',
-    width: '80vw',
-    textAlign: 'center',
-    display: 'flex',
-    justifyContent: 'center',
+    display: 'none',
     [theme.breakpoints.down('sm')]: {
-      visibility: 'visible'
+      visibility: 'visible',
+      textAlign: 'center',
+      display: 'flex',
+      justifyContent: 'center'
     }
   }
 }))

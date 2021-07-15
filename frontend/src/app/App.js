@@ -7,9 +7,6 @@ import Footer from '../footer/Footer'
 import RouteHandler from './routes'
 import appStyles from './AppStyles'
 
-// TODO: consider implementing polling for some of the pages (especially the homepage)
-// https://www.apollographql.com/docs/react/data/queries/#polling
-
 function App () {
   const classes = appStyles()
 
