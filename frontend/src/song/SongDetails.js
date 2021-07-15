@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import SwipeableViews from 'react-swipeable-views'
 import {
   Paper,
@@ -150,12 +150,10 @@ const SongDetails = (props) => {
           value={value}
           index={1}
         >
-          <div className={classes.innerContainer}>
-            <SongChars
-              details={props.details}
-              songName={props.name}
-            />
-          </div>
+          <SongChars
+            details={props.details}
+            songName={props.name}
+          />
         </TabPanel>
       </SwipeableViews>
     </Paper>

@@ -2,8 +2,7 @@ import React from 'react'
 import { useQuery, gql } from '@apollo/client'
 import {
   Paper,
-  Typography,
-  useTheme
+  Typography
 } from '@material-ui/core'
 import { DataGrid } from '@material-ui/data-grid'
 import { Alert } from '@material-ui/lab'
@@ -27,7 +26,7 @@ const columns = [
   {
     field: 'genreName',
     headerName: 'Genre',
-    width: 500,
+    width: 300,
     renderCell: (params) => (
       <Paper
         component={Link}
@@ -93,7 +92,7 @@ const GenreList = () => {
 
   if (loading || processing) {
     return (
-      <LoadingScreen text='Loading artists tracked by VaultBot...' />
+      <LoadingScreen text='Loading genres tracked by VaultBot...' />
     )
   }
 

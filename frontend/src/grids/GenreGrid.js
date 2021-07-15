@@ -30,16 +30,17 @@ const GenreGrid = (props) => {
             >
               <div className={classes.buttonContent}>
                 <Button
-                  // color='secondary'
                   variant='contained'
                   size='small'
                   className={classes.button}
                   component={Link}
                   to={`/genres/${genre}`}
+                  lang='en'
                   style={{
                     backgroundColor: genreToMuiColor(genre),
                     lineHeight: 'inherit',
-                    justifyContent: 'left'
+                    justifyContent: 'left',
+                    wordBreak: 'break-word'
                   }}
                 >
                   <div

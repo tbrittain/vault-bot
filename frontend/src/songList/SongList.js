@@ -12,6 +12,7 @@ import { Link } from 'react-router-dom'
 import LoadingScreen from '../loading/LoadingScreen'
 import minTommss from '../utils/minTommss'
 import songListStyles from './SongListStyles'
+import { withStyles } from '@material-ui/core/styles'
 
 // could do server-side pagination
 // https://material-ui.com/components/data-grid/pagination/
@@ -34,8 +35,15 @@ const QUERY = gql`
   }
 `
 
-// TODO: may want to remove album art preview from song list
-// to prevent getting rate-limited
+// wrap datagrid toolbar
+const GlobalCss = withStyles({
+  '@global': {
+    '.MuiDataGrid-toolbarContainer': {
+      flexFlow: 'wrap'
+    }
+  }
+})(() => null)
+
 const columns = [
   {
     field: 'albumArt',
@@ -145,6 +153,7 @@ const SongList = () => {
           flexGrow: 1
         }}
       >
+        <GlobalCss />
         <DataGrid
           columns={columns}
           rows={rows}

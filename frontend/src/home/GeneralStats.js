@@ -79,12 +79,6 @@ const GeneralStats = () => {
         >
           <svg
             className={classes.animateText}
-            style={{
-              fontSize: '5em',
-              fontWeight: 800,
-              width: '100%',
-              height: 'auto'
-            }}
           >
             <symbol id='s-text'>
               <text
@@ -211,7 +205,8 @@ const GeneralStats = () => {
               animationDelay: '1s',
               display: 'flex',
               flexDirection: 'column',
-              alignItems: 'center'
+              alignItems: 'center',
+              textAlign: 'center'
             }}
           >
             <div
@@ -239,8 +234,11 @@ const GeneralStats = () => {
             <div>
               <Typography
                 variant='subtitle1'
+                style={{
+                  color: 'grey'
+                }}
               >
-                ({((Number(formattedData.totalNumGenres) / 5508) * 100).toFixed(2)}% of total genres tracked by Spotify!)
+                <i>({((Number(formattedData.totalNumGenres) / 5508) * 100).toFixed(2)}% of total genres tracked by Spotify!)</i>
               </Typography>
             </div>
 

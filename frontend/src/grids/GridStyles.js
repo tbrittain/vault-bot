@@ -16,7 +16,10 @@ const gridStyles = makeStyles((theme) => ({
   },
   tile: {
     minWidth: 150,
-    height: '-moz-fit-content'
+    height: '-moz-fit-content',
+    margin: 'auto',
+    display: 'flex',
+    justifyContent: 'center'
   },
   button: {
     width: '10vw',

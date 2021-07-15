@@ -19,14 +19,13 @@ function Header () {
         position='fixed'
         className={classes.headerContainer}
       >
-        <Toolbar>
+        <Toolbar
+          className={classes.toolbar}
+        >
           <Box
             component={Link}
             to='/'
-            style={{
-              display: 'inline-flex',
-              textDecoration: 'none'
-            }}
+            className={classes.titleContainer}
           >
             <img
               src={VaultBotLogo}
@@ -47,11 +46,7 @@ function Header () {
             color='primary'
             aria-label='text primary button group'
             size='large'
-            style={{
-              position: 'absolute',
-              float: 'right',
-              right: 25
-            }}
+            className={classes.actionButtons}
           >
             <Button
               color='inherit'

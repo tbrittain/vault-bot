@@ -28,28 +28,71 @@ const SongChars = (props) => {
   const classes = songStyles()
 
   let formattedData
+  let processing = true
   if (data) {
     formattedData = data.getAvgTrackDetails
+    processing = false
   }
 
-  return (
-    <div
-      className={classes.innerContainer}
-    >
-      {loading &&
-        <CircularProgress />}
-      {error &&
-        <Alert severity='error'>An error occurred during data retrieval :(</Alert>}
-      {data &&
+  if (loading || processing) {
+    return (
+      <CircularProgress />
+    )
+  }
+
+  if (error) {
+    <Alert severity='error'>An error occurred during data retrieval :(</Alert>
+  }
+
+  if (formattedData) {
+    return (
+      <div
+        className={classes.innerContainer}
+      >
+        <div
+          className={classes.songComparisonSmall}
+        >
+          <div
+            style={{
+              width: '50%',
+              margin: 'auto'
+            }}
+          >
+            <Typography
+              variant='subtitle1'
+              style={{
+                lineHeight: 'inherit',
+                marginBottom: 10,
+                fontSize: '2ch',
+                fontWeight: 300
+              }}
+            >
+              {props.songName}
+            </Typography>
+          </div>
+          <div
+            style={{
+              width: '50%',
+              margin: 'auto'
+            }}
+          >
+            <Typography
+              variant='subtitle1'
+              style={{
+                lineHeight: 'inherit',
+                fontSize: '2ch',
+                fontWeight: 300
+              }}
+            >
+              Total song average
+            </Typography>
+          </div>
+        </div>
         <div
           style={{ display: 'flex' }}
         >
           <div
-            style={{
-              width: '15vw',
-              margin: 'auto auto',
-              textAlign: 'left'
-            }}
+            className={classes.songComparison}
           >
             <Typography
               variant='h6'
@@ -100,11 +143,7 @@ const SongChars = (props) => {
             />
           </div>
           <div
-            style={{
-              width: '15vw',
-              margin: 'auto auto',
-              textAlign: 'right'
-            }}
+            className={classes.songComparison}
           >
             <Typography
               variant='h6'
@@ -116,9 +155,10 @@ const SongChars = (props) => {
               Total song average
             </Typography>
           </div>
-        </div>}
-    </div>
-  )
+        </div>
+      </div>
+    )
+  }
 }
 
 export default SongChars

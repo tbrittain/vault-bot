@@ -13,7 +13,12 @@ const songStyles = makeStyles((theme) => ({
     width: 'calc(12vw + 5rem)',
     height: 'calc(12vw + 5rem)',
     margin: theme.spacing(4),
-    boxShadow: '0px 0px 4px #adadad'
+    boxShadow: '0px 0px 4px #adadad',
+    [theme.breakpoints.down('sm')]: {
+      margin: theme.spacing(2),
+      minWidth: 175,
+      minHeight: 175
+    }
   },
   outerContainer: {
     display: 'flex',
@@ -26,19 +31,24 @@ const songStyles = makeStyles((theme) => ({
   innerContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    display: 'flex'
+    display: 'flex',
+    [theme.breakpoints.down('sm')]: {
+      flexDirection: 'column'
+    }
   },
   songCharsContainer: {
     width: '100%',
     display: 'grid',
-    gridGap: '2vw',
     gridTemplateColumns: '1fr 1fr 1fr'
   },
   artistContainer: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    width: '100%'
+    width: '100%',
+    [theme.breakpoints.down('sm')]: {
+      flexDirection: 'column'
+    }
   },
   containerItem: {
     margin: 0,
@@ -64,10 +74,17 @@ const songStyles = makeStyles((theme) => ({
     width: '12vw',
     height: '12vw',
     margin: 'auto',
-    boxShadow: '0px 0px 4px #adadad'
+    boxShadow: '0px 0px 4px #adadad',
+    [theme.breakpoints.down('sm')]: {
+      minWidth: 150,
+      minHeight: 150
+    }
   },
   genreContainer: {
-    width: '65%'
+    width: '65%',
+    [theme.breakpoints.down('sm')]: {
+      width: '100%'
+    }
   },
   navBar: {
     zIndex: 10
@@ -83,7 +100,10 @@ const songStyles = makeStyles((theme) => ({
     gridTemplate: '1fr / 1fr',
     placeItems: 'center',
     flex: '1 0 auto',
-    maxWidth: '13vw'
+    maxWidth: '13vw',
+    [theme.breakpoints.down('sm')]: {
+      minWidth: 85
+    }
   },
   albumInner: {
     gridColumn: '1 / 1',
@@ -114,6 +134,24 @@ const songStyles = makeStyles((theme) => ({
     },
     to: {
       transform: 'rotate(359deg)'
+    }
+  },
+  songComparison: {
+    width: '10vw',
+    margin: 'auto auto',
+    textAlign: 'center',
+    [theme.breakpoints.down('sm')]: {
+      visibility: 'hidden'
+    }
+  },
+  songComparisonSmall: {
+    visibility: 'hidden',
+    width: '80vw',
+    textAlign: 'center',
+    display: 'flex',
+    justifyContent: 'center',
+    [theme.breakpoints.down('sm')]: {
+      visibility: 'visible'
     }
   }
 }))

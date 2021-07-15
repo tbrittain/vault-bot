@@ -45,11 +45,12 @@ const artistStyles = makeStyles((theme) => ({
     textAlign: 'center'
   },
   albumText: {
-    width: '12vw',
+    width: '100%',
     lineHeight: 'inherit',
     marginTop: 5,
     color: theme.palette.secondary.main,
-    fontWeight: 300
+    fontWeight: 300,
+    padding: 3
   },
   albumArt: {
     width: '12vw',

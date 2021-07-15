@@ -23,8 +23,22 @@ const homeStyles = makeStyles((theme) => ({
     animationFillMode: 'both',
     margin: 15
   },
+  animateText: {
+    fontSize: '5em',
+    fontWeight: 800,
+    width: '100%',
+    height: '6vw',
+    [theme.breakpoints.down('sm')]: {
+      fontSize: '3.5em',
+      height: '18vw'
+    }
+  },
   statDescription: {
-    fontWeight: 300
+    fontWeight: 300,
+    [theme.breakpoints.down('sm')]: {
+      fontSize: '2ch',
+      textAlign: 'center'
+    }
   },
   '@keyframes slidein': {
     from: {
@@ -39,7 +53,10 @@ const homeStyles = makeStyles((theme) => ({
   numberHighlight: {
     fontWeight: 800,
     color: theme.palette.primary.dark,
-    marginLeft: 5
+    marginLeft: 5,
+    [theme.breakpoints.down('sm')]: {
+      fontSize: '2ch'
+    }
   }
 }))
 
