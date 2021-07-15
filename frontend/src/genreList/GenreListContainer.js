@@ -15,7 +15,7 @@ const GenreListContainer = () => {
       <Typography
         variant='subtitle1'
       >
-        Total list of all the artists tracked by VaultBot
+        Total list of all the genres tracked by VaultBot
       </Typography>
       <GenreViewer />
     </div>

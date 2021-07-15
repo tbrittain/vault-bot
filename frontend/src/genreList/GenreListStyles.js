@@ -46,6 +46,18 @@ const genreListStyles = makeStyles((theme) => ({
     overflowY: 'auto',
     background: 'none'
   },
+  genreResultItem: {
+    display: 'flex',
+    transition: '0.1s',
+    '&:hover': {
+      outline: `2px solid ${theme.palette.primary.main}`
+    }
+  },
+  totalGenreResults: {
+    display: 'flex',
+    width: '100%',
+    height: 'calc(50vh + 100px)'
+  }
 }))
 
 export default genreListStyles

@@ -11,6 +11,7 @@ import {
 import SearchIcon from '@material-ui/icons/Search'
 import genreListStyles from './GenreListStyles'
 import GenreSearchContainer from './GenreSearchContainer'
+import GenreList from './GenreList'
 
 const GenreViewer = () => {
   const classes = genreListStyles()
@@ -43,7 +44,7 @@ const GenreViewer = () => {
               <SearchIcon />
             </div>
             <InputBase
-              placeholder='Search for an artist...'
+              placeholder='Search for a genre...'
               classes={{
                 root: classes.inputRoot,
                 input: classes.inputInput
@@ -88,6 +89,7 @@ const GenreViewer = () => {
           </div>
         </Toolbar>
       </AppBar>
+      <GenreList />
     </Paper>
   )
 }

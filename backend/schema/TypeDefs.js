@@ -39,6 +39,8 @@ const typeDefs = gql`
 
   type Genre {
     genre: String!
+    numArtists: Int
+    rank: Int
   }
 
   type CurrentOverallStats {

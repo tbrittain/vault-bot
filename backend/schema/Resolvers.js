@@ -49,7 +49,7 @@ const resolvers = {
       const result = await ArtistGenre.findAll({
         attributes: [
           'genre',
-          [Sequelize.fn('COUNT', Sequelize.col('genre')), 'n_genre']
+          [Sequelize.fn('COUNT', Sequelize.col('genre')), 'numArtists']
         ],
         group: 'genre',
         order: [
@@ -322,6 +322,21 @@ const resolvers = {
         limit: 25,
         where: {
           name: {
+            [Op.iLike]: `%${searchQuery}%`
+          }
+        }
+      })
+        .catch(err => console.error(err))
+      result = JSON.parse(JSON.stringify(result))
+      return result
+    },
+    async findGenresLike (parent, args, context, info) {
+      let { searchQuery } = args
+      let result = await ArtistGenre.findAll({
+        limit: 25,
+        attributes: [[sequelize.literal('DISTINCT genre'), 'genre']],
+        where: {
+          genre: {
             [Op.iLike]: `%${searchQuery}%`
           }
         }
