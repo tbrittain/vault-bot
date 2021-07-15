@@ -8,6 +8,7 @@ import Home from '../home/Home'
 import GenreContainer from '../genre/GenreContainer'
 import PageNotFound from '../404/404'
 import ArtistListContainer from '../artistList/ArtistListContainer'
+import GenreListContainer from '../genreList/GenreListContainer'
 import { TransitionGroup, CSSTransition } from 'react-transition-group'
 import './transitions.css'
 
@@ -55,9 +56,8 @@ function RouteHandler () {
           <Route
             exact
             path='/genres'
-          >
-            <h1>Genres index</h1>
-          </Route>
+            component={GenreListContainer}
+          />
           <Route
             path='/genres/:genreName'
             component={GenreContainer}

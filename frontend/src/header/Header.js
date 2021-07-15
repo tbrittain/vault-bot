@@ -4,10 +4,12 @@ import {
   Toolbar,
   Typography,
   Button,
-  ButtonGroup
+  ButtonGroup,
+  Box
 } from '@material-ui/core'
 import { Link } from 'react-router-dom'
 import headerStyles from './HeaderStyles'
+import VaultBotLogo from '../assets/VaultBotLogo.svg'
 
 function Header () {
   const classes = headerStyles()
@@ -18,19 +20,38 @@ function Header () {
         className={classes.headerContainer}
       >
         <Toolbar>
-          <Typography
-            variant='h6'
-            className={classes.title}
+          <Box
             component={Link}
             to='/'
+            style={{
+              display: 'inline-flex',
+              textDecoration: 'none'
+            }}
           >
-            <i>VaultBot</i>
-          </Typography>
+            <img
+              src={VaultBotLogo}
+              alt='VaultBot logo'
+              style={{
+                height: '3.25rem'
+              }}
+            />
+            <Typography
+              variant='h6'
+              className={classes.title}
+            >
+              <i>VaultBot</i>
+            </Typography>
+          </Box>
           <ButtonGroup
             variant='text'
             color='primary'
             aria-label='text primary button group'
             size='large'
+            style={{
+              position: 'absolute',
+              float: 'right',
+              right: 25
+            }}
           >
             <Button
               color='inherit'

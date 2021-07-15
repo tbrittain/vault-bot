@@ -208,25 +208,42 @@ const GeneralStats = () => {
             item
             className={classes.animateContainer}
             style={{
-              animationDelay: '1s'
+              animationDelay: '1s',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center'
             }}
           >
-            <Typography
-              variant='h6'
-              className={classes.statDescription}
+            <div
+              style={{
+                display: 'inline-flex'
+              }}
             >
-              Unique genres:
-            </Typography>
-            <Typography
-              variant='h6'
-              className={classes.numberHighlight}
-            >
-              <i>
-                <CountUpAnimation>
-                  {Number(formattedData.totalNumGenres)}
-                </CountUpAnimation>
-              </i>
-            </Typography>
+              <Typography
+                variant='h6'
+                className={classes.statDescription}
+              >
+                Unique genres:
+              </Typography>
+              <Typography
+                variant='h6'
+                className={classes.numberHighlight}
+              >
+                <i>
+                  <CountUpAnimation>
+                    {Number(formattedData.totalNumGenres)}
+                  </CountUpAnimation>
+                </i>
+              </Typography>
+            </div>
+            <div>
+              <Typography
+                variant='subtitle1'
+              >
+                ({((Number(formattedData.totalNumGenres) / 5508) * 100).toFixed(2)}% of total genres tracked by Spotify!)
+              </Typography>
+            </div>
+
           </Grid>
         </Grid>
       </div>

@@ -39,7 +39,7 @@ const columns = [
   {
     field: 'artistName',
     headerName: 'Artist',
-    width: 250,
+    width: '75vmax',
     renderCell: (params) => (
       <Link
         to={`/artists/${params.id}`}
