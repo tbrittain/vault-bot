@@ -35,7 +35,7 @@ const TabPanel = (props) => {
 
 const SongDetails = (props) => {
   const classes = songStyles()
-  const theme = useTheme() // TODO: implement this elsewhere
+  const theme = useTheme()
 
   const [value, setValue] = useState(0)
   const handleChange = (event, newValue) => {
@@ -59,19 +59,6 @@ const SongDetails = (props) => {
       soundFile.currentTime = 0
     } catch (err) { console.error(err) }
   }
-
-  // FIXME: refresh adding event listeners when div is hidden and reopened
-  // https://www.npmjs.com/package/react-event-listener
-  useEffect(() => {
-    if (props.songPreview) {
-      try {
-        document.getElementById('albumArt')
-          .addEventListener('mouseover', playSound)
-        document.getElementById('albumArt')
-          .addEventListener('mouseout', stopSound)
-      } catch (err) { console.error(err) }
-    }
-  }, [props])
 
   return (
     <Paper
@@ -113,13 +100,24 @@ const SongDetails = (props) => {
         >
           <div className={classes.innerContainer}>
             <div className={classes.containerItem}>
-              <Avatar
-                id='albumArt'
-                className={props.songPreview ? `${classes.albumArt} ${classes.albumArtRotate}` : classes.albumArt}
-                alt={props.album + ' album art'}
-                src={props.art}
-                variant='circle'
-              />
+              {props.songPreview &&
+                <Avatar
+                  id='albumArt'
+                  className={props.songPreview ? `${classes.albumArt} ${classes.albumArtRotate}` : classes.albumArt}
+                  alt={props.album + ' album art'}
+                  src={props.art}
+                  variant='circle'
+                  onMouseEnter={playSound}
+                  onMouseLeave={stopSound}
+                />}
+              {!props.songPreview &&
+                <Avatar
+                  id='albumArt'
+                  className={props.songPreview ? `${classes.albumArt} ${classes.albumArtRotate}` : classes.albumArt}
+                  alt={props.album + ' album art'}
+                  src={props.art}
+                  variant='circle'
+                />}
             </div>
             <div className={`${classes.containerItem} ${classes.songDescription}`}>
               <Typography

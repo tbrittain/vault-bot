@@ -3,10 +3,7 @@ import { useQuery, gql } from '@apollo/client'
 import {
   Avatar
 } from '@material-ui/core'
-import {
-  DataGrid,
-  GridToolbar
-} from '@material-ui/data-grid'
+import { DataGrid } from '@material-ui/data-grid'
 import { Alert } from '@material-ui/lab'
 import { Link } from 'react-router-dom'
 import LoadingScreen from '../loading/LoadingScreen'
@@ -42,7 +39,7 @@ const columns = [
   {
     field: 'artistName',
     headerName: 'Artist',
-    width: 500,
+    width: 250,
     renderCell: (params) => (
       <Link
         to={`/artists/${params.id}`}
@@ -97,9 +94,6 @@ const ArtistList = () => {
           columns={columns}
           rows={rows}
           rowHeight={75}
-          components={{
-            Toolbar: GridToolbar
-          }}
         />
       </div>
     </div>

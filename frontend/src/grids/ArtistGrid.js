@@ -8,6 +8,7 @@ import gridStyles from './GridStyles'
 const ArtistGrid = (props) => {
   const classes = gridStyles()
   const { artists } = props
+
   return (
     <Paper
       elevation={3}

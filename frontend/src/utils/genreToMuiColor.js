@@ -20,16 +20,16 @@ const shades = [
 ]
 
 const genreToMuiColor = (genreName) => {
-  const firstChar = genreName.slice(0, 1)
-  const lastChar = genreName.slice(-1)
-  const middleChar = genreName.slice(
-    Math.floor(genreName.length / 2),
-    Math.floor(genreName.length / 2) + 1
-  )
+  const secondChar = genreName.slice(1, 2)
+  const secondLastChar = genreName.slice(-2)
+  // const middleChar = genreName.slice(
+  //   Math.floor(genreName.length / 2),
+  //   Math.floor(genreName.length / 2) + 1
+  // )
 
-  const r = Math.abs(firstChar.charCodeAt(0) - 97)
-  const g = Math.abs(lastChar.charCodeAt(0) - 97)
-  const b = Math.abs(middleChar.charCodeAt(0) - 97)
+  const r = Math.abs(secondChar.charCodeAt(0) - 97)
+  const g = Math.abs(secondLastChar.charCodeAt(0) - 97)
+  // const b = Math.abs(middleChar.charCodeAt(0) - 97)
 
   const hue = hues[r % 18]
   const shade = shades[g % 8]

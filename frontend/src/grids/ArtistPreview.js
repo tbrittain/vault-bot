@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
   Avatar,
   Paper,
   Tooltip,
-  Fade
+  Fade,
+  Backdrop
 } from '@material-ui/core'
 import { Link } from 'react-router-dom'
 import gridStyles from './GridStyles'
@@ -26,6 +27,15 @@ const DarkTooltip = (props) => {
 const ArtistPreview = (props) => {
   const { name, id, art } = props
   const classes = gridStyles()
+  const [open, setOpen] = useState(false)
+
+  const handleMouseEnter = () => {
+    setOpen(true)
+  }
+
+  const handleMouseLeave = () => {
+    setOpen(false)
+  }
 
   return (
     <DarkTooltip
@@ -44,6 +54,14 @@ const ArtistPreview = (props) => {
           alt={`${name} artist art`}
           variant='square'
           className={classes.artistArt}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        />
+        <Backdrop
+          open={open}
+          style={{
+            zIndex: 9
+          }}
         />
       </Paper>
     </DarkTooltip>
