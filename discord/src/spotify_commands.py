@@ -36,10 +36,15 @@ elif environment == "prod_local":
                                           project_id=project_id)
     REDIRECT_URI = access_secret_version(secret_id="db-spotify-redirect-uri",
                                          project_id=project_id)
-    commit_changes = False
+    commit_changes = True
 else:
     print("Invalid environment variable, exiting")
     sys.exit(1)
+
+# TODO: implement custom cache handler
+# https://github.com/plamere/spotipy/blob/master/spotipy/cache_handler.py
+# https://github.com/plamere/spotipy/issues/675
+# https://github.com/plamere/spotipy/issues/555
 
 scope = "playlist-modify-public user-library-read"
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID,
@@ -51,13 +56,13 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID,
 
 async def song_search(user_message):
     original_message = str(user_message)
-    original_message = original_message.replace("'", "")  # clean up user message for spotify search
+    original_message = original_message.replace("'", "")
     original_message = original_message.replace('"', '')
 
     search_results = sp.search(q=original_message, type='track')
     if len(search_results['tracks']['items']) > 0:
         track_results_string = "```"
-        results_list = []
+        result_track_ids = []
         for count, item in enumerate(search_results['tracks']['items']):
             artist = (item['album']['artists'][0]['name'])
             album = (item['album']['name'])
@@ -65,13 +70,13 @@ async def song_search(user_message):
 
             track_id = (item['id'])
             track_id_dic = {count + 1: track_id}
-            results_list.append(track_id_dic)
+            result_track_ids.append(track_id_dic)
 
             track_results_string += f'{count + 1}. "{track}" by {artist} from album "{album}"\n'
         track_results_string += '```'
-        return [track_results_string, results_list]
+        return track_results_string, result_track_ids
     else:
-        return f'No Spotify tracks for query {original_message} found!'
+        raise SyntaxError('No tracks found')
 
 
 async def add_to_playlist(song_id):
@@ -81,7 +86,7 @@ async def add_to_playlist(song_id):
         raise FileExistsError('Song already present in Dyn playlist! Not adding duplicate ID.')
     else:
         song_id = [song_id, ]  # input is a list
-        if not commit_changes:
+        if commit_changes:
             sp.playlist_add_items('5YQHb5wt9d0hmShWNxjsTs', song_id)  # dynamic
             sp.playlist_add_items('4C6pU7YmbBUG8sFFk4eSXj', song_id)  # archive
         else:

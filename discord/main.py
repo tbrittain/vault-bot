@@ -2,7 +2,6 @@ import discord
 from discord.ext import tasks, commands
 import os
 from dotenv import load_dotenv
-import asyncio
 from spotipy import SpotifyException
 import random
 from src import spotify_commands
@@ -15,6 +14,8 @@ from alive_progress import alive_bar, config_handler
 from google.cloud import secretmanager
 import sys
 import re
+import asyncio
+
 
 # TODO: implement discord slash commands
 # https://pypi.org/project/discord-py-slash-command/
@@ -48,15 +49,16 @@ elif config.environment == "prod":
 elif config.environment == "prod_local":
     load_dotenv(f'{base_dir}/prod_local.env')
     project_id = os.getenv("PROJECT_ID")
-    DISCORD_TOKEN = access_secret_version(secret_id="vb-discord-token",
-                                          project_id=project_id)
+    # TODO: reinstate accessing secret version of discord token once development complete
+    # DISCORD_TOKEN = access_secret_version(secret_id="vb-discord-token",
+    #                                       project_id=project_id)
+    DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
     logger.info("Running program in local production mode")
 else:
     logger.error("Invalid environment setting, exiting")
     sys.exit(1)
 
-intents = discord.Intents.default()
-intents.members = True
+intents = discord.Intents.all()
 bot = commands.Bot(command_prefix=commands.when_mentioned,
                    case_insensitive=True,
                    help_command=None,
@@ -78,7 +80,9 @@ async def on_ready():
     logger.info(f"VaultBot is fully loaded and online.")
     await bot.change_presence(activity=discord.Game(f'@me + help'))
 
-    if config.environment == "prod_local" or config.environment == "prod":
+    # TODO: reinstate below line once development complete
+    # if config.environment == "prod_local" or config.environment == "prod":
+    if config.environment == "prod":
         hourly_cleanup.start()
         generate_aggregate_playlists.start()
 
@@ -152,16 +156,14 @@ async def on_message(ctx):
 async def search(ctx, *, song_query):
     logger.debug(f'User {ctx.author} invoked $search with query {song_query}')
 
-    raw_results = await asyncio.gather(spotify_commands.song_search(song_query))
-    search_results = raw_results[0]
-
-    if search_results[0] == 'N':
+    try:
+        track_results, track_ids = await spotify_commands.song_search(song_query)
+    except SyntaxError:
         await ctx.send(f'No tracks found! Are you sure you '
                        f'spelled everything right, {ctx.author.mention}?')
 
     else:
-        msg = await ctx.channel.send(search_results[0])
-        track_ids = search_results[1]
+        msg = await ctx.channel.send(track_results)
 
         emojis = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣',
                   '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟']
@@ -184,8 +186,6 @@ async def search(ctx, *, song_query):
         except asyncio.TimeoutError:
             await ctx.channel.send(f'Never mind, {ctx.author.mention}. '
                                    f'You took too long. Please try again.')
-        # FIXME this fix prevents duplicate songs from being added but prevents the
-        # original message from being processed
         if reaction and msg.id == reaction.message.id:
             try:
                 if reaction.emoji == '1️⃣':
@@ -225,9 +225,6 @@ async def search(ctx, *, song_query):
             except FileExistsError:
                 await ctx.channel.send(f"Track already exists in dynamic playlist, "
                                        f"{ctx.author.mention}! I'm not gonna re-add it!")
-            except ValueError:
-                await ctx.channel.send(f"Cannot add podcast episode to playlist, "
-                                       f"{ctx.author.mention}!")
             except OverflowError:
                 await ctx.channel.send(f"Cannot add songs longer than 10 minutes "
                                        f"to playlist, {ctx.author.mention}!")

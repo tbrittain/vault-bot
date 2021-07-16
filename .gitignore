@@ -1,6 +1,5 @@
 # Vaultbot things
 */node_modules
-*/package-lock.json
 *.csv
 *.txt
 discord/.idea

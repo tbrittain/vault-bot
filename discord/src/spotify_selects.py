@@ -10,6 +10,7 @@ moody_playlist_id = "0jiEtmsU9wRGrAVf7O5YeT"
 
 
 # TODO: figure out how to manually order tracks in the playlist
+# TODO: vaultbot selects randomly selected genre
 def selects_playlists_coordinator():
     party_playlist_sql = """SELECT songs.id, COUNT(archive.song_id) FROM songs JOIN archive ON songs.id = 
     archive.song_id JOIN artists ON songs.artist_id = artists.id JOIN artists_genres ON artists.id = 
