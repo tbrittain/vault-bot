@@ -4,8 +4,6 @@ const ArtistGenre = require('../db/models/ArtistGenre')
 const DynamicSong = require('../db/models/DynamicSong')
 const Song = require('../db/models/Song')
 const { Op, Sequelize } = require('sequelize')
-const { artistRank } = require('../db/utils/ArtistRank')
-const { genreRank } = require('../db/utils/GenreRank')
 const { sequelize } = require('../db/models/Song')
 const escape = require('escape-html')
 
@@ -331,7 +329,7 @@ const resolvers = {
       return result
     },
     async findGenresLike (parent, args, context, info) {
-      let { searchQuery } = args
+      const { searchQuery } = args
       let result = await ArtistGenre.findAll({
         limit: 25,
         attributes: [[sequelize.literal('DISTINCT genre'), 'genre']],

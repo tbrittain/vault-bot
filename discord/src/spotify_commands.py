@@ -1,5 +1,6 @@
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
+from spotipy.cache_handler import CacheHandler
 from dotenv import load_dotenv
 import os
 from datetime import datetime, timedelta
@@ -7,6 +8,7 @@ from .db import DatabaseConnection, access_secret_version
 from .vb_utils import logger
 from .config import environment
 import sys
+import json
 
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if environment == "dev":
@@ -41,17 +43,35 @@ else:
     print("Invalid environment variable, exiting")
     sys.exit(1)
 
-# TODO: implement custom cache handler
-# https://github.com/plamere/spotipy/blob/master/spotipy/cache_handler.py
-# https://github.com/plamere/spotipy/issues/675
-# https://github.com/plamere/spotipy/issues/555
+
+class MemoryCacheHandler(CacheHandler):
+    def __init__(self, token_info=None):
+        """
+        Parameters:
+            * token_info: The token info to store in memory. Can be None.
+        """
+        self.token_info = token_info
+
+    def get_cached_token(self):
+        # logger.debug('Pulling Spotify cache information')
+        return self.token_info
+
+    def save_token_to_cache(self, token_info):
+        logger.debug('Rewriting token info to memory')
+        self.token_info = token_info
+
+
+project_id = os.getenv("PROJECT_ID")
+token = access_secret_version('vb-spotify-cache', project_id, '2')
+json_token = json.loads(token)
+cache_handler = MemoryCacheHandler(token_info=json_token)
 
 scope = "playlist-modify-public user-library-read"
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID,
                                                client_secret=CLIENT_SECRET,
                                                redirect_uri=REDIRECT_URI,
                                                scope=scope,
-                                               cache_path=f"{base_dir}/src/cache.json"))
+                                               cache_handler=cache_handler))
 
 
 async def song_search(user_message):
@@ -275,9 +295,6 @@ def playlist_description_update(playlist_id: str, initial_desc: str):
 
 async def expired_track_removal():
     logger.debug("Fetching dynamic playlist info...")
-    logger.debug(f"Cache location: {base_dir}/src/cache.json")
-    cache_exists = os.path.isfile(f"{base_dir}/src/cache.json")
-    logger.debug(f"Cache file exists: {cache_exists}")
 
     results = sp.playlist_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs')
     tracks = results['items']

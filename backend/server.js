@@ -3,8 +3,6 @@ const { ApolloServer } = require('apollo-server-express')
 const { createComplexityLimitRule } = require('graphql-validation-complexity')
 const cors = require('cors')
 
-require('dotenv').config() // for use in non-docker development
-
 // express as middleware
 const port = process.env.port || 4001
 const app = express()

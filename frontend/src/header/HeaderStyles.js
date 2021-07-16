@@ -8,7 +8,7 @@ const headerStyles = makeStyles((theme) => ({
     height: '4rem',
     zIndex: 20,
     [theme.breakpoints.down('sm')]: {
-      height: '6rem'
+      height: '6.5rem'
     }
   },
   title: {
@@ -35,7 +35,8 @@ const headerStyles = makeStyles((theme) => ({
     display: 'inline-flex',
     textDecoration: 'none',
     [theme.breakpoints.down('sm')]: {
-      margin: 'auto auto'
+      margin: 'auto auto',
+      paddingTop: 5
     }
   },
   toolbar: {

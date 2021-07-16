@@ -13,7 +13,9 @@ const artistStyles = makeStyles((theme) => ({
   artistName: {
     fontWeight: 800,
     color: theme.palette.secondary.main,
-    textAlign: 'center'
+    textAlign: 'center',
+    display: 'flex',
+    justifyContent: 'center'
   },
   artistArt: {
     width: '12vw',
@@ -21,7 +23,11 @@ const artistStyles = makeStyles((theme) => ({
     margin: 'auto',
     boxShadow: '0px 0px 4px #adadad',
     minHeight: 75,
-    minWidth: 75
+    minWidth: 75,
+    [theme.breakpoints.down('sm')]: {
+      minHeight: 175,
+      minWidth: 175
+    }
   },
   album: {
     display: 'grid',

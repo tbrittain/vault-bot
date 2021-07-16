@@ -29,7 +29,13 @@ const ArtistDetails = (props) => {
             variant='h2'
             className={classes.artistName}
           >
-            <i>{props.name}</i>
+            <i
+              style={{
+                textAlign: 'center'
+              }}
+            >
+              {props.name}
+            </i>
           </Typography>
         </div>
         <Typography

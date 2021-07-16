@@ -49,10 +49,8 @@ elif config.environment == "prod":
 elif config.environment == "prod_local":
     load_dotenv(f'{base_dir}/prod_local.env')
     project_id = os.getenv("PROJECT_ID")
-    # TODO: reinstate accessing secret version of discord token once development complete
-    # DISCORD_TOKEN = access_secret_version(secret_id="vb-discord-token",
-    #                                       project_id=project_id)
-    DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
+    DISCORD_TOKEN = access_secret_version(secret_id="vb-discord-token",
+                                          project_id=project_id)
     logger.info("Running program in local production mode")
 else:
     logger.error("Invalid environment setting, exiting")
@@ -80,8 +78,6 @@ async def on_ready():
     logger.info(f"VaultBot is fully loaded and online.")
     await bot.change_presence(activity=discord.Game(f'@me + help'))
 
-    # TODO: reinstate below line once development complete
-    # if config.environment == "prod_local" or config.environment == "prod":
     if config.environment == "prod":
         hourly_cleanup.start()
         generate_aggregate_playlists.start()

@@ -4,7 +4,7 @@ const appStyles = makeStyles((theme) => ({
   app: {
     marginTop: '4.5rem',
     [theme.breakpoints.down('sm')]: {
-      marginTop: '6.5rem'
+      marginTop: '7rem'
     }
   }
 }))
