@@ -24,7 +24,9 @@ const footerStyles = makeStyles((theme) => ({
     }
   },
   footerActions: {
-    margin: 'auto'
+    margin: 'auto',
+    display: 'flex',
+    justifyContent: 'center'
   }
 }))
 

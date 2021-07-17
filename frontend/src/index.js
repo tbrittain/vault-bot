@@ -13,7 +13,7 @@ import {
 } from '@apollo/client'
 
 const client = new ApolloClient({
-  uri: 'http://localhost:4001/graphql',
+  uri: process.env.REACT_APP_BACKEND_URL,
   cache: new InMemoryCache()
 })
 

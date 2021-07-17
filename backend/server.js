@@ -4,7 +4,7 @@ const { createComplexityLimitRule } = require('graphql-validation-complexity')
 const cors = require('cors')
 
 // express as middleware
-const port = process.env.port || 4001
+const port = process.env.PORT || 4001
 const app = express()
 
 // types and resolvers
@@ -42,5 +42,5 @@ const corsSettings = {
 server.applyMiddleware({ app, cors: true })
 
 app.listen(port, () => {
-  console.log(`🚀 GraphQL API server listening at http://localhost:${port}/graphql/`)
+  console.log(`🚀 GraphQL API server listening on port ${port}`)
 })

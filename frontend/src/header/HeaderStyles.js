@@ -44,6 +44,9 @@ const headerStyles = makeStyles((theme) => ({
       display: 'flex',
       flexDirection: 'column'
     }
+  },
+  menuButton: {
+    padding: 5
   }
 }))
 

@@ -37,8 +37,17 @@ function Header () {
             <Typography
               variant='h6'
               className={classes.title}
+              style={{
+                fontWeight: 800
+              }}
             >
-              <i>VaultBot</i>
+              <i
+                style={{
+                  fontWeight: 800
+                }}
+              >
+                VaultBot
+              </i>
             </Typography>
           </Box>
           <ButtonGroup
@@ -53,6 +62,9 @@ function Header () {
               className={classes.menuButton}
               component={Link}
               to='/songs'
+              style={{
+                padding: 5
+              }}
             >
               Songs
             </Button>
@@ -61,6 +73,9 @@ function Header () {
               className={classes.menuButton}
               component={Link}
               to='/artists'
+              style={{
+                padding: 5
+              }}
             >
               Artists
             </Button>
@@ -69,6 +84,9 @@ function Header () {
               className={classes.menuButton}
               component={Link}
               to='/genres'
+              style={{
+                padding: 5
+              }}
             >
               Genres
             </Button>
