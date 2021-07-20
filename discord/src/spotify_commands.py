@@ -293,7 +293,7 @@ def playlist_description_update(playlist_id: str, initial_desc: str):
         logger.warning(f'Description too long. Not updating {playlist_id} playlist description.')
 
 
-async def expired_track_removal():
+def expired_track_removal():
     logger.debug("Fetching dynamic playlist info...")
 
     results = sp.playlist_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs')

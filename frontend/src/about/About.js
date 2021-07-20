@@ -111,6 +111,24 @@ const About = () => {
             >
               Days since the first song was added to VaultBot: {(Math.floor(difference / (1000 * 60 * 60 * 24))).toLocaleString()}
             </Typography>
+            <Typography
+              variant='body2'
+              style={{
+                color: 'grey'
+              }}
+            >
+              If you want to see a snapshot of the legacy website, you can do so
+              <a
+                href='https://web.archive.org/web/20210618053632/http://vaultbot.tbrittain.com/'
+                target='_blank'
+                rel='noopener noreferrer'
+                style={{
+                  color: 'grey'
+                }}
+              >
+                here.
+              </a>
+            </Typography>
           </article>
         </div>
 

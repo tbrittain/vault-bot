@@ -1,16 +1,17 @@
 from .db import DatabaseConnection
 from .spotify_commands import sp
 from .vb_utils import logger
+import random
 
 party_playlist_id = "6ksVLVljYiEUpjSoDh8z0w"
 top_50_playlist_id = "1b04aMKreEwigG4ivcZNJm"
 chill_playlist_id = "65PiacgUM34qS9EtNgbr5r"
 cheerful_playlist_id = "5gsgXQu45m0W06WkmWXQBY"
 moody_playlist_id = "0jiEtmsU9wRGrAVf7O5YeT"
+genre_playlist_id = "5MDgnMXhfdmxpsCfHz1ioL"
 
 
 # TODO: figure out how to manually order tracks in the playlist
-# TODO: vaultbot selects randomly selected genre
 def selects_playlists_coordinator():
     party_playlist_sql = """SELECT songs.id, COUNT(archive.song_id) FROM songs JOIN archive ON songs.id = 
     archive.song_id JOIN artists ON songs.artist_id = artists.id JOIN artists_genres ON artists.id = 
@@ -36,6 +37,12 @@ def selects_playlists_coordinator():
     = archive.song_id WHERE songs.valence < 0.1 GROUP BY songs.name, songs.id ORDER BY COUNT(archive.song_id) DESC 
     LIMIT 100;"""
 
+    genres = get_viable_genres()
+    selected_genre = random.choice(genres)
+
+    genre_playlist_sql = f"""SELECT songs.id FROM songs JOIN artists ON songs.artist_id = artists.id
+    JOIN artists_genres ON artists_genres.artist_id = artists.id WHERE artists_genres.genre = '{selected_genre}';"""
+
     logger.info(f"Updating aggregate playlist Party (id: {party_playlist_id})")
     update_playlist(playlist_id=party_playlist_id, playlist_sql=party_playlist_sql)
 
@@ -51,13 +58,22 @@ def selects_playlists_coordinator():
     logger.info(f"Updating aggregate playlist Moody (id: {moody_playlist_id})")
     update_playlist(playlist_id=moody_playlist_id, playlist_sql=moody_playlist_sql)
 
+    logger.info(f"Updating aggregate playlist Genre (id: {genre_playlist_id})")
+    description = f"A randomly selected genre tracked by VaultBot. " \
+                  f"Currently: {selected_genre}. Updates every 12 hours!"
+    sp.playlist_change_details(playlist_id=genre_playlist_id, description=description)
+    update_playlist(playlist_id=genre_playlist_id, playlist_sql=genre_playlist_sql)
+
 
 def aggregate_tracks(sql: str) -> list:
+    """
+    @param sql: Raw SQL to execute
+    @return: List of track IDs
+    """
     conn = DatabaseConnection()
     tracks = conn.select_query_raw(sql=sql)
     conn.terminate()
-    tracks = [x[0] for x in tracks]
-    return tracks
+    return [x[0] for x in tracks]
 
 
 def update_playlist(playlist_id: str, playlist_sql: str):
@@ -100,7 +116,20 @@ def update_playlist(playlist_id: str, playlist_sql: str):
         sp.playlist_add_items(playlist_id=playlist_id, items=aggregated_tracks)
     else:
         logger.debug("Skipping song addition, since no songs require removal")
+        
+
+def get_viable_genres() -> list:
+    """
+    Retrieves genres containing a minimum of 15 songs
+    """
+    conn = DatabaseConnection()
+    sql = """SELECT artists_genres.genre, COUNT(songs.id) FROM songs JOIN artists ON songs.artist_id = artists.id
+    JOIN artists_genres ON artists_genres.artist_id = artists.id GROUP BY artists_genres.genre
+    HAVING COUNT(songs.id) >= 15 ORDER BY COUNT(songs.id) DESC;"""
+
+    genres = conn.select_query_raw(sql=sql)
+    return [x[0] for x in genres]
 
 
 if __name__ == "__main__":
-    selects_playlists_coordinator()
+    pass
