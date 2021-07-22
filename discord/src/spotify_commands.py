@@ -26,19 +26,9 @@ elif environment == "prod":
     REDIRECT_URI = access_secret_version(secret_id="db-spotify-redirect-uri",
                                          project_id=project_id)
     commit_changes = True
-    if None in [project_id]:
+    if project_id is None:
         print("Invalid environment setting, exiting")
         sys.exit(1)
-elif environment == "prod_local":
-    load_dotenv(f'{base_dir}/prod_local.env')
-    project_id = os.getenv("PROJECT_ID")
-    CLIENT_ID = access_secret_version(secret_id="vb-spotify-client-id",
-                                      project_id=project_id)
-    CLIENT_SECRET = access_secret_version(secret_id="vb-spotify-client-secret",
-                                          project_id=project_id)
-    REDIRECT_URI = access_secret_version(secret_id="db-spotify-redirect-uri",
-                                         project_id=project_id)
-    commit_changes = True
 else:
     print("Invalid environment variable, exiting")
     sys.exit(1)

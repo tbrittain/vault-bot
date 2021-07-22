@@ -1,3 +1,2 @@
-bot_command_prefix = '$'
+# TODO: depreciate this file in favor of actual environment variable
 environment = 'prod'
-guild_ids = [177261427763970048]

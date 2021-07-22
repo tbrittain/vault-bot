@@ -10,7 +10,14 @@ from google.cloud import secretmanager
 import sys
 
 
-def access_secret_version(secret_id, project_id, version_id="1"):
+def access_secret_version(secret_id, project_id, version_id="1") -> str:
+    """
+    Pull a secret stored in Google Cloud Secret Manager
+    @param secret_id: ID of the secret
+    @param project_id: ID of the project
+    @param version_id: Secret version
+    @return: Secret in string format
+    """
     client = secretmanager.SecretManagerServiceClient()
     name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
     response = client.access_secret_version(name=name)
@@ -37,23 +44,9 @@ elif environment == "prod":
                                     project_id=project_id)
     db_name = access_secret_version(secret_id="vb-postgres-db-name",
                                     project_id=project_id)
-    if None in [project_id]:
+    if project_id is None:
         print("Invalid environment variable, exiting")
         sys.exit(1)
-elif environment == "prod_local":
-    load_dotenv(f'{base_dir}/prod_local.env')
-    project_id = os.getenv("PROJECT_ID")
-
-    db_user = access_secret_version(secret_id="vb-postgres-user",
-                                    project_id=project_id)
-    db_pass = access_secret_version(secret_id="vb-postgres-pass",
-                                    project_id=project_id)
-    db_host = access_secret_version(secret_id="vb-postgres-db-host",
-                                    project_id=project_id)
-    db_port = access_secret_version(secret_id="vb-postgres-db-port",
-                                    project_id=project_id)
-    db_name = access_secret_version(secret_id="vb-postgres-db-name",
-                                    project_id=project_id)
 else:
     print("Invalid environment setting, exiting")
     sys.exit(1)

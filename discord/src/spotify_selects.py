@@ -2,6 +2,8 @@ from .db import DatabaseConnection
 from .spotify_commands import sp
 from .vb_utils import logger
 import random
+from datetime import datetime, timedelta
+from dateutil import tz
 
 party_playlist_id = "6ksVLVljYiEUpjSoDh8z0w"
 top_50_playlist_id = "1b04aMKreEwigG4ivcZNJm"
@@ -59,8 +61,25 @@ def selects_playlists_coordinator():
     update_playlist(playlist_id=moody_playlist_id, playlist_sql=moody_playlist_sql)
 
     logger.info(f"Updating aggregate playlist Genre (id: {genre_playlist_id})")
+
+    # formatting time for display in genre playlist description
+    from_timezone = tz.gettz('UTC')
+    local_timezone = tz.gettz('America/Chicago')
+
+    utc = datetime.utcnow()
+    utc = utc.replace(tzinfo=from_timezone)
+    cst = utc.astimezone(tz=local_timezone)
+    cst = cst + timedelta(hours=12)
+
+    weekday = cst.strftime("%A")
+    day = cst.strftime("%B %d")
+    time = cst.strftime("%H:%M %Z")
+
+    time_formatted = f'{weekday}, {day} at {time}'
+
     description = f"A randomly selected genre tracked by VaultBot. " \
-                  f"Currently: {selected_genre}. Updates every 12 hours!"
+                  f"Currently: {str.title(selected_genre)}. Next update: {time_formatted}"
+
     sp.playlist_change_details(playlist_id=genre_playlist_id, description=description)
     update_playlist(playlist_id=genre_playlist_id, playlist_sql=genre_playlist_sql)
 
@@ -125,7 +144,7 @@ def get_viable_genres() -> list:
     conn = DatabaseConnection()
     sql = """SELECT artists_genres.genre, COUNT(songs.id) FROM songs JOIN artists ON songs.artist_id = artists.id
     JOIN artists_genres ON artists_genres.artist_id = artists.id GROUP BY artists_genres.genre
-    HAVING COUNT(songs.id) >= 15 ORDER BY COUNT(songs.id) DESC;"""
+    HAVING COUNT(songs.id) >= 20 AND COUNT(artists.id) >= 4 ORDER BY COUNT(songs.id) DESC;"""
 
     genres = conn.select_query_raw(sql=sql)
     return [x[0] for x in genres]

@@ -4,12 +4,14 @@ import os
 from dotenv import load_dotenv
 from spotipy import SpotifyException
 import random
+from datetime import datetime, time
 from src import spotify_commands
 from src import config
 from src import historical_tracking
 from src import vb_utils
 from src import spotify_selects
 from src import discord_responses
+from src import webhook_updates
 from alive_progress import alive_bar, config_handler
 from google.cloud import secretmanager
 import sys
@@ -19,10 +21,6 @@ import asyncio
 
 # TODO: implement discord slash commands
 # https://pypi.org/project/discord-py-slash-command/
-
-# TODO: implement a webhook to send daily statistics to myself
-# https://www.codespeedy.com/create-a-discord-webhook-in-python-for-a-bot/
-
 
 def access_secret_version(secret_id, project_id, version_id="1"):
     client = secretmanager.SecretManagerServiceClient()
@@ -43,15 +41,9 @@ elif config.environment == "prod":
     DISCORD_TOKEN = access_secret_version(secret_id="vb-discord-token",
                                           project_id=project_id)
     logger.info("Running program in production mode")
-    if None in [project_id]:
+    if project_id is None:
         logger.error("Invalid environment variable, exiting")
         sys.exit(1)
-elif config.environment == "prod_local":
-    load_dotenv(f'{base_dir}/prod_local.env')
-    project_id = os.getenv("PROJECT_ID")
-    DISCORD_TOKEN = access_secret_version(secret_id="vb-discord-token",
-                                          project_id=project_id)
-    logger.info("Running program in local production mode")
 else:
     logger.error("Invalid environment setting, exiting")
     sys.exit(1)
@@ -86,19 +78,28 @@ async def on_ready():
 @tasks.loop(minutes=60)
 async def hourly_cleanup():
     await bot.wait_until_ready()
-    logger.info(f"Beginning hourly cleanup")
-    with alive_bar(total=3, title='Hourly cleanup...') as bar:
+    logger.info(f"Beginning hourly cleanup...")
+    with alive_bar(total=4, title='Hourly cleanup...') as bar:
         logger.debug("Performing expired track removal (if necessary)...")
         # awaiting this may have been causing an issue with the Spotify cache not being refreshed properly
         spotify_commands.expired_track_removal()
         bar()
         spotify_commands.playlist_description_update(playlist_id="5YQHb5wt9d0hmShWNxjsTs",
-                                                     initial_desc='The playlist with guaranteed freshness. ')
+                                                     initial_desc='The playlist with guaranteed freshness. '
+                                                                  'See more at vaultbot.tbrittain.com! ')
         bar()
         logger.debug('Checking whether to log current playlist data...')
         historical_tracking.playlist_snapshot_coordinator()
         bar()
-        logger.info('Playlist stats logging complete')
+        logger.debug('Checking whether to post webhook updates...')
+        time_now = datetime.utcnow().time()
+        begin = time(23, 0)
+        end = time(23, 59, 59)
+        if begin >= time_now >= end:
+            logger.debug('Pushing update to webhook...')
+            webhook_updates.post_webhook()
+        bar()
+        logger.info('Playlist stats logging complete!')
     logger.info('Hourly playlist cleanup complete!')
 
 
