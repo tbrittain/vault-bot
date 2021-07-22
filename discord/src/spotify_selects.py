@@ -95,6 +95,11 @@ def aggregate_tracks(sql: str) -> list:
     return [x[0] for x in tracks]
 
 
+def array_chunks(lst, n):
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+
+
 def update_playlist(playlist_id: str, playlist_sql: str):
     # pull existing tracks
     existing_tracks = sp.playlist_items(playlist_id=playlist_id)
@@ -115,8 +120,16 @@ def update_playlist(playlist_id: str, playlist_sql: str):
 
     if len(tracks_to_remove) > 0:
         logger.debug(f"Removing {len(tracks_to_remove)} tracks from playlist")
-        sp.playlist_remove_all_occurrences_of_items(playlist_id=playlist_id,
-                                                    items=tracks_to_remove)
+        if len(tracks_to_remove) > 100:
+            logger.debug(f"Splitting tracks into chunks of 100")
+            chunked_tracks_to_remove = list(array_chunks(tracks_to_remove, 100))
+            for chunked_list in chunked_tracks_to_remove:
+                logger.debug(f"Removing {len(chunked_list)} tracks")
+                sp.playlist_remove_all_occurrences_of_items(playlist_id=playlist_id,
+                                                            items=chunked_list)
+        else:
+            sp.playlist_remove_all_occurrences_of_items(playlist_id=playlist_id,
+                                                        items=tracks_to_remove)
     else:
         logger.debug("No tracks require removal from playlist")
 
@@ -132,19 +145,26 @@ def update_playlist(playlist_id: str, playlist_sql: str):
 
     if len(aggregated_tracks) > 0:
         logger.debug(f"Adding {len(aggregated_tracks)} replacement tracks to playlist")
-        sp.playlist_add_items(playlist_id=playlist_id, items=aggregated_tracks)
+        if len(aggregated_tracks) > 100:  # max 100 songs per request
+            logger.debug(f"Splitting tracks into chunks of 100")
+            chunked_aggregated_tracks = list(array_chunks(aggregated_tracks, 100))
+            for chunked_list in chunked_aggregated_tracks:
+                logger.debug(f"Adding {len(chunked_list)} tracks")
+                sp.playlist_add_items(playlist_id=playlist_id, items=chunked_list)
+        else:
+            sp.playlist_add_items(playlist_id=playlist_id, items=aggregated_tracks)
     else:
-        logger.debug("Skipping song addition, since no songs require removal")
-        
+        logger.debug("Skipping song addition since no songs require removal")
+
 
 def get_viable_genres() -> list:
     """
-    Retrieves genres containing a minimum of 15 songs
+    Retrieves genres containing a minimum of 20 songs from 4+ artists
     """
     conn = DatabaseConnection()
     sql = """SELECT artists_genres.genre, COUNT(songs.id) FROM songs JOIN artists ON songs.artist_id = artists.id
     JOIN artists_genres ON artists_genres.artist_id = artists.id GROUP BY artists_genres.genre
-    HAVING COUNT(songs.id) >= 20 AND COUNT(artists.id) >= 4 ORDER BY COUNT(songs.id) DESC;"""
+    HAVING COUNT(songs.id) >= 20 AND COUNT(DISTINCT artists.id) >= 4 ORDER BY COUNT(songs.id) DESC;"""
 
     genres = conn.select_query_raw(sql=sql)
     return [x[0] for x in genres]
