@@ -6,6 +6,7 @@ const Song = require('../db/models/Song')
 const { Op, Sequelize } = require('sequelize')
 const { sequelize } = require('../db/models/Song')
 const escape = require('escape-html')
+const axios = require('axios').default
 
 // TODO: consider separating individual resolvers into their own files and merging them together
 // https://www.graphql-tools.com/docs/introduction/
@@ -378,6 +379,100 @@ const resolvers = {
 
       result = JSON.parse(JSON.stringify(result))
       return result
+    },
+    async bio (parent, args) {
+      const originalArtistName = String(parent.name)
+      const FIND_WIKI_ARTICLE_URL = 'https://en.wikipedia.org/w/api.php?action=query&origin=*&format=json&generator=search&gsrnamespace=0&gsrlimit=10&gsrsearch='
+
+      // for use with specific number of sentences
+      // const WIKI_ARTICLE_CONTENT_URL = 'https://en.wikipedia.org/w/api.php?action=query&prop=extracts&format=json&explaintext&exsentences=6&exsectionformat=plain&pageids='
+
+      // for use with only the intro page - more ideal
+      const WIKI_ARTICLE_CONTENT_URL = 'https://en.wikipedia.org/w/api.php?action=query&prop=extracts&format=json&explaintext&exintro&exsectionformat=plain&pageids='
+      // TODO: group keyword leads to false positives
+      const artistKeywords = ['musician', 'band', 'singer', 'singer-songwriter',
+        'rapper', 'group', 'duo', 'trio', 'supergroup', 'dj', 'vocalist', 'record producer']
+
+      // remove accented characters, which leads to error code 400 in wikipedia request
+      const artistName = originalArtistName.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+
+      const articles = await axios.get(`${FIND_WIKI_ARTICLE_URL}'${artistName}'`)
+        .then(res => res.data.query.pages)
+        .then(res => Object.values(res))
+        .catch(err => console.error(err))
+
+      articles.sort((a, b) => parseFloat(a.index) - parseFloat(b.index)) // sort array of results by index property
+
+      /*
+      Iterate over article results to determine whether any of the artist qualifiers are present in the title
+      This is useful in distinguishing between pages that have identical names to the artist, or
+      if the artist is more obscure and requires the qualifier in the page title
+      */
+
+      let artistArticleId = null
+      for (const result of articles) {
+        // iterate through the list of artist keywords and determine if the title includes them
+        let articleFound = false
+        for (const keyword of artistKeywords) {
+          const lowerCaseTitle = String(result.title).toLowerCase()
+          if (lowerCaseTitle.includes(`${artistName.toLowerCase()} (${keyword})`)) {
+            articleFound = true
+            artistArticleId = result.pageid
+            break
+          }
+        }
+        if (articleFound) {
+          break
+        }
+      }
+
+      if (artistArticleId) {
+        const articleContent = await axios.get(`${WIKI_ARTICLE_CONTENT_URL}${artistArticleId}`)
+          .then(res => res.data.query.pages)
+          .then(res => Object.values(res)[0])
+          .then(res => res.extract)
+          .catch(err => console.error(err))
+        return articleContent
+      } else {
+        /*
+        Parse through the articles from existing results for keywords
+        Generally the top result is going to be the artist if the artist
+        is popular enough to not have a keyword in the page title
+        */
+        for (const result of articles) {
+          const articleContent = await axios.get(`${WIKI_ARTICLE_CONTENT_URL}${result.pageid}`)
+            .then(res => res.data.query.pages)
+            .then(res => Object.values(res)[0])
+            .then(res => res.extract)
+            .catch(err => console.error(err))
+
+          const lowerCaseArticle = String(articleContent).toLowerCase()
+          const lowerCaseArtist = String(artistName).toLowerCase()
+
+          for (const keyword of artistKeywords) {
+            const articleIncludesKeyword = lowerCaseArticle.includes(` ${keyword} `) || lowerCaseArticle.includes(` ${keyword}.`) || lowerCaseArticle.includes(` ${keyword},`)
+            let articleIncludesArtistName = lowerCaseArticle.includes(lowerCaseArtist) // issue if artist name is a nickname of their full name
+
+            if (!articleIncludesArtistName) {
+              // try splitting the artist name into an array of each word in the artist name, and check for each word
+              try {
+                const artistNameArr = lowerCaseArtist.split(' ')
+                for (const artistWord of artistNameArr) {
+                  if (lowerCaseArticle.includes(artistWord)) {
+                    articleIncludesArtistName = true
+                    break
+                  }
+                }
+              } catch (err) {
+                console.error(err)
+              }
+            }
+            if (articleIncludesKeyword && articleIncludesArtistName) {
+              return articleContent
+            }
+          }
+        }
+      }
     }
   },
   Song: {

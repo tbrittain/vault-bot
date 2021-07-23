@@ -10,6 +10,7 @@ const typeDefs = gql`
     art: String
     genres: [Genre]
     songs: [Song!]!
+    bio: String
   }
 
   type Song {
