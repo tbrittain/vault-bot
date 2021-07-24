@@ -1,14 +1,15 @@
 import React, { useState } from 'react'
 import {
-  Avatar,
   Paper,
   Tooltip,
   Fade,
   Backdrop
 } from '@material-ui/core'
 import { Link } from 'react-router-dom'
+import { LazyLoadImage } from 'react-lazy-load-image-component'
 import gridStyles from './GridStyles'
 import { makeStyles } from '@material-ui/core/styles'
+import 'react-lazy-load-image-component/src/effects/opacity.css'
 
 const darkTooltipTheme = makeStyles((theme) => ({
   tooltip: {
@@ -38,34 +39,37 @@ const ArtistPreview = (props) => {
   }
 
   return (
-    <DarkTooltip
-      disableFocusListener
-      TransitionComponent={Fade}
-      TransitionProps={{ timeout: 200 }}
-      title={<i>{name}</i>}
-    >
-      <Paper
-        className={classes.artistCard}
-        component={Link}
-        to={`/artists/${id}`}
+    <>
+      <DarkTooltip
+        disableFocusListener
+        TransitionComponent={Fade}
+        TransitionProps={{ timeout: 200 }}
+        title={<i>{name}</i>}
       >
-        <Avatar
-          src={art}
-          alt={`${name} artist art`}
-          variant='square'
-          className={classes.artistArt}
+        <Paper
+          className={classes.artistCard}
+          component={Link}
+          to={`/artists/${id}`}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
-        />
-        <Backdrop
-          open={open}
           style={{
-            zIndex: 9
+            borderRadius: 0
           }}
-        />
-      </Paper>
-    </DarkTooltip>
-
+        >
+          <LazyLoadImage
+            src={art}
+            alt={`${name} artist art`}
+            className={classes.artistArt}
+            effect='opacity'
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+          />
+        </Paper>
+      </DarkTooltip>
+    </>
   )
 }
 

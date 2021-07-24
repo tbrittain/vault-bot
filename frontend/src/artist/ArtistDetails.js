@@ -13,6 +13,9 @@ const ArtistDetails = (props) => {
   return (
     <Paper
       elevation={3}
+      style={{
+        borderRadius: 0
+      }}
     >
       <div className={classes.artistTop}>
         <Avatar

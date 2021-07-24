@@ -89,6 +89,25 @@ const artistStyles = makeStyles((theme) => ({
     '&:hover': {
       background: theme.palette.primary.main
     }
+  },
+  artistBio: {
+    padding: '3% 15%',
+    textIndent: '3ch',
+    textAlign: 'justify',
+    maxHeight: '20vw',
+    overflowY: 'auto',
+    [theme.breakpoints.down('sm')]: {
+      maxHeight: '75vw',
+      padding: '5%'
+    }
+  },
+  link: {
+    textDecoration: 'none',
+    color: theme.palette.secondary.dark,
+    transition: '0.3s',
+    '&:hover': {
+      color: 'white'
+    }
   }
 }))
 

@@ -10,6 +10,7 @@ import { Alert } from '@material-ui/lab'
 import LoadingScreen from '../loading/LoadingScreen'
 import ArtistDetails from './ArtistDetails'
 import GenreGrid from '../grids/GenreGrid'
+import ArtistBio from './ArtistBio'
 
 const QUERY = gql`
   query ($artistId: String!){
@@ -81,7 +82,7 @@ const ArtistContainer = () => {
   }
 
   return (
-    <div>
+    <>
       <Grid
         container
         direction='column'
@@ -102,8 +103,11 @@ const ArtistContainer = () => {
             genres={formattedData.genres}
           />
         </Paper>
+        <ArtistBio
+          artistId={artistId}
+        />
       </Grid>
-    </div>
+    </>
   )
 }
 
