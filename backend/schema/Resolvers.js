@@ -7,8 +7,9 @@ const { Op, Sequelize } = require('sequelize')
 const { sequelize } = require('../db/models/Song')
 const escape = require('escape-html')
 const axios = require('axios').default
+const { removeAccents } = require('../utils/RemoveAccents')
 
-// TODO: consider separating individual resolvers into their own files and merging them together
+// TODO: separate individual resolvers into their own files and merge them together
 // https://www.graphql-tools.com/docs/introduction/
 // https://stackoverflow.com/questions/52457345/how-to-seperate-schema-and-resolvers-and-merage-them-apollo-server-express
 const resolvers = {
@@ -380,42 +381,45 @@ const resolvers = {
       result = JSON.parse(JSON.stringify(result))
       return result
     },
-    async bio (parent, args) {
+    async wikiBio (parent, args) {
       const originalArtistName = String(parent.name)
       const FIND_WIKI_ARTICLE_URL = 'https://en.wikipedia.org/w/api.php?action=query&origin=*&format=json&generator=search&gsrnamespace=0&gsrlimit=10&gsrsearch='
 
       // for use with specific number of sentences
-      // const WIKI_ARTICLE_CONTENT_URL = 'https://en.wikipedia.org/w/api.php?action=query&prop=extracts&format=json&explaintext&exsentences=6&exsectionformat=plain&pageids='
+      const WIKI_ARTICLE_CONTENT_URL = 'https://en.wikipedia.org/w/api.php?action=query&prop=extracts&format=json&explaintext&exsentences=10&exsectionformat=plain&pageids='
 
       // for use with only the intro page - more ideal
-      const WIKI_ARTICLE_CONTENT_URL = 'https://en.wikipedia.org/w/api.php?action=query&prop=extracts&format=json&explaintext&exintro&exsectionformat=plain&pageids='
-      // TODO: group keyword leads to false positives
+      // const WIKI_ARTICLE_CONTENT_URL = 'https://en.wikipedia.org/w/api.php?action=query&prop=extracts&format=json&explaintext&exintro&exsectionformat=plain&pageids='
+
+      // 'group', is another keyword, but it produces too many false positives
       const artistKeywords = ['musician', 'band', 'singer', 'singer-songwriter',
-        'rapper', 'group', 'duo', 'trio', 'supergroup', 'dj', 'vocalist', 'record producer']
+        'rapper', 'duo', 'trio', 'supergroup', 'dj', 'vocalist', 'record producer',
+        'music producer', 'composer', 'multi-instrumentalist']
 
       // remove accented characters, which leads to error code 400 in wikipedia request
-      const artistName = originalArtistName.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      let artistNameNoSymbols = removeAccents(originalArtistName)
+      artistNameNoSymbols = artistNameNoSymbols.replace('.', '')
 
-      const articles = await axios.get(`${FIND_WIKI_ARTICLE_URL}'${artistName}'`)
+      let articles = await axios.get(`${FIND_WIKI_ARTICLE_URL}'${artistNameNoSymbols}'`, {
+        headers: { 'User-Agent': 'VaultBot/0.2 +https://vaultbot.tbrittain.com/' }
+      })
         .then(res => res.data.query.pages)
         .then(res => Object.values(res))
         .catch(err => console.error(err))
 
       articles.sort((a, b) => parseFloat(a.index) - parseFloat(b.index)) // sort array of results by index property
-
       /*
       Iterate over article results to determine whether any of the artist qualifiers are present in the title
       This is useful in distinguishing between pages that have identical names to the artist, or
       if the artist is more obscure and requires the qualifier in the page title
       */
-
       let artistArticleId = null
       for (const result of articles) {
         // iterate through the list of artist keywords and determine if the title includes them
         let articleFound = false
         for (const keyword of artistKeywords) {
           const lowerCaseTitle = String(result.title).toLowerCase()
-          if (lowerCaseTitle.includes(`${artistName.toLowerCase()} (${keyword})`)) {
+          if (lowerCaseTitle.includes(`${artistNameNoSymbols.toLowerCase()} (${keyword})`)) {
             articleFound = true
             artistArticleId = result.pageid
             break
@@ -425,14 +429,24 @@ const resolvers = {
           break
         }
       }
+      // clean results of albums
+      articles = articles.filter(article => !article.title.includes(' (album)'))
 
+      let artistPageName
       if (artistArticleId) {
-        const articleContent = await axios.get(`${WIKI_ARTICLE_CONTENT_URL}${artistArticleId}`)
+        const articleContent = await axios.get(`${WIKI_ARTICLE_CONTENT_URL}${artistArticleId}`, {
+          headers: { 'User-Agent': 'VaultBot/0.2 +https://vaultbot.tbrittain.com/' }
+        })
           .then(res => res.data.query.pages)
           .then(res => Object.values(res)[0])
-          .then(res => res.extract)
           .catch(err => console.error(err))
-        return articleContent
+
+        artistPageName = articleContent.title.replace(' ', '_')
+        const articleLink = `https://en.wikipedia.org/wiki/${artistPageName}`
+        return {
+          bio: articleContent.extract,
+          url: articleLink
+        }
       } else {
         /*
         Parse through the articles from existing results for keywords
@@ -440,35 +454,30 @@ const resolvers = {
         is popular enough to not have a keyword in the page title
         */
         for (const result of articles) {
-          const articleContent = await axios.get(`${WIKI_ARTICLE_CONTENT_URL}${result.pageid}`)
+          const articleContent = await axios.get(`${WIKI_ARTICLE_CONTENT_URL}${result.pageid}`, {
+            headers: { 'User-Agent': 'VaultBot/0.2 +https://vaultbot.tbrittain.com/' }
+          })
             .then(res => res.data.query.pages)
             .then(res => Object.values(res)[0])
-            .then(res => res.extract)
             .catch(err => console.error(err))
 
-          const lowerCaseArticle = String(articleContent).toLowerCase()
-          const lowerCaseArtist = String(artistName).toLowerCase()
+          let rawArticle = String(articleContent.extract).toLowerCase()
+          rawArticle = rawArticle.replace('.', '')
+          rawArticle = rawArticle.replace(',', '')
+          rawArticle = rawArticle.replace(';', '')
+          const lowerCaseArtist = String(originalArtistName).toLowerCase()
 
           for (const keyword of artistKeywords) {
-            const articleIncludesKeyword = lowerCaseArticle.includes(` ${keyword} `) || lowerCaseArticle.includes(` ${keyword}.`) || lowerCaseArticle.includes(` ${keyword},`)
-            let articleIncludesArtistName = lowerCaseArticle.includes(lowerCaseArtist) // issue if artist name is a nickname of their full name
+            const articleIncludesKeyword = rawArticle.includes(` ${keyword} `)
+            const articleIncludesArtistName = rawArticle.includes(` ${lowerCaseArtist} `) || rawArticle.includes(`${lowerCaseArtist} `)
 
-            if (!articleIncludesArtistName) {
-              // try splitting the artist name into an array of each word in the artist name, and check for each word
-              try {
-                const artistNameArr = lowerCaseArtist.split(' ')
-                for (const artistWord of artistNameArr) {
-                  if (lowerCaseArticle.includes(artistWord)) {
-                    articleIncludesArtistName = true
-                    break
-                  }
-                }
-              } catch (err) {
-                console.error(err)
+            if (articleIncludesKeyword && articleIncludesArtistName) { // issues when artist name is their real name (but not full name)
+              artistPageName = articleContent.title.replace(' ', '_')
+              const articleLink = `https://en.wikipedia.org/wiki/${artistPageName}`
+              return {
+                bio: articleContent.extract,
+                url: articleLink
               }
-            }
-            if (articleIncludesKeyword && articleIncludesArtistName) {
-              return articleContent
             }
           }
         }

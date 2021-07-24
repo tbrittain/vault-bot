@@ -42,5 +42,7 @@ const corsSettings = {
 server.applyMiddleware({ app, cors: true })
 
 app.listen(port, () => {
-  console.log(`🚀 GraphQL API server listening on port ${port}`)
+  process.env.NODE_ENV === 'production'
+    ? console.log(`🚀 GraphQL API server listening on port ${port}`)
+    : console.log(`🚀 GraphQL API server listening on http://localhost:${port}/graphql/`)
 })
