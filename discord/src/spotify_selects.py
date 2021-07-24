@@ -1,5 +1,5 @@
 from .db import DatabaseConnection
-from .spotify_commands import sp
+from .spotify_commands import sp, get_full_playlist
 from .vb_utils import logger
 import random
 from datetime import datetime, timedelta
@@ -20,7 +20,7 @@ def selects_playlists_coordinator():
     artists_genres.artist_id WHERE artists_genres.genre = ANY('{hip hop, pop rap, rap, edm, house, 
     tropical house, uk dance, turntablism, pop, filter house, vapor twitch, dance-punk, bass house, 
     electronic trap, electro house, bass music, australian electropop, la pop, metropopolis, pop edm}') AND 
-    songs.danceability > 0.6 AND songs.energy > 0.5 AND songs.length < 4.33 AND songs.tempo > 105 GROUP BY 
+    songs.danceability > 0.6 AND songs.energy > 0.5 AND songs.length < 4.75 AND songs.tempo > 105 GROUP BY 
     songs.name, songs.id ORDER BY COUNT(archive.song_id) DESC LIMIT 100;"""
 
     top_50_playlist_sql = """SELECT songs.id, COUNT(archive.song_id) FROM songs JOIN archive 
@@ -61,6 +61,7 @@ def selects_playlists_coordinator():
     update_playlist(playlist_id=moody_playlist_id, playlist_sql=moody_playlist_sql)
 
     logger.info(f"Updating aggregate playlist Genre (id: {genre_playlist_id})")
+    logger.info(f"New genre: {selected_genre}, selected out of {len(genres)} viable genres")
 
     # formatting time for display in genre playlist description
     from_timezone = tz.gettz('UTC')
@@ -95,6 +96,7 @@ def aggregate_tracks(sql: str) -> list:
     return [x[0] for x in tracks]
 
 
+# TODO: move this to utils, along with some other helper functions
 def array_chunks(lst, n):
     for i in range(0, len(lst), n):
         yield lst[i:i + n]
@@ -102,9 +104,8 @@ def array_chunks(lst, n):
 
 def update_playlist(playlist_id: str, playlist_sql: str):
     # pull existing tracks
-    existing_tracks = sp.playlist_items(playlist_id=playlist_id)
-    if existing_tracks['total'] > 0:
-        existing_tracks = existing_tracks['items']
+    existing_tracks = get_full_playlist(playlist_id=playlist_id)
+    if len(existing_tracks) > 0:
         existing_tracks = [track['track']['id'] for track in existing_tracks]
     else:
         existing_tracks = None

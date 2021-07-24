@@ -64,6 +64,22 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID,
                                                cache_handler=cache_handler))
 
 
+def get_full_playlist(playlist_id: str) -> list:
+    """
+    Retrieves all results from playlist by parsing through paginated results
+    @param playlist_id: Spotify ID of the playlist
+    """
+    results = sp.playlist_items(playlist_id=playlist_id)
+    if results['total'] > 0:
+        tracks = results['items']
+        while results['next']:
+            results = sp.next(results)
+            tracks.extend(results['items'])
+        return tracks
+    else:
+        return []
+
+
 async def song_search(user_message):
     original_message = str(user_message)
     original_message = original_message.replace("'", "")
@@ -270,7 +286,7 @@ def playlist_description_update(playlist_id: str, initial_desc: str):
         desc += 'Prominent genres include: '
         for genre, count in top_genres.items():
             desc += f'{genre}, '
-        desc += 'and more!'
+        desc += 'and more'
 
     description_length = len(desc)
     logger.debug(f'Updated length of playlist {playlist_id} description: {description_length}')
@@ -281,6 +297,11 @@ def playlist_description_update(playlist_id: str, initial_desc: str):
         sp.playlist_change_details(playlist_id=playlist_id, description=desc)
     else:
         logger.warning(f'Description too long. Not updating {playlist_id} playlist description.')
+
+
+def array_chunks(lst, n):
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
 
 
 def expired_track_removal():
@@ -308,6 +329,7 @@ def expired_track_removal():
         logger.warning('Preparing to update track popularities and check for expired songs. '
                        'Please do not exit the program during this time.')
         conn = DatabaseConnection()
+        tracks_to_remove = []
         for track in track_list:
             # key is the track id
             for key, value in track.items():
@@ -325,16 +347,33 @@ def expired_track_removal():
                                                             day=int(date_split[2]))
                 # song removal from dynamic playlist
                 if time_difference > timedelta(days=14):  # set 2 weeks threshold for track removal
-                    sp.playlist_remove_all_occurrences_of_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs',
-                                                                items=[key])
+                    tracks_to_remove.append(key)
                     conn.delete_query(table='dynamic', column_to_match='song_id', condition=key)
-                    logger.debug(f'Song {key} removed from playlist')
+                    logger.debug(f'Song {key} removed from database')
+        if len(tracks_to_remove) > 0:
+            logger.debug(f"Preparing to remove {len(tracks_to_remove)} from dynamic playlist")
+            if len(tracks_to_remove) > 100:
+                logger.debug(f"Splitting tracks into chunks of 100")
+                chunked_tracks_to_remove = list(array_chunks(tracks_to_remove, 100))
+                for chunked_list in chunked_tracks_to_remove:
+                    logger.debug(f"Removing {len(chunked_list)} tracks from dynamic")
+                    sp.playlist_remove_all_occurrences_of_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs',
+                                                                items=chunked_list)
+            else:
+                logger.debug(f"Removing {len(tracks_to_remove)} tracks from dynamic")
+                sp.playlist_remove_all_occurrences_of_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs',
+                                                            items=tracks_to_remove)
         if commit_changes:
             conn.commit()
         else:
             conn.rollback()
         conn.terminate()
     logger.info('Track popularities updated and expired songs checked.')
+
+
+def force_refresh_cache():
+    cache_handler.get_cached_token()
+    # song = sp.track(track_id='6oy7lD7B9HScHz11HQ2P0F')
 
 
 if __name__ == "__main__":

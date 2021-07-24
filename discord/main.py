@@ -71,8 +71,8 @@ async def on_ready():
     await bot.change_presence(activity=discord.Game(f'@me + help'))
 
     if config.environment == "prod":
-        generate_aggregate_playlists.start()
         hourly_cleanup.start()
+        generate_aggregate_playlists.start()
 
 
 @tasks.loop(minutes=60)
@@ -81,7 +81,7 @@ async def hourly_cleanup():
     logger.info(f"Beginning hourly cleanup...")
     with alive_bar(total=4, title='Hourly cleanup...') as bar:
         logger.debug("Performing expired track removal (if necessary)...")
-        # awaiting this may have been causing an issue with the Spotify cache not being refreshed properly
+        spotify_commands.force_refresh_cache()
         spotify_commands.expired_track_removal()
         bar()
         spotify_commands.playlist_description_update(playlist_id="5YQHb5wt9d0hmShWNxjsTs",
@@ -95,7 +95,7 @@ async def hourly_cleanup():
         time_now = datetime.utcnow().time()
         begin = time(23, 0)
         end = time(23, 59, 59)
-        if begin >= time_now >= end:
+        if begin <= time_now <= end:
             logger.debug('Pushing update to webhook...')
             webhook_updates.post_webhook()
         bar()
