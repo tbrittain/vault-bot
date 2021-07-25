@@ -72,7 +72,7 @@ const SongContainer = () => {
 
   if (loading || processing) {
     return (
-      <LoadingScreen text='Loading songs...' />
+      <LoadingScreen text='Loading song...' />
     )
   }
 
@@ -83,7 +83,7 @@ const SongContainer = () => {
   }
 
   return (
-    <div>
+    <>
       <Grid
         container
         direction='column'
@@ -98,6 +98,7 @@ const SongContainer = () => {
           art={formattedData.art}
           songPreview={formattedData.previewUrl}
           details={formattedData.details}
+          id={songId}
         />
         <Typography variant='h2'>Artist Preview</Typography>
         <SongArtist
@@ -107,7 +108,7 @@ const SongContainer = () => {
           genres={artistGenres}
         />
       </Grid>
-    </div>
+    </>
   )
 }
 

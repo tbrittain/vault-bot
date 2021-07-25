@@ -40,6 +40,7 @@ const gridStyles = makeStyles((theme) => ({
   artistArt: {
     height: '12vw',
     width: '12vw',
+    objectFit: 'cover',
     minWidth: 100,
     minHeight: 100,
     transition: 'transform .2s',

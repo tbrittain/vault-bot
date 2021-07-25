@@ -2,25 +2,25 @@ import React from 'react'
 import {
   Typography,
   Paper,
-  Avatar
+  Avatar,
+  Button
 } from '@material-ui/core'
+import OpenInNewIcon from '@material-ui/icons/OpenInNew'
 import CountUpAnimation from '../effects/CountUpAnimation'
 import ArtistAlbums from './ArtistAlbums'
 import artistStyles from './ArtistStyles'
 
 const ArtistDetails = (props) => {
+  const artistLink = `spotify:artist:${props.id}`
   const classes = artistStyles()
   return (
     <Paper
       elevation={3}
-      style={{
-        borderRadius: 0
-      }}
     >
       <div className={classes.artistTop}>
         <Avatar
           className={classes.artistArt}
-          alt={`${props.name} artist art`}
+          alt={props.name}
           src={props.artistArt}
         />
         <div
@@ -53,6 +53,23 @@ const ArtistDetails = (props) => {
           {Number(props.numSongs) === 1 &&
             ' unique song'}
         </Typography>
+        <Button
+          variant='contained'
+          component='a'
+          href={artistLink}
+          style={{
+            marginTop: 10,
+            backgroundColor: 'rgb(35, 207, 95)',
+            color: 'white'
+          }}
+        >
+          Open on Spotify
+          <OpenInNewIcon
+            style={{
+              paddingLeft: 4
+            }}
+          />
+        </Button>
       </div>
       <ArtistAlbums
         albumSongs={props.albumSongs}

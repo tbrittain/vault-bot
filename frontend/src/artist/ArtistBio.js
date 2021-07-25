@@ -95,7 +95,6 @@ const ArtistBio = (props) => {
           className={classes.artistBio}
           style={{
             backgroundColor: theme.palette.primary.main,
-            borderRadius: 0
           }}
         >
           <Typography

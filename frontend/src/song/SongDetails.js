@@ -8,8 +8,10 @@ import {
   AppBar,
   Tabs,
   Tab,
-  useTheme
+  useTheme,
+  Button
 } from '@material-ui/core'
+import OpenInNewIcon from '@material-ui/icons/OpenInNew'
 import AlbumSongs from './AlbumSongs'
 import SongChars from './SongCharacteristics'
 import songStyles from './SongStyles'
@@ -36,6 +38,7 @@ const TabPanel = (props) => {
 const SongDetails = (props) => {
   const classes = songStyles()
   const theme = useTheme()
+  const songLink = `spotify:track:${props.id}`
 
   const [value, setValue] = useState(0)
   const handleChange = (event, newValue) => {
@@ -137,6 +140,23 @@ const SongDetails = (props) => {
               >
                 <Box component='span' fontWeight='300'>from the album</Box> {props.album}
               </Typography>
+              <Button
+                variant='contained'
+                component='a'
+                href={songLink}
+                style={{
+                  marginTop: 10,
+                  backgroundColor: 'rgb(35, 207, 95)',
+                  color: 'white'
+                }}
+              >
+                Open on Spotify
+                <OpenInNewIcon
+                  style={{
+                    paddingLeft: 4
+                  }}
+                />
+              </Button>
             </div>
           </div>
           <div className={classes.innerContainer}>

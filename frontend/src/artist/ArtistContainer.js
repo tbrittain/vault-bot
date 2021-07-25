@@ -94,6 +94,7 @@ const ArtistContainer = () => {
           albumSongs={formattedData.albumSongs}
           artistArt={formattedData.art}
           numSongs={formattedData.numSongs}
+          id={artistId}
         />
         <Typography variant='h1'>Artist Genres</Typography>
         <Paper

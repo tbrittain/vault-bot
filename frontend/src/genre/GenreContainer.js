@@ -5,8 +5,10 @@ import { Alert } from '@material-ui/lab'
 import {
   Typography,
   Paper,
-  useTheme
+  useTheme,
+  Button
 } from '@material-ui/core'
+import OpenInNewIcon from '@material-ui/icons/OpenInNew'
 import LoadingScreen from '../loading/LoadingScreen'
 import ArtistGrid from '../grids/ArtistGrid'
 import CountUpAnimation from '../effects/CountUpAnimation'
@@ -40,8 +42,14 @@ const GenreContainer = () => {
   let processing = true
   if (data) {
     formattedData = data.getArtistsFromGenre
-    processing = false
   }
+
+  let everyNoiseGenre = genreName
+  everyNoiseGenre = everyNoiseGenre.replaceAll(' ', '')
+  everyNoiseGenre = everyNoiseGenre.replaceAll('&', '')
+  everyNoiseGenre = everyNoiseGenre.replaceAll('-', '')
+  const everyNoiseLink = `http://everynoise.com/engenremap-${everyNoiseGenre}.html`
+  processing = false
 
   if (loading || processing) {
     return (
@@ -56,7 +64,7 @@ const GenreContainer = () => {
   }
 
   return (
-    <div>
+    <>
       <Typography
         variant='h1'
       >
@@ -92,11 +100,28 @@ const GenreContainer = () => {
           {formattedData.length < 20 &&
             formattedData.length}
         </Typography>
+        <Button
+          variant='outlined'
+          component='a'
+          href={everyNoiseLink}
+          target='_blank'
+          rel='noopener noreferrer'
+          style={{
+            color: theme.palette.getContrastText(genreToMuiColor(genreName))
+          }}
+        >
+          Open on EveryNoise
+          <OpenInNewIcon
+            style={{
+              paddingLeft: 4
+            }}
+          />
+        </Button>
       </Paper>
       <ArtistGrid
         artists={formattedData}
       />
-    </div>
+    </>
   )
 }
 

@@ -48,6 +48,18 @@ const defaultTheme = createTheme({
     h6: {
       fontSize: '2rem'
     }
+  },
+  overrides: {
+    MuiBreadcrumbs: {
+      ol: {
+        justifyContent: 'center'
+      }
+    }
+  },
+  props: {
+    MuiPaper: {
+      square: true
+    }
   }
 })
 

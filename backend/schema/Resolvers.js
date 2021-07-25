@@ -399,13 +399,21 @@ const resolvers = {
       // remove accented characters, which leads to error code 400 in wikipedia request
       let artistNameNoSymbols = removeAccents(originalArtistName)
       artistNameNoSymbols = artistNameNoSymbols.replace('.', '')
+      artistNameNoSymbols = artistNameNoSymbols.replace('&', '')
 
       let articles = await axios.get(`${FIND_WIKI_ARTICLE_URL}'${artistNameNoSymbols}'`, {
         headers: { 'User-Agent': 'VaultBot/0.2 +https://vaultbot.tbrittain.com/' }
       })
         .then(res => res.data.query.pages)
         .then(res => Object.values(res))
-        .catch(err => console.error(err))
+        .catch(err => {
+          console.error(err)
+          return null
+        })
+
+      if (!articles) {
+        return null
+      }
 
       articles.sort((a, b) => parseFloat(a.index) - parseFloat(b.index)) // sort array of results by index property
       /*
@@ -431,7 +439,7 @@ const resolvers = {
       }
       // clean results of albums
       articles = articles.filter(article => !article.title.includes(' (album)'))
-
+      articles = articles.filter(article => !article.title.includes(' (song)'))
       let artistPageName
       if (artistArticleId) {
         const articleContent = await axios.get(`${WIKI_ARTICLE_CONTENT_URL}${artistArticleId}`, {
@@ -462,15 +470,13 @@ const resolvers = {
             .catch(err => console.error(err))
 
           let rawArticle = String(articleContent.extract).toLowerCase()
-          rawArticle = rawArticle.replace('.', '')
-          rawArticle = rawArticle.replace(',', '')
-          rawArticle = rawArticle.replace(';', '')
+          rawArticle = rawArticle.replace(/[^a-zA-Z0-9_ -]/g, '')
+
           const lowerCaseArtist = String(originalArtistName).toLowerCase()
 
           for (const keyword of artistKeywords) {
             const articleIncludesKeyword = rawArticle.includes(` ${keyword} `)
             const articleIncludesArtistName = rawArticle.includes(` ${lowerCaseArtist} `) || rawArticle.includes(`${lowerCaseArtist} `)
-
             if (articleIncludesKeyword && articleIncludesArtistName) { // issues when artist name is their real name (but not full name)
               artistPageName = articleContent.title.replace(' ', '_')
               const articleLink = `https://en.wikipedia.org/wiki/${artistPageName}`

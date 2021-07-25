@@ -33,7 +33,7 @@ const ArtistSearchResult = (props) => {
           }}
         >
           <Avatar
-            alt={`${props.name} artist art`}
+            alt={props.name}
             src={props.art}
             className={classes.searchResultArt}
           />

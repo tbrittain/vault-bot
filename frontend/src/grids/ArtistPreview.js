@@ -52,13 +52,10 @@ const ArtistPreview = (props) => {
           to={`/artists/${id}`}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
-          style={{
-            borderRadius: 0
-          }}
         >
           <LazyLoadImage
             src={art}
-            alt={`${name} artist art`}
+            alt={name}
             className={classes.artistArt}
             effect='opacity'
             style={{

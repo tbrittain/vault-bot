@@ -11,6 +11,7 @@ import ArtistListContainer from '../artistList/ArtistListContainer'
 import GenreListContainer from '../genreList/GenreListContainer'
 import { TransitionGroup, CSSTransition } from 'react-transition-group'
 import ScrollToTop from '../utils/ScrollToTop'
+import Changelog from '../changelog/Changelog'
 import './transitions.css'
 
 function RouteHandler () {
@@ -37,6 +38,11 @@ function RouteHandler () {
               path='/about'
               component={About}
             />
+            {/* <Route
+              exact
+              path='/changelog'
+              component={Changelog}
+            /> */}
             <Route
               exact
               path='/songs'
