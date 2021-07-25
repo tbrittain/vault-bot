@@ -97,7 +97,6 @@ def post_webhook():
 
     embed = DiscordEmbed(title='VaultBot Daily Stat Overview',
                          color='BCE7FD')
-    embed.set_thumbnail(url='https://vaultbot.tbrittain.com/android-chrome-192x192.png')
     embed.set_timestamp()
 
     embed.add_embed_field(
@@ -132,4 +131,4 @@ def post_webhook():
 
 
 if __name__ == '__main__':
-    pass
+    post_webhook()
