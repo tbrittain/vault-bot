@@ -8,6 +8,8 @@ const { sequelize } = require('../db/models/Song')
 const escape = require('escape-html')
 const axios = require('axios').default
 const { removeAccents } = require('../utils/RemoveAccents')
+const path = require('path')
+const fs = require('fs')
 
 // TODO: separate individual resolvers into their own files and merge them together
 // https://www.graphql-tools.com/docs/introduction/
@@ -300,7 +302,6 @@ const resolvers = {
       return result
     },
     async findTracksLike (parent, args, context, info) {
-      // TODO: handle apostrophes in song name
       let { searchQuery } = args
       searchQuery = escape(searchQuery)
       let result = await Song.findAll({
@@ -344,6 +345,24 @@ const resolvers = {
         .catch(err => console.error(err))
       result = JSON.parse(JSON.stringify(result))
       return result
+    },
+    async getChangeLogPosts (parent, args, context, info) {
+      const postsDirectory = path.join(__dirname, '../changeLogPosts')
+      const postNames = fs.readdirSync(postsDirectory, { withFileTypes: true })
+        .filter(item => !item.isDirectory())
+        .map(item => item.name)
+      const changeLogPosts = []
+      for (let i = 0; i < postNames.length; i++) {
+        const post = postNames[i]
+        const postDate = post.replace('.md', '')
+        const postPath = path.join(__dirname, `../changeLogPosts/${post}`)
+        const postContent = fs.readFileSync(postPath, 'utf8')
+        changeLogPosts.push({
+          post: postContent,
+          date: postDate
+        })
+      }
+      return changeLogPosts
     }
   },
   Artist: {

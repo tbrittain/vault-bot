@@ -38,11 +38,11 @@ function RouteHandler () {
               path='/about'
               component={About}
             />
-            {/* <Route
+            <Route
               exact
               path='/changelog'
               component={Changelog}
-            /> */}
+            />
             <Route
               exact
               path='/songs'

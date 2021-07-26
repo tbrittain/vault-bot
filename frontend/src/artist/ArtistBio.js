@@ -94,7 +94,7 @@ const ArtistBio = (props) => {
           elevation={3}
           className={classes.artistBio}
           style={{
-            backgroundColor: theme.palette.primary.main,
+            backgroundColor: theme.palette.primary.main
           }}
         >
           <Typography

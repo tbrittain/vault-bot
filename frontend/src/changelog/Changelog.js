@@ -3,8 +3,11 @@ import {
   Paper,
   Typography
 } from '@material-ui/core'
+import PostContainer from './PostContainer'
+import changeLogStyles from './ChangelogStyles'
 
 const Changelog = () => {
+  const classes = changeLogStyles()
   return (
     <>
       <Typography
@@ -14,8 +17,9 @@ const Changelog = () => {
       </Typography>
       <Paper
         elevation={3}
+        className={classes.changeLogContainer}
       >
-        Test
+        <PostContainer />
       </Paper>
     </>
   )

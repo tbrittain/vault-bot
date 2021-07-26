@@ -60,6 +60,11 @@ const typeDefs = gql`
     totalNumGenres: Int!
   }
 
+  type ChangeLogPost {
+    post: String!
+    date: String!
+  }
+
   type Query {
     getArtist(id: String, name: String): Artist!
     getGenres(limit: Int): [Genre!]!
@@ -74,6 +79,7 @@ const typeDefs = gql`
     findTracksLike(searchQuery: String!): [Song!]!
     findArtistsLike(searchQuery: String!): [Artist!]!
     findGenresLike(searchQuery: String!): [Genre!]!
+    getChangeLogPosts: [ChangeLogPost!]!
   }
 `
 

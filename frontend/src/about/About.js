@@ -123,7 +123,8 @@ const About = () => {
                 target='_blank'
                 rel='noopener noreferrer'
                 style={{
-                  color: 'grey'
+                  color: 'grey',
+                  paddingLeft: '0.5ch'
                 }}
               >
                 here.
