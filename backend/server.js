@@ -8,8 +8,8 @@ const port = process.env.PORT || 4001
 const app = express()
 
 // types and resolvers
-const { typeDefs } = require('./schema/TypeDefs')
-const { resolvers } = require('./schema/Resolvers')
+const typeDefs = require('./schema/TypeDefs')
+const resolvers = require('./schema/Resolvers')
 
 const ComplexityLimitRule = createComplexityLimitRule(1500, {
   onCost: (cost) => {
