@@ -1,8 +1,9 @@
+import random
 from .db import DatabaseConnection
 from .spotify_commands import dyn_playlist_genres
 from .vb_utils import logger
 from .config import environment
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import math
 
 iso_format = "%Y-%m-%d %H:%M"
@@ -121,5 +122,30 @@ def playlist_diversity_index():
         return 0
 
 
+def featured_artist():
+    conn = DatabaseConnection()
+    last_update_sql = """SELECT featured FROM artists WHERE featured IS NOT NULL ORDER BY featured DESC LIMIT 1;"""
+    last_update = conn.select_query_raw(sql=last_update_sql)
+    last_update = last_update[0][0].date()
+    date_today = datetime.utcnow().date()
+    if date_today != last_update:
+        logger.debug('Selecting a new featured artist')
+        viable_artists_sql = """SELECT artists.id, artists.name, COUNT(songs.id) FROM artists JOIN songs
+        ON artists.id = songs.artist_id GROUP BY artists.id, artists.name HAVING COUNT(songs.id) >= 3
+        ORDER BY COUNT(songs.id) DESC;"""
+        viable_artists = conn.select_query_raw(sql=viable_artists_sql)
+        viable_artists = [x[0] for x in viable_artists]
+        selected_artist = random.choice(viable_artists)
+
+        update_selected_artist_sql = f"""UPDATE artists SET featured = NOW()::timestamp 
+        WHERE id = '{selected_artist}';"""
+        conn.update_query_raw(sql=update_selected_artist_sql)
+        if environment == 'dev':
+            conn.rollback()
+        else:
+            conn.commit()
+    conn.terminate()
+
+
 if __name__ == "__main__":
-    playlist_snapshot_coordinator()
+    featured_artist()

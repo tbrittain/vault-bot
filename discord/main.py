@@ -79,7 +79,7 @@ async def on_ready():
 async def hourly_cleanup():
     await bot.wait_until_ready()
     logger.info(f"Beginning hourly cleanup...")
-    with alive_bar(total=4, title='Hourly cleanup...') as bar:
+    with alive_bar(total=5, title='Hourly cleanup...') as bar:
         logger.debug("Performing expired track removal (if necessary)...")
         spotify_commands.force_refresh_cache()
         spotify_commands.expired_track_removal()
@@ -98,6 +98,9 @@ async def hourly_cleanup():
         if begin <= time_now <= end:
             logger.debug('Pushing update to webhook...')
             webhook_updates.post_webhook()
+        bar()
+        logger.debug('Checking whether to select a new featured artist')
+        historical_tracking.featured_artist()
         bar()
         logger.info('Playlist stats logging complete!')
     logger.info('Hourly playlist cleanup complete!')

@@ -101,7 +101,6 @@ class DatabaseConnection:
             raise error_code
         finally:
             cur.close()
-
         return rows
 
     def select_query(self, query_literal: str, table: str) -> list:
@@ -162,7 +161,17 @@ class DatabaseConnection:
             raise error_code
         finally:
             cur.close()
+        return True
 
+    def update_query_raw(self, sql: str) -> bool:
+        cur = self.conn.cursor()
+        try:
+            cur.execute(sql)
+        except Exception as e:
+            error_code = psycopg2.errors.lookup(e.pgcode)
+            raise error_code
+        finally:
+            cur.close()
         return True
 
     def delete_query(self, table: str, column_to_match: str, condition: str) -> bool:
