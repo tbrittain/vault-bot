@@ -29,7 +29,6 @@ const PostContainer = () => {
     let dataToSort = [...formattedData]
     dataToSort = dataToSort.sort(dateSort)
     formattedData = dataToSort
-    console.log(formattedData)
     processing = false
   }
 

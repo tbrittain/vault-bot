@@ -4,9 +4,12 @@ import {
 } from '@material-ui/core'
 import homeStyles from './HomeStyles'
 import GeneralStats from './GeneralStats'
+import TrendPreview from './TrendPreview'
+import SwipeableViews from 'react-swipeable-views'
+import { autoPlay } from 'react-swipeable-views-utils'
+import './override.css'
 
-// TODO: https://material-ui.com/components/steppers/#text-with-carousel-effect
-// alternatively https://mui.wertarbyte.com/#material-auto-rotating-carousel
+const AutoPlaySwipeableViews = autoPlay(SwipeableViews)
 
 const Home = () => {
   const classes = homeStyles()
@@ -15,7 +18,15 @@ const Home = () => {
       className={classes.container}
       elevation={3}
     >
-      <GeneralStats />
+      <AutoPlaySwipeableViews
+        interval={10000}
+        style={{
+          height: '100%'
+        }}
+      >
+        <GeneralStats />
+        <TrendPreview />
+      </AutoPlaySwipeableViews>
     </Paper>
   )
 }

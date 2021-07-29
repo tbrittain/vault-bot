@@ -67,6 +67,7 @@ const GeneralStats = () => {
       <Alert severity='error'>An error occurred during data retrieval :(</Alert>
     )
   }
+
   if (formattedData) {
     return (
       <div
