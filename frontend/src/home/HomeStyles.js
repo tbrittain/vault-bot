@@ -7,10 +7,11 @@ const homeStyles = makeStyles((theme) => ({
   },
   container: {
     width: '100%',
-    height: '80vh'
+    height: '100%'
   },
   statsContainer: {
-    margin: 'auto'
+    margin: 'auto',
+    overflowY: 'hidden'
   },
   individualStat: {
     display: 'flex'
@@ -22,7 +23,8 @@ const homeStyles = makeStyles((theme) => ({
     animationDirection: 'forward',
     animationTimingFunction: 'ease-out',
     animationFillMode: 'both',
-    margin: 15
+    margin: 15,
+    zIndex: 50
   },
   animateText: {
     fontSize: '5em',

@@ -62,7 +62,6 @@ const TrendPreview = () => {
     formattedData = {
       datasets: Object.values(datasets)
     }
-    console.log(formattedData)
   }
 
   let delayed
