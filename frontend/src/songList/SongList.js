@@ -61,7 +61,7 @@ const columns = [
   {
     field: 'songName',
     headerName: 'Song',
-    width: 175,
+    width: 160,
     renderCell: (params) => (
       <Link
         to={`/songs/${params.id}`}
@@ -109,10 +109,10 @@ const columns = [
   }
 ]
 
-const SongList = () => {
+const SongList = (props) => {
   const classes = songListStyles()
-
   const { loading, error, data } = useQuery(QUERY)
+  const { trackSelection, setTrackSelection } = props
   let formattedData
   const rows = []
   let processing = true
@@ -158,9 +158,14 @@ const SongList = () => {
           columns={columns}
           rows={rows}
           rowHeight={35}
+          checkboxSelection
           components={{
             Toolbar: GridToolbar
           }}
+          onSelectionModelChange={(newSelection) => {
+            setTrackSelection(newSelection.selectionModel)
+          }}
+          selectionModel={trackSelection}
         />
       </div>
     </div>

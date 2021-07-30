@@ -13,8 +13,9 @@ import songListStyles from './SongListStyles'
 import SongSearchContainer from './SongSearchContainer'
 import SongList from './SongList'
 
-const SongViewer = () => {
+const SongViewer = (props) => {
   const classes = songListStyles()
+  const { trackSelection, setTrackSelection } = props
   const [search, setSearch] = useState('')
   const [anchorEl, setAnchorEl] = useState(null)
 
@@ -89,7 +90,10 @@ const SongViewer = () => {
           </div>
         </Toolbar>
       </AppBar>
-      <SongList />
+      <SongList
+        trackSelection={trackSelection}
+        setTrackSelection={setTrackSelection}
+      />
     </Paper>
   )
 }
