@@ -10,6 +10,7 @@ import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight'
 import homeStyles from './HomeStyles'
 import GeneralStats from './GeneralStats'
 import TrendPreview from './TrendPreview'
+import FeaturedArtist from './FeaturedArtist'
 import SwipeableViews from 'react-swipeable-views'
 import { autoPlay } from 'react-swipeable-views-utils'
 import './override.css'
@@ -19,7 +20,7 @@ const AutoPlaySwipeableViews = autoPlay(SwipeableViews)
 const Home = () => {
   const classes = homeStyles()
   const [activeStep, setActiveStep] = useState(0)
-  const maxSteps = 2
+  const maxSteps = 3
   const theme = useTheme()
 
   const handleNext = () => {
@@ -40,7 +41,7 @@ const Home = () => {
       elevation={3}
     >
       <AutoPlaySwipeableViews
-        interval={10000}
+        interval={15000}
         style={{
           height: '100%'
         }}
@@ -51,6 +52,7 @@ const Home = () => {
       >
         <GeneralStats />
         <TrendPreview />
+        <FeaturedArtist />
       </AutoPlaySwipeableViews>
       <MobileStepper
         steps={maxSteps}

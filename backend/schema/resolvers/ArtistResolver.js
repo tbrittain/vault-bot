@@ -33,10 +33,24 @@ module.exports = {
 
       if (result) {
         result = JSON.parse(JSON.stringify(result))
+        console.log(result)
         return result
       } else {
         throw new SyntaxError('No results found for artist provided')
       }
+    },
+    async getFeaturedArtist (parent, args, context, info) {
+      let result = await Artist.findOne({
+        where: {
+          featured: {
+            [Op.not]: null
+          }
+        },
+        order: [['featured', 'desc']]
+      })
+        .catch(err => console.error(err))
+      result = JSON.parse(JSON.stringify(result))
+      return result
     },
     async getArtists (parent, args, context, info) {
       let result = await Artist.findAll({

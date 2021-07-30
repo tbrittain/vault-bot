@@ -8,6 +8,7 @@ module.exports = gql`
     genres: [Genre]
     songs: [Song!]!
     wikiBio: wikiBio
+    featured: String
   }
 
   # TODO: integrate with discogs as well: https://www.discogs.com/developers/

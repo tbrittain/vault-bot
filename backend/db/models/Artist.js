@@ -14,6 +14,9 @@ const Artist = db.define('artist', {
   },
   art: {
     type: Sequelize.STRING
+  },
+  featured: {
+    type: Sequelize.DATE
   }
 }, {
   tableName: 'artists',

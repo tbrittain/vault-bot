@@ -11,7 +11,8 @@ const homeStyles = makeStyles((theme) => ({
   },
   statsContainer: {
     margin: 'auto',
-    overflowY: 'hidden'
+    overflowY: 'hidden',
+    userSelect: 'none'
   },
   individualStat: {
     display: 'flex'
@@ -59,6 +60,47 @@ const homeStyles = makeStyles((theme) => ({
     marginLeft: 5,
     [theme.breakpoints.down('sm')]: {
       fontSize: '2ch'
+    }
+  },
+  featuredArtistName: {
+    textDecoration: 'none',
+    color: theme.palette.secondary.main,
+    fontWeight: 800,
+    transition: '0.3s',
+    '&:hover': {
+      color: theme.palette.primary.main
+    }
+  },
+  featuredArtistInfo: {
+    width: '100%',
+    margin: 'auto',
+    textAlign: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
+  },
+  artistArt: {
+    width: '12vw',
+    height: '12vw',
+    margin: 15,
+    boxShadow: '0px 0px 4px #adadad',
+    minHeight: 75,
+    minWidth: 75,
+    [theme.breakpoints.down('sm')]: {
+      minHeight: 175,
+      minWidth: 175
+    }
+  },
+  title: {
+    backgroundColor: theme.palette.primary.main,
+    textAlign: 'center',
+    color: theme.palette.secondary.main,
+    fontWeight: 300
+  },
+  genreContainer: {
+    [theme.breakpoints.down('sm')]: {
+      maxHeight: '30vh',
+      overflow: 'auto'
     }
   }
 }))

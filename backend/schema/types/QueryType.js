@@ -5,6 +5,7 @@ module.exports = gql`
     getArtist(id: String, name: String): Artist!
     getGenres(limit: Int): [Genre!]!
     getArtists: [Artist!]!
+    getFeaturedArtist: Artist!
     getArtistsFromGenre(genreName: String!): [Artist!]!
     getArchiveTracks(startDate: String, endDate: String): [Song!]!
     getTracks: [Song!]!
