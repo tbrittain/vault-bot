@@ -67,8 +67,9 @@ const homeStyles = makeStyles((theme) => ({
     color: theme.palette.secondary.main,
     fontWeight: 800,
     transition: '0.3s',
+    margin: 5,
     '&:hover': {
-      color: theme.palette.primary.main
+      color: theme.palette.secondary.light
     }
   },
   featuredArtistInfo: {
@@ -77,7 +78,9 @@ const homeStyles = makeStyles((theme) => ({
     textAlign: 'center',
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center'
+    alignItems: 'center',
+    background: 'none',
+    zIndex: 26
   },
   artistArt: {
     width: '12vw',
@@ -95,7 +98,8 @@ const homeStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.primary.main,
     textAlign: 'center',
     color: theme.palette.secondary.main,
-    fontWeight: 300
+    fontWeight: 300,
+    zIndex: 27
   },
   genreContainer: {
     [theme.breakpoints.down('sm')]: {

@@ -71,6 +71,28 @@ const songListStyles = makeStyles((theme) => ({
     '&:hover': {
       color: theme.palette.primary.main
     }
+  },
+  exportContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
+  },
+  songListToExport: {
+    width: '100%'
+  },
+  songToExport: {
+    display: 'flex',
+    margin: 5,
+    alignItems: 'center'
+  },
+  playlistInput: {
+    paddingBottom: 10,
+    width: '30vw'
+  },
+  userPlaylist: {
+    margin: 15,
+    display: 'flex',
+    flexDirection: 'column'
   }
 }))
 

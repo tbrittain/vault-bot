@@ -3,7 +3,9 @@ import homeStyles from './HomeStyles'
 import {
   Typography,
   CircularProgress,
-  Avatar
+  Avatar,
+  Paper,
+  useTheme
 } from '@material-ui/core'
 import { useQuery, gql } from '@apollo/client'
 import { Alert } from '@material-ui/lab'
@@ -27,16 +29,30 @@ const QUERY = gql`
 const FeaturedArtist = () => {
   const classes = homeStyles()
   const { loading, error, data } = useQuery(QUERY)
+  const theme = useTheme()
 
   let processing = true
   let formattedData
   let dateToday
+  let backgroundStyling
   if (data) {
     formattedData = { ...data.getFeaturedArtist }
     formattedData.genres = formattedData.genres.map(genre => genre.genre)
     dateToday = new Date(formattedData.featured)
-    console.log(formattedData)
     processing = false
+    backgroundStyling = {
+      backgroundImage: `url(${formattedData.art})`,
+      backgroundPosition: 'center center',
+      backgroundSize: '100vw 100vw',
+      filter: 'blur(20px)',
+      '-webkit-filter': 'blur(20px)',
+      overflow: 'hidden',
+      zIndex: 1,
+      gridColumn: '1 / 1',
+      gridRow: '1 / 1',
+      height: '100%',
+      width: '100%'
+    }
   }
 
   if (loading || processing) {
@@ -74,7 +90,9 @@ const FeaturedArtist = () => {
   return (
     <div
       style={{
-        height: '100%'
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column'
       }}
     >
       <div
@@ -91,23 +109,48 @@ const FeaturedArtist = () => {
       </div>
       <div>
         <div
-          className={classes.featuredArtistInfo}
+          style={{
+            display: 'grid',
+            gridTemplate: '1fr / 1fr',
+            placeItems: 'center',
+            background: 'none'
+          }}
         >
-          <Avatar
-            src={formattedData.art}
-            alt={formattedData.name}
-            component={Link}
-            to={`/artists/${formattedData.id}`}
-            className={classes.artistArt}
-          />
-          <Typography
-            component={Link}
-            to={`/artists/${formattedData.id}`}
-            variant='h2'
-            className={classes.featuredArtistName}
+          <div
+            className={classes.featuredArtistInfo}
+            style={{
+              gridColumn: '1 / 1',
+              gridRow: '1 / 1',
+              height: '100%',
+              width: '100%'
+            }}
           >
-            <i>{formattedData.name}</i>
-          </Typography>
+            <Avatar
+              src={formattedData.art}
+              alt={formattedData.name}
+              component={Link}
+              to={`/artists/${formattedData.id}`}
+              className={classes.artistArt}
+            />
+            <Paper
+              square={false}
+              style={{
+                backgroundColor: theme.palette.primary.light
+              }}
+            >
+              <Typography
+                component={Link}
+                to={`/artists/${formattedData.id}`}
+                variant='h2'
+                className={classes.featuredArtistName}
+              >
+                <i>{formattedData.name}</i>
+              </Typography>
+            </Paper>
+          </div>
+          <div
+            style={backgroundStyling}
+          />
         </div>
         <div
           className={classes.genreContainer}

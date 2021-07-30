@@ -21,7 +21,7 @@ const Post = (props) => {
       <Typography
         variant='subtitle1'
       >
-        <i>Updated on {formattedDate.toLocaleString()}</i>
+        <i>Updated on {formattedDate.toLocaleDateString()}</i>
       </Typography>
     </Paper>
   )

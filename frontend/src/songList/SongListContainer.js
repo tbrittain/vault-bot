@@ -5,9 +5,13 @@ import {
   Stepper,
   Step,
   StepLabel,
-  Button
+  Button,
+  useTheme
 } from '@material-ui/core'
+import SwipeableViews from 'react-swipeable-views'
+import TabPanel from '../tabpanel/TabPanel'
 import SongViewer from './SongViewer'
+import SongExport from './SongExport'
 import { Alert } from '@material-ui/lab'
 
 const getSteps = () => {
@@ -30,13 +34,14 @@ const SongListContainer = () => {
   const [activeStep, setActiveStep] = useState(0)
   const steps = getSteps()
   const openWarning = selectionModel.length > 100
+  const theme = useTheme()
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1)
   }
 
   const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    setActiveStep((prevActiveStep) => prevActiveStep - 1)
   }
 
   return (
@@ -51,10 +56,28 @@ const SongListContainer = () => {
       >
         Total list of all the songs tracked by VaultBot
       </Typography>
-      <SongViewer
-        trackSelection={selectionModel}
-        setTrackSelection={setSelectionModel}
-      />
+      <SwipeableViews
+        axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
+        index={activeStep}
+      >
+        <TabPanel
+          value={activeStep}
+          index={0}
+        >
+          <SongViewer
+            trackSelection={selectionModel}
+            setTrackSelection={setSelectionModel}
+          />
+        </TabPanel>
+        <TabPanel
+          value={activeStep}
+          index={1}
+        >
+          <SongExport
+            songIds={selectionModel}
+          />
+        </TabPanel>
+      </SwipeableViews>
       {selectionModel.length > 0 && selectionModel.length < 100 &&
         <div>
           <Stepper activeStep={activeStep}>
@@ -75,7 +98,9 @@ const SongListContainer = () => {
             disabled={activeStep === 0}
             onClick={handleBack}
             variant='contained'
-            // className={classes.button}
+            style={{
+              marginRight: 10
+            }}
           >
             Back
           </Button>
