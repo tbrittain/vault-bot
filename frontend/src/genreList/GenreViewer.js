@@ -44,6 +44,7 @@ const GenreViewer = () => {
               <SearchIcon />
             </div>
             <InputBase
+              InputLabelProps={{ shrink: true }}
               placeholder='Search for a genre...'
               classes={{
                 root: classes.inputRoot,

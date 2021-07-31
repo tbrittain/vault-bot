@@ -23,7 +23,7 @@ const Spotify = {
       window.history.pushState('Access Token', null, '/')
       return accessToken
     } else {
-      const accessUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&scope=playlist-modify-public&redirect_uri=${redirectUri}`
+      const accessUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&scope=playlist-modify-private&redirect_uri=${redirectUri}`
       window.location = accessUrl
     }
   },
@@ -31,6 +31,9 @@ const Spotify = {
     if (!name || !trackUris.length) {
       return
     }
+    const formattedTrackUris = [...trackUris].map(uri => {
+      return `spotify:track:${uri}`
+    })
 
     const accessToken = Spotify.getAccessToken()
     const headers = { Authorization: `Bearer ${accessToken}` }
@@ -43,13 +46,13 @@ const Spotify = {
         method: 'POST',
         body: JSON.stringify({ name: name })
       })
-      .then(res => newUserPlaylist.json())
+      .then(res => res.json())
       .then(res => res.id)
     return await fetch(`https://api.spotify.com/v1/users/${userId}/playlists/${newUserPlaylist}/tracks`,
       {
         headers: headers,
         method: 'POST',
-        body: JSON.stringify({ uris: trackUris })
+        body: JSON.stringify({ uris: formattedTrackUris })
       })
   }
 }

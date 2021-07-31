@@ -44,6 +44,7 @@ const ArtistViewer = () => {
               <SearchIcon />
             </div>
             <InputBase
+              InputLabelProps={{ shrink: true }}
               placeholder='Search for an artist...'
               classes={{
                 root: classes.inputRoot,

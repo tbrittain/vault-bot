@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useQuery, gql } from '@apollo/client'
 import {
   Avatar
@@ -133,6 +133,18 @@ const SongList = (props) => {
     }
     processing = false
   }
+
+  useEffect(() => { // get cached track selection if present
+    localStorage.setItem('exportStep', 1) // eslint-disable-line
+    if (localStorage.getItem('trackSelection')) { // eslint-disable-line
+      const cachedTrackSelection = localStorage.getItem('trackSelection').split(',') // eslint-disable-line
+      setTrackSelection(cachedTrackSelection)
+    }
+  }, [setTrackSelection])
+
+  useEffect(() => { // cache track selection
+    localStorage.setItem('trackSelection', trackSelection) // eslint-disable-line
+  }, [trackSelection])
 
   if (loading || processing) {
     return (

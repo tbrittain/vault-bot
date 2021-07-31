@@ -78,7 +78,9 @@ const songListStyles = makeStyles((theme) => ({
     alignItems: 'center'
   },
   songListToExport: {
-    width: '100%'
+    width: '100%',
+    maxHeight: '40vh',
+    overflowY: 'auto'
   },
   songToExport: {
     display: 'flex',
@@ -87,12 +89,19 @@ const songListStyles = makeStyles((theme) => ({
   },
   playlistInput: {
     paddingBottom: 10,
-    width: '30vw'
+    width: '30vw',
+    minWidth: 200
   },
   userPlaylist: {
     margin: 15,
     display: 'flex',
     flexDirection: 'column'
+  },
+  songExportTitle: {
+    textAlign: 'center',
+    [theme.breakpoints.down('sm')]: {
+      fontSize: '2rem'
+    }
   }
 }))
 

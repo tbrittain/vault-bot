@@ -12,10 +12,11 @@ import SwipeableViews from 'react-swipeable-views'
 import TabPanel from '../tabpanel/TabPanel'
 import SongViewer from './SongViewer'
 import SongExport from './SongExport'
+import SongExportSuccess from './SongExportSuccess'
 import { Alert } from '@material-ui/lab'
 
 const getSteps = () => {
-  return ['Select songs to export', 'Export']
+  return ['Select songs', 'Export', 'Done!']
 }
 
 const getStepContent = (step) => {
@@ -24,6 +25,8 @@ const getStepContent = (step) => {
       return 'Select songs to export to Spotify'
     case 1:
       return 'Export songs to Spotify playlist'
+    case 2:
+      return 'Export complete'
     default:
       return 'Unknown step'
   }
@@ -31,7 +34,9 @@ const getStepContent = (step) => {
 
 const SongListContainer = () => {
   const [selectionModel, setSelectionModel] = useState([])
-  const [activeStep, setActiveStep] = useState(0)
+  const [activeStep, setActiveStep] = useState(
+    Number(localStorage.getItem('exportStep')) || 0 // eslint-disable-line
+  )
   const steps = getSteps()
   const openWarning = selectionModel.length > 100
   const theme = useTheme()
@@ -75,45 +80,53 @@ const SongListContainer = () => {
         >
           <SongExport
             songIds={selectionModel}
+            setActiveStep={setActiveStep}
+            setSelectionModel={setSelectionModel}
+          />
+        </TabPanel>
+        <TabPanel
+          value={activeStep}
+          index={2}
+        >
+          <SongExportSuccess
+            setActiveStep={setActiveStep}
           />
         </TabPanel>
       </SwipeableViews>
-      {selectionModel.length > 0 && selectionModel.length < 100 &&
-        <div>
-          <Stepper activeStep={activeStep}>
-            {steps.map((label, index) => {
-              return (
-                <Step key={label}>
-                  <StepLabel>{label}</StepLabel>
-                </Step>
-              )
-            })}
-          </Stepper>
-          <Typography
-            variant='body1'
-          >
-            {getStepContent(activeStep)}
-          </Typography>
-          <Button
-            disabled={activeStep === 0}
-            onClick={handleBack}
-            variant='contained'
-            style={{
-              marginRight: 10
-            }}
-          >
-            Back
-          </Button>
-          <Button
-            variant='contained'
-            color='primary'
-            onClick={handleNext}
-            disabled={activeStep === steps.length - 1}
-            // className={classes.button}
-          >
-            Next
-          </Button>
-        </div>}
+      <div>
+        <Stepper activeStep={activeStep}>
+          {steps.map((label, index) => {
+            return (
+              <Step key={label}>
+                <StepLabel>{label}</StepLabel>
+              </Step>
+            )
+          })}
+        </Stepper>
+        <Typography
+          variant='body1'
+        >
+          {getStepContent(activeStep)}
+        </Typography>
+        <Button
+          disabled={activeStep === 0 || activeStep === 2}
+          onClick={handleBack}
+          variant='contained'
+          style={{
+            marginRight: 10
+          }}
+        >
+          Back
+        </Button>
+        <Button
+          variant='contained'
+          color='primary'
+          onClick={handleNext}
+          disabled={activeStep !== 0 || selectionModel.length === 0 || selectionModel.length > 100}
+        >
+          Next
+        </Button>
+      </div>
       <Snackbar open={openWarning}>
         <Alert severity='error'>
           Only 100 or fewer tracks can be exported to Spotify

@@ -49,6 +49,11 @@ function RouteHandler () {
               component={SongListContainer}
             />
             <Route
+              exact
+              path='/songs/callback'
+              component={SongListContainer}
+            />
+            <Route
               path='/songs/:songId'
               component={SongContainer}
             />

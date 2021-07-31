@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { useQuery, gql } from '@apollo/client'
-import { Alert } from '@material-ui/lab'
+import { Alert, AlertTitle } from '@material-ui/lab'
 import Spotify from '../utils/Spotify'
 import {
   Avatar,
@@ -10,7 +10,8 @@ import {
   Button,
   CircularProgress,
   Grid,
-  IconButton
+  IconButton,
+  LinearProgress
 } from '@material-ui/core'
 import CancelIcon from '@material-ui/icons/Cancel'
 import RestoreIcon from '@material-ui/icons/Restore'
@@ -29,9 +30,17 @@ const QUERY = gql`
 
 const SongExport = (props) => {
   const classes = songListStyles()
-  const { songIds } = props
-  const [playlistName, setPlaylistName] = useState('')
+  const { songIds, setActiveStep, setSelectionModel } = props
+
+  // state
+  const [playlistName, setPlaylistName] = useState(
+    localStorage.getItem('playlistName') || '' // eslint-disable-line
+  )
   const [trackUris, setTrackUris] = useState([])
+  const [spotifyResponseStatus, setSpotifyResponseStatus] = useState(null)
+  const [exporting, setExporting] = useState(false)
+
+  // form validation
   const invalidNameLength = playlistName.length > 100
   const invalidNameChars = /[^a-zA-Z 0-9]+/g.test(playlistName)
   const invalidName = invalidNameLength || invalidNameChars
@@ -52,6 +61,14 @@ const SongExport = (props) => {
     setTrackUris(songIds)
   }
 
+  const cleanUpBeforeDismount = useCallback(() => {
+    localStorage.removeItem('playlistName') // eslint-disable-line
+    localStorage.removeItem('trackSelection') // eslint-disable-line
+    localStorage.removeItem('exportStep') // eslint-disable-line
+    setTrackUris([])
+    setSelectionModel([])
+  }, [setSelectionModel])
+
   let textFieldErrorMessage
   if (invalidNameLength) {
     textFieldErrorMessage = `Playlist name must be 100 characters or fewer (currently ${playlistName.length})`
@@ -60,12 +77,33 @@ const SongExport = (props) => {
   }
 
   useEffect(() => {
-    setTrackUris(songIds)
-  }, [songIds])
+    localStorage.setItem('exportStep', 1) // eslint-disable-line
+    const cachedTrackSelection = localStorage.getItem('trackSelection').split(',') // eslint-disable-line
+    setTrackUris(cachedTrackSelection)
+  }, [])
 
-  const savePlaylist = () => {
-    Spotify.savePlaylist(playlistName, trackUris)
+  useEffect(() => {
+    localStorage.setItem('playlistName', playlistName) // eslint-disable-line
+  }, [playlistName])
+
+  useEffect(() => { // this exits the component and into the success component
+    if (spotifyResponseStatus === 201) {
+      cleanUpBeforeDismount()
+      setActiveStep(2)
+    }
+  }, [spotifyResponseStatus, setActiveStep, cleanUpBeforeDismount])
+
+  const savePlaylist = async () => {
+    setExporting(true)
+    const save = await Spotify.savePlaylist(playlistName, trackUris)
+    setExporting(false)
+    setSpotifyResponseStatus(Number(save.status))
+    // setTimeout(() => {
+    //   setExporting(false)
+    //   setSpotifyResponseStatus(201)
+    // }, 3000)
   }
+
   let processing = true
   let formattedData
   if (data) {
@@ -111,6 +149,7 @@ const SongExport = (props) => {
     >
       <Typography
         variant='h2'
+        className={classes.songExportTitle}
       >
         Export to Spotify
       </Typography>
@@ -140,7 +179,20 @@ const SongExport = (props) => {
         >
           Export to Spotify
         </Button>
+        {exporting &&
+          <LinearProgress
+            color='secondary'
+          />}
       </div>
+      {spotifyResponseStatus && spotifyResponseStatus !== 201 &&
+        <Alert
+          open={spotifyResponseStatus && spotifyResponseStatus !== 201}
+          elevation={8}
+          severity='error'
+        >
+          <AlertTitle>Error</AlertTitle>
+          Something went wrong with the playlist export. Try again. Sorry about that :(
+        </Alert>}
       <div
         style={{
           width: '100%',

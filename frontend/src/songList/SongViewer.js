@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Paper,
   AppBar,
@@ -32,6 +32,10 @@ const SongViewer = (props) => {
   const minSearchLength = 3
   const open = Boolean(anchorEl && search.length >= minSearchLength)
 
+  useEffect(() => {
+    localStorage.setItem('exportStep', 0) // eslint-disable-line
+  }, [])
+
   return (
     <Paper
       elevation={3}
@@ -45,6 +49,7 @@ const SongViewer = (props) => {
               <SearchIcon />
             </div>
             <InputBase
+              InputLabelProps={{ shrink: true }}
               placeholder='Search for a song...'
               classes={{
                 root: classes.inputRoot,
