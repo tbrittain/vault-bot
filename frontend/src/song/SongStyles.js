@@ -2,12 +2,9 @@ import { makeStyles } from '@material-ui/core/styles'
 
 const songStyles = makeStyles((theme) => ({
   albumArtRotate: {
-    '&:hover': {
-      cursor: 'pointer',
-      animation: '$rotate 4s',
-      animationTimingFunction: 'linear',
-      animationIterationCount: 'infinite'
-    }
+    animation: '$rotate 4s',
+    animationTimingFunction: 'linear',
+    animationIterationCount: 'infinite'
   },
   albumArt: {
     width: 'calc(12vw + 5rem)',

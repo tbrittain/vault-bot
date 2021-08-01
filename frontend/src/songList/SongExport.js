@@ -165,7 +165,7 @@ const SongExport = (props) => {
           variant='outlined'
           color='primary'
           size='normal'
-          InputLabelProps={{ shrink: true }} // TODO: implement this to fix the search bar formatting problems
+          InputLabelProps={{ shrink: true }}
           fullWidth
           helperText={textFieldErrorMessage}
           value={playlistName}

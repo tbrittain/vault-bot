@@ -9,8 +9,11 @@ import {
   Tabs,
   Tab,
   useTheme,
-  Button
+  Button,
+  IconButton
 } from '@material-ui/core'
+import PlayArrowIcon from '@material-ui/icons/PlayArrow'
+import PauseIcon from '@material-ui/icons/Pause'
 import OpenInNewIcon from '@material-ui/icons/OpenInNew'
 import AlbumSongs from './AlbumSongs'
 import SongChars from './SongCharacteristics'
@@ -23,6 +26,8 @@ const SongDetails = (props) => {
   const songLink = `spotify:track:${props.id}`
 
   const [value, setValue] = useState(0)
+  const [playing, setPlaying] = useState(false)
+
   const handleChange = (event, newValue) => {
     setValue(newValue)
   }
@@ -34,6 +39,7 @@ const SongDetails = (props) => {
     try {
       const soundFile = document.getElementById('songPreview')
       soundFile.play()
+      setPlaying(true)
     } catch (err) { console.error(err) }
   }
 
@@ -42,6 +48,7 @@ const SongDetails = (props) => {
       const soundFile = document.getElementById('songPreview')
       soundFile.pause()
       soundFile.currentTime = 0
+      setPlaying(false)
     } catch (err) { console.error(err) }
   }
 
@@ -86,19 +93,68 @@ const SongDetails = (props) => {
           <div className={classes.innerContainer}>
             <div className={classes.containerItem}>
               {props.songPreview &&
-                <Avatar
-                  id='albumArt'
-                  className={props.songPreview ? `${classes.albumArt} ${classes.albumArtRotate}` : classes.albumArt}
-                  alt={props.album + ' album art'}
-                  src={props.art}
-                  variant='circle'
-                  onMouseEnter={playSound}
-                  onMouseLeave={stopSound}
-                />}
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplate: '1fr / 1fr'
+                  }}
+                >
+                  <div
+                    style={{
+                      gridColumn: '1 / 1',
+                      gridRow: '1 / 1',
+                      display: 'flex',
+                      margin: 'auto',
+                      zIndex: 51
+                    }}
+                  >
+                    {!playing &&
+                      <IconButton
+                        size='medium'
+                        color='primary'
+                        style={{
+                          backgroundColor: 'rgba(0, 0, 0, 0.4)'
+                        }}
+                        onClick={playSound}
+                      >
+                        <PlayArrowIcon
+                          fontSize='large'
+                        />
+                      </IconButton>}
+                    {playing &&
+                      <IconButton
+                        size='medium'
+                        color='primary'
+                        style={{
+                          backgroundColor: 'rgba(0, 0, 0, 0.4)'
+                        }}
+                        onClick={stopSound}
+                      >
+                        <PauseIcon
+                          fontSize='large'
+                        />
+                      </IconButton>}
+                  </div>
+                  <div
+                    style={{
+                      gridColumn: '1 / 1',
+                      gridRow: '1 / 1',
+                      zIndex: 50
+                    }}
+                  >
+                    <Avatar
+                      id='albumArt'
+                      className={playing ? `${classes.albumArt} ${classes.albumArtRotate}` : classes.albumArt}
+                      alt={props.album + ' album art'}
+                      src={props.art}
+                      variant='circle'
+                    />
+                  </div>
+                </div>}
               {!props.songPreview &&
                 <Avatar
                   id='albumArt'
-                  className={props.songPreview ? `${classes.albumArt} ${classes.albumArtRotate}` : classes.albumArt}
+                  className={classes.albumArt}
                   alt={props.album + ' album art'}
                   src={props.art}
                   variant='circle'
