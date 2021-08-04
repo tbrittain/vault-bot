@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
+import React from 'react'
 import {
   Paper,
   Tooltip,
-  Fade,
-  Backdrop
+  Fade
+  // Backdrop
 } from '@material-ui/core'
 import { Link } from 'react-router-dom'
 import { LazyLoadImage } from 'react-lazy-load-image-component'
@@ -28,15 +28,16 @@ const DarkTooltip = (props) => {
 const ArtistPreview = (props) => {
   const { name, id, art } = props
   const classes = gridStyles()
-  const [open, setOpen] = useState(false)
 
-  const handleMouseEnter = () => {
-    setOpen(true)
-  }
+  // const [open, setOpen] = useState(false)
 
-  const handleMouseLeave = () => {
-    setOpen(false)
-  }
+  // const handleMouseEnter = () => {
+  //   setOpen(true)
+  // }
+
+  // const handleMouseLeave = () => {
+  //   setOpen(false)
+  // }
 
   return (
     <>
@@ -50,8 +51,8 @@ const ArtistPreview = (props) => {
           className={classes.artistCard}
           component={Link}
           to={`/artists/${id}`}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
+          // onMouseEnter={handleMouseEnter}
+          // onMouseLeave={handleMouseLeave}
         >
           <LazyLoadImage
             src={art}

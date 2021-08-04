@@ -22,7 +22,7 @@ function RouteHandler () {
         timeout={300}
         classNames='fade'
         key={location.key}
-        unmountOnExit
+        // unmountOnExit
       >
         <ScrollToTop>
           <Switch
