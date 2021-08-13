@@ -14,7 +14,7 @@ const { removeAccents } = require('../../utils/RemoveAccents')
 
 export default {
   Query: {
-    async getArtist (args: GetArtistsArgs) {
+    async getArtist (_parent, args: GetArtistsArgs) {
       if (!args.id && !args.name) {
         throw new SyntaxError('Either an artist ID or artist name must be provided')
       }
@@ -40,14 +40,12 @@ export default {
 
       if (result) {
         result = JSON.parse(JSON.stringify(result))
-        console.log(result)
         return result
       } else {
         throw new SyntaxError('No results found for artist provided')
       }
     },
     async getFeaturedArtist () {
-      console.log('Function called')
       let result = await Artist.findOne({
         where: {
           featured: {
@@ -68,7 +66,7 @@ export default {
       result = JSON.parse(JSON.stringify(result))
       return result
     },
-    async findArtistsLike (args: FindArtistsLikeArgs) {
+    async findArtistsLike (_parent, args: FindArtistsLikeArgs) {
       let { searchQuery } = args
       searchQuery = escape(searchQuery)
       let result = await Artist.findAll({
