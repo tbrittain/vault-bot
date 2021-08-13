@@ -1,25 +1,27 @@
-const HistGenre = require('../../db/models/HistGenre')
-const { Op } = require('sequelize')
+import HistGenre from '../../db/models/HistGenre.model'
+import { Op } from 'sequelize'
+import {
+  GetHistGenresArgs
+} from './interfaces/HistGenres'
 
-module.exports = {
+export default {
   Query: {
-    async getHistGenres (parent, args, context, info) {
-      let { startDate } = args
-      let endDate
+    async getHistGenres (_parent, args: GetHistGenresArgs) {
+      let endDate: Date
       if (args.endDate) {
-        endDate = args.endDate
+        endDate = new Date(args.endDate)
       } else {
         endDate = new Date()
       }
 
       // Input validation
-      startDate = new Date(startDate)
-      if (!(startDate instanceof Date && isFinite(startDate))) {
+      const startDate = new Date(args.startDate)
+      if (!(startDate instanceof Date && !isNaN(startDate.getTime()))) {
         throw new SyntaxError('Invalid startDate')
       }
 
       endDate = new Date(endDate)
-      if (!(endDate instanceof Date && isFinite(endDate))) {
+      if (!(endDate instanceof Date && !isNaN(endDate.getTime()))) {
         throw new SyntaxError('Invalid endDate')
       }
 
@@ -32,8 +34,9 @@ module.exports = {
         throw new SyntaxError(`endDate cannot be greater than the current date (${dateToday.toISOString()})`)
       }
 
-      const diffTime = Math.abs(endDate - startDate)
+      const diffTime = Math.abs(endDate.getTime() - startDate.getTime())
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+      console.log(diffDays)
       if (diffDays > 8) { // 8 instead of 7 due to the remainder of hours default endDate may have above 7 days
         throw new SyntaxError('Difference between dates must not be greater than one week')
       }
