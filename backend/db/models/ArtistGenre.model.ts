@@ -19,7 +19,6 @@ const ArtistGenreOptions: TableOptions = {
 export default class ArtistGenre extends Model {
   @PrimaryKey
   @Column
-  // @BelongsTo(() => Artist)
   @ForeignKey(() => Artist)
   artistId!: string
 

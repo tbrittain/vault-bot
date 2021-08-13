@@ -2,8 +2,10 @@ import {
   Table,
   Column,
   Model,
-  PrimaryKey
+  PrimaryKey,
+  HasMany
 } from "sequelize-typescript"
+import ArtistGenre from "./ArtistGenre.model"
 import { TableOptions } from './interfaces/TableOptions'
 
 const ArtistOptions: TableOptions = {
@@ -26,5 +28,8 @@ export default class Artist extends Model {
 
   @Column
   featured!: Date
+
+  @HasMany(() => ArtistGenre)
+  genres!: ArtistGenre[]
 }
 
