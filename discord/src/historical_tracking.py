@@ -10,7 +10,7 @@ iso_format = "%Y-%m-%d %H:%M"
 
 if environment == "dev":
     commit_changes = False
-elif environment == "prod" or environment == "prod_local":
+elif environment == "prod":
     commit_changes = True
 
 
@@ -18,10 +18,11 @@ def playlist_snapshot_coordinator():
     conn = DatabaseConnection()
     most_recent_time = conn.get_most_recent_historical_update()
     logger.debug(f"Most recent historical update: {most_recent_time}")
-    last_update_genres, last_update_tracking = conn.get_most_recent_historical_data()
 
     # check to ensure update only occurs every n hours
-    if (datetime.now() - most_recent_time) >= timedelta(hours=2):
+    # TODO: remove this nesting and just have it return if does not fulfill time constraint
+    if (datetime.utcnow() - most_recent_time) >= timedelta(hours=2):
+        last_update_genres, last_update_tracking = conn.get_most_recent_historical_data()
         logger.debug("Historical data preparing to be updated...")
 
         pdi = playlist_diversity_index()
@@ -29,26 +30,32 @@ def playlist_snapshot_coordinator():
 
         playlist_len, song_len, tempo, pop, dance, energy, valence = historical_average_features()
 
-        now = datetime.now()
+        now = datetime.utcnow()
         timestamp_now = now.strftime(iso_format)
 
         novelty = dynamic_playlist_novelty()
         logger.debug(f"Current playlist novelty: {round(novelty, 3)}")
 
+        pkey_sql = """SELECT id FROM historical_tracking ORDER BY updated_at DESC LIMIT 1;"""
+        most_recent_htrack_pkey = conn.select_query_raw(pkey_sql)
+        most_recent_htrack_pkey = most_recent_htrack_pkey[0][0]
+
         # add historical tracking data
-        historical_columns = ('updated_at', 'pdi', 'popularity', 'danceability', 'energy', 'valence', 'song_length',
-                              'tempo', 'novelty')
-        historical_values = (timestamp_now, pdi, song_len, tempo, pop, dance, energy, valence, novelty)
+        historical_columns = ('updated_at', 'pdi', 'song_length', 'tempo', 'popularity', 'danceability',
+                              'energy', 'valence', 'novelty', 'id')
+        historical_values = (timestamp_now, pdi, song_len, tempo, pop, dance,
+                             energy, valence, novelty, most_recent_htrack_pkey + 1)
         tracking_check_if_update_needed = []
 
         # TODO: need to go back through existing historical_tracking and historical_genres data and remove
         # redundant, duplicated data
-        for i in range(1, len(last_update_tracking)):
+        for i in range(1, len(last_update_tracking)):  # compare existing aggregates and compare with last update
             tracking_check_if_update_needed.append(
                 float(last_update_tracking[i]) == float(historical_values[i])
             )
 
         if False in tracking_check_if_update_needed:
+            logger.debug("Logging historical data now...")
             conn.insert_single_row(table='historical_tracking', columns=historical_columns, row=historical_values)
 
             # using historical_tracking info as a proxy for whether genres need updating actually
@@ -140,12 +147,12 @@ def featured_artist():
         update_selected_artist_sql = f"""UPDATE artists SET featured = NOW()::timestamp 
         WHERE id = '{selected_artist}';"""
         conn.update_query_raw(sql=update_selected_artist_sql)
-        if environment == 'dev':
-            conn.rollback()
-        else:
+        if commit_changes:
             conn.commit()
+        else:
+            conn.rollback()
     conn.terminate()
 
 
 if __name__ == "__main__":
-    featured_artist()
+    playlist_snapshot_coordinator()

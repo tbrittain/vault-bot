@@ -114,16 +114,18 @@ def post_webhook():
         value=playlist_data['tracks_to_remove'],
         inline=False
     )
-    embed.add_embed_field(
-        name='New genres',
-        value=playlist_data['novel_genres'],
-        inline=False
-    )
-    embed.add_embed_field(
-        name='New artists',
-        value=playlist_data['novel_artists'],
-        inline=False
-    )
+    if playlist_data['novel_genres']:
+        embed.add_embed_field(
+            name='New genres',
+            value=playlist_data['novel_genres'],
+            inline=False
+        )
+    if playlist_data['novel_artists']:
+        embed.add_embed_field(
+            name='New artists',
+            value=playlist_data['novel_artists'],
+            inline=False
+        )
 
     webhook = DiscordWebhook(url=webhook_url)
     webhook.add_embed(embed)
