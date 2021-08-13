@@ -15,6 +15,10 @@ const HistTrackOptions: TableOptions = {
 
 @Table(HistTrackOptions)
 export default class HistTrack extends Model {
+  @PrimaryKey
+  @Column
+  id!: number
+
   @Column
   updatedAt!: Date
 
@@ -42,6 +46,3 @@ export default class HistTrack extends Model {
   @Column
   novelty!: number
 }
-
-// HistTrack.removeAttribute('id') // No default ID primary key
-

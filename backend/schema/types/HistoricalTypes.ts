@@ -8,6 +8,7 @@ export default gql`
   }
 
   type HistTracking {
+    id: Int!
     updatedAt: String!
     pdi: Float!
     popularity: Float!

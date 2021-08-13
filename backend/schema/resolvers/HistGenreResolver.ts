@@ -20,7 +20,6 @@ export default {
         throw new SyntaxError('Invalid startDate')
       }
 
-      endDate = new Date(endDate)
       if (!(endDate instanceof Date && !isNaN(endDate.getTime()))) {
         throw new SyntaxError('Invalid endDate')
       }
