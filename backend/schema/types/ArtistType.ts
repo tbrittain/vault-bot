@@ -1,6 +1,6 @@
-const { gql } = require('apollo-server-express')
+import { gql } from 'apollo-server-express'
 
-module.exports = gql`
+export default gql`
   type Artist {
     id: String!
     name: String!
@@ -11,7 +11,6 @@ module.exports = gql`
     featured: String
   }
 
-  # TODO: integrate with discogs as well: https://www.discogs.com/developers/
   type wikiBio {
     bio: String
     url: String

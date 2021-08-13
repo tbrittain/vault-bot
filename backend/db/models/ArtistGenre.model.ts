@@ -3,9 +3,10 @@ import {
   Column,
   Model,
   PrimaryKey,
-  BelongsTo
+  BelongsTo,
+  ForeignKey
 } from 'sequelize-typescript'
-import Artist from './Artist'
+import Artist from './Artist.model'
 import { TableOptions } from './interfaces/TableOptions'
 
 const ArtistGenreOptions: TableOptions = {
@@ -18,7 +19,8 @@ const ArtistGenreOptions: TableOptions = {
 export default class ArtistGenre extends Model {
   @PrimaryKey
   @Column
-  @BelongsTo(() => Artist)
+  // @BelongsTo(() => Artist)
+  @ForeignKey(() => Artist)
   artistId!: string
 
   @PrimaryKey

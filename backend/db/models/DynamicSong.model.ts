@@ -3,11 +3,12 @@ import {
   Column,
   Model,
   PrimaryKey,
-  BelongsTo
+  BelongsTo,
+  ForeignKey
 } from "sequelize-typescript"
-import Artist from "./Artist"
+import Artist from "./Artist.model"
 import { TableOptions } from './interfaces/TableOptions'
-import Song from "./Song"
+import Song from "./Song.model"
 
 const DynamicSongOptions: TableOptions = {
   tableName: 'dynamic',
@@ -19,11 +20,13 @@ const DynamicSongOptions: TableOptions = {
 export default class DynamicSong extends Model {
   @PrimaryKey
   @Column
-  @BelongsTo(() => Song, 'id')
+  // @BelongsTo(() => Song, 'id')
+  @ForeignKey(() => Song)
   songId!: string
 
   @Column
-  @BelongsTo(() => Artist)
+  // @BelongsTo(() => Artist)
+  @ForeignKey(() => Artist)
   artistId!: string
 
   @Column
@@ -33,5 +36,5 @@ export default class DynamicSong extends Model {
   addedAt!: Date
 
   @Column
-  popularity: number | undefined
+  popularity!: number
 }

@@ -3,11 +3,12 @@ import {
   Column,
   Model,
   PrimaryKey,
-  BelongsTo
+  BelongsTo,
+  ForeignKey
 } from "sequelize-typescript"
-import Artist from "./Artist"
+import Artist from "./Artist.model"
 import { TableOptions } from './interfaces/TableOptions'
-import Song from "./Song"
+import Song from "./Song.model"
 
 const ArchiveSongOptions: TableOptions = {
   tableName: 'archive',
@@ -22,11 +23,13 @@ export default class ArchiveSong extends Model {
   id!: number
 
   @Column
-  @BelongsTo(() => Song, 'id')
+  // @BelongsTo(() => Song, 'id')
+  @ForeignKey(() => Song)
   songId!: string
 
   @Column
-  @BelongsTo(() => Artist)
+  // @BelongsTo(() => Artist, 'id')
+  @ForeignKey(() => Artist)
   artistId!: string
 
   @Column

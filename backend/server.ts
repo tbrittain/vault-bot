@@ -1,15 +1,18 @@
 import { ApolloServer } from 'apollo-server-express';
-import express, { Application, Request, Response } from 'express';
+import express, { Application } from 'express';
+import typeDefs from './schema/TypeDefs';
+import resolvers from './schema/Resolvers';
+import './db/db' // init sequelize
 // import { createComplexityLimitRule } from 'graphql-validation-complexity';
 // const cors = require('cors')
+
+// TODO https://typeofnan.dev/your-first-node-express-app-with-typescript/
+// https://ankitdeveloper.medium.com/apollo-server-express-graphql-api-using-node-js-with-typescript-e762afaccb8c
 
 // express as middleware
 const port = process.env.PORT || 4001;
 const app: Application = express();
 
-// types and resolvers
-const typeDefs = require('./schema/TypeDefs')
-const resolvers = require('./schema/Resolvers')
 
 // const ComplexityLimitRule = createComplexityLimitRule(1500, {
 //   onCost: (cost: Number) => {

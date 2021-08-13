@@ -7,7 +7,7 @@ import {
 import { TableOptions } from './interfaces/TableOptions'
 
 const ArtistOptions: TableOptions = {
-  tableName: 'songs',
+  tableName: 'artists',
   timestamps: false,
   underscored: true
 }
@@ -22,13 +22,9 @@ export default class Artist extends Model {
   name!: string
 
   @Column
-  art: string | undefined
+  art!: string
 
   @Column
-  featured: Date | undefined
+  featured!: Date
 }
-
-
-// Artist.hasMany(DynamicSong)
-// Artist.hasMany(ArchiveSong)
 

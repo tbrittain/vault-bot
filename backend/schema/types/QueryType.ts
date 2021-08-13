@@ -1,6 +1,6 @@
-const { gql } = require('apollo-server-express')
+import { gql } from 'apollo-server-express'
 
-module.exports = gql`
+export default gql`
   type Query {
     getArtist(id: String, name: String): Artist!
     getGenres(limit: Int): [Genre!]!

@@ -40,8 +40,8 @@ export default class HistTrack extends Model {
   tempo!: number
 
   @Column
-  novelty: number | undefined
+  novelty!: number
 }
 
-HistTrack.removeAttribute('id') // No default ID primary key
+// HistTrack.removeAttribute('id') // No default ID primary key
 
