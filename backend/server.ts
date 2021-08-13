@@ -3,6 +3,7 @@ import express, { Application } from 'express';
 import typeDefs from './schema/TypeDefs';
 import resolvers from './schema/Resolvers';
 import './db/db' // init sequelize
+import errorHandler from 'strong-error-handler';
 // import { createComplexityLimitRule } from 'graphql-validation-complexity';
 // const cors = require('cors')
 
@@ -38,6 +39,11 @@ const server: ApolloServer = new ApolloServer({
 // }
 
 // app.use(cors(corsSettings))
+
+app.use(errorHandler({
+  debug: process.env.NODE_ENV !== 'production', // debug during development
+  log: true
+}))
 
 server.applyMiddleware({ app, cors: true })
 
