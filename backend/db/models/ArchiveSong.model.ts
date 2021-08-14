@@ -22,13 +22,10 @@ export default class ArchiveSong extends Model {
   @Column
   id!: number
 
-  @Column
-  // @BelongsTo(() => Song, 'id')
-  @ForeignKey(() => Song)
-  songId!: string
+  @BelongsTo(() => Song, 'songId')
+  song!: Song
 
   @Column
-  // @BelongsTo(() => Artist, 'id')
   @ForeignKey(() => Artist)
   artistId!: string
 

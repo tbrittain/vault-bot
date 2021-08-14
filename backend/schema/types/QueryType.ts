@@ -11,7 +11,7 @@ export default gql`
     getTracks: [Song!]!
     getCurrentOverallStats: CurrentOverallStats!
     getTrack(id: String!): Song!
-    getAvgTrackDetails(genre: String): SongDetails!
+    getAvgTrackDetails: SongDetails!
     getSongsFromAlbum(album: String!, artistId: String!): [Song!]!
     findTracksLike(searchQuery: String!): [Song!]!
     findArtistsLike(searchQuery: String!): [Artist!]!

@@ -3,7 +3,6 @@ import {
   Column,
   Model,
   PrimaryKey,
-  BelongsTo,
   ForeignKey
 } from "sequelize-typescript"
 import Artist from "./Artist.model"

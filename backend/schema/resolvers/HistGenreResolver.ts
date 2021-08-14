@@ -35,7 +35,6 @@ export default {
 
       const diffTime = Math.abs(endDate.getTime() - startDate.getTime())
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-      console.log(diffDays)
       if (diffDays > 8) { // 8 instead of 7 due to the remainder of hours default endDate may have above 7 days
         throw new SyntaxError('Difference between dates must not be greater than one week')
       }
