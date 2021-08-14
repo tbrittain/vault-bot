@@ -1,15 +1,15 @@
-const path = require('path')
-const fs = require('fs')
-const { Sequelize } = require('sequelize')
-const DynamicSong = require('../../db/models/DynamicSong')
-const ArchiveSong = require('../../db/models/ArchiveSong')
-const Song = require('../../db/models/Song')
-const Artist = require('../../db/models/Artist')
-const ArtistGenre = require('../../db/models/ArtistGenre')
+import path from 'path'
+import fs from 'fs'
+import { Sequelize } from 'sequelize'
+import DynamicSong from '../../db/models/DynamicSong.model'
+import ArchiveSong from '../../db/models/ArchiveSong.model'
+import Song from '../../db/models/Song.model'
+import Artist from '../../db/models/Artist.model'
+import ArtistGenre from '../../db/models/ArtistGenre.model'
 
-module.exports = {
+export default {
   Query: {
-    async getCurrentOverallStats (parent, args, context, info) {
+    async getCurrentOverallStats () {
       let result = await DynamicSong.findAll({
         attributes: [
           [Sequelize.fn('count', Sequelize.col('song_id')), 'dynamicNumTracks']
@@ -20,7 +20,7 @@ module.exports = {
       result = result[0]
       return result
     },
-    async getChangeLogPosts (parent, args, context, info) {
+    async getChangeLogPosts () {
       const postsDirectory = path.join(__dirname, '../../changeLogPosts')
       const postNames = fs.readdirSync(postsDirectory, { withFileTypes: true })
         .filter(item => !item.isDirectory())
@@ -40,7 +40,7 @@ module.exports = {
     }
   },
   CurrentOverallStats: {
-    async totalNumTracks (parent, args) {
+    async totalNumTracks () {
       let result = await Song.findAll({
         attributes: [
           [Sequelize.fn('count', Sequelize.col('id')), 'totalNumTracks']
@@ -48,11 +48,9 @@ module.exports = {
       })
         .catch(err => console.error(err))
       result = JSON.parse(JSON.stringify(result))
-      const now = new Date()
-      console.log(now)
       return result[0].totalNumTracks
     },
-    async archiveNumTracks (parent, args) {
+    async archiveNumTracks () {
       let result = await ArchiveSong.findAll({
         attributes: [
           [Sequelize.fn('count', Sequelize.col('song_id')), 'archiveNumTracks']
@@ -62,7 +60,7 @@ module.exports = {
       result = JSON.parse(JSON.stringify(result))
       return result[0].archiveNumTracks
     },
-    async totalNumArtists (parent, args) {
+    async totalNumArtists () {
       let result = await Artist.findAll({
         attributes: [
           [Sequelize.fn('count', Sequelize.col('id')), 'totalNumArtists']
@@ -72,7 +70,7 @@ module.exports = {
       result = JSON.parse(JSON.stringify(result))
       return result[0].totalNumArtists
     },
-    async totalNumGenres (parent, args) {
+    async totalNumGenres () {
       const result = await ArtistGenre.aggregate('genre', 'count', { distinct: true })
       return result
     }
