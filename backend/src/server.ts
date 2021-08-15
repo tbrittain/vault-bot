@@ -4,7 +4,7 @@ import typeDefs from './schema/TypeDefs';
 import resolvers from './schema/Resolvers';
 import './db/db' // init sequelize
 import errorHandler from 'strong-error-handler';
-// import { createComplexityLimitRule } from 'graphql-validation-complexity';
+import { createComplexityLimitRule } from 'graphql-validation-complexity';
 // const cors = require('cors')
 
 
@@ -12,18 +12,18 @@ const port = process.env.PORT || 4001;
 const app: Application = express();
 
 
-// const ComplexityLimitRule = createComplexityLimitRule(1500, {
-//   onCost: (cost: Number) => {
-//     console.log('Query cost: ', cost);
-//   },
-//   formatErrorMessage: (cost: Number) =>
-//     `Query with cost ${cost} exceeds complexity limit`
-// })
+const ComplexityLimitRule = createComplexityLimitRule(1500, {
+  onCost: (cost: Number) => {
+    console.log('Query cost: ', cost);
+  },
+  formatErrorMessage: (cost: Number) =>
+    `Query with cost ${cost} exceeds complexity limit`
+})
 
 // apollo server
 // https://github.com/apollographql/apollo-server/issues/1142 for cors info
 const server: ApolloServer = new ApolloServer({
-  // validationRules: [ComplexityLimitRule],
+  validationRules: [ComplexityLimitRule],
   typeDefs,
   resolvers
 })
