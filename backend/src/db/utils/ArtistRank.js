@@ -8,14 +8,11 @@ const artistRank = async (artistId) => {
       [Sequelize.fn('COUNT', Sequelize.col('artist_id')), 'n_artistId']
     ],
     group: 'artistId',
-    order: [
-      [Sequelize.fn('COUNT', Sequelize.col('artist_id')), 'DESC']
-    ]
-  })
-    .catch(err => console.log(err))
+    order: [[Sequelize.fn('COUNT', Sequelize.col('artist_id')), 'DESC']]
+  }).catch((err) => console.log(err))
 
   artists = JSON.parse(JSON.stringify(artists))
-  const index = artists.findIndex(artist => {
+  const index = artists.findIndex((artist) => {
     return artist.artistId === artistId
   })
   return index + 1

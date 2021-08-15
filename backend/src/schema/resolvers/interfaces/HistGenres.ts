@@ -1,4 +1,4 @@
 export interface GetHistGenresArgs {
-  startDate: string,
+  startDate: string
   endDate?: string
 }

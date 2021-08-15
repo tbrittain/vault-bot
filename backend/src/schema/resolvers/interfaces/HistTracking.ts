@@ -1,4 +1,4 @@
 export interface GetHistTrackingArgs {
-  startDate: string,
+  startDate: string
   endDate?: string
 }

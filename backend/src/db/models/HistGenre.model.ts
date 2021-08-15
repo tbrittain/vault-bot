@@ -1,9 +1,4 @@
-import {
-  Table,
-  Column,
-  Model,
-  PrimaryKey
-} from "sequelize-typescript"
+import { Table, Column, Model, PrimaryKey } from 'sequelize-typescript'
 import { TableOptions } from './interfaces/TableOptions'
 
 const HistGenreOptions: TableOptions = {

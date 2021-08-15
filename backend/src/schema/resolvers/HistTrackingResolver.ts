@@ -4,7 +4,7 @@ import { GetHistTrackingArgs } from './interfaces/HistTracking'
 
 export default {
   Query: {
-    async getHistTracking (_parent, args: GetHistTrackingArgs) {
+    async getHistTracking(_parent, args: GetHistTrackingArgs) {
       let endDate: Date
       if (args.endDate) {
         endDate = new Date(args.endDate)
@@ -28,13 +28,18 @@ export default {
 
       const dateToday = new Date()
       if (endDate > dateToday) {
-        throw new SyntaxError(`endDate cannot be greater than the current date (${dateToday.toISOString()})`)
+        throw new SyntaxError(
+          `endDate cannot be greater than the current date (${dateToday.toISOString()})`
+        )
       }
 
       const diffTime = Math.abs(endDate.getTime() - startDate.getTime())
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-      if (diffDays > 8) { // 8 instead of 7 due to the remainder of hours default endDate may have above 7 days
-        throw new SyntaxError('Difference between dates must not be greater than one week')
+      if (diffDays > 8) {
+        // 8 instead of 7 due to the remainder of hours default endDate may have above 7 days
+        throw new SyntaxError(
+          'Difference between dates must not be greater than one week'
+        )
       }
 
       let result = await HistTrack.findAll({

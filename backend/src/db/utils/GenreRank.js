@@ -8,14 +8,11 @@ const genreRank = async (genreName) => {
       [Sequelize.fn('COUNT', Sequelize.col('genre')), 'n_genre']
     ],
     group: 'genre',
-    order: [
-      [Sequelize.fn('COUNT', Sequelize.col('genre')), 'DESC']
-    ]
-  })
-    .catch(err => console.log(err))
+    order: [[Sequelize.fn('COUNT', Sequelize.col('genre')), 'DESC']]
+  }).catch((err) => console.log(err))
 
   genres = JSON.parse(JSON.stringify(genres))
-  const index = genres.findIndex(genre => {
+  const index = genres.findIndex((genre) => {
     return genre.genre === genreName
   })
   return index + 1

@@ -1,5 +1,5 @@
 export interface GetArtistsArgs {
-  id?: string,
+  id?: string
   name?: string
 }
 

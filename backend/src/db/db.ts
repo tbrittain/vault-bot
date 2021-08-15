@@ -1,4 +1,4 @@
-import { Sequelize } from 'sequelize-typescript';
+import { Sequelize } from 'sequelize-typescript'
 
 const sequelize = new Sequelize({
   database: process.env.DB_NAME,
@@ -8,7 +8,9 @@ const sequelize = new Sequelize({
   dialect: 'postgres',
   models: [__dirname + '/models/*.model.*'],
   modelMatch: (filename, member) => {
-    return filename.substring(0, filename.indexOf('.model')) === member.toLowerCase();
+    return (
+      filename.substring(0, filename.indexOf('.model')) === member.toLowerCase()
+    )
   }
 })
 

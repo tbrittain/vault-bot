@@ -5,10 +5,10 @@ import {
   PrimaryKey,
   BelongsTo,
   ForeignKey
-} from "sequelize-typescript"
-import Artist from "./Artist.model"
+} from 'sequelize-typescript'
+import Artist from './Artist.model'
 import { TableOptions } from './interfaces/TableOptions'
-import Song from "./Song.model"
+import Song from './Song.model'
 
 const ArchiveSongOptions: TableOptions = {
   tableName: 'archive',

@@ -8,18 +8,15 @@ import {
 
 export default {
   Query: {
-    async getGenres () {
+    async getGenres() {
       const results = await ArtistGenre.findAll({
         attributes: [
           'genre',
           [Sequelize.fn('COUNT', Sequelize.col('genre')), 'numArtists']
         ],
         group: 'genre',
-        order: [
-          [Sequelize.fn('COUNT', Sequelize.col('genre')), 'DESC']
-        ]
-      })
-        .catch(err => console.error(err))
+        order: [[Sequelize.fn('COUNT', Sequelize.col('genre')), 'DESC']]
+      }).catch((err) => console.error(err))
 
       const genres = JSON.parse(JSON.stringify(results))
 
@@ -28,7 +25,7 @@ export default {
       }
       return genres
     },
-    async getArtistsFromGenre (_parent, args: GetArtistsFromGenreArgs) {
+    async getArtistsFromGenre(_parent, args: GetArtistsFromGenreArgs) {
       const { genreName } = args
       const results = await Artist.findAll({
         include: {
@@ -37,16 +34,17 @@ export default {
             genre: genreName
           }
         }
-      })
-        .catch(err => console.error(err))
+      }).catch((err) => console.error(err))
       const artists = JSON.parse(JSON.stringify(results))
       if (artists.length > 0) {
         return artists
       } else {
-        throw new SyntaxError(`No artists found matching provided genre: ${escape(genreName)}`)
+        throw new SyntaxError(
+          `No artists found matching provided genre: ${escape(genreName)}`
+        )
       }
     },
-    async findGenresLike (_parent, args: FindGenresLikeArgs) {
+    async findGenresLike(_parent, args: FindGenresLikeArgs) {
       const { searchQuery } = args
       let results = await ArtistGenre.findAll({
         limit: 25,
@@ -56,8 +54,7 @@ export default {
             [Op.iLike]: `%${searchQuery}%`
           }
         }
-      })
-        .catch(err => console.error(err))
+      }).catch((err) => console.error(err))
       results = JSON.parse(JSON.stringify(results))
       return results
     }

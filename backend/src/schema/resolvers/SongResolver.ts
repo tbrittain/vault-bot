@@ -13,39 +13,36 @@ import {
 
 export default {
   Query: {
-    async getTrack (_parent, args: GetTrackArgs) {
+    async getTrack(_parent, args: GetTrackArgs) {
       const { id } = args
       let result = await Song.findAll({
         where: {
           id: id
         }
-      })
-        .catch(err => console.error(err))
+      }).catch((err) => console.error(err))
       result = JSON.parse(JSON.stringify(result))[0]
 
       return result
     },
-    async getTracks () {
+    async getTracks() {
       let result = await Song.findAll({
         order: [['name', 'asc']]
-      })
-        .catch(err => console.error(err))
+      }).catch((err) => console.error(err))
       result = JSON.parse(JSON.stringify(result))
       return result
     },
-    async getSongsFromAlbum (_parent, args: GetSongsFromAlbumArgs) {
+    async getSongsFromAlbum(_parent, args: GetSongsFromAlbumArgs) {
       const { album, artistId } = args
       let result = await Song.findAll({
         where: {
           album: album,
           artistId: artistId
         }
-      })
-        .catch(err => console.error(err))
+      }).catch((err) => console.error(err))
       result = JSON.parse(JSON.stringify(result))
       return result
     },
-    async findTracksLike (_parent, args: FindTracksLikeArgs) {
+    async findTracksLike(_parent, args: FindTracksLikeArgs) {
       let { searchQuery } = args
       searchQuery = escape(searchQuery)
       let result = await Song.findAll({
@@ -55,12 +52,11 @@ export default {
             [Op.iLike]: `%${searchQuery}%`
           }
         }
-      })
-        .catch(err => console.error(err))
+      }).catch((err) => console.error(err))
       result = JSON.parse(JSON.stringify(result))
       return result
     },
-    async getArchiveTracks (_parent, args: GetArtchiveTracksArgs) {
+    async getArchiveTracks(_parent, args: GetArtchiveTracksArgs) {
       let startDate: Date, endDate: Date
 
       // argument validation
@@ -80,10 +76,14 @@ export default {
       if (startDate > endDate) {
         throw new SyntaxError('startDate must be earlier in time than endDate')
       }
-  
 
       // construct condition based on dates provided
-      let condition: { addedAt: { [Op.between]: string[] } | { [Op.gte]: string } | { [Op.lte]: string } }
+      let condition: {
+        addedAt:
+          | { [Op.between]: string[] }
+          | { [Op.gte]: string }
+          | { [Op.lte]: string }
+      }
       if (startDate && endDate) {
         condition = {
           addedAt: {
@@ -113,8 +113,7 @@ export default {
               model: Song
             }
           ]
-        })
-          .catch(err => console.error(err))
+        }).catch((err) => console.error(err))
       } else {
         result = await ArchiveSong.findAll({
           include: [
@@ -129,7 +128,7 @@ export default {
       // TODO: can filter songs by characteristics here
       // TODO: may also want to consider filtering by genre?
       // TODO: could also resolve SongDetails with the info retrieved here
-      songs = songs.map(song => {
+      songs = songs.map((song) => {
         return {
           id: song.song.id,
           artistId: song.song.artistId,
@@ -143,27 +142,29 @@ export default {
       })
       return songs
     },
-    async getAvgTrackDetails () {
+    async getAvgTrackDetails() {
       let result = await Song.findAll({
         attributes: [
           [Sequelize.fn('AVG', Sequelize.col('acousticness')), 'acousticness'],
           [Sequelize.fn('AVG', Sequelize.col('danceability')), 'danceability'],
           [Sequelize.fn('AVG', Sequelize.col('energy')), 'energy'],
-          [Sequelize.fn('AVG', Sequelize.col('instrumentalness')), 'instrumentalness'],
+          [
+            Sequelize.fn('AVG', Sequelize.col('instrumentalness')),
+            'instrumentalness'
+          ],
           [Sequelize.fn('AVG', Sequelize.col('length')), 'length'],
           [Sequelize.fn('AVG', Sequelize.col('liveness')), 'liveness'],
           [Sequelize.fn('AVG', Sequelize.col('loudness')), 'loudness'],
           [Sequelize.fn('AVG', Sequelize.col('tempo')), 'tempo'],
           [Sequelize.fn('AVG', Sequelize.col('valence')), 'valence']
         ]
-      })
-        .catch(err => console.error(err))
+      }).catch((err) => console.error(err))
       result = JSON.parse(JSON.stringify(result))[0]
       return result
     }
   },
   Song: {
-    async details (parent: SongDetails) {
+    async details(parent: SongDetails) {
       const details = {
         length: parent.length,
         tempo: parent.tempo,
@@ -177,14 +178,13 @@ export default {
       }
       return details
     },
-    async artist (parent: SongArtist) {
+    async artist(parent: SongArtist) {
       const { artistId } = parent
       let result = await Artist.findOne({
         where: {
           id: artistId
         }
-      })
-        .catch(err => console.error(err))
+      }).catch((err) => console.error(err))
 
       result = JSON.parse(JSON.stringify(result))
       return result

@@ -1,11 +1,5 @@
-import {
-  Table,
-  Column,
-  Model,
-  PrimaryKey,
-  HasMany
-} from "sequelize-typescript"
-import ArtistGenre from "./ArtistGenre.model"
+import { Table, Column, Model, PrimaryKey, HasMany } from 'sequelize-typescript'
+import ArtistGenre from './ArtistGenre.model'
 import { TableOptions } from './interfaces/TableOptions'
 
 const ArtistOptions: TableOptions = {
@@ -32,4 +26,3 @@ export default class Artist extends Model {
   @HasMany(() => ArtistGenre)
   genres!: ArtistGenre[]
 }
-

@@ -1,31 +1,30 @@
-import { ApolloServer } from 'apollo-server-express';
-import express, { Application } from 'express';
-import typeDefs from './schema/TypeDefs';
-import resolvers from './schema/Resolvers';
-import sequelize from './db/db';
-import errorHandler from 'strong-error-handler';
-import { createComplexityLimitRule } from 'graphql-validation-complexity';
+import { ApolloServer } from 'apollo-server-express'
+import express, { Application } from 'express'
+import typeDefs from './schema/TypeDefs'
+import resolvers from './schema/Resolvers'
+import sequelize from './db/db'
+import errorHandler from 'strong-error-handler'
+import { createComplexityLimitRule } from 'graphql-validation-complexity'
 // const cors = require('cors')
 
-(async () => {
-  sequelize.authenticate()
+;(async () => {
+  sequelize
+    .authenticate()
     .then(() => {
       console.log('Database connection established successfully')
     })
-    .catch(err => {
+    .catch((err) => {
       console.error('Database connection could not be made, exiting', err)
       process.exit(1)
     })
 })()
 
-
-const port = process.env.PORT || 4001;
-const app: Application = express();
-
+const port = process.env.PORT || 4001
+const app: Application = express()
 
 const ComplexityLimitRule = createComplexityLimitRule(1500, {
   onCost: (cost: Number) => {
-    console.log('Query cost: ', cost);
+    console.log('Query cost: ', cost)
   },
   formatErrorMessage: (cost: Number) =>
     `Query with cost ${cost} exceeds complexity limit`
@@ -39,7 +38,6 @@ const server: ApolloServer = new ApolloServer({
   resolvers
 })
 
-
 // TODO: enable cross origin requests only for frontend
 // const corsSettings = {
 //   origin: process.env.FRONTEND_URL,
@@ -48,15 +46,19 @@ const server: ApolloServer = new ApolloServer({
 
 // app.use(cors(corsSettings))
 
-app.use(errorHandler({
-  debug: process.env.NODE_ENV !== 'production', // debug during development
-  log: true
-}))
+app.use(
+  errorHandler({
+    debug: process.env.NODE_ENV !== 'production', // debug during development
+    log: true
+  })
+)
 
 server.applyMiddleware({ app, cors: true })
 
 app.listen(port, () => {
   process.env.NODE_ENV === 'production'
     ? console.log(`🚀 GraphQL API server listening on port ${port}`)
-    : console.log(`🚀 GraphQL API server listening on http://localhost:${port}/graphql/`)
+    : console.log(
+        `🚀 GraphQL API server listening on http://localhost:${port}/graphql/`
+      )
 })

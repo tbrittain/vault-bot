@@ -4,8 +4,8 @@ import {
   Model,
   PrimaryKey,
   ForeignKey
-} from "sequelize-typescript"
-import Artist from "./Artist.model"
+} from 'sequelize-typescript'
+import Artist from './Artist.model'
 import { TableOptions } from './interfaces/TableOptions'
 
 const SongOptions: TableOptions = {

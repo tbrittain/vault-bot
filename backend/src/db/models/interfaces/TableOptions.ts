@@ -1,5 +1,5 @@
 export interface TableOptions {
-  tableName: string,
-  timestamps: boolean,
+  tableName: string
+  timestamps: boolean
   underscored: boolean
 }

@@ -17,7 +17,7 @@ export default gql`
     findArtistsLike(searchQuery: String!): [Artist!]!
     findGenresLike(searchQuery: String!): [Genre!]!
     getChangeLogPosts: [ChangeLogPost!]!
-    getHistGenres (startDate: String!, endDate: String): [HistGenre!]
-    getHistTracking (startDate: String!, endDate: String): [HistTracking!]
+    getHistGenres(startDate: String!, endDate: String): [HistGenre!]
+    getHistTracking(startDate: String!, endDate: String): [HistTracking!]
   }
 `
