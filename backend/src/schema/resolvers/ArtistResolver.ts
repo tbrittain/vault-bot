@@ -10,7 +10,7 @@ import {
   ArtistWikiBioParent
 } from './interfaces/Artists'
 const axios = require('axios').default
-const { removeAccents } = require('../../utils/RemoveAccents')
+import removeAccents from '../../utils/RemoveAccents'
 
 export default {
   Query: {

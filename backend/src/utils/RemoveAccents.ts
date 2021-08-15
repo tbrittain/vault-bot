@@ -19,8 +19,8 @@ const accentsMap = new Map([
   ['AE', 'Æ']
 ])
 
-const reducer = (acc, [key]) =>
+const reducer = (acc: string, [key]: any) =>
   acc.replace(new RegExp(accentsMap.get(key), 'g'), key)
 
-const removeAccents = (text) => [...accentsMap].reduce(reducer, text)
-module.exports = { removeAccents }
+const removeAccents = (text: string) => [...accentsMap].reduce(reducer, text)
+export default removeAccents

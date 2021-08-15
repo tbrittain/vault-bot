@@ -5,6 +5,7 @@
 discord/.idea
 backend/.vscode
 .vs/*
+backend/build
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
