@@ -7,10 +7,7 @@ import errorHandler from 'strong-error-handler';
 // import { createComplexityLimitRule } from 'graphql-validation-complexity';
 // const cors = require('cors')
 
-// TODO https://typeofnan.dev/your-first-node-express-app-with-typescript/
-// https://ankitdeveloper.medium.com/apollo-server-express-graphql-api-using-node-js-with-typescript-e762afaccb8c
 
-// express as middleware
 const port = process.env.PORT || 4001;
 const app: Application = express();
 
