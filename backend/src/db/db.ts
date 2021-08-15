@@ -6,7 +6,7 @@ const sequelize = new Sequelize({
   password: process.env.DB_PASS,
   host: process.env.DB_HOST,
   dialect: 'postgres',
-  models: [__dirname + '/models/*.model.ts'],
+  models: [__dirname + '/models/*.model.*'],
   modelMatch: (filename, member) => {
     return filename.substring(0, filename.indexOf('.model')) === member.toLowerCase();
   }

@@ -2,10 +2,21 @@ import { ApolloServer } from 'apollo-server-express';
 import express, { Application } from 'express';
 import typeDefs from './schema/TypeDefs';
 import resolvers from './schema/Resolvers';
-import './db/db' // init sequelize
+import sequelize from './db/db';
 import errorHandler from 'strong-error-handler';
 import { createComplexityLimitRule } from 'graphql-validation-complexity';
 // const cors = require('cors')
+
+(async () => {
+  sequelize.authenticate()
+    .then(() => {
+      console.log('Database connection established successfully')
+    })
+    .catch(err => {
+      console.error('Database connection could not be made, exiting', err)
+      process.exit(1)
+    })
+})()
 
 
 const port = process.env.PORT || 4001;
