@@ -16,7 +16,7 @@
     "@graphql-tools/load-files": "^6.3.2",
     "@graphql-tools/merge": "^6.2.14",
     "apollo-server-express": "^2.25.1",
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "cors": "^2.8.5",
     "escape-html": "^1.0.3",
     "express": "^4.17.1",
