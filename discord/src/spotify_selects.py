@@ -11,6 +11,7 @@ chill_playlist_id = "65PiacgUM34qS9EtNgbr5r"
 cheerful_playlist_id = "5gsgXQu45m0W06WkmWXQBY"
 moody_playlist_id = "0jiEtmsU9wRGrAVf7O5YeT"
 genre_playlist_id = "5MDgnMXhfdmxpsCfHz1ioL"
+party_unfiltered_playlist_id = "6chmLTkj3RZVBPoen7mCs8"
 
 
 # TODO: figure out how to manually order tracks in the playlist
@@ -39,6 +40,11 @@ def selects_playlists_coordinator():
     = archive.song_id WHERE songs.valence < 0.1 GROUP BY songs.name, songs.id ORDER BY COUNT(archive.song_id) DESC 
     LIMIT 100;"""
 
+    party_unfiltered_playlist_sql = """SELECT songs.id, COUNT(archive.song_id) FROM songs JOIN archive ON songs.id
+    = archive.song_id JOIN artists ON songs.artist_id = artists.id JOIN artists_genres ON artists.id
+    = artists_genres.artist_id AND songs.danceability > 0.6 AND songs.energy > 0.5 GROUP BY songs.name, songs.id
+    ORDER BY COUNT(archive.song_id) desc LIMIT 100;"""
+
     genres = get_viable_genres()
     selected_genre = random.choice(genres)
 
@@ -47,6 +53,9 @@ def selects_playlists_coordinator():
 
     logger.info(f"Updating aggregate playlist Party (id: {party_playlist_id})")
     update_playlist(playlist_id=party_playlist_id, playlist_sql=party_playlist_sql)
+
+    logger.info(f"Updating aggregate playlist Party Unfiltered (id: {party_unfiltered_playlist_sql})")
+    update_playlist(playlist_id=party_unfiltered_playlist_id, playlist_sql=party_unfiltered_playlist_sql)
 
     logger.info(f"Updating aggregate playlist Top 50 (id: {top_50_playlist_id})")
     update_playlist(playlist_id=top_50_playlist_id, playlist_sql=top_50_playlist_sql)
