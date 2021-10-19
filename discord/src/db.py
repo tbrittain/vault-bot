@@ -5,23 +5,8 @@ import psycopg2
 import psycopg2.errors
 from dotenv import load_dotenv
 import os
-from google.cloud import secretmanager
 import sys
-
-
-def access_secret_version(secret_id, project_id, version_id="1") -> str:
-    """
-    Pull a secret stored in Google Cloud Secret Manager
-    @param secret_id: ID of the secret
-    @param project_id: ID of the project
-    @param version_id: Secret version
-    @return: Secret in string format
-    """
-    client = secretmanager.SecretManagerServiceClient()
-    name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
-    response = client.access_secret_version(name=name)
-    return response.payload.data.decode('UTF-8')
-
+from vb_utils import access_secret_version
 
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 environment = os.getenv("ENVIRONMENT")

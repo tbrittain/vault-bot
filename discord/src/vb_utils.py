@@ -1,5 +1,6 @@
 import logging
 import google.cloud.logging
+from google.cloud import secretmanager
 from google.cloud.logging.handlers import CloudLoggingHandler
 import os
 
@@ -17,11 +18,26 @@ if environment == "dev":
 
     logger.addHandler(ch)
 elif environment == "prod":
-    client = google.cloud.logging.Client()
-    handler = CloudLoggingHandler(client, name="VaultBot")
+    logging_client = google.cloud.logging.Client()
+    handler = CloudLoggingHandler(logging_client, name="VaultBot")
     logger = logging.getLogger('cloudLogger')
     logger.setLevel(logging.INFO)
     logger.addHandler(handler)
+
+
+def access_secret_version(secret_id, project_id, version_id="1") -> str:
+    """
+    Pull a secret stored in Google Cloud Secret Manager
+    @param secret_id: ID of the secret
+    @param project_id: ID of the project
+    @param version_id: Secret version
+    @return: Secret in string format
+    """
+    secret_client = secretmanager.SecretManagerServiceClient()
+    name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
+    response = secret_client.access_secret_version(name=name)
+    return response.payload.data.decode('UTF-8')
+
 
 if __name__ == "__main__":
     pass

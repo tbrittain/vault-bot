@@ -12,18 +12,9 @@ from src import spotify_selects
 from src import discord_responses
 from src import webhook_updates
 from alive_progress import alive_bar, config_handler
-from google.cloud import secretmanager
 import sys
 import re
 import asyncio
-
-
-def access_secret_version(secret_id, project_id, version_id="1"):
-    client = secretmanager.SecretManagerServiceClient()
-    name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
-    response = client.access_secret_version(name=name)
-    return response.payload.data.decode('UTF-8')
-
 
 logger = vb_utils.logger
 
@@ -35,8 +26,8 @@ if environment == "dev":
     logger.info("Running program in dev mode")
 elif environment == "prod":
     project_id = os.getenv("PROJECT_ID")
-    DISCORD_TOKEN = access_secret_version(secret_id="vb-discord-token",
-                                          project_id=project_id)
+    DISCORD_TOKEN = vb_utils.access_secret_version(secret_id="vb-discord-token",
+                                                   project_id=project_id)
     logger.info("Running program in production mode")
     if project_id is None:
         logger.error("Invalid environment variable, exiting")
@@ -183,6 +174,7 @@ async def search(ctx, *, song_query):
         except asyncio.TimeoutError:
             await ctx.channel.send(f'Never mind, {ctx.author.mention}. '
                                    f'You took too long. Please try again.')
+            return
         if reaction and msg.id == reaction.message.id:
             try:
                 if reaction.emoji == '1️⃣':
