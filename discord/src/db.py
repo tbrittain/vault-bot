@@ -5,7 +5,6 @@ import psycopg2
 import psycopg2.errors
 from dotenv import load_dotenv
 import os
-from .config import environment
 from google.cloud import secretmanager
 import sys
 
@@ -25,6 +24,7 @@ def access_secret_version(secret_id, project_id, version_id="1") -> str:
 
 
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+environment = os.getenv("ENVIRONMENT")
 if environment == "dev":
     load_dotenv(f'{base_dir}/dev.env')
     db_user = os.getenv("DB_USER")

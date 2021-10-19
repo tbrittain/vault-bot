@@ -1,23 +1,27 @@
 import logging
-from .config import environment
+import google.cloud.logging
+from google.cloud.logging.handlers import CloudLoggingHandler
+import os
 
-# TODO: implement the below line in each file rather than declaring it here
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+environment = os.getenv("ENVIRONMENT")
+global logger
+if environment == "dev":
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
 
-if environment == 'dev':
-    fh = logging.FileHandler('recent_run.log')
-    fh.setLevel(logging.DEBUG)
-    logger.addHandler(fh)
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
 
-ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    ch.setFormatter(formatter)
 
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-ch.setFormatter(formatter)
-
-logger.addHandler(ch)
-
+    logger.addHandler(ch)
+elif environment == "prod":
+    client = google.cloud.logging.Client()
+    handler = CloudLoggingHandler(client, name="VaultBot")
+    logger = logging.getLogger('cloudLogger')
+    logger.setLevel(logging.INFO)
+    logger.addHandler(handler)
 
 if __name__ == "__main__":
     pass

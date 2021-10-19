@@ -1,13 +1,14 @@
 import random
+import os
 from .db import DatabaseConnection
 from .spotify_commands import dyn_playlist_genres
 from .vb_utils import logger
-from .config import environment
 from datetime import datetime, timedelta, date
 import math
 
 iso_format = "%Y-%m-%d %H:%M"
 
+environment = os.getenv("ENVIRONMENT")
 if environment == "dev":
     commit_changes = False
 elif environment == "prod":

@@ -1,11 +1,11 @@
 import os
 from dotenv import load_dotenv
 from .db import DatabaseConnection, access_secret_version
-from .config import environment
 from discord_webhook import DiscordWebhook, DiscordEmbed
 from datetime import datetime, timedelta
 
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+environment = os.getenv("ENVIRONMENT")
 if environment == "dev":
     load_dotenv(f'{base_dir}/dev.env')
     webhook_url = os.getenv('UPDATES_WEBHOOK')

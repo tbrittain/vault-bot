@@ -6,11 +6,11 @@ import os
 from datetime import datetime, timedelta
 from .db import DatabaseConnection, access_secret_version
 from .vb_utils import logger
-from .config import environment
 import sys
 import json
 
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+environment = os.getenv("ENVIRONMENT")
 if environment == "dev":
     load_dotenv(f'{base_dir}/dev.env')
     CLIENT_ID = os.getenv("SPOTIPY_CLIENT_ID")

@@ -6,7 +6,6 @@ from spotipy import SpotifyException
 import random
 from datetime import datetime, time
 from src import spotify_commands
-from src import config
 from src import historical_tracking
 from src import vb_utils
 from src import spotify_selects
@@ -19,9 +18,6 @@ import re
 import asyncio
 
 
-# TODO: implement discord slash commands
-# https://pypi.org/project/discord-py-slash-command/
-
 def access_secret_version(secret_id, project_id, version_id="1"):
     client = secretmanager.SecretManagerServiceClient()
     name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
@@ -32,11 +28,12 @@ def access_secret_version(secret_id, project_id, version_id="1"):
 logger = vb_utils.logger
 
 base_dir = os.getcwd()
-if config.environment == "dev":
-    load_dotenv(f'{base_dir}/dev.env')
+environment = os.getenv("ENVIRONMENT")
+if environment == "dev":
+    load_dotenv(f"{base_dir}/dev.env")
     DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
     logger.info("Running program in dev mode")
-elif config.environment == "prod":
+elif environment == "prod":
     project_id = os.getenv("PROJECT_ID")
     DISCORD_TOKEN = access_secret_version(secret_id="vb-discord-token",
                                           project_id=project_id)
@@ -48,11 +45,10 @@ else:
     logger.error("Invalid environment setting, exiting")
     sys.exit(1)
 
-intents = discord.Intents.all()
 bot = commands.Bot(command_prefix=commands.when_mentioned,
                    case_insensitive=True,
                    help_command=None,
-                   intents=intents)
+                   intents=discord.Intents.all())
 bot.remove_command('help')
 emoji_responses = discord_responses.emoji_responses
 
@@ -70,7 +66,7 @@ async def on_ready():
     logger.info(f"VaultBot is fully loaded and online.")
     await bot.change_presence(activity=discord.Game(f'@me + help'))
 
-    if config.environment == "prod":
+    if environment == "prod":
         hourly_cleanup.start()
         generate_aggregate_playlists.start()
 
@@ -278,8 +274,8 @@ async def add_error(ctx, error):
 
 @bot.command(aliases=['playlist', 'links'])
 async def playlists(ctx):
-    logger.debug(f'User {ctx.author} invoked {config.bot_command_prefix}playlists')
-    playlist_embed = discord.Embed(title=f'{config.bot_command_prefix}links',
+    logger.debug(f'User {ctx.author} invoked $playlists')
+    playlist_embed = discord.Embed(title=f'Playlists',
                                    description='Links to the playlists and more. Be sure to '
                                                'follow the playlists for easy access :grinning:',
                                    color=random.randint(0, 0xffffff))
