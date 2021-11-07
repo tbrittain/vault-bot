@@ -1,6 +1,12 @@
 const fetch = require('node-fetch')
+const path = require('path')
 
-let accessToken
+let accessToken: string
+
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config({ path: path.join(__dirname, '../../../.env') })
+}
+
 const clientId = process.env.SPOTIFY_CLIENT_ID
 const redirectUri = process.env.SPOTIFY_REDIRECT_URI
 

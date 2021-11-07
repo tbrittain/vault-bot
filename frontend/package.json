@@ -49,6 +49,7 @@
     ]
   },
   "devDependencies": {
+    "dotenv": "^10.0.0",
     "prettier": "^2.3.2",
     "standard": "^16.0.3"
   }

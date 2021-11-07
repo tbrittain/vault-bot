@@ -11,6 +11,12 @@ import {
   InMemoryCache,
   ApolloProvider
 } from '@apollo/client'
+import path from 'path'
+
+
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config({ path: path.join(__dirname, '../../.env') })
+}
 
 const client = new ApolloClient({
   uri: process.env.REACT_APP_BACKEND_URL,
