@@ -1,7 +1,15 @@
-# TODO: adjust for build TS -> JS & file structure changes
-FROM node:14-slim
+FROM node:14-slim AS builder
 WORKDIR /usr/src/app
 COPY package*.json ./
-RUN npm install --only=production
-COPY ./build ./
-CMD [ "node", "server.js" ]
+RUN npm ci
+COPY tsconfig.json ./
+COPY src src
+RUN npm run build
+
+FROM gcr.io/distroless/nodejs:14
+ENV NODE_ENV production
+WORKDIR /usr/src/app
+COPY package*.json ./
+RUN npm ci
+COPY --from=builder /usr/src/app/build ./
+CMD ["node", "server.js"]

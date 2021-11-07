@@ -1,4 +1,9 @@
 import { Sequelize } from 'sequelize-typescript'
+import path from 'path'
+
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config({ path: path.join(__dirname, '../../.env') })
+}
 
 const sequelize = new Sequelize({
   database: process.env.DB_NAME,
