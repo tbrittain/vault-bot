@@ -1,9 +1,9 @@
 const fetch = require('node-fetch')
-const path = require('path')
 
 let accessToken: string
 
 if (process.env.NODE_ENV !== 'production') {
+  const path = require('path')
   require('dotenv').config({ path: path.join(__dirname, '../../../.env') })
 }
 
