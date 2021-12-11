@@ -21,7 +21,7 @@ def selects_playlists_coordinator():
     artists_genres.artist_id WHERE artists_genres.genre = ANY('{hip hop, pop rap, rap, edm, house, 
     tropical house, uk dance, turntablism, pop, filter house, vapor twitch, dance-punk, bass house, 
     electronic trap, electro house, bass music, australian electropop, la pop, metropopolis, pop edm}') AND 
-    songs.danceability > 0.6 AND songs.energy > 0.5 AND songs.length < 4.75 AND songs.tempo > 105 GROUP BY 
+    songs.danceability > 0.4 AND songs.energy > 0.7 AND songs.length < 4.5 AND songs.tempo > 105 GROUP BY 
     songs.name, songs.id ORDER BY COUNT(archive.song_id) DESC LIMIT 100;"""
 
     top_50_playlist_sql = """SELECT songs.id, COUNT(archive.song_id) FROM songs JOIN archive 
@@ -40,10 +40,10 @@ def selects_playlists_coordinator():
     = archive.song_id WHERE songs.valence < 0.1 GROUP BY songs.name, songs.id ORDER BY COUNT(archive.song_id) DESC 
     LIMIT 100;"""
 
-    party_unfiltered_playlist_sql = """SELECT songs.id, COUNT(archive.song_id) FROM songs JOIN archive ON songs.id
-    = archive.song_id JOIN artists ON songs.artist_id = artists.id JOIN artists_genres ON artists.id
-    = artists_genres.artist_id AND songs.danceability > 0.6 AND songs.energy > 0.5 GROUP BY songs.name, songs.id
-    ORDER BY COUNT(archive.song_id) desc LIMIT 100;"""
+    party_unfiltered_playlist_sql = """SELECT songs.id, COUNT(archive.song_id) FROM songs JOIN archive
+    ON songs.id = archive.song_id JOIN artists ON songs.artist_id = artists.id JOIN artists_genres ON artists.id
+    = artists_genres.artist_id AND songs.danceability > 0.8 AND songs.energy > 0.5 
+    AND songs.length < 4.5 GROUP BY songs.name, songs.id ORDER BY COUNT(archive.song_id) desc LIMIT 100;"""
 
     genres = get_viable_genres()
     selected_genre = random.choice(genres)
