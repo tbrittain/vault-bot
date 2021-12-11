@@ -16,6 +16,7 @@ if environment == "dev":
     CLIENT_ID = os.getenv("SPOTIPY_CLIENT_ID")
     CLIENT_SECRET = os.getenv("SPOTIPY_CLIENT_SECRET")
     REDIRECT_URI = os.getenv("SPOTIPY_REDIRECT_URI")
+    TOKEN = os.getenv("SPOTIFY_CACHE")
     commit_changes = False
 elif environment == "prod":
     project_id = os.getenv("PROJECT_ID")
@@ -25,6 +26,7 @@ elif environment == "prod":
                                           project_id=project_id)
     REDIRECT_URI = access_secret_version(secret_id="db-spotify-redirect-uri",
                                          project_id=project_id)
+    TOKEN = access_secret_version('vb-spotify-cache', project_id, '2')
     commit_changes = True
     if project_id is None:
         print("Invalid environment setting, exiting")
@@ -52,8 +54,7 @@ class MemoryCacheHandler(CacheHandler):
 
 
 project_id = os.getenv("PROJECT_ID")
-token = access_secret_version('vb-spotify-cache', project_id, '2')
-json_token = json.loads(token)
+json_token = json.loads(TOKEN)
 cache_handler = MemoryCacheHandler(token_info=json_token)
 
 scope = "playlist-modify-public user-library-read"

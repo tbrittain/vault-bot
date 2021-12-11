@@ -6,7 +6,7 @@ import psycopg2.errors
 from dotenv import load_dotenv
 import os
 import sys
-from vb_utils import access_secret_version
+from .vb_utils import access_secret_version
 
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 environment = os.getenv("ENVIRONMENT")
