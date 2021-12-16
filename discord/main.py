@@ -165,9 +165,9 @@ async def search(ctx, *, song_query):
         await ctx.channel.send(
             f'Select the emoji of the track you want to add, {ctx.author.mention}')
 
-        def check(reaction, user):
-            return True if user == ctx.author and (any(str(reaction.emoji) in s for s in emojis) or
-                                                   str(reaction.emoji == cancel_emoji)) else False
+        def check(check_reaction, user_reaction):
+            return True if user_reaction == ctx.author and (any(str(check_reaction.emoji) in s for s in emojis) or
+                                                            str(check_reaction.emoji == cancel_emoji)) else False
 
         try:
             reaction, user = await bot.wait_for('reaction_add', timeout=30.0, check=check)
