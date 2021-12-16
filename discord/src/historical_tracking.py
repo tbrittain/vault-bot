@@ -21,63 +21,64 @@ def playlist_snapshot_coordinator():
     logger.debug(f"Most recent historical update: {most_recent_time}")
 
     # check to ensure update only occurs every n hours
-    # TODO: remove this nesting and just have it return if does not fulfill time constraint
-    if (datetime.utcnow() - most_recent_time) >= timedelta(hours=2):
-        last_update_genres, last_update_tracking = conn.get_most_recent_historical_data()
-        logger.debug("Historical data preparing to be updated...")
+    if (datetime.utcnow() - most_recent_time) < timedelta(hours=2):
+        conn.terminate()
+        return
 
-        pdi = playlist_diversity_index()
-        logger.debug(f"Current playlist PDI: {round(pdi, 3)}")
+    last_update_genres, last_update_tracking = conn.get_most_recent_historical_data()
+    logger.debug("Historical data preparing to be updated...")
 
-        playlist_len, song_len, tempo, pop, dance, energy, valence = historical_average_features()
+    pdi = playlist_diversity_index()
+    logger.debug(f"Current playlist PDI: {round(pdi, 3)}")
 
-        now = datetime.utcnow()
-        timestamp_now = now.strftime(iso_format)
+    playlist_len, song_len, tempo, pop, dance, energy, valence = historical_average_features()
 
-        novelty = dynamic_playlist_novelty()
-        logger.debug(f"Current playlist novelty: {round(novelty, 3)}")
+    now = datetime.utcnow()
+    timestamp_now = now.strftime(iso_format)
 
-        pkey_sql = """SELECT id FROM historical_tracking ORDER BY updated_at DESC LIMIT 1;"""
-        most_recent_htrack_pkey = conn.select_query_raw(pkey_sql)
-        most_recent_htrack_pkey = most_recent_htrack_pkey[0][0]
+    novelty = dynamic_playlist_novelty()
+    logger.debug(f"Current playlist novelty: {round(novelty, 3)}")
 
-        # add historical tracking data
-        historical_columns = ('updated_at', 'pdi', 'song_length', 'tempo', 'popularity', 'danceability',
-                              'energy', 'valence', 'novelty', 'id')
-        historical_values = (timestamp_now, pdi, song_len, tempo, pop, dance,
-                             energy, valence, novelty, most_recent_htrack_pkey + 1)
-        tracking_check_if_update_needed = []
+    pkey_sql = """SELECT id FROM historical_tracking ORDER BY updated_at DESC LIMIT 1;"""
+    most_recent_h_track_pkey = conn.select_query_raw(pkey_sql)
+    most_recent_h_track_pkey = most_recent_h_track_pkey[0][0]
 
-        # TODO: need to go back through existing historical_tracking and historical_genres data and remove
-        # redundant, duplicated data
-        for i in range(1, len(last_update_tracking)):  # compare existing aggregates and compare with last update
-            tracking_check_if_update_needed.append(
-                float(last_update_tracking[i]) == float(historical_values[i])
-            )
+    # add historical tracking data
+    historical_columns = ('updated_at', 'pdi', 'song_length', 'tempo', 'popularity', 'danceability',
+                          'energy', 'valence', 'novelty', 'id')
+    historical_values = (timestamp_now, pdi, song_len, tempo, pop, dance,
+                         energy, valence, novelty, most_recent_h_track_pkey + 1)
+    tracking_check_if_update_needed = []
 
-        if False in tracking_check_if_update_needed:
-            logger.debug("Logging historical data now...")
-            conn.insert_single_row(table='historical_tracking', columns=historical_columns, row=historical_values)
+    # compare existing aggregates and compare with last update
+    for i in range(1, len(last_update_tracking)):
+        tracking_check_if_update_needed.append(
+            float(last_update_tracking[i]) == float(historical_values[i])
+        )
 
-            # using historical_tracking info as a proxy for whether genres need updating actually
-            top_10_genres = dyn_playlist_genres(limit=10)
+    if False in tracking_check_if_update_needed:
+        logger.debug("Logging historical data now...")
+        conn.insert_single_row(table='historical_tracking', columns=historical_columns, row=historical_values)
 
-            # adds total number of songs as a genre
-            total_genre_columns = ('updated_at', 'genre', 'count')
-            total_genre_values = (timestamp_now, 'total', playlist_len)
-            conn.insert_single_row(table='historical_genres', columns=total_genre_columns, row=total_genre_values)
+        # using historical_tracking info as a proxy for whether genres need updating actually
+        top_10_genres = dyn_playlist_genres(limit=10)
 
-            # add each genre
-            for genre, count in top_10_genres.items():
-                individual_genre_values = (timestamp_now, genre, count)
-                conn.insert_single_row(table='historical_genres', columns=total_genre_columns,
-                                       row=individual_genre_values)
-        else:
-            logger.info("Current playlist data matches last historical update, not logging")
-        if commit_changes:
-            conn.commit()
-        else:
-            conn.rollback()
+        # adds total number of songs as a genre
+        total_genre_columns = ('updated_at', 'genre', 'count')
+        total_genre_values = (timestamp_now, 'total', playlist_len)
+        conn.insert_single_row(table='historical_genres', columns=total_genre_columns, row=total_genre_values)
+
+        # add each genre
+        for genre, count in top_10_genres.items():
+            individual_genre_values = (timestamp_now, genre, count)
+            conn.insert_single_row(table='historical_genres', columns=total_genre_columns,
+                                   row=individual_genre_values)
+    else:
+        logger.info("Current playlist data matches last historical update, not logging")
+    if commit_changes:
+        conn.commit()
+    else:
+        conn.rollback()
     conn.terminate()
 
 
