@@ -2,8 +2,8 @@
 */node_modules
 *.csv
 *.txt
-discord/.idea
-backend/.vscode
+.idea
+.vscode
 .vs/*
 backend/build
 .prettierrc.json
