@@ -1,9 +1,11 @@
+from datetime import datetime, timedelta
+from random import choice
+
+from dateutil import tz
+
 from .db import DatabaseConnection
 from .spotify_commands import sp, get_full_playlist
 from .vb_utils import logger
-import random
-from datetime import datetime, timedelta
-from dateutil import tz
 
 party_playlist_id = "6ksVLVljYiEUpjSoDh8z0w"
 top_50_playlist_id = "1b04aMKreEwigG4ivcZNJm"
@@ -46,7 +48,7 @@ def selects_playlists_coordinator():
     AND songs.length < 4.5 GROUP BY songs.name, songs.id ORDER BY COUNT(archive.song_id) desc LIMIT 100;"""
 
     genres = get_viable_genres()
-    selected_genre = random.choice(genres)
+    selected_genre = choice(genres)
 
     genre_playlist_sql = f"""SELECT songs.id FROM songs JOIN artists ON songs.artist_id = artists.id
     JOIN artists_genres ON artists_genres.artist_id = artists.id WHERE artists_genres.genre = '{selected_genre}';"""

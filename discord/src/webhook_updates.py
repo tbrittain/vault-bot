@@ -1,16 +1,18 @@
-import os
-from dotenv import load_dotenv
-from .db import DatabaseConnection, access_secret_version
-from discord_webhook import DiscordWebhook, DiscordEmbed
 from datetime import datetime, timedelta
+from os import getenv, path
 
-base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-environment = os.getenv("ENVIRONMENT")
+from discord_webhook import DiscordWebhook, DiscordEmbed
+from dotenv import load_dotenv
+
+from .db import DatabaseConnection, access_secret_version
+
+base_dir = path.dirname(path.dirname(path.abspath(__file__)))
+environment = getenv("ENVIRONMENT")
 if environment == "dev":
     load_dotenv(f'{base_dir}/dev.env')
-    webhook_url = os.getenv('UPDATES_WEBHOOK')
+    webhook_url = getenv('UPDATES_WEBHOOK')
 elif environment == "prod":
-    project_id = os.getenv("PROJECT_ID")
+    project_id = getenv("PROJECT_ID")
     webhook_url = access_secret_version(secret_id='vb-updates-webhook',
                                         project_id=project_id)
 

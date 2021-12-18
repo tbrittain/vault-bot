@@ -1,7 +1,7 @@
-import math
-import os
-import random
 from datetime import datetime, timedelta
+from math import log
+from os import getenv
+from random import choice
 
 from .db import DatabaseConnection
 from .spotify_commands import dyn_playlist_genres
@@ -9,7 +9,7 @@ from .vb_utils import logger
 
 iso_format = "%Y-%m-%d %H:%M"
 
-environment = os.getenv("ENVIRONMENT")
+environment = getenv("ENVIRONMENT")
 if environment == "dev":
     commit_changes = False
 elif environment == "prod":
@@ -121,7 +121,7 @@ def playlist_diversity_index():
     if len(genre_counts) > 0:
         pdi_sum = 0
         for genre_count in genre_counts:
-            genre_calc = 1 + ((math.log(1 / genre_count)) / 5)
+            genre_calc = 1 + ((log(1 / genre_count)) / 5)
             pdi_sum += genre_calc
         pdi_sum = pdi_sum / len(genre_counts)
 
@@ -143,7 +143,7 @@ def featured_artist():
         ORDER BY COUNT(songs.id) DESC;"""
         viable_artists = conn.select_query_raw(sql=viable_artists_sql)
         viable_artists = [x[0] for x in viable_artists]
-        selected_artist = random.choice(viable_artists)
+        selected_artist = choice(viable_artists)
 
         update_selected_artist_sql = f"""UPDATE artists SET featured = NOW()::timestamp 
         WHERE id = '{selected_artist}';"""

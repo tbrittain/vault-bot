@@ -1,10 +1,11 @@
 import logging
+from os import getenv
+
 import google.cloud.logging
 from google.cloud import secretmanager
 from google.cloud.logging.handlers import CloudLoggingHandler
-import os
 
-environment = os.getenv("ENVIRONMENT")
+environment = getenv("ENVIRONMENT")
 global logger
 if environment == "dev":
     logger = logging.getLogger(__name__)

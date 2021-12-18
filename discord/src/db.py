@@ -1,24 +1,26 @@
-import datetime
+from datetime import datetime
 from io import StringIO
+from os import getenv, path
+from sys import exit
+
 import pandas as pd
 import psycopg2
 import psycopg2.errors
 from dotenv import load_dotenv
-import os
-import sys
-from .vb_utils import access_secret_version
 
-base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-environment = os.getenv("ENVIRONMENT")
+from .vb_utils import access_secret_version, logger
+
+base_dir = path.dirname(path.dirname(path.abspath(__file__)))
+environment = getenv("ENVIRONMENT")
 if environment == "dev":
     load_dotenv(f'{base_dir}/dev.env')
-    db_user = os.getenv("DB_USER")
-    db_pass = os.getenv("DB_PASS")
-    db_port = os.getenv("DB_PORT")
-    db_name = os.getenv("DB_NAME")
-    db_host = os.getenv("DB_HOST")
+    db_user = getenv("DB_USER")
+    db_pass = getenv("DB_PASS")
+    db_port = getenv("DB_PORT")
+    db_name = getenv("DB_NAME")
+    db_host = getenv("DB_HOST")
 elif environment == "prod":
-    project_id = os.getenv("PROJECT_ID")
+    project_id = getenv("PROJECT_ID")
     db_user = access_secret_version(secret_id="vb-postgres-user",
                                     project_id=project_id)
     db_pass = access_secret_version(secret_id="vb-postgres-pass",
@@ -30,11 +32,11 @@ elif environment == "prod":
     db_name = access_secret_version(secret_id="vb-postgres-db-name",
                                     project_id=project_id)
     if project_id is None:
-        print("Invalid environment variable, exiting")
-        sys.exit(1)
+        logger.fatal("Invalid environment variable, exiting")
+        exit(1)
 else:
-    print("Invalid environment setting, exiting")
-    sys.exit(1)
+    logger.fatal("Invalid environment setting, exiting")
+    exit(1)
 
 
 class DatabaseConnection:
@@ -53,7 +55,7 @@ class DatabaseConnection:
     def rollback(self):
         self.conn.rollback()
 
-    def get_most_recent_historical_update(self) -> datetime.datetime:
+    def get_most_recent_historical_update(self) -> datetime:
         """Pulls the most recent match timestamp from the database"""
         cur = self.conn.cursor()
 
@@ -179,9 +181,6 @@ class DatabaseConnection:
         buffer.seek(0)
 
         try:
-            # cur.copy_from(file=buffer, table=table, sep=",", columns=columns, null="")
-            # testing copy_expert, as copy_from does not handle escaping commas in strings...
-            # https://stackoverflow.com/questions/27055634/psycopg2-copy-from-command-possible-to-ignore-delimiter-in-quote-getting-err
             cur.copy_expert(f"""COPY {table} FROM STDIN WITH (FORMAT CSV)""", buffer)
         except Exception as e:
             error_code = psycopg2.errors.lookup(e.pgcode)

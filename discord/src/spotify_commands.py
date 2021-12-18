@@ -1,25 +1,27 @@
-import spotipy
-from spotipy.oauth2 import SpotifyOAuth
-from spotipy.cache_handler import CacheHandler
-from dotenv import load_dotenv
-import os
 from datetime import datetime, timedelta
+from json import loads
+from os import getenv, path
+from sys import exit
+
+import spotipy
+from dotenv import load_dotenv
+from spotipy.cache_handler import CacheHandler
+from spotipy.oauth2 import SpotifyOAuth
+
 from .db import DatabaseConnection, access_secret_version
 from .vb_utils import logger
-import sys
-import json
 
-base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-environment = os.getenv("ENVIRONMENT")
+base_dir = path.dirname(path.dirname(path.abspath(__file__)))
+environment = getenv("ENVIRONMENT")
 if environment == "dev":
     load_dotenv(f'{base_dir}/dev.env')
-    CLIENT_ID = os.getenv("SPOTIPY_CLIENT_ID")
-    CLIENT_SECRET = os.getenv("SPOTIPY_CLIENT_SECRET")
-    REDIRECT_URI = os.getenv("SPOTIPY_REDIRECT_URI")
-    TOKEN = os.getenv("SPOTIFY_CACHE")
+    CLIENT_ID = getenv("SPOTIPY_CLIENT_ID")
+    CLIENT_SECRET = getenv("SPOTIPY_CLIENT_SECRET")
+    REDIRECT_URI = getenv("SPOTIPY_REDIRECT_URI")
+    TOKEN = getenv("SPOTIFY_CACHE")
     commit_changes = False
 elif environment == "prod":
-    project_id = os.getenv("PROJECT_ID")
+    project_id = getenv("PROJECT_ID")
     CLIENT_ID = access_secret_version(secret_id="vb-spotify-client-id",
                                       project_id=project_id)
     CLIENT_SECRET = access_secret_version(secret_id="vb-spotify-client-secret",
@@ -30,10 +32,10 @@ elif environment == "prod":
     commit_changes = True
     if project_id is None:
         print("Invalid environment setting, exiting")
-        sys.exit(1)
+        exit(1)
 else:
     print("Invalid environment variable, exiting")
-    sys.exit(1)
+    exit(1)
 
 
 class MemoryCacheHandler(CacheHandler):
@@ -53,8 +55,8 @@ class MemoryCacheHandler(CacheHandler):
         self.token_info = token_info
 
 
-project_id = os.getenv("PROJECT_ID")
-json_token = json.loads(TOKEN)
+project_id = getenv("PROJECT_ID")
+json_token = loads(TOKEN)
 cache_handler = MemoryCacheHandler(token_info=json_token)
 
 scope = "playlist-modify-public user-library-read"
