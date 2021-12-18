@@ -1,10 +1,11 @@
-import random
+import math
 import os
+import random
+from datetime import datetime, timedelta
+
 from .db import DatabaseConnection
 from .spotify_commands import dyn_playlist_genres
 from .vb_utils import logger
-from datetime import datetime, timedelta, date
-import math
 
 iso_format = "%Y-%m-%d %H:%M"
 
@@ -82,8 +83,6 @@ def playlist_snapshot_coordinator():
     conn.terminate()
 
 
-# this function should also update the number of tracks since that data will be easily available to it
-# idea: pull dynamic playlist data, put rows into pandas df, then calculate averages
 def historical_average_features():
     conn = DatabaseConnection()
     sql_query = "COUNT(dynamic.*), AVG(songs.length), AVG(songs.tempo), AVG(dynamic.popularity), " \
@@ -93,8 +92,8 @@ def historical_average_features():
                                                    join_condition='songs.id = dynamic.song_id')
     dynamic_averages = dynamic_averages[0]
     conn.terminate()
-    return dynamic_averages[0], dynamic_averages[1], dynamic_averages[2], dynamic_averages[3], dynamic_averages[4], \
-           dynamic_averages[5], dynamic_averages[6]
+    return dynamic_averages[0], dynamic_averages[1], dynamic_averages[2], dynamic_averages[3], \
+           dynamic_averages[4], dynamic_averages[5], dynamic_averages[6]
 
 
 def dynamic_playlist_novelty():

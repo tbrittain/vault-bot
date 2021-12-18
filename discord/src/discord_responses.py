@@ -1,7 +1,20 @@
-import random
+AFFIRMATIVES = ['👌', '👍', '🤘', '🤙', '🤝']
 
-"""
-Will use this file to store variations of responses and return a random choice of each
-"""
+NUMBERS = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣',
+           '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟']
 
-emoji_responses = ['👌', '👍', '🤘', '🤙', '🤝']
+NUMBERS_TO_INDEX_MAP = {
+    '1️⃣': 0,
+    '2️⃣': 1,
+    '3️⃣': 2,
+    '4️⃣': 3,
+    '5️⃣': 4,
+    '6️⃣': 5,
+    '7️⃣': 6,
+    '8️⃣': 7,
+    '9️⃣': 8,
+    '🔟': 9,
+    '❌': None
+}
+
+CANCEL = '❌'
