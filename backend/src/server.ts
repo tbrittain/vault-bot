@@ -1,11 +1,13 @@
+import { createComplexityLimitRule } from 'graphql-validation-complexity'
+import { createServer } from 'http'
 import { ApolloServer } from 'apollo-server-express'
-import express, { Application } from 'express'
+import { ApolloServerPluginDrainHttpServer } from 'apollo-server-core'
+import express from 'express'
+import sequelize from './db'
 import typeDefs from './schema/TypeDefs'
 import resolvers from './schema/Resolvers'
-import sequelize from './db/db'
-import errorHandler from 'strong-error-handler'
-import { createComplexityLimitRule } from 'graphql-validation-complexity'
-// const cors = require('cors')
+
+const cors = require('cors')
 
 ;(async () => {
   sequelize
@@ -19,8 +21,8 @@ import { createComplexityLimitRule } from 'graphql-validation-complexity'
     })
 })()
 
-const port = process.env.PORT || 4001
-const app: Application = express()
+const port = process.env.PORT || 3001
+const origin = process.env.ORIGIN || 'http://localhost:3000'
 
 const ComplexityLimitRule = createComplexityLimitRule(1500, {
   onCost: (cost: Number) => {
@@ -30,35 +32,39 @@ const ComplexityLimitRule = createComplexityLimitRule(1500, {
     `Query with cost ${cost} exceeds complexity limit`
 })
 
-// apollo server
-// https://github.com/apollographql/apollo-server/issues/1142 for cors info
-const server: ApolloServer = new ApolloServer({
-  validationRules: [ComplexityLimitRule],
-  typeDefs,
-  resolvers
-})
+const corsSettings = {
+  origin: origin,
+  credentials: true
+}
 
-// TODO: enable cross origin requests only for frontend
-// const corsSettings = {
-//   origin: process.env.FRONTEND_URL,
-//   credentials: true
-// }
-
-// app.use(cors(corsSettings))
-
-app.use(
-  errorHandler({
-    debug: process.env.NODE_ENV !== 'production', // debug during development
-    log: true
+async function startApolloServer(typeDefs, resolvers) {
+  const app = express()
+  const httpServer = createServer(app)
+  const server = new ApolloServer({
+    typeDefs,
+    resolvers,
+    validationRules: [ComplexityLimitRule],
+    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })]
   })
-)
 
-server.applyMiddleware({ app, cors: true })
+  await server.start()
+  server.applyMiddleware({ app, cors: cors(corsSettings) })
+  await new Promise<void>((resolve) => httpServer.listen(port, resolve))
 
-app.listen(port, () => {
   process.env.NODE_ENV === 'production'
     ? console.log(`🚀 GraphQL API server listening on port ${port}`)
     : console.log(
         `🚀 GraphQL API server listening on http://localhost:${port}/graphql/`
       )
-})
+
+  console.log(`Accepting requests from origin ${origin}`)
+}
+
+;(async () => {
+  try {
+    await startApolloServer(typeDefs, resolvers)
+  } catch (e) {
+    console.error(e)
+    process.exit(1)
+  }
+})()
