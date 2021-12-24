@@ -3,10 +3,9 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./app/App";
 import { BrowserRouter } from "react-router-dom";
-import defaultTheme from "./themes/DefaultTheme";
-import { ThemeProvider } from "@material-ui/core";
 import * as serviceWorker from "./serviceWorker";
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
+import ThemeToggler from "./themes/ThemeToggler";
 
 let { REACT_APP_BACKEND_URL } = process.env;
 if (!REACT_APP_BACKEND_URL) {
@@ -18,13 +17,15 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
+// https://localforage.github.io/localForage/#localforage
+
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter forceRefresh={false}>
       <ApolloProvider client={client}>
-        <ThemeProvider theme={defaultTheme}>
+        <ThemeToggler>
           <App />
-        </ThemeProvider>
+        </ThemeToggler>
       </ApolloProvider>
     </BrowserRouter>
   </React.StrictMode>,

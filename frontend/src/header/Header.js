@@ -1,18 +1,26 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   AppBar,
   Box,
   Button,
   ButtonGroup,
+  IconButton,
   Toolbar,
   Typography,
+  useTheme,
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import headerStyles from "./HeaderStyles";
 import VaultBotLogo from "../assets/VaultBotLogo.svg";
+import { ColorModeContext } from "../themes/ThemeToggler";
+import Brightness4Icon from "@material-ui/icons/Brightness4";
+import Brightness7Icon from "@material-ui/icons/Brightness7";
 
 function Header() {
   const classes = headerStyles();
+  const colorMode = useContext(ColorModeContext);
+  const theme = useTheme();
+
   return (
     <header className={classes.header}>
       <AppBar position="fixed" className={classes.headerContainer}>
@@ -81,6 +89,17 @@ function Header() {
             >
               Genres
             </Button>
+            <IconButton
+              sx={{ ml: 1 }}
+              onClick={colorMode.toggleColorMode}
+              color="inherit"
+            >
+              {theme.palette.mode === "dark" ? (
+                <Brightness7Icon />
+              ) : (
+                <Brightness4Icon />
+              )}
+            </IconButton>
           </ButtonGroup>
         </Toolbar>
       </AppBar>

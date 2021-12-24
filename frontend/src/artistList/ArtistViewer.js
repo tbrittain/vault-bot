@@ -31,6 +31,7 @@ const ArtistViewer = () => {
   const minSearchLength = 3
   const open = Boolean(anchorEl && search.length >= minSearchLength)
 
+  // FIXME
   return (
     <Paper
       elevation={3}
