@@ -1,66 +1,64 @@
-const fetch = require('node-fetch')
+const fetch = require("node-fetch");
 
-let accessToken: string
-
-if (process.env.NODE_ENV !== 'production') {
-  const path = require('path')
-  require('dotenv').config({ path: path.join(__dirname, '../../../.env') })
-}
-
-const clientId = process.env.SPOTIFY_CLIENT_ID
-const redirectUri = process.env.SPOTIFY_REDIRECT_URI
+let accessToken = null;
+const { SPOTIFY_CLIENT_ID, SPOTIFY_REDIRECT_URI } = process.env;
 
 const Spotify = {
-  getAccessToken () {
+  getAccessToken() {
     if (accessToken) {
-      return accessToken
+      return accessToken;
     }
 
     // first check for access token match
-    const accessTokenMatch = window.location.href.match(/access_token=([^&]*)/)
-    const expiresInMatch = window.location.href.match(/expires_in=([^&]*)/)
+    const accessTokenMatch = window.location.href.match(/access_token=([^&]*)/);
+    const expiresInMatch = window.location.href.match(/expires_in=([^&]*)/);
 
     if (accessTokenMatch && expiresInMatch) {
-      accessToken = accessTokenMatch[1]
-      const expiresIn = Number(expiresInMatch[1])
+      accessToken = accessTokenMatch[1];
+      const expiresIn = Number(expiresInMatch[1]);
 
       // clear parameters to grab new access token when it expired
-      window.setTimeout(() => accessToken = '', expiresIn * 1000) // eslint-disable-line
-      window.history.pushState('Access Token', null, '/')
-      return accessToken
+      window.setTimeout(() => (accessToken = ""), expiresIn * 1000); // eslint-disable-line
+      window.history.pushState("Access Token", null, "/");
+      return accessToken;
     } else {
-      const accessUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&scope=playlist-modify-private&redirect_uri=${redirectUri}`
-      window.location = accessUrl
+      window.location = `https://accounts.spotify.com/authorize?client_id=${SPOTIFY_CLIENT_ID}&response_type=token&scope=playlist-modify-private&redirect_uri=${SPOTIFY_REDIRECT_URI}`;
     }
   },
-  async savePlaylist (name, trackUris) {
+  async savePlaylist(name, trackUris) {
     if (!name || !trackUris.length) {
-      return
+      return;
     }
-    const formattedTrackUris = [...trackUris].map(uri => {
-      return `spotify:track:${uri}`
+    const formattedTrackUris = [...trackUris].map((uri) => {
+      return `spotify:track:${uri}`;
+    });
+
+    const accessToken = Spotify.getAccessToken();
+    const headers = { Authorization: `Bearer ${accessToken}` };
+    const userId = await fetch("https://api.spotify.com/v1/me", {
+      headers: headers,
     })
-
-    const accessToken = Spotify.getAccessToken()
-    const headers = { Authorization: `Bearer ${accessToken}` }
-    const userId = await fetch('https://api.spotify.com/v1/me', { headers: headers })
-      .then(res => res.json())
-      .then(res => res.id)
-    const newUserPlaylist = await fetch(`https://api.spotify.com/v1/users/${userId}/playlists`,
+      .then((res) => res.json())
+      .then((res) => res.id);
+    const newUserPlaylist = await fetch(
+      `https://api.spotify.com/v1/users/${userId}/playlists`,
       {
         headers: headers,
-        method: 'POST',
-        body: JSON.stringify({ name: name })
-      })
-      .then(res => res.json())
-      .then(res => res.id)
-    return await fetch(`https://api.spotify.com/v1/users/${userId}/playlists/${newUserPlaylist}/tracks`,
+        method: "POST",
+        body: JSON.stringify({ name: name }),
+      }
+    )
+      .then((res) => res.json())
+      .then((res) => res.id);
+    return await fetch(
+      `https://api.spotify.com/v1/users/${userId}/playlists/${newUserPlaylist}/tracks`,
       {
         headers: headers,
-        method: 'POST',
-        body: JSON.stringify({ uris: formattedTrackUris })
-      })
-  }
-}
+        method: "POST",
+        body: JSON.stringify({ uris: formattedTrackUris }),
+      }
+    );
+  },
+};
 
-export default Spotify
+export default Spotify;

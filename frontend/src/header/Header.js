@@ -1,49 +1,40 @@
-import React from 'react'
+import React from "react";
 import {
   AppBar,
-  Toolbar,
-  Typography,
+  Box,
   Button,
   ButtonGroup,
-  Box
-} from '@material-ui/core'
-import { Link } from 'react-router-dom'
-import headerStyles from './HeaderStyles'
-import VaultBotLogo from '../assets/VaultBotLogo.svg'
+  Toolbar,
+  Typography,
+} from "@material-ui/core";
+import { Link } from "react-router-dom";
+import headerStyles from "./HeaderStyles";
+import VaultBotLogo from "../assets/VaultBotLogo.svg";
 
-function Header () {
-  const classes = headerStyles()
+function Header() {
+  const classes = headerStyles();
   return (
     <header className={classes.header}>
-      <AppBar
-        position='fixed'
-        className={classes.headerContainer}
-      >
-        <Toolbar
-          className={classes.toolbar}
-        >
-          <Box
-            component={Link}
-            to='/'
-            className={classes.titleContainer}
-          >
+      <AppBar position="fixed" className={classes.headerContainer}>
+        <Toolbar className={classes.toolbar}>
+          <Box component={Link} to="/" className={classes.titleContainer}>
             <img
               src={VaultBotLogo}
-              alt='VaultBot logo'
+              alt="VaultBot logo"
               style={{
-                height: '3.25rem'
+                height: "3.25rem",
               }}
             />
             <Typography
-              variant='h6'
+              variant="h6"
               className={classes.title}
               style={{
-                fontWeight: 800
+                fontWeight: 800,
               }}
             >
               <i
                 style={{
-                  fontWeight: 800
+                  fontWeight: 800,
                 }}
               >
                 VaultBot
@@ -51,41 +42,41 @@ function Header () {
             </Typography>
           </Box>
           <ButtonGroup
-            variant='text'
-            color='primary'
-            aria-label='text primary button group'
-            size='large'
+            variant="text"
+            color="primary"
+            aria-label="text primary button group"
+            size="large"
             className={classes.actionButtons}
           >
             <Button
-              color='inherit'
+              color="inherit"
               className={classes.menuButton}
               component={Link}
-              to='/songs'
+              to="/songs"
               style={{
-                padding: 5
+                padding: 5,
               }}
             >
               Songs
             </Button>
             <Button
-              color='inherit'
+              color="inherit"
               className={classes.menuButton}
               component={Link}
-              to='/artists'
+              to="/artists"
               style={{
-                padding: 5
+                padding: 5,
               }}
             >
               Artists
             </Button>
             <Button
-              color='inherit'
+              color="inherit"
               className={classes.menuButton}
               component={Link}
-              to='/genres'
+              to="/genres"
               style={{
-                padding: 5
+                padding: 5,
               }}
             >
               Genres
@@ -94,7 +85,7 @@ function Header () {
         </Toolbar>
       </AppBar>
     </header>
-  )
+  );
 }
 
-export default Header
+export default Header;

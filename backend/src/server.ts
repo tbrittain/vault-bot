@@ -7,8 +7,6 @@ import sequelize from './db'
 import typeDefs from './schema/TypeDefs'
 import resolvers from './schema/Resolvers'
 
-const cors = require('cors')
-
 ;(async () => {
   sequelize
     .authenticate()
@@ -48,7 +46,7 @@ async function startApolloServer(typeDefs, resolvers) {
   })
 
   await server.start()
-  server.applyMiddleware({ app, cors: cors(corsSettings) })
+  server.applyMiddleware({ app, cors: corsSettings })
   await new Promise<void>((resolve) => httpServer.listen(port, resolve))
 
   process.env.NODE_ENV === 'production'
