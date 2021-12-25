@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { render } from "react-dom";
 import "./index.css";
 import App from "./app/App";
 import { BrowserRouter } from "react-router-dom";
@@ -19,7 +19,7 @@ const client = new ApolloClient({
 
 // https://localforage.github.io/localForage/#localforage
 
-ReactDOM.render(
+render(
   <React.StrictMode>
     <BrowserRouter forceRefresh={false}>
       <ApolloProvider client={client}>

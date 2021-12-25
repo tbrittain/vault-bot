@@ -1,4 +1,4 @@
-const fetch = require("node-fetch");
+const axios = require("axios");
 
 let accessToken = null;
 const { SPOTIFY_CLIENT_ID, SPOTIFY_REDIRECT_URI } = process.env;
@@ -29,35 +29,50 @@ const Spotify = {
     if (!name || !trackUris.length) {
       return;
     }
+
     const formattedTrackUris = [...trackUris].map((uri) => {
       return `spotify:track:${uri}`;
     });
 
     const accessToken = Spotify.getAccessToken();
     const headers = { Authorization: `Bearer ${accessToken}` };
-    const userId = await fetch("https://api.spotify.com/v1/me", {
-      headers: headers,
-    })
-      .then((res) => res.json())
-      .then((res) => res.id);
-    const newUserPlaylist = await fetch(
-      `https://api.spotify.com/v1/users/${userId}/playlists`,
-      {
+    const userId = await axios
+      .get("https://api.spotify.com/v1/me", {
         headers: headers,
-        method: "POST",
+      })
+      .then((res) => res.data.id);
+
+    const newUserPlaylistId = await axios
+      .post(`https://api.spotify.com/v1/users/${userId}/playlists`, {
+        headers: headers,
         body: JSON.stringify({ name: name }),
+      })
+      .then((res) => res.data.id);
+
+    if (formattedTrackUris.length <= 100) {
+      return await axios.post(
+        `https://api.spotify.com/v1/users/${userId}/playlists/${newUserPlaylistId}/tracks`,
+        {
+          headers: headers,
+          body: JSON.stringify({ uris: formattedTrackUris }),
+        }
+      );
+    } else {
+      // TODO: test this
+      const chunks = [];
+      for (let i = 0; i < formattedTrackUris.length; i += 100) {
+        chunks.push(formattedTrackUris.slice(i, i + 100));
       }
-    )
-      .then((res) => res.json())
-      .then((res) => res.id);
-    return await fetch(
-      `https://api.spotify.com/v1/users/${userId}/playlists/${newUserPlaylist}/tracks`,
-      {
-        headers: headers,
-        method: "POST",
-        body: JSON.stringify({ uris: formattedTrackUris }),
+      for (let i = 0; i < chunks.length; i++) {
+        await axios.post(
+          `https://api.spotify.com/v1/users/${userId}/playlists/${newUserPlaylistId}/tracks`,
+          {
+            headers: headers,
+            body: JSON.stringify({ uris: chunks[i] }),
+          }
+        );
       }
-    );
+    }
   },
 };
 
