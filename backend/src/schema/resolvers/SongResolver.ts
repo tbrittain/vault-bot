@@ -1,15 +1,17 @@
 import Song from '../../db/models/Song.model'
 import ArchiveSong from '../../db/models/ArchiveSong.model'
 import Artist from '../../db/models/Artist.model'
-import { Sequelize, Op } from 'sequelize'
+import { Op, Sequelize } from 'sequelize'
 import {
   FindTracksLikeArgs,
-  GetArtchiveTracksArgs,
-  GetSongsFromAlbumArgs,
+  GetArchiveTracksArgs,
+  GetSimilarTracksArgs,
   GetTrackArgs,
+  GetTracksFromAlbumArgs,
   SongArtist,
   SongDetails
 } from './interfaces/Songs'
+import { getSimilarSongs } from '../../db/utils/SongSimilarity'
 
 export default {
   Query: {
@@ -31,7 +33,7 @@ export default {
       result = JSON.parse(JSON.stringify(result))
       return result
     },
-    async getSongsFromAlbum(_parent, args: GetSongsFromAlbumArgs) {
+    async getTracksFromAlbum(_parent, args: GetTracksFromAlbumArgs) {
       const { album, artistId } = args
       let result = await Song.findAll({
         where: {
@@ -56,7 +58,7 @@ export default {
       result = JSON.parse(JSON.stringify(result))
       return result
     },
-    async getArchiveTracks(_parent, args: GetArtchiveTracksArgs) {
+    async getArchiveTracks(_parent, args: GetArchiveTracksArgs) {
       let startDate: Date, endDate: Date
 
       // argument validation
@@ -161,11 +163,15 @@ export default {
       }).catch((err) => console.error(err))
       result = JSON.parse(JSON.stringify(result))[0]
       return result
+    },
+    async getSimilarTracks(_parent, args: GetSimilarTracksArgs) {
+      const { id } = args
+      return await getSimilarSongs(id)
     }
   },
   Song: {
     async details(parent: SongDetails) {
-      const details = {
+      return {
         length: parent.length,
         tempo: parent.tempo,
         danceability: parent.danceability,
@@ -176,7 +182,6 @@ export default {
         liveness: parent.liveness,
         valence: parent.valence
       }
-      return details
     },
     async artist(parent: SongArtist) {
       const { artistId } = parent

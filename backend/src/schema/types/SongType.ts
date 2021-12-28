@@ -25,4 +25,9 @@ export default gql`
     liveness: Float!
     valence: Float!
   }
+
+  type SimilarSong {
+    song: Song!
+    score: Float!
+  }
 `

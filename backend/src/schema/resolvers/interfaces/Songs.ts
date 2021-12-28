@@ -2,7 +2,7 @@ export interface GetTrackArgs {
   id: string
 }
 
-export interface GetSongsFromAlbumArgs {
+export interface GetTracksFromAlbumArgs {
   album: string
   artistId: string
 }
@@ -11,7 +11,7 @@ export interface FindTracksLikeArgs {
   searchQuery: string
 }
 
-export interface GetArtchiveTracksArgs {
+export interface GetArchiveTracksArgs {
   startDate?: string
   endDate?: string
 }
@@ -30,4 +30,8 @@ export interface SongDetails {
 
 export interface SongArtist {
   artistId: string
+}
+
+export interface GetSimilarTracksArgs {
+  id: string
 }
