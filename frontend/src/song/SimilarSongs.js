@@ -44,5 +44,19 @@ export default function SimilarSongs(props) {
     <Alert severity="error">An error occurred during data retrieval :(</Alert>;
   }
 
-  return <div>Similar Songs to {songId}</div>;
+  return (
+    <div className={classes.root}>
+      <h2>Similar Songs</h2>
+      <div className={classes.songList}>
+        {formattedData.map((song) => (
+          <div key={song.song.id} className={classes.song}>
+            <div className={classes.songName}>
+              {song.song.name} by {song.song.artist.name}
+            </div>
+            <div className={classes.songScore}>{song.score.toFixed(2)}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
