@@ -7,14 +7,7 @@ const SIMILARITY_SQL_QUERY = `
         FROM songs
         WHERE songs.id = :songId
     )
-    SELECT s.id,
-        s.name,
-        s.length,
-        s.tempo,
-        s.danceability,
-        s.energy,
-        s.valence,
-        s.loudness
+    SELECT *
     FROM songs s
     WHERE s.danceability BETWEEN ((SELECT ss.danceability FROM ss) - 0.1) AND ((SELECT ss.danceability FROM ss) + 0.1)
         AND s.energy BETWEEN ((SELECT ss.energy FROM ss) - 0.1) AND ((SELECT ss.energy FROM ss) + 0.1)
