@@ -165,8 +165,16 @@ export default {
       return result
     },
     async getSimilarTracks(_parent, args: GetSimilarTracksArgs) {
-      const { id } = args
-      return await getSimilarSongs(id)
+      let { id, limit } = args
+      if (typeof limit !== 'number') {
+        limit = 10
+      }
+
+      if (limit < 1 || limit > 100) {
+        throw new SyntaxError('limit must be between 1 and 100')
+      }
+
+      return await getSimilarSongs(id, limit)
     }
   },
   Song: {

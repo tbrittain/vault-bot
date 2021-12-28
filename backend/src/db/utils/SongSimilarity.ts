@@ -55,14 +55,10 @@ async function calculateSimilarity(sourceSong, targetSong: Song) {
   }
 }
 
-export async function getSimilarSongs(songId, limit = 10) {
+export async function getSimilarSongs(songId, limit) {
   const sourceSong = await Song.findByPk(songId)
   if (!sourceSong) {
     throw new Error('Source song not found')
-  }
-
-  if (limit > 100 || limit < 1) {
-    throw new Error('Limit must be between 1 and 100')
   }
 
   const similarSongResults = await sequelize.query(SIMILARITY_SQL_QUERY, {
@@ -78,9 +74,18 @@ export async function getSimilarSongs(songId, limit = 10) {
     return await calculateSimilarity(sourceSong, song)
   })
 
-  return await Promise.all(similarSongs).then((results) => {
-    return results.sort((a, b) => {
-      return b.score - a.score
+  return await Promise.all(similarSongs)
+    .then((results) => {
+      return results.sort((a, b) => {
+        return b.score - a.score
+      })
     })
-  })
+    .then((results) => {
+      return results.slice(0, limit)
+    })
+    .then((results) => {
+      return results.filter((result) => {
+        return result.score > 0
+      })
+    })
 }

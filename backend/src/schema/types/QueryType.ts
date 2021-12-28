@@ -16,7 +16,7 @@ export default gql`
     # Tracks
     getTrack(id: String!): Song!
     getTracks: [Song!]!
-    getSimilarTracks(id: String!): [SimilarSong]!
+    getSimilarTracks(id: String!, limit: Int): [SimilarSong]!
     getArchiveTracks(startDate: String, endDate: String): [Song!]!
     getAvgTrackDetails: SongDetails!
     getTracksFromAlbum(album: String!, artistId: String!): [Song!]!

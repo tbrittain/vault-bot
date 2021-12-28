@@ -34,4 +34,5 @@ export interface SongArtist {
 
 export interface GetSimilarTracksArgs {
   id: string
+  limit?: number
 }
