@@ -118,7 +118,10 @@ const artistStyles = makeStyles((theme) => ({
   },
   link: {
     textDecoration: "none",
-    color: theme.palette.secondary.dark,
+    color:
+      theme.palette.mode === "light"
+        ? theme.palette.secondary.dark
+        : theme.palette.secondary.contrastText,
     transition: "0.3s",
     "&:hover": {
       color: "white",

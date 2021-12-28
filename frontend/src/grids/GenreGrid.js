@@ -1,76 +1,61 @@
-import React from 'react'
-import {
-  GridList,
-  GridListTile,
-  Button,
-  Typography,
-  useTheme
-} from '@material-ui/core'
-import { Link } from 'react-router-dom'
-import gridStyles from './GridStyles'
-import genreToMuiColor from '../utils/genreToMuiColor'
+import React from "react";
+import { Button, ImageList, Typography, useTheme } from "@material-ui/core";
+import { Link } from "react-router-dom";
+import gridStyles from "./GridStyles";
+import genreToMuiColor from "../utils/genreToMuiColor";
 
 const GenreGrid = (props) => {
-  const classes = gridStyles()
-  const theme = useTheme()
+  const classes = gridStyles();
+  const theme = useTheme();
   return (
     <div className={classes.gridContainer}>
-      {typeof props.genres !== 'undefined' &&
-        <GridList
+      {typeof props.genres !== "undefined" && (
+        <ImageList
           className={classes.gridList}
           cols={props.genres.length < 4 ? props.genres.length : 4}
         >
-          {props.genres.map(genre => (
-            <GridListTile
-              key={genre}
-              className={classes.tile}
-              style={{
-                height: 'fit-content'
-              }}
-            >
-              <div className={classes.buttonContent}>
-                <Button
-                  variant='contained'
-                  size='small'
-                  className={classes.button}
-                  component={Link}
-                  to={`/genres/${genre}`}
-                  lang='en'
+          {props.genres.map((genre) => (
+            <ImageList key={genre} className={classes.tile}>
+              <Button
+                variant="contained"
+                size="small"
+                className={classes.button}
+                component={Link}
+                to={`/genres/${genre}`}
+                lang="en"
+                style={{
+                  backgroundColor: genreToMuiColor(genre),
+                }}
+              >
+                <div
                   style={{
-                    backgroundColor: genreToMuiColor(genre),
-                    lineHeight: 'inherit',
-                    justifyContent: 'left',
-                    wordBreak: 'break-word'
+                    width: "85%",
                   }}
                 >
-                  <div
+                  <Typography
+                    variant="body1"
                     style={{
-                      width: '85%'
+                      textAlign: "left",
+                      color: theme.palette.getContrastText(
+                        genreToMuiColor(genre)
+                      ),
                     }}
                   >
-                    <Typography
-                      variant='body1'
-                      style={{
-                        textAlign: 'left',
-                        color: theme.palette.getContrastText(genreToMuiColor(genre))
-                      }}
-                    >
-                      {genre}
-                    </Typography>
-                  </div>
-                </Button>
-              </div>
-            </GridListTile>
+                    {genre}
+                  </Typography>
+                </div>
+              </Button>
+            </ImageList>
           ))}
-        </GridList>}
-      {typeof props.genres === 'undefined' &&
-        <Typography
-          variant='subtitle1'
-        >
+        </ImageList>
+      )}
+      {typeof props.genres === "undefined" && (
+        <Typography variant="subtitle1">
           No genres present for this artist :(
-        </Typography>}
+        </Typography>
+      )}
     </div>
-  )
-}
+  );
+};
 
-export default GenreGrid
+export default GenreGrid;

@@ -1,14 +1,11 @@
-import React from 'react'
-import { useParams } from 'react-router-dom'
-import { useQuery, gql } from '@apollo/client'
-import {
-  Grid,
-  Typography
-} from '@material-ui/core'
-import { Alert } from '@material-ui/lab'
-import SongDetails from './SongDetails'
-import SongArtist from './SongArtist'
-import LoadingScreen from '../loading/LoadingScreen'
+import React from "react";
+import { useParams } from "react-router-dom";
+import { gql, useQuery } from "@apollo/client";
+import { Grid, Typography } from "@material-ui/core";
+import { Alert } from "@material-ui/lab";
+import SongDetails from "./SongDetails";
+import SongArtist from "./SongArtist";
+import LoadingScreen from "../loading/LoadingScreen";
 
 // TODO: create fragments for these long queries and present
 // each fragment in their required component
@@ -43,53 +40,43 @@ const QUERY = gql`
       }
     }
   }
-`
+`;
 
 const SongContainer = () => {
-  const { songId } = useParams()
-  const { loading, error, data } = useQuery(
-    QUERY,
-    {
-      variables: {
-        songId
-      }
-    })
+  const { songId } = useParams();
+  const { loading, error, data } = useQuery(QUERY, {
+    variables: {
+      songId,
+    },
+  });
 
-  // TODO: refactor this formatted data into an onCompleted function in the useQuery hook
-  // https://www.apollographql.com/docs/react/api/react/hooks/#oncompleted
-  let formattedData
-  let artistGenres
-  let processing = true
+  let formattedData;
+  let artistGenres;
+  let processing = true;
   if (data) {
-    formattedData = data
-    formattedData = data.getTrack
+    formattedData = data;
+    formattedData = data.getTrack;
     if (formattedData.artist.genres.length > 0) {
-      artistGenres = formattedData.artist.genres
-      artistGenres = artistGenres.map(genreObject => genreObject.genre)
+      artistGenres = formattedData.artist.genres;
+      artistGenres = artistGenres.map((genreObject) => genreObject.genre);
     }
-    processing = false
+    processing = false;
   }
 
   if (loading || processing) {
-    return (
-      <LoadingScreen text='Loading song...' />
-    )
+    return <LoadingScreen text="Loading song..." />;
   }
 
   if (error) {
     return (
-      <Alert severity='error'>An error occurred during data retrieval :(</Alert>
-    )
+      <Alert severity="error">An error occurred during data retrieval :(</Alert>
+    );
   }
 
   return (
     <>
-      <Grid
-        container
-        direction='column'
-        justify='space-evenly'
-      >
-        <Typography variant='h1'>Song Details</Typography>
+      <Grid container direction="column" justify="space-evenly">
+        <Typography variant="h1">Song Details</Typography>
         <SongDetails
           album={formattedData.album}
           name={formattedData.name}
@@ -100,7 +87,7 @@ const SongContainer = () => {
           details={formattedData.details}
           id={songId}
         />
-        <Typography variant='h2'>Artist Preview</Typography>
+        <Typography variant="h2">Artist Preview</Typography>
         <SongArtist
           id={formattedData.artist.id}
           name={formattedData.artist.name}
@@ -109,7 +96,7 @@ const SongContainer = () => {
         />
       </Grid>
     </>
-  )
-}
+  );
+};
 
-export default SongContainer
+export default SongContainer;
