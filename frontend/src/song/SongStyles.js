@@ -156,6 +156,41 @@ const songStyles = makeStyles((theme) => ({
       justifyContent: "center",
     },
   },
+  similarSong: {
+    display: "grid",
+    gridTemplate: "1fr / 1fr",
+    placeItems: "center",
+    background: "none",
+    width: "100%",
+    margin: "1rem",
+  },
+  similarSongInner: {
+    gridColumn: "1 / 1",
+    gridRow: "1 / 1",
+    height: "100%",
+    width: "100%",
+  },
+  similarSongDetails: {
+    display: "flex",
+    alignItems: "center",
+  },
+  similarSongArt: {
+    width: "8vw",
+    height: "8vw",
+    margin: "auto",
+    boxShadow: "0px 0px 4px #adadad",
+    [theme.breakpoints.down("sm")]: {
+      minWidth: 75,
+      minHeight: 75,
+    },
+  },
+  similarSongScore: {
+    width: "5vw",
+    height: "5vw",
+    margin: "auto",
+    boxShadow: "0px 0px 4px #adadad",
+    minWidth: 75,
+    minHeight: 75,
+  },
 }));
-
 export default songStyles;

@@ -79,6 +79,7 @@ const SongDetails = (props) => {
         index={value}
         onChangeIndex={handleChangeIndex}
       >
+        {/* TODO: split the index 0 tab panel into its own component*/}
         <TabPanel value={value} index={0}>
           <div className={classes.innerContainer}>
             <div className={classes.containerItem}>

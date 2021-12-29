@@ -1,7 +1,13 @@
 import React from "react";
 import { gql, useQuery } from "@apollo/client";
 import songStyles from "./SongStyles";
-import { CircularProgress } from "@material-ui/core";
+import {
+  Avatar,
+  Box,
+  CircularProgress,
+  Typography,
+  useTheme,
+} from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 
 const QUERY = gql`
@@ -10,6 +16,9 @@ const QUERY = gql`
       song {
         id
         name
+        art
+        album
+        artistId
         artist {
           name
         }
@@ -26,6 +35,7 @@ export default function SimilarSongs(props) {
   });
 
   const classes = songStyles();
+  const theme = useTheme();
 
   let formattedData;
   let processing = true;
@@ -44,19 +54,81 @@ export default function SimilarSongs(props) {
     <Alert severity="error">An error occurred during data retrieval :(</Alert>;
   }
 
+  if (formattedData.length === 0) {
+    return (
+      <Box className={classes.noSongs}>
+        <Typography variant="h6">No similar songs found :(</Typography>
+      </Box>
+    );
+  }
+
   return (
-    <div className={classes.root}>
-      <h2>Similar Songs</h2>
-      <div className={classes.songList}>
-        {formattedData.map((song) => (
-          <div key={song.song.id} className={classes.song}>
-            <div className={classes.songName}>
-              {song.song.name} by {song.song.artist.name}
+    <div className={classes.innerContainer} style={{ flexDirection: "column" }}>
+      {formattedData.map((song) => (
+        <div key={song.song.id} className={classes.similarSong}>
+          <div
+            className={classes.similarSongInner}
+            style={{
+              zIndex: 2,
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <div className={classes.similarSongDetails}>
+              <Avatar
+                src={song.song.art}
+                alt={song.song.name}
+                className={classes.similarSongArt}
+              />
+              <Typography
+                variant="h6"
+                className={classes.albumText}
+                style={{
+                  width: "50%",
+                }}
+              >
+                {song.song.name}
+                <Box style={{ fontWeight: 300 }}>by</Box>
+                {song.song.artist.name}
+              </Typography>
             </div>
-            <div className={classes.songScore}>{song.score.toFixed(2)}</div>
+            <div
+              style={{ display: "flex", alignItems: "center", margin: "30px" }}
+            >
+              <Avatar
+                className={classes.similarSongScore}
+                style={{
+                  color:
+                    song.score > 65
+                      ? theme.palette.getContrastText(
+                          `hsl(${song.score * 5.4}, 100%, 50%)`
+                        )
+                      : theme.palette.getContrastText("hsl(351, 100%, 50%)"),
+                  backgroundColor:
+                    song.score > 65
+                      ? `hsl(${song.score * 5.4}, 100%, 50%)`
+                      : "hsl(351, 100%, 50%)",
+                }}
+              >
+                {song.score.toFixed(2)}
+              </Avatar>
+            </div>
           </div>
-        ))}
-      </div>
+          <div
+            className={classes.similarSongInner}
+            style={{
+              backgroundImage: `url(${song.song.art})`,
+              backgroundPosition: "center center",
+              backgroundSize: "100vw 100vw",
+              filter: "blur(20px)",
+              WebkitFilter: "blur(20px)",
+              overflow: "hidden",
+              zIndex: 1,
+              opacity: 0.5,
+            }}
+          />
+        </div>
+      ))}
     </div>
   );
 }

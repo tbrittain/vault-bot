@@ -14,6 +14,7 @@ const ArtistAlbum = (props) => {
     WebkitFilter: "blur(20px)",
     overflow: "hidden",
     zIndex: 1,
+    opacity: 0.5,
   };
   return (
     <div className={classes.album}>
