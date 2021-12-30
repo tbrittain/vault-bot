@@ -18,10 +18,6 @@ const songStyles = makeStyles((theme) => ({
     },
   },
   outerContainer: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
     maxWidth: "100%",
     overflow: "auto",
   },
@@ -173,15 +169,28 @@ const songStyles = makeStyles((theme) => ({
   similarSongDetails: {
     display: "flex",
     alignItems: "center",
+    justifyContent: "left",
+    width: "100%",
   },
   similarSongArt: {
     width: "8vw",
     height: "8vw",
-    margin: "auto",
+    marginLeft: "1rem",
     boxShadow: "0px 0px 4px #adadad",
     [theme.breakpoints.down("sm")]: {
       minWidth: 75,
       minHeight: 75,
+    },
+  },
+  similarSongSongText: {
+    [theme.breakpoints.down("sm")]: {
+      fontSize: "1.5rem",
+    },
+  },
+  similarSongArtistText: {
+    fontSize: "1.5rem",
+    [theme.breakpoints.down("sm")]: {
+      fontSize: "1.1rem",
     },
   },
   similarSongScore: {
@@ -191,6 +200,17 @@ const songStyles = makeStyles((theme) => ({
     boxShadow: "0px 0px 4px #adadad",
     minWidth: 75,
     minHeight: 75,
+    [theme.breakpoints.down("sm")]: {
+      minWidth: 60,
+      minHeight: 60,
+    },
+  },
+  similarSongScoreText: {
+    fontSize: "1.5rem",
+    fontWeight: "bold",
+    [theme.breakpoints.down("sm")]: {
+      fontSize: "1.15rem",
+    },
   },
 }));
 export default songStyles;

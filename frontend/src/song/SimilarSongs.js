@@ -9,6 +9,7 @@ import {
   useTheme,
 } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
+import { Link } from "react-router-dom";
 
 const QUERY = gql`
   query getSimilarTracks($getSimilarTracksId: String!) {
@@ -43,11 +44,14 @@ export default function SimilarSongs(props) {
   if (data) {
     formattedData = data.getSimilarTracks;
     processing = false;
-    console.log(formattedData);
   }
 
   if (loading || processing) {
-    return <CircularProgress />;
+    return (
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <CircularProgress />
+      </div>
+    );
   }
 
   if (error) {
@@ -63,7 +67,10 @@ export default function SimilarSongs(props) {
   }
 
   return (
-    <div className={classes.innerContainer} style={{ flexDirection: "column" }}>
+    <div
+      className={classes.innerContainer}
+      style={{ flexDirection: "column", width: "100%" }}
+    >
       {formattedData.map((song) => (
         <div key={song.song.id} className={classes.similarSong}>
           <div
@@ -74,26 +81,49 @@ export default function SimilarSongs(props) {
               justifyContent: "space-between",
             }}
           >
-            <div className={classes.similarSongDetails}>
-              <Avatar
-                src={song.song.art}
-                alt={song.song.name}
-                className={classes.similarSongArt}
-              />
-              <Typography
-                variant="h6"
-                className={classes.albumText}
-                style={{
-                  width: "50%",
-                }}
-              >
-                {song.song.name}
-                <Box style={{ fontWeight: 300 }}>by</Box>
-                {song.song.artist.name}
-              </Typography>
-            </div>
+            <Link
+              to={`/songs/${song.song.id}`}
+              style={{
+                textDecoration: "none",
+                width: "100%",
+              }}
+            >
+              <div className={classes.similarSongDetails}>
+                <Avatar
+                  src={song.song.art}
+                  alt={song.song.name}
+                  className={classes.similarSongArt}
+                />
+                <div style={{ width: "80%" }}>
+                  <Typography
+                    variant="h6"
+                    className={`${classes.albumText} ${classes.similarSongSongText}`}
+                    style={{
+                      textDecoration: "none",
+                      lineHeight: "1.15",
+                      [theme.breakpoints.down("sm")]: {
+                        fontSize: "1.5rem",
+                      },
+                    }}
+                  >
+                    {song.song.name}
+                  </Typography>
+                  <Typography
+                    variant="h6"
+                    className={`${classes.albumText} ${classes.similarSongArtistText}`}
+                  >
+                    <Box style={{ fontWeight: 300 }}>by</Box>
+                    {song.song.artist.name}
+                  </Typography>
+                </div>
+              </div>
+            </Link>
             <div
-              style={{ display: "flex", alignItems: "center", margin: "30px" }}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginRight: "1rem",
+              }}
             >
               <Avatar
                 className={classes.similarSongScore}
@@ -110,7 +140,12 @@ export default function SimilarSongs(props) {
                       : "hsl(351, 100%, 50%)",
                 }}
               >
-                {song.score.toFixed(2)}
+                <Typography
+                  variant="subtitle1"
+                  className={classes.similarSongScoreText}
+                >
+                  {song.score.toFixed(1)}%
+                </Typography>
               </Avatar>
             </div>
           </div>
