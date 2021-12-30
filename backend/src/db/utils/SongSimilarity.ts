@@ -81,6 +81,27 @@ export async function getSimilarSongs(songId, limit) {
       })
     })
     .then((results) => {
+      const filteredResults = results
+        .filter((result) => {
+          return (
+            result.song.name !== sourceSong.name &&
+            result.song.artistId !== sourceSong.artistId
+          )
+        })
+        .filter((result, index, self) => {
+          return (
+            self.findIndex((t) => {
+              return (
+                t.song.name === result.song.name &&
+                t.song.artistId === result.song.artistId
+              )
+            }) === index
+          )
+        })
+      console.log(filteredResults)
+      return filteredResults
+    })
+    .then((results) => {
       return results.slice(0, limit)
     })
     .then((results) => {
