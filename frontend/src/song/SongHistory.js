@@ -1,7 +1,13 @@
 import React from "react";
-import songStyles from "./SongStyles";
 import { gql, useQuery } from "@apollo/client";
-import { CircularProgress } from "@material-ui/core";
+import {
+  Box,
+  CircularProgress,
+  List,
+  ListItem,
+  ListItemText,
+  Typography,
+} from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 
 const QUERY = gql`
@@ -15,7 +21,6 @@ const QUERY = gql`
 
 const SongHistory = (props) => {
   const { songId } = props;
-  const classes = songStyles();
 
   let formattedData;
   let processing = true;
@@ -25,7 +30,7 @@ const SongHistory = (props) => {
   });
 
   if (data) {
-    console.log(data);
+    formattedData = data.getWhenTrackAddedByUsers;
     processing = false;
   }
 
@@ -43,7 +48,31 @@ const SongHistory = (props) => {
 
   return (
     <div>
-      <pre>{JSON.stringify(data, null, 2)}</pre>
+      <List>
+        {formattedData.map((historyEntry, index) => {
+          const dateTime = new Date(historyEntry.addedAt);
+          return (
+            <ListItem key={index} divider>
+              <ListItemText>
+                <Typography variant="subtitle1" style={{ fontSize: "1.3rem" }}>
+                  {index + 1}.{" "}
+                  <Box display="inline" style={{ fontWeight: "bold" }}>
+                    {historyEntry.addedBy}
+                  </Box>{" "}
+                  added this song on{" "}
+                  <Box display="inline" style={{ fontWeight: "bold" }}>
+                    {dateTime.toLocaleDateString()}
+                  </Box>{" "}
+                  at{" "}
+                  <Box display="inline" style={{ fontWeight: "bold" }}>
+                    {dateTime.toLocaleTimeString()}
+                  </Box>
+                </Typography>
+              </ListItemText>
+            </ListItem>
+          );
+        })}
+      </List>
     </div>
   );
 };

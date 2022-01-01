@@ -36,7 +36,11 @@ const SongChars = (props) => {
   }
 
   if (loading || processing) {
-    return <CircularProgress />;
+    return (
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <CircularProgress />
+      </div>
+    );
   }
 
   if (error) {

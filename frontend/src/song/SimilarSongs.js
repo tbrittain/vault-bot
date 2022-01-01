@@ -112,8 +112,7 @@ export default function SimilarSongs(props) {
                     variant="h6"
                     className={`${classes.albumText} ${classes.similarSongArtistText}`}
                   >
-                    <Box style={{ fontWeight: 300 }}>by</Box>
-                    {song.song.artist.name}
+                    by {song.song.artist.name}
                   </Typography>
                 </div>
               </div>
