@@ -11,10 +11,6 @@ export interface FindTracksLikeArgs {
   searchQuery: string
 }
 
-export interface GetArchiveTracksArgs {
-  startDate?: string
-  endDate?: string
-}
 
 export interface SongDetails {
   length: string

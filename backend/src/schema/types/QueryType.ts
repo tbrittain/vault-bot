@@ -17,10 +17,10 @@ export default gql`
     getTrack(id: String!): Song!
     getTracks: [Song!]!
     getSimilarTracks(id: String!, limit: Int): [SimilarSong]!
-    getArchiveTracks(startDate: String, endDate: String): [Song!]!
     getAvgTrackDetails: SongDetails!
     getTracksFromAlbum(album: String!, artistId: String!): [Song!]!
     findTracksLike(searchQuery: String!): [Song!]!
+    getWhenTrackAddedByUsers(id: String!): [Song!]!
 
     # Hist data
     getHistGenres(startDate: String!, endDate: String): [HistGenre!]

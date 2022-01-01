@@ -1,10 +1,8 @@
 import Song from '../../db/models/Song.model'
-import ArchiveSong from '../../db/models/ArchiveSong.model'
 import Artist from '../../db/models/Artist.model'
 import { Op, Sequelize } from 'sequelize'
 import {
   FindTracksLikeArgs,
-  GetArchiveTracksArgs,
   GetSimilarTracksArgs,
   GetTrackArgs,
   GetTracksFromAlbumArgs,
@@ -56,89 +54,6 @@ export default {
       }).catch((err) => console.error(err))
       result = JSON.parse(JSON.stringify(result))
       return result
-    },
-    async getArchiveTracks(_parent, args: GetArchiveTracksArgs) {
-      let startDate: Date, endDate: Date
-
-      // argument validation
-      if (args.startDate) {
-        startDate = new Date(args.startDate)
-        if (!(startDate instanceof Date && !isNaN(startDate.getTime()))) {
-          throw new SyntaxError('Invalid startDate')
-        }
-      }
-      if (args.endDate) {
-        endDate = new Date(args.endDate)
-        if (!(endDate instanceof Date && !isNaN(endDate.getTime()))) {
-          throw new SyntaxError('Invalid endDate')
-        }
-      }
-
-      if (startDate > endDate) {
-        throw new SyntaxError('startDate must be earlier in time than endDate')
-      }
-
-      // construct condition based on dates provided
-      let condition: {
-        addedAt:
-          | { [Op.between]: string[] }
-          | { [Op.gte]: string }
-          | { [Op.lte]: string }
-      }
-      if (startDate && endDate) {
-        condition = {
-          addedAt: {
-            [Op.between]: [startDate.toISOString(), endDate.toISOString()]
-          }
-        }
-      } else if (startDate && !endDate) {
-        condition = {
-          addedAt: {
-            [Op.gte]: startDate.toISOString()
-          }
-        }
-      } else if (!startDate && endDate) {
-        condition = {
-          addedAt: {
-            [Op.lte]: endDate.toISOString()
-          }
-        }
-      }
-
-      let result: void | ArchiveSong[]
-      if (condition) {
-        result = await ArchiveSong.findAll({
-          where: condition,
-          include: [
-            {
-              model: Song
-            }
-          ]
-        }).catch((err) => console.error(err))
-      } else {
-        result = await ArchiveSong.findAll({
-          include: [
-            {
-              model: Song
-            }
-          ]
-        })
-      }
-      let songs = JSON.parse(JSON.stringify(result))
-
-      songs = songs.map((song) => {
-        return {
-          id: song.song.id,
-          artistId: song.song.artistId,
-          name: song.song.name,
-          album: song.song.album,
-          art: song.song.art,
-          previewUrl: song.song.previewUrl,
-          addedBy: song.addedBy,
-          addedAt: song.addedAt
-        }
-      })
-      return songs
     },
     async getAvgTrackDetails() {
       let result = await Song.findAll({
