@@ -45,8 +45,7 @@ export default {
       return result
     },
     async findTracksLike(_parent, args: FindTracksLikeArgs) {
-      let { searchQuery } = args
-      searchQuery = escape(searchQuery)
+      const { searchQuery } = args
       let result = await Song.findAll({
         limit: 25,
         where: {
@@ -127,9 +126,6 @@ export default {
       }
       let songs = JSON.parse(JSON.stringify(result))
 
-      // TODO: can filter songs by characteristics here
-      // TODO: may also want to consider filtering by genre?
-      // TODO: could also resolve SongDetails with the info retrieved here
       songs = songs.map((song) => {
         return {
           id: song.song.id,

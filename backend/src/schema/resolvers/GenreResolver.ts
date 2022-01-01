@@ -39,9 +39,7 @@ export default {
       if (artists.length > 0) {
         return artists
       } else {
-        throw new SyntaxError(
-          `No artists found matching provided genre: ${escape(genreName)}`
-        )
+        throw new SyntaxError('No artists found matching provided genre')
       }
     },
     async findGenresLike(_parent, args: FindGenresLikeArgs) {

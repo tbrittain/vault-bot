@@ -3,13 +3,14 @@ import Song from '../../db/models/Song.model'
 import Artist from '../../db/models/Artist.model'
 import { Op } from 'sequelize'
 import {
-  GetArtistsArgs,
-  FindArtistsLikeArgs,
-  ArtistSongsParent,
   ArtistGenresParent,
-  ArtistWikiBioParent
+  ArtistSongsParent,
+  ArtistWikiBioParent,
+  FindArtistsLikeArgs,
+  GetArtistsArgs
 } from './interfaces/Artists'
 import removeAccents from '../../utils/RemoveAccents'
+
 const axios = require('axios').default
 
 export default {
@@ -66,8 +67,7 @@ export default {
       return result
     },
     async findArtistsLike(_parent, args: FindArtistsLikeArgs) {
-      let { searchQuery } = args
-      searchQuery = escape(searchQuery)
+      const { searchQuery } = args
       let result = await Artist.findAll({
         limit: 25,
         where: {

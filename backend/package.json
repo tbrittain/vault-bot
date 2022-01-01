@@ -18,7 +18,6 @@
     "apollo-server-express": "^3.5.0",
     "axios": "^0.24.0",
     "cors": "^2.8.5",
-    "escape-html": "^1.0.3",
     "express": "^4.17.1",
     "graphql": "^16.2.0",
     "graphql-validation-complexity": "^0.4.2",
