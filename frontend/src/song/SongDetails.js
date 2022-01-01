@@ -140,7 +140,7 @@ const SongDetails = (props) => {
                       }
                       alt={props.album + " album art"}
                       src={props.art}
-                      variant="circle"
+                      variant="circular"
                     />
                   </div>
                 </div>
@@ -151,7 +151,7 @@ const SongDetails = (props) => {
                   className={classes.albumArt}
                   alt={props.album + " album art"}
                   src={props.art}
-                  variant="circle"
+                  variant="circular"
                 />
               )}
             </div>

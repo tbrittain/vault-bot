@@ -65,6 +65,9 @@ const songStyles = makeStyles((theme) => ({
     textDecoration: "none",
     color: theme.palette.secondary.main,
     transition: "0.3s",
+    lineHeight: 1,
+    fontWeight: 800,
+    marginTop: "1rem",
     "&:hover": {
       color: theme.palette.primary.main,
     },
