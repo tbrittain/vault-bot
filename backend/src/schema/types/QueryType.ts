@@ -20,7 +20,7 @@ export default gql`
     getAvgTrackDetails: SongDetails!
     getTracksFromAlbum(album: String!, artistId: String!): [Song!]!
     findTracksLike(searchQuery: String!): [Song!]!
-    getWhenTrackAddedByUsers(id: String!): [Song!]!
+    getWhenTrackAddedByUsers(id: String!): [SongHistory!]!
 
     # Hist data
     getHistGenres(startDate: String!, endDate: String): [HistGenre!]

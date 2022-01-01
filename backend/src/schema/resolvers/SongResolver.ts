@@ -10,6 +10,7 @@ import {
   SongDetails
 } from './interfaces/Songs'
 import { getSimilarSongs } from '../../db/utils/SongSimilarity'
+import ArchiveSong from '../../db/models/ArchiveSong.model'
 
 export default {
   Query: {
@@ -86,6 +87,16 @@ export default {
       }
 
       return await getSimilarSongs(id, limit)
+    },
+    async getWhenTrackAddedByUsers(_parent, args: GetTrackArgs) {
+      let { id } = args
+      return await ArchiveSong.findAll({
+        where: {
+          songId: id
+        }
+      })
+        .then((res) => JSON.parse(JSON.stringify(res)))
+        .catch((err) => console.error(err))
     }
   },
   Song: {
@@ -112,6 +123,16 @@ export default {
 
       result = JSON.parse(JSON.stringify(result))
       return result
+    },
+    async history(parent: GetTrackArgs) {
+      const { id } = parent
+      return await ArchiveSong.findAll({
+        where: {
+          songId: id
+        }
+      })
+        .then((res) => JSON.parse(JSON.stringify(res)))
+        .catch((err) => console.error(err))
     }
   }
 }
