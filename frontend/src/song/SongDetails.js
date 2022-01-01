@@ -20,6 +20,7 @@ import SongChars from "./SongCharacteristics";
 import songStyles from "./SongStyles";
 import TabPanel from "../tabpanel/TabPanel";
 import SimilarSongs from "./SimilarSongs";
+import SongHistory from "./SongHistory";
 
 const SongDetails = (props) => {
   const classes = songStyles();
@@ -72,6 +73,7 @@ const SongDetails = (props) => {
           <Tab label="Details" />
           <Tab label="Characteristics" />
           <Tab label="Similar Songs" />
+          <Tab label="History" />
         </Tabs>
       </AppBar>
       <SwipeableViews
@@ -210,6 +212,9 @@ const SongDetails = (props) => {
         </TabPanel>
         <TabPanel value={value} index={2}>
           <SimilarSongs songId={props.id} />
+        </TabPanel>
+        <TabPanel value={value} index={3}>
+          <SongHistory songId={props.id} />
         </TabPanel>
       </SwipeableViews>
     </Paper>
