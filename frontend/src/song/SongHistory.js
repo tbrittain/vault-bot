@@ -49,10 +49,11 @@ const SongHistory = (props) => {
   return (
     <div>
       <List>
-        {formattedData.map((historyEntry, index) => {
+        {formattedData.map((historyEntry, index, array) => {
           const dateTime = new Date(historyEntry.addedAt);
+          const finalItem = index === array.length - 1;
           return (
-            <ListItem key={index} divider>
+            <ListItem key={index} divider={!finalItem}>
               <ListItemText>
                 <Typography variant="subtitle1" style={{ fontSize: "1.3rem" }}>
                   {index + 1}.{" "}
