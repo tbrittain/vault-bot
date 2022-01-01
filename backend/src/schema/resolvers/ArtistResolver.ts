@@ -9,7 +9,6 @@ import {
   FindArtistsLikeArgs,
   GetArtistsArgs
 } from './interfaces/Artists'
-import removeAccents from '../../utils/RemoveAccents'
 
 const axios = require('axios').default
 
@@ -141,16 +140,16 @@ export default {
         'multi-instrumentalist'
       ]
 
-      // remove accented characters, which leads to error code 400 in wikipedia request
-      let artistNameNoSymbols = removeAccents(originalArtistName)
-      artistNameNoSymbols = artistNameNoSymbols.replace('.', '')
-      artistNameNoSymbols = artistNameNoSymbols.replace('&', '')
+      // URL-friendly version of the artist name
+      const encodedArtistName = encodeURIComponent(
+        originalArtistName.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      )
 
       let articles = await axios
-        .get(`${FIND_WIKI_ARTICLE_URL}'${artistNameNoSymbols}'`, {
+        .get(`${FIND_WIKI_ARTICLE_URL}'${encodedArtistName}'`, {
           headers: {
             'User-Agent':
-              'VaultBot GraphQL Backend/2.0.0 +https://vaultbot.tbrittain.com/'
+              'VaultBot GraphQL Backend/2.1.0 +https://vaultbot.tbrittain.com/'
           }
         })
         .then((res) => res.data.query.pages)
@@ -181,7 +180,7 @@ export default {
           const lowerCaseTitle = String(result.title).toLowerCase()
           if (
             lowerCaseTitle.includes(
-              `${artistNameNoSymbols.toLowerCase()} (${keyword})`
+              `${originalArtistName.toLowerCase()} (${keyword})`
             )
           ) {
             articleFound = true
@@ -206,7 +205,7 @@ export default {
           .get(`${WIKI_ARTICLE_CONTENT_URL}${artistArticleId}`, {
             headers: {
               'User-Agent':
-                'VaultBot GraphQL Backend/2.0.0 +https://vaultbot.tbrittain.com/'
+                'VaultBot GraphQL Backend/2.1.0 +https://vaultbot.tbrittain.com/'
             }
           })
           .then((res) => res.data.query.pages)
@@ -222,15 +221,16 @@ export default {
       } else {
         /*
         Parse through the articles from existing results for keywords
-        Generally the top result is going to be the artist if the artist
-        is popular enough to not have a keyword in the page title
+        Generally the top result (the lowest index article) is going
+        to be the artist if the artist is popular enough to not have
+        a keyword in the page title
         */
-        for (const result of articles) {
+        for (const article of articles) {
           const articleContent = await axios
-            .get(`${WIKI_ARTICLE_CONTENT_URL}${result.pageid}`, {
+            .get(`${WIKI_ARTICLE_CONTENT_URL}${article.pageid}`, {
               headers: {
                 'User-Agent':
-                  'VaultBot GraphQL Backend/2.0.0 +https://vaultbot.tbrittain.com/'
+                  'VaultBot GraphQL Backend/2.1.0 +https://vaultbot.tbrittain.com/'
               }
             })
             .then((res) => res.data.query.pages)
@@ -238,7 +238,7 @@ export default {
             .catch((err) => console.error(err))
 
           let rawArticle = String(articleContent.extract).toLowerCase()
-          rawArticle = rawArticle.replace(/[^a-zA-Z0-9_ -]/g, '')
+          rawArticle = rawArticle.replace(/[^a-zA-Z0-9À-ÿ_ -]/g, '')
 
           const lowerCaseArtist = String(originalArtistName).toLowerCase()
 
@@ -248,7 +248,9 @@ export default {
               rawArticle.includes(` ${lowerCaseArtist} `) ||
               rawArticle.includes(`${lowerCaseArtist} `)
             if (articleIncludesKeyword && articleIncludesArtistName) {
-              // issues when artist name is their real name (but not full name)
+              // Known issue when artist name is their real name (but not full name)
+              // https://github.com/tbrittain/vault-bot/issues/24
+
               artistPageName = articleContent.title.replace(' ', '_')
               const articleLink = `https://en.wikipedia.org/wiki/${artistPageName}`
               return {
