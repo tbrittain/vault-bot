@@ -1,30 +1,21 @@
-import React from 'react'
-import {
-  Paper,
-  Typography
-} from '@material-ui/core'
-import ReactMarkdown from 'react-markdown'
-import changeLogStyles from './ChangelogStyles'
+import React from "react";
+import { Typography } from "@material-ui/core";
+import ReactMarkdown from "react-markdown";
+import changeLogStyles from "./ChangelogStyles";
 
 const Post = (props) => {
-  const classes = changeLogStyles()
-  const { content, date } = props
-  const formattedDate = new Date(date)
+  const classes = changeLogStyles();
+  const { content, date } = props;
+  const formattedDate = new Date(date);
 
   return (
-    <Paper
-      className={classes.post}
-      elevation={1}
-      square={false}
-    >
+    <div className={classes.post}>
       <ReactMarkdown>{content}</ReactMarkdown>
-      <Typography
-        variant='subtitle1'
-      >
+      <Typography variant="subtitle1">
         <i>Updated on {formattedDate.toLocaleDateString()}</i>
       </Typography>
-    </Paper>
-  )
-}
+    </div>
+  );
+};
 
-export default Post
+export default Post;

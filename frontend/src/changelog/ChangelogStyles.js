@@ -1,14 +1,14 @@
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from "@material-ui/core/styles";
 
-const changeLogStyles = makeStyles((theme) => ({
+const changeLogStyles = makeStyles(() => ({
   changeLogContainer: {
-    maxHeight: '80vh',
-    overflow: 'auto'
+    maxHeight: "80vh",
+    overflow: "auto",
   },
   post: {
-    margin: '5%',
-    padding: '2%'
-  }
-}))
+    margin: "2%",
+    padding: "2%",
+  },
+}));
 
-export default changeLogStyles
+export default changeLogStyles;
