@@ -1,5 +1,5 @@
 import React from "react";
-import { Avatar, Paper, Typography } from "@material-ui/core";
+import { Avatar, Typography } from "@material-ui/core";
 import ArtistAlbumSongs from "./ArtistAlbumSongs";
 import artistStyles from "./ArtistStyles";
 
@@ -31,16 +31,10 @@ const ArtistAlbum = (props) => {
             variant="square"
             className={classes.albumArt}
           />
-          <Paper
-            elevation={3}
-            style={{
-              width: "100%",
-            }}
-          >
-            <Typography variant="subtitle1" className={classes.albumText}>
-              {name}
-            </Typography>
-          </Paper>
+
+          <Typography variant="subtitle1" className={classes.albumText}>
+            {name}
+          </Typography>
         </div>
         <ArtistAlbumSongs songs={songs} />
       </div>

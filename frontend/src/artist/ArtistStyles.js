@@ -66,7 +66,7 @@ const artistStyles = makeStyles((theme) => ({
     textAlign: "center",
     display: "flex",
     flexDirection: "column",
-    margin: "auto",
+    width: "min-content",
     [theme.breakpoints.down("sm")]: {
       paddingLeft: 0,
     },
@@ -80,7 +80,6 @@ const artistStyles = makeStyles((theme) => ({
   albumArt: {
     width: "12vw",
     height: "12vw",
-    margin: "auto",
     boxShadow: "0px 0px 4px #adadad",
     minHeight: 75,
     minWidth: 75,
