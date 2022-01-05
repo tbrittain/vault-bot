@@ -1,16 +1,16 @@
 import {
-  Table,
+  BelongsTo,
   Column,
+  ForeignKey,
   Model,
   PrimaryKey,
-  BelongsTo,
-  ForeignKey
+  Table
 } from 'sequelize-typescript'
 import Artist from './Artist.model'
-import { TableOptions } from './interfaces/TableOptions'
+import { ITableOptions } from './interfaces/ITableOptions'
 import Song from './Song.model'
 
-const ArchiveSongOptions: TableOptions = {
+const ArchiveSongOptions: ITableOptions = {
   tableName: 'archive',
   timestamps: false,
   underscored: true

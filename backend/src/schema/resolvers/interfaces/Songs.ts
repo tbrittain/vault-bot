@@ -1,18 +1,17 @@
-export interface GetTrackArgs {
+export interface IGetTrackArgs {
   id: string
 }
 
-export interface GetTracksFromAlbumArgs {
+export interface IGetTracksFromAlbumArgs {
   album: string
   artistId: string
 }
 
-export interface FindTracksLikeArgs {
+export interface IFindTracksLikeArgs {
   searchQuery: string
 }
 
-
-export interface SongDetails {
+export interface ISongDetails {
   length: string
   tempo: string
   danceability: string
@@ -24,11 +23,11 @@ export interface SongDetails {
   valence: string
 }
 
-export interface SongArtist {
+export interface ISongArtist {
   artistId: string
 }
 
-export interface GetSimilarTracksArgs {
+export interface IGetSimilarTracksArgs {
   id: string
   limit?: number
 }

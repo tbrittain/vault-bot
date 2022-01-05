@@ -1,7 +1,7 @@
-import { Table, Column, Model, PrimaryKey } from 'sequelize-typescript'
-import { TableOptions } from './interfaces/TableOptions'
+import { Column, Model, PrimaryKey, Table } from 'sequelize-typescript'
+import { ITableOptions } from './interfaces/ITableOptions'
 
-const HistGenreOptions: TableOptions = {
+const HistGenreOptions: ITableOptions = {
   tableName: 'historical_genres',
   timestamps: false,
   underscored: true

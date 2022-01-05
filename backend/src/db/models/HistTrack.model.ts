@@ -1,7 +1,7 @@
-import { Table, Column, Model, PrimaryKey } from 'sequelize-typescript'
-import { TableOptions } from './interfaces/TableOptions'
+import { Column, Model, PrimaryKey, Table } from 'sequelize-typescript'
+import { ITableOptions } from './interfaces/ITableOptions'
 
-const HistTrackOptions: TableOptions = {
+const HistTrackOptions: ITableOptions = {
   tableName: 'historical_tracking',
   timestamps: false,
   underscored: true

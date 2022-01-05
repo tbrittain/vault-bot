@@ -3,18 +3,18 @@ import Song from '../../db/models/Song.model'
 import Artist from '../../db/models/Artist.model'
 import { Op } from 'sequelize'
 import {
-  ArtistGenresParent,
-  ArtistSongsParent,
-  ArtistWikiBioParent,
-  FindArtistsLikeArgs,
-  GetArtistsArgs
+  IArtistGenresParent,
+  IArtistInfo,
+  IArtistSongsParent,
+  IArtistWikiBioParent,
+  IFindArtistsLikeArgs
 } from './interfaces/Artists'
 
 const axios = require('axios').default
 
 export default {
   Query: {
-    async getArtist(_parent, args: GetArtistsArgs) {
+    async getArtist(_parent, args: IArtistInfo) {
       if (!args.id && !args.name) {
         throw new SyntaxError(
           'Either an artist ID or artist name must be provided'
@@ -65,7 +65,7 @@ export default {
       result = JSON.parse(JSON.stringify(result))
       return result
     },
-    async findArtistsLike(_parent, args: FindArtistsLikeArgs) {
+    async findArtistsLike(_parent, args: IFindArtistsLikeArgs) {
       const { searchQuery } = args
       let result = await Artist.findAll({
         limit: 25,
@@ -80,7 +80,7 @@ export default {
     }
   },
   Artist: {
-    async songs(parent: ArtistSongsParent) {
+    async songs(parent: IArtistSongsParent) {
       const artistId = parent.id
 
       let result = await Song.findAll({
@@ -97,7 +97,7 @@ export default {
       result = JSON.parse(JSON.stringify(result))
       return result
     },
-    async genres(parent: ArtistGenresParent) {
+    async genres(parent: IArtistGenresParent) {
       const artistId = parent.id
 
       let result = await ArtistGenre.findAll({
@@ -110,7 +110,7 @@ export default {
       result = JSON.parse(JSON.stringify(result))
       return result
     },
-    async wikiBio(parent: ArtistWikiBioParent) {
+    async wikiBio(parent: IArtistWikiBioParent) {
       const originalArtistName = String(parent.name)
       const FIND_WIKI_ARTICLE_URL =
         'https://en.wikipedia.org/w/api.php?action=query&origin=*&format=json&generator=search&gsrnamespace=0&gsrlimit=10&gsrsearch='

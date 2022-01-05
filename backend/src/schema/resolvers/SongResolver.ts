@@ -2,19 +2,19 @@ import Song from '../../db/models/Song.model'
 import Artist from '../../db/models/Artist.model'
 import { Op, Sequelize } from 'sequelize'
 import {
-  FindTracksLikeArgs,
-  GetSimilarTracksArgs,
-  GetTrackArgs,
-  GetTracksFromAlbumArgs,
-  SongArtist,
-  SongDetails
+  IFindTracksLikeArgs,
+  IGetSimilarTracksArgs,
+  IGetTrackArgs,
+  IGetTracksFromAlbumArgs,
+  ISongArtist,
+  ISongDetails
 } from './interfaces/Songs'
 import { getSimilarSongs } from '../../db/utils/SongSimilarity'
 import ArchiveSong from '../../db/models/ArchiveSong.model'
 
 export default {
   Query: {
-    async getTrack(_parent, args: GetTrackArgs) {
+    async getTrack(_parent, args: IGetTrackArgs) {
       const { id } = args
       let result = await Song.findAll({
         where: {
@@ -32,7 +32,7 @@ export default {
       result = JSON.parse(JSON.stringify(result))
       return result
     },
-    async getTracksFromAlbum(_parent, args: GetTracksFromAlbumArgs) {
+    async getTracksFromAlbum(_parent, args: IGetTracksFromAlbumArgs) {
       const { album, artistId } = args
       let result = await Song.findAll({
         where: {
@@ -43,7 +43,7 @@ export default {
       result = JSON.parse(JSON.stringify(result))
       return result
     },
-    async findTracksLike(_parent, args: FindTracksLikeArgs) {
+    async findTracksLike(_parent, args: IFindTracksLikeArgs) {
       const { searchQuery } = args
       let result = await Song.findAll({
         limit: 25,
@@ -76,7 +76,7 @@ export default {
       result = JSON.parse(JSON.stringify(result))[0]
       return result
     },
-    async getSimilarTracks(_parent, args: GetSimilarTracksArgs) {
+    async getSimilarTracks(_parent, args: IGetSimilarTracksArgs) {
       let { id, limit } = args
       if (typeof limit !== 'number') {
         limit = 10
@@ -88,7 +88,7 @@ export default {
 
       return await getSimilarSongs(id, limit)
     },
-    async getWhenTrackAddedByUsers(_parent, args: GetTrackArgs) {
+    async getWhenTrackAddedByUsers(_parent, args: IGetTrackArgs) {
       let { id } = args
       return await ArchiveSong.findAll({
         where: {
@@ -100,7 +100,7 @@ export default {
     }
   },
   Song: {
-    async details(parent: SongDetails) {
+    async details(parent: ISongDetails) {
       return {
         length: parent.length,
         tempo: parent.tempo,
@@ -113,7 +113,7 @@ export default {
         valence: parent.valence
       }
     },
-    async artist(parent: SongArtist) {
+    async artist(parent: ISongArtist) {
       const { artistId } = parent
       let result = await Artist.findOne({
         where: {
@@ -124,7 +124,7 @@ export default {
       result = JSON.parse(JSON.stringify(result))
       return result
     },
-    async history(parent: GetTrackArgs) {
+    async history(parent: IGetTrackArgs) {
       const { id } = parent
       return await ArchiveSong.findAll({
         where: {
