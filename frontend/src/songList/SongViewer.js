@@ -12,11 +12,14 @@ import SearchIcon from "@material-ui/icons/Search";
 import songListStyles from "./SongListStyles";
 import SongSearchContainer from "./SongSearchContainer";
 import SongList from "./SongList";
+import useDebounce from "../hooks/useDebounce";
 
 const SongViewer = (props) => {
   const classes = songListStyles();
   const { trackSelection, setTrackSelection } = props;
   const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 250);
+
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleChange = (event) => {
@@ -74,8 +77,8 @@ const SongViewer = (props) => {
                 {({ TransitionProps }) => (
                   <Fade {...TransitionProps} timeout={350}>
                     <Paper elevation={0}>
-                      {search.length >= minSearchLength && (
-                        <SongSearchContainer searchQuery={search} />
+                      {debouncedSearch.length >= minSearchLength && (
+                        <SongSearchContainer searchQuery={debouncedSearch} />
                       )}
                     </Paper>
                   </Fade>

@@ -1,44 +1,43 @@
-import React, { useState } from 'react'
+import React, { useState } from "react";
 import {
-  Paper,
   AppBar,
-  Toolbar,
-  InputBase,
-  Popper,
+  ClickAwayListener,
   Fade,
-  ClickAwayListener
-} from '@material-ui/core'
-import SearchIcon from '@material-ui/icons/Search'
-import artistListStyles from './ArtistListStyles'
-import ArtistSearchContainer from './ArtistSearchContainer'
-import ArtistList from './ArtistList'
+  InputBase,
+  Paper,
+  Popper,
+  Toolbar,
+} from "@material-ui/core";
+import SearchIcon from "@material-ui/icons/Search";
+import artistListStyles from "./ArtistListStyles";
+import ArtistSearchContainer from "./ArtistSearchContainer";
+import ArtistList from "./ArtistList";
+import useDebounce from "../hooks/useDebounce";
 
 const ArtistViewer = () => {
-  const classes = artistListStyles()
-  const [search, setSearch] = useState('')
-  const [anchorEl, setAnchorEl] = useState(null)
+  const classes = artistListStyles();
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 250);
+
+  const [anchorEl, setAnchorEl] = useState(null);
 
   const handleChange = (event) => {
-    setSearch(event.target.value)
-    setAnchorEl(event.currentTarget)
-  }
+    setSearch(event.target.value);
+    setAnchorEl(event.currentTarget);
+  };
 
-  const handleClickAway = (event) => {
-    setAnchorEl(null)
-    setSearch('')
-  }
+  const handleClickAway = () => {
+    setAnchorEl(null);
+    setSearch("");
+  };
 
-  const minSearchLength = 3
-  const open = Boolean(anchorEl && search.length >= minSearchLength)
+  const minSearchLength = 3;
+  const open = Boolean(anchorEl && search.length >= minSearchLength);
 
   // FIXME
   return (
-    <Paper
-      elevation={3}
-    >
-      <AppBar
-        position='static'
-      >
+    <Paper elevation={3}>
+      <AppBar position="static">
         <Toolbar>
           <div className={classes.search}>
             <div className={classes.searchIcon}>
@@ -46,26 +45,26 @@ const ArtistViewer = () => {
             </div>
             <InputBase
               InputLabelProps={{ shrink: true }}
-              placeholder='Search for an artist...'
+              placeholder="Search for an artist..."
               classes={{
                 root: classes.inputRoot,
-                input: classes.inputInput
+                input: classes.inputInput,
               }}
               value={search}
               onChange={handleChange}
             />
             <ClickAwayListener onClickAway={handleClickAway}>
               <Popper
-                placement='bottom-start'
+                placement="bottom-start"
                 disablePortal={false}
                 modifiers={{
                   flip: {
-                    enabled: true
+                    enabled: true,
                   },
                   preventOverflow: {
                     enabled: true,
-                    boundariesElement: 'scrollParent'
-                  }
+                    boundariesElement: "scrollParent",
+                  },
                 }}
                 open={open}
                 anchorEl={anchorEl}
@@ -76,13 +75,12 @@ const ArtistViewer = () => {
                     <Paper
                       elevation={0}
                       style={{
-                        background: 'none'
+                        background: "none",
                       }}
                     >
-                      {search.length >= minSearchLength &&
-                        <ArtistSearchContainer
-                          searchQuery={search}
-                        />}
+                      {debouncedSearch.length >= minSearchLength && (
+                        <ArtistSearchContainer searchQuery={debouncedSearch} />
+                      )}
                     </Paper>
                   </Fade>
                 )}
@@ -93,7 +91,7 @@ const ArtistViewer = () => {
       </AppBar>
       <ArtistList />
     </Paper>
-  )
-}
+  );
+};
 
-export default ArtistViewer
+export default ArtistViewer;

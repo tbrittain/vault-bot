@@ -12,10 +12,13 @@ import SearchIcon from '@material-ui/icons/Search'
 import genreListStyles from './GenreListStyles'
 import GenreSearchContainer from './GenreSearchContainer'
 import GenreList from './GenreList'
+import useDebounce from "../hooks/useDebounce";
 
 const GenreViewer = () => {
   const classes = genreListStyles()
   const [search, setSearch] = useState('')
+  const debouncedSearch = useDebounce(search, 250);
+
   const [anchorEl, setAnchorEl] = useState(null)
 
   const handleChange = (event) => {
@@ -23,7 +26,7 @@ const GenreViewer = () => {
     setAnchorEl(event.currentTarget)
   }
 
-  const handleClickAway = (event) => {
+  const handleClickAway = () => {
     setAnchorEl(null)
     setSearch('')
   }
@@ -78,9 +81,9 @@ const GenreViewer = () => {
                         background: 'none'
                       }}
                     >
-                      {search.length >= minSearchLength &&
+                      {debouncedSearch.length >= minSearchLength &&
                         <GenreSearchContainer
-                          searchQuery={search}
+                          searchQuery={debouncedSearch}
                         />}
                     </Paper>
                   </Fade>
