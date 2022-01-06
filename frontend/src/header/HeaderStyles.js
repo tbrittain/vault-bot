@@ -1,4 +1,4 @@
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@mui/material";
 
 const headerStyles = makeStyles((theme) => ({
   header: {

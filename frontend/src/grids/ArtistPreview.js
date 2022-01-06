@@ -1,9 +1,8 @@
 import React from "react";
-import { Avatar, Fade, Paper, Tooltip } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import gridStyles from "./GridStyles";
-import { makeStyles } from "@material-ui/core/styles";
+import { Avatar, Fade, makeStyles, Paper, Tooltip } from "@mui/material";
 import "react-lazy-load-image-component/src/effects/opacity.css";
 
 const darkTooltipTheme = makeStyles((theme) => ({
@@ -17,7 +16,12 @@ const darkTooltipTheme = makeStyles((theme) => ({
 const DarkTooltip = (props) => {
   const classes = darkTooltipTheme();
 
-  return <Tooltip classes={classes} {...props} />;
+  // FIXME: https://mui.com/customization/how-to-customize/
+  return (
+    <Tooltip classes={classes} {...props}>
+      {children}
+    </Tooltip>
+  );
 };
 
 const ArtistPreview = (props) => {

@@ -1,8 +1,8 @@
 import React from "react";
 import songStyles from "./SongStyles";
-import { Avatar, Paper, Typography } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import GenreGrid from "../grids/GenreGrid";
+import { Avatar, Paper, Typography } from "@mui/material";
 
 const SongArtist = (props) => {
   const classes = songStyles();

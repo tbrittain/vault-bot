@@ -1,10 +1,9 @@
 import React from "react";
-import { CircularProgress, Grid, Typography } from "@material-ui/core";
 import homeStyles from "./HomeStyles";
 import { gql, useQuery } from "@apollo/client";
-import { Alert } from "@material-ui/lab";
 import CountUpAnimation from "../effects/CountUpAnimation";
 import "./textAnimate.css";
+import { Alert, CircularProgress, Grid, Typography } from "@mui/material";
 
 const QUERY = gql`
   query {

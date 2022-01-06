@@ -1,7 +1,7 @@
 import React from "react";
-import { Card, Typography } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import artistStyles from "./ArtistStyles";
+import { Card, Typography } from "@mui/material";
 
 const ArtistAlbumSong = (props) => {
   const classes = artistStyles();

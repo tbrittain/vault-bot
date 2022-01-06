@@ -1,16 +1,16 @@
 import React from "react";
 import homeStyles from "./HomeStyles";
+import { gql, useQuery } from "@apollo/client";
+import { Link } from "react-router-dom";
+import GenreGrid from "../grids/GenreGrid";
 import {
+  Alert,
   Avatar,
   CircularProgress,
   Paper,
   Typography,
   useTheme,
-} from "@material-ui/core";
-import { gql, useQuery } from "@apollo/client";
-import { Alert } from "@material-ui/lab";
-import { Link } from "react-router-dom";
-import GenreGrid from "../grids/GenreGrid";
+} from "@mui/material";
 
 const QUERY = gql`
   query {

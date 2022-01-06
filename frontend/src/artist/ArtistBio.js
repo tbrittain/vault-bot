@@ -1,13 +1,13 @@
 import React from "react";
+import artistStyles from "./ArtistStyles";
+import { gql, useQuery } from "@apollo/client";
 import {
+  Alert,
   CircularProgress,
   Paper,
   Typography,
   useTheme,
-} from "@material-ui/core";
-import artistStyles from "./ArtistStyles";
-import { gql, useQuery } from "@apollo/client";
-import { Alert } from "@material-ui/lab";
+} from "@mui/material";
 
 const QUERY = gql`
   query ($artistId: String!) {

@@ -15,5 +15,3 @@ function ScrollToTop({ history, children }) {
 }
 
 export default withRouter(ScrollToTop);
-
-// https://stackoverflow.com/questions/70193712/how-to-scroll-to-top-on-route-change-with-react-router-dom-v6

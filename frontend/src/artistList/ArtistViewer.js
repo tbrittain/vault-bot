@@ -1,4 +1,9 @@
 import React, { useState } from "react";
+import SearchIcon from "@mui/icons-material/Search";
+import artistListStyles from "./ArtistListStyles";
+import ArtistSearchContainer from "./ArtistSearchContainer";
+import ArtistList from "./ArtistList";
+import useDebounce from "../hooks/useDebounce";
 import {
   AppBar,
   ClickAwayListener,
@@ -7,12 +12,7 @@ import {
   Paper,
   Popper,
   Toolbar,
-} from "@material-ui/core";
-import SearchIcon from "@material-ui/icons/Search";
-import artistListStyles from "./ArtistListStyles";
-import ArtistSearchContainer from "./ArtistSearchContainer";
-import ArtistList from "./ArtistList";
-import useDebounce from "../hooks/useDebounce";
+} from "@mui/material";
 
 const ArtistViewer = () => {
   const classes = artistListStyles();
@@ -34,7 +34,6 @@ const ArtistViewer = () => {
   const minSearchLength = 3;
   const open = Boolean(anchorEl && search.length >= minSearchLength);
 
-  // FIXME
   return (
     <Paper elevation={3}>
       <AppBar position="static">

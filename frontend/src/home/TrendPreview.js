@@ -1,7 +1,5 @@
 import React from "react";
-import { CircularProgress, Typography } from "@material-ui/core";
 import { gql, useQuery } from "@apollo/client";
-import { Alert } from "@material-ui/lab";
 import { Scatter } from "react-chartjs-2";
 import genreToMuiColor from "../utils/genreToMuiColor";
 import "chartjs-adapter-date-fns";
@@ -16,7 +14,7 @@ const QUERY = gql`
   }
 `;
 
-// declare outside of component
+// declare date outside of component
 const oneWeekAgo = new Date();
 oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 

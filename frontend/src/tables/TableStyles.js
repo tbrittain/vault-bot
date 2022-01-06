@@ -1,9 +1,9 @@
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from "@mui/material";
 
-const tableStyles = makeStyles((theme) => ({
+const tableStyles = makeStyles(() => ({
   table: {
-    minWidth: 400
-  }
-}))
+    minWidth: 400,
+  },
+}));
 
-export default tableStyles
+export default tableStyles;

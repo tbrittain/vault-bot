@@ -1,49 +1,35 @@
-import React from 'react'
-import tableStyles from './TableStyles'
+import React from "react";
+import tableStyles from "./TableStyles";
 import {
+  Paper,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
-  Typography
-} from '@material-ui/core'
+  Typography,
+} from "@mui/material";
 
 const SongCharTable = (props) => {
-  const classes = tableStyles()
+  const classes = tableStyles();
   return (
     <TableContainer component={Paper}>
-      <Table
-        className={classes.table}
-        size='small'
-        aria-label='genre table'
-      >
+      <Table className={classes.table} size="small" aria-label="genre table">
         <TableHead>
           <TableRow>
-            {props.headers.map(header => (
-              <TableCell
-                align='center'
-                key={header}
-              >
-                <Typography
-                  variant='h6'
-                >
-                  {header}
-                </Typography>
+            {props.headers.map((header) => (
+              <TableCell align="center" key={header}>
+                <Typography variant="h6">{header}</Typography>
               </TableCell>
             ))}
           </TableRow>
         </TableHead>
         <TableBody>
-          {props.data.map(row => (
+          {props.data.map((row) => (
             <TableRow key={row[0]}>
-              {row.map(cell => (
-                <TableCell
-                  key={cell}
-                  align='center'
-                >
+              {row.map((cell) => (
+                <TableCell key={cell} align="center">
                   {cell}
                 </TableCell>
               ))}
@@ -52,7 +38,7 @@ const SongCharTable = (props) => {
         </TableBody>
       </Table>
     </TableContainer>
-  )
-}
+  );
+};
 
-export default SongCharTable
+export default SongCharTable;

@@ -1,5 +1,14 @@
 import React, { useState } from "react";
 import SwipeableViews from "react-swipeable-views";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import PauseIcon from "@mui/icons-material/Pause";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import AlbumSongs from "./AlbumSongs";
+import SongChars from "./SongCharacteristics";
+import songStyles from "./SongStyles";
+import TabPanel from "../tabpanel/TabPanel";
+import SimilarSongs from "./SimilarSongs";
+import SongHistory from "./SongHistory";
 import {
   AppBar,
   Avatar,
@@ -11,16 +20,7 @@ import {
   Tabs,
   Typography,
   useTheme,
-} from "@material-ui/core";
-import PlayArrowIcon from "@material-ui/icons/PlayArrow";
-import PauseIcon from "@material-ui/icons/Pause";
-import OpenInNewIcon from "@material-ui/icons/OpenInNew";
-import AlbumSongs from "./AlbumSongs";
-import SongChars from "./SongCharacteristics";
-import songStyles from "./SongStyles";
-import TabPanel from "../tabpanel/TabPanel";
-import SimilarSongs from "./SimilarSongs";
-import SongHistory from "./SongHistory";
+} from "@mui/material";
 
 const SongDetails = (props) => {
   const classes = songStyles();

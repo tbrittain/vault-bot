@@ -1,4 +1,9 @@
 import React, { useEffect, useState } from "react";
+import SearchIcon from "@mui/icons-material/Search";
+import songListStyles from "./SongListStyles";
+import SongSearchContainer from "./SongSearchContainer";
+import SongList from "./SongList";
+import useDebounce from "../hooks/useDebounce";
 import {
   AppBar,
   ClickAwayListener,
@@ -7,12 +12,7 @@ import {
   Paper,
   Popper,
   Toolbar,
-} from "@material-ui/core";
-import SearchIcon from "@material-ui/icons/Search";
-import songListStyles from "./SongListStyles";
-import SongSearchContainer from "./SongSearchContainer";
-import SongList from "./SongList";
-import useDebounce from "../hooks/useDebounce";
+} from "@mui/material";
 
 const SongViewer = (props) => {
   const classes = songListStyles();
@@ -36,7 +36,7 @@ const SongViewer = (props) => {
   const open = Boolean(anchorEl && search.length >= minSearchLength);
 
   useEffect(() => {
-    localStorage.setItem("exportStep", 0); // eslint-disable-line
+    localStorage.setItem("exportStep", 0);
   }, []);
 
   return (

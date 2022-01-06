@@ -1,55 +1,52 @@
-import React from 'react'
-import {
-  Typography
-} from '@material-ui/core'
-import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
-import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
-import songStyles from './SongStyles'
-import minTommss from '../utils/minTommss'
-import { withStyles } from '@material-ui/core/styles'
+import React from "react";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import songStyles from "./SongStyles";
+import minTommss from "../utils/minTommss";
+import { Typography, withStyles } from "@mui/material";
 
 const GlobalCss = withStyles({
-  '@global': {
-    '.MuiBox-root': {
-      padding: 0
-    }
-  }
-})(() => null)
+  "@global": {
+    ".MuiBox-root": {
+      padding: 0,
+    },
+  },
+})(() => null);
 
 const CharCompare = (props) => {
-  const classes = songStyles()
-  const name = props.name
-  let stat = props.stat
-  let avgStat = props.avgStat
+  const classes = songStyles();
+  const name = props.name;
+  let stat = props.stat;
+  let avgStat = props.avgStat;
 
-  const statLargerThanAvg = stat > avgStat
-  let difference
+  const statLargerThanAvg = stat > avgStat;
+  let difference;
   if (statLargerThanAvg === true) {
-    difference = `${Math.abs(Math.floor(100 * ((stat / avgStat) - 1)))}%`
+    difference = `${Math.abs(Math.floor(100 * (stat / avgStat - 1)))}%`;
   } else {
-    difference = `${Math.abs(Math.floor(100 * ((avgStat / stat) - 1)))}%`
+    difference = `${Math.abs(Math.floor(100 * (avgStat / stat - 1)))}%`;
   }
 
-  if (name === 'length') {
-    stat = minTommss(stat)
-    avgStat = minTommss(avgStat)
+  if (name === "length") {
+    stat = minTommss(stat);
+    avgStat = minTommss(avgStat);
   } else {
-    avgStat = avgStat.toFixed(3)
+    avgStat = avgStat.toFixed(3);
   }
 
   return (
     <div
       style={{
-        textAlign: 'center',
-        margin: 10
+        textAlign: "center",
+        margin: 10,
       }}
     >
       <GlobalCss />
       <Typography
-        variant='h6'
+        variant="h6"
         style={{
-          textTransform: 'capitalize',
-          fontWeight: 300
+          textTransform: "capitalize",
+          fontWeight: 300,
         }}
       >
         {name}
@@ -57,14 +54,14 @@ const CharCompare = (props) => {
       <div className={classes.songCharsContainer}>
         <div
           style={{
-            gridColumn: '1 2'
+            gridColumn: "1 2",
           }}
         >
           <Typography
-            variant='h5'
+            variant="h5"
             className={classes.songChar}
             style={{
-              textAlign: 'left'
+              textAlign: "left",
             }}
           >
             {stat}
@@ -72,47 +69,45 @@ const CharCompare = (props) => {
         </div>
         <div
           style={{
-            gridColumn: '2 3',
-            margin: 'auto auto',
-            display: 'flex',
-            flexDirection: 'column'
+            gridColumn: "2 3",
+            margin: "auto auto",
+            display: "flex",
+            flexDirection: "column",
           }}
         >
-          {statLargerThanAvg === true &&
+          {statLargerThanAvg === true && (
             <div>
               <ArrowUpwardIcon
                 style={{
-                  color: '#4dd020',
-                  fontSize: 30
+                  color: "#4dd020",
+                  fontSize: 30,
                 }}
               />
-              <Typography variant='body2'>
-                {difference}
-              </Typography>
-            </div>}
-          {statLargerThanAvg === false &&
+              <Typography variant="body2">{difference}</Typography>
+            </div>
+          )}
+          {statLargerThanAvg === false && (
             <div>
               <ArrowDownwardIcon
                 style={{
-                  color: '#d11f1f',
-                  fontSize: 30
+                  color: "#d11f1f",
+                  fontSize: 30,
                 }}
               />
-              <Typography variant='body2'>
-                {difference}
-              </Typography>
-            </div>}
+              <Typography variant="body2">{difference}</Typography>
+            </div>
+          )}
         </div>
         <div
           style={{
-            gridColumn: '3 4'
+            gridColumn: "3 4",
           }}
         >
           <Typography
-            variant='h5'
+            variant="h5"
             className={classes.songChar}
             style={{
-              textAlign: 'right'
+              textAlign: "right",
             }}
           >
             {avgStat}
@@ -120,7 +115,7 @@ const CharCompare = (props) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default CharCompare
+export default CharCompare;

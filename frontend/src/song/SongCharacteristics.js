@@ -1,9 +1,8 @@
 import React from "react";
 import { gql, useQuery } from "@apollo/client";
-import { CircularProgress, Typography } from "@material-ui/core";
-import { Alert } from "@material-ui/lab";
 import CharCompare from "./CharCompare";
 import songStyles from "./SongStyles";
+import { Alert, CircularProgress, Typography } from "@mui/material";
 
 const QUERY = gql`
   query {
@@ -44,7 +43,9 @@ const SongChars = (props) => {
   }
 
   if (error) {
-    <Alert severity="error">An error occurred during data retrieval :(</Alert>;
+    return (
+      <Alert severity="error">An error occurred during data retrieval :(</Alert>
+    );
   }
 
   if (formattedData) {

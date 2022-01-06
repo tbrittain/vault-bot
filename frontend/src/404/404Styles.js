@@ -1,11 +1,11 @@
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from "@mui/material";
 
 const pageNotFoundStyles = makeStyles((theme) => ({
   title: {
     fontWeight: 800,
     color: theme.palette.secondary.main,
-    textAlign: 'center'
-  }
-}))
+    textAlign: "center",
+  },
+}));
 
-export default pageNotFoundStyles
+export default pageNotFoundStyles;

@@ -1,9 +1,9 @@
 import React from "react";
 import { gql, useQuery } from "@apollo/client";
-import { Typography } from "@material-ui/core";
 import { useParams } from "react-router-dom";
 import AlbumSong from "./AlbumSong";
 import songStyles from "./SongStyles";
+import { Typography } from "@mui/material";
 
 const QUERY = gql`
   query ($artistId: String!, $album: String!) {

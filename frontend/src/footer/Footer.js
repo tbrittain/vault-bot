@@ -1,8 +1,8 @@
 import React from "react";
 import Copyright from "./Copyright";
-import { Breadcrumbs } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import footerStyles from "./FooterStyles";
+import { Breadcrumbs } from "@mui/material";
 
 const Footer = () => {
   const classes = footerStyles();

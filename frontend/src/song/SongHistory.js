@@ -1,14 +1,13 @@
 import React from "react";
 import { gql, useQuery } from "@apollo/client";
 import {
+  Alert,
   Box,
   CircularProgress,
-  List,
   ListItem,
   ListItemText,
   Typography,
-} from "@material-ui/core";
-import { Alert } from "@material-ui/lab";
+} from "@mui/material";
 
 const QUERY = gql`
   query getWhenTrackAddedByUsers($getWhenTrackAddedByUsersId: String!) {
@@ -43,7 +42,9 @@ const SongHistory = (props) => {
   }
 
   if (error) {
-    <Alert severity="error">An error occurred during data retrieval :(</Alert>;
+    return (
+      <Alert severity="error">An error occurred during data retrieval :(</Alert>
+    );
   }
 
   return (

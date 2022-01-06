@@ -1,9 +1,9 @@
 import React from "react";
-import { Avatar, Button, Paper, Typography } from "@material-ui/core";
-import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 import CountUpAnimation from "../effects/CountUpAnimation";
 import ArtistAlbums from "./ArtistAlbums";
 import artistStyles from "./ArtistStyles";
+import { Avatar, Button, Paper, Typography } from "@mui/material";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 
 const ArtistDetails = (props) => {
   const artistLink = `spotify:artist:${props.id}`;

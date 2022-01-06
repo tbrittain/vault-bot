@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import { Button, MobileStepper, Paper, useTheme } from "@material-ui/core";
-import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
-import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
+import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import homeStyles from "./HomeStyles";
 import GeneralStats from "./GeneralStats";
 import FeaturedArtist from "./FeaturedArtist";
 import SwipeableViews from "react-swipeable-views";
 import { autoPlay } from "react-swipeable-views-utils";
 import "./override.css";
+import { Button, MobileStepper, Paper, useTheme } from "@mui/material";
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
@@ -29,7 +29,7 @@ const Home = () => {
     setActiveStep(step);
   };
 
-  // TODO: total rewrite of homepage
+  // TODO: make current homepage the mobile version
   return (
     <Paper className={classes.container} elevation={3}>
       <AutoPlaySwipeableViews
@@ -43,7 +43,7 @@ const Home = () => {
         enableMouseEvents
       >
         <GeneralStats />
-        {/*<TrendPreview />*/}
+        {/*FIXME <TrendPreview />*/}
         <FeaturedArtist />
       </AutoPlaySwipeableViews>
       <MobileStepper
@@ -59,18 +59,18 @@ const Home = () => {
           >
             Next
             {theme.direction === "rtl" ? (
-              <KeyboardArrowLeft />
+              <KeyboardArrowLeftIcon />
             ) : (
-              <KeyboardArrowRight />
+              <KeyboardArrowRightIcon />
             )}
           </Button>
         }
         backButton={
           <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
             {theme.direction === "rtl" ? (
-              <KeyboardArrowRight />
+              <KeyboardArrowRightIcon />
             ) : (
-              <KeyboardArrowLeft />
+              <KeyboardArrowLeftIcon />
             )}
             Back
           </Button>

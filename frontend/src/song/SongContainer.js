@@ -1,15 +1,10 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
-import { Grid, Typography } from "@material-ui/core";
-import { Alert } from "@material-ui/lab";
 import SongDetails from "./SongDetails";
 import SongArtist from "./SongArtist";
 import LoadingScreen from "../loading/LoadingScreen";
-
-// TODO: create fragments for these long queries and present
-// each fragment in their required component
-// https://www.apollographql.com/docs/react/data/fragments/#colocating-fragments
+import { Alert, Grid, Typography } from "@mui/material";
 
 const QUERY = gql`
   query ($songId: String!) {

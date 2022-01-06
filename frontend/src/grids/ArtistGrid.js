@@ -1,20 +1,15 @@
-import React from 'react'
-import {
-  Paper
-} from '@material-ui/core'
-import ArtistPreview from './ArtistPreview'
-import gridStyles from './GridStyles'
+import React from "react";
+import ArtistPreview from "./ArtistPreview";
+import gridStyles from "./GridStyles";
+import { Paper } from "@mui/material";
 
 const ArtistGrid = (props) => {
-  const classes = gridStyles()
-  const { artists } = props
+  const classes = gridStyles();
+  const { artists } = props;
 
   return (
-    <Paper
-      elevation={3}
-      className={classes.artistGrid}
-    >
-      {artists.map(artist => (
+    <Paper elevation={3} className={classes.artistGrid}>
+      {artists.map((artist) => (
         <ArtistPreview
           key={artist.id}
           id={artist.id}
@@ -23,7 +18,7 @@ const ArtistGrid = (props) => {
         />
       ))}
     </Paper>
-  )
-}
+  );
+};
 
-export default ArtistGrid
+export default ArtistGrid;

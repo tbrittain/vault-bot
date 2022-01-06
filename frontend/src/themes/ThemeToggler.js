@@ -1,7 +1,7 @@
 import React, { createContext, useMemo, useState } from "react";
-import { CssBaseline, ThemeProvider } from "@material-ui/core";
 import lightTheme from "./LightTheme";
 import darkTheme from "./DarkTheme";
+import { CssBaseline, ThemeProvider } from "@mui/material";
 
 export const ColorModeContext = createContext({
   toggleColorMode: () => {},

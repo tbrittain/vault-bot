@@ -1,7 +1,7 @@
 import React from "react";
-import { Avatar, Typography } from "@material-ui/core";
 import ArtistAlbumSongs from "./ArtistAlbumSongs";
 import artistStyles from "./ArtistStyles";
+import { Avatar, Typography } from "@mui/material";
 
 const ArtistAlbum = (props) => {
   const classes = artistStyles();
@@ -31,7 +31,6 @@ const ArtistAlbum = (props) => {
             variant="square"
             className={classes.albumArt}
           />
-
           <Typography variant="subtitle1" className={classes.albumText}>
             {name}
           </Typography>

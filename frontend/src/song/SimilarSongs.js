@@ -1,15 +1,15 @@
 import React from "react";
 import { gql, useQuery } from "@apollo/client";
 import songStyles from "./SongStyles";
+import { Link } from "react-router-dom";
 import {
+  Alert,
   Avatar,
   Box,
   CircularProgress,
   Typography,
   useTheme,
-} from "@material-ui/core";
-import { Alert } from "@material-ui/lab";
-import { Link } from "react-router-dom";
+} from "@mui/material";
 
 const QUERY = gql`
   query getSimilarTracks($getSimilarTracksId: String!) {
@@ -55,7 +55,9 @@ export default function SimilarSongs(props) {
   }
 
   if (error) {
-    <Alert severity="error">An error occurred during data retrieval :(</Alert>;
+    return (
+      <Alert severity="error">An error occurred during data retrieval :(</Alert>
+    );
   }
 
   if (formattedData.length === 0) {

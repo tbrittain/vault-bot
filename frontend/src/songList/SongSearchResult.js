@@ -1,18 +1,15 @@
-import React from 'react'
-import {
-  Typography,
-  Grid,
-  Avatar,
-  Paper,
-  Box
-} from '@material-ui/core'
-import songListStyles from './SongListStyles'
-import { Link } from 'react-router-dom'
-import extractUnderline from '../utils/underline'
+import React from "react";
+import songListStyles from "./SongListStyles";
+import { Link } from "react-router-dom";
+import extractUnderline from "../utils/underline";
+import { Avatar, Box, Grid, Paper, Typography } from "@mui/material";
 
 const SongSearchResult = (props) => {
-  const classes = songListStyles()
-  const { beginText, underline, endText } = extractUnderline(String(props.searchQuery), String(props.name))
+  const classes = songListStyles();
+  const { beginText, underline, endText } = extractUnderline(
+    String(props.searchQuery),
+    String(props.name)
+  );
 
   return (
     <Grid
@@ -21,16 +18,14 @@ const SongSearchResult = (props) => {
       component={Link}
       to={`/songs/${props.id}`}
       style={{
-        textDecoration: 'none',
-        width: '100%'
+        textDecoration: "none",
+        width: "100%",
       }}
     >
-      <Paper
-        className={classes.songResultItem}
-      >
+      <Paper className={classes.songResultItem}>
         <div
           style={{
-            padding: '0.5rem'
+            padding: "0.5rem",
           }}
         >
           <Avatar
@@ -41,33 +36,42 @@ const SongSearchResult = (props) => {
         </div>
         <div
           style={{
-            margin: 'auto auto',
-            textAlign: 'center',
-            padding: '0.5rem'
+            margin: "auto auto",
+            textAlign: "center",
+            padding: "0.5rem",
           }}
         >
           <Typography
-            variant='subtitle1'
+            variant="subtitle1"
             style={{
-              textDecoration: 'none',
-              lineHeight: 'inherit'
+              textDecoration: "none",
+              lineHeight: "inherit",
             }}
           >
-            {beginText}<u>{underline}</u>{endText}
-            <Box component='span' fontWeight='300'> by</Box> {props.artist}
+            {beginText}
+            <u>{underline}</u>
+            {endText}
+            <Box component="span" fontWeight="300">
+              {" "}
+              by
+            </Box>{" "}
+            {props.artist}
           </Typography>
           <Typography
-            variant='body2'
+            variant="body2"
             style={{
-              textDecoration: 'none'
+              textDecoration: "none",
             }}
           >
-            <Box component='span' fontWeight='300'>from the album</Box> {props.album}
+            <Box component="span" fontWeight="300">
+              from the album
+            </Box>{" "}
+            {props.album}
           </Typography>
         </div>
       </Paper>
     </Grid>
-  )
-}
+  );
+};
 
-export default SongSearchResult
+export default SongSearchResult;

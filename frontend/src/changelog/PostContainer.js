@@ -1,8 +1,8 @@
 import React from "react";
 import { gql, useQuery } from "@apollo/client";
-import { Alert } from "@material-ui/lab";
 import LoadingScreen from "../loading/LoadingScreen";
 import Post from "./Post";
+import { Alert } from "@mui/material";
 
 const QUERY = gql`
   query {

@@ -1,8 +1,8 @@
 import React from "react";
-import { Button, ImageList, Typography, useTheme } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import gridStyles from "./GridStyles";
 import genreToMuiColor from "../utils/genreToMuiColor";
+import { Button, ImageList, Typography, useTheme } from "@mui/material";
 
 const GenreGrid = (props) => {
   const classes = gridStyles();
