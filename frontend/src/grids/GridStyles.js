@@ -1,36 +1,18 @@
 import { makeStyles } from "@mui/styles";
 
 const gridStyles = makeStyles((theme) => ({
-  gridList: {
-    flexWrap: "wrap",
-    transform: "translateZ(0)",
-    margin: 0,
-    overflow: "hidden",
-    justifyContent: "center",
-  },
+  gridList: {},
   gridContainer: {
-    display: "flex",
-    flexWrap: "wrap",
-    justifyContent: "space-around",
-    overflow: "hidden",
-    backgroundColor: theme.palette.background.paper,
     padding: theme.spacing(2),
   },
   tile: {
-    minWidth: 125,
-    width: "10vw",
-    margin: "auto",
-    display: "flex",
+    gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr)) !important",
+    minWidth: "10vw",
     overflow: "hidden",
-    justifyContent: "center",
-    padding: `${theme.spacing(1)}px !important`,
   },
   button: {
-    width: "12rem",
-    minWidth: 125,
+    minWidth: "10vw",
     height: "75px !important",
-    lineHeight: "inherit",
-    justifyContent: "left",
     wordBreak: "initial",
   },
   artistGrid: {

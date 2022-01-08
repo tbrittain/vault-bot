@@ -2,48 +2,59 @@ import React from "react";
 import { Link } from "react-router-dom";
 import gridStyles from "./GridStyles";
 import genreToMuiColor from "../utils/genreToMuiColor";
-import { Button, ImageList, Typography, useTheme } from "@mui/material";
+import {
+  Button,
+  ImageList,
+  lighten,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 
 const GenreGrid = (props) => {
   const classes = gridStyles();
   const theme = useTheme();
+  const isSmallScreen = useMediaQuery("(max-width:800px)");
+
   return (
     <div className={classes.gridContainer}>
-      {typeof props.genres !== "undefined" && (
+      {props.genres !== undefined && (
         <ImageList
           className={classes.gridList}
-          cols={props.genres.length < 4 ? props.genres.length : 4}
+          cols={
+            isSmallScreen
+              ? 2
+              : props.genres.length < 4
+              ? props.genres.length
+              : 4
+          }
         >
           {props.genres.map((genre) => (
             <ImageList key={genre} className={classes.tile}>
               <Button
                 variant="contained"
-                size="small"
+                size="large"
                 className={classes.button}
                 component={Link}
                 to={`/genres/${genre}`}
                 lang="en"
-                style={{
+                sx={{
                   backgroundColor: genreToMuiColor(genre),
+                  "&:hover": {
+                    backgroundColor: lighten(genreToMuiColor(genre), 0.25),
+                  },
                 }}
               >
-                <div
-                  style={{
-                    width: "85%",
+                <Typography
+                  variant="body1"
+                  sx={{
+                    color: theme.palette.getContrastText(
+                      genreToMuiColor(genre)
+                    ),
                   }}
                 >
-                  <Typography
-                    variant="body1"
-                    style={{
-                      textAlign: "left",
-                      color: theme.palette.getContrastText(
-                        genreToMuiColor(genre)
-                      ),
-                    }}
-                  >
-                    {genre}
-                  </Typography>
-                </div>
+                  {genre}
+                </Typography>
               </Button>
             </ImageList>
           ))}
