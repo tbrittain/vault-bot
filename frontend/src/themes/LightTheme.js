@@ -3,6 +3,7 @@ import "@fontsource/rubik/300.css";
 import "@fontsource/rubik/400.css";
 import "@fontsource/rubik/500.css";
 import "@fontsource/rubik/800.css";
+import { commonOverrides, commonProps, commonTypography } from "./CommonTheme";
 
 const lightTheme = createTheme({
   palette: {
@@ -18,39 +19,9 @@ const lightTheme = createTheme({
     },
     mode: "light",
   },
-  typography: {
-    fontFamily: "Rubik, sans-serif",
-    h1: {
-      fontSize: "3.2rem",
-    },
-    h2: {
-      fontSize: "2.8rem",
-    },
-    h3: {
-      fontSize: "2.6rem",
-    },
-    h4: {
-      fontSize: "2.4rem",
-    },
-    h5: {
-      fontSize: "2.2rem",
-    },
-    h6: {
-      fontSize: "2rem",
-    },
-  },
-  overrides: {
-    MuiBreadcrumbs: {
-      ol: {
-        justifyContent: "center",
-      },
-    },
-  },
-  props: {
-    MuiPaper: {
-      square: true,
-    },
-  },
+  typography: { ...commonTypography },
+  overrides: { ...commonOverrides },
+  props: { ...commonProps },
 });
 
 export default lightTheme;
