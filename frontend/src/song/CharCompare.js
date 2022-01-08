@@ -3,7 +3,8 @@ import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import songStyles from "./SongStyles";
 import minTommss from "../utils/minTommss";
-import { Typography, withStyles } from "@mui/material";
+import { Typography } from "@mui/material";
+import { withStyles } from "@mui/styles";
 
 const GlobalCss = withStyles({
   "@global": {

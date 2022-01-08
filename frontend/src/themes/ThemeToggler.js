@@ -24,9 +24,8 @@ export default function ThemeToggler({ children }) {
         );
       },
     }),
-    []
+    [prefersDarkMode]
   );
-
   // set theme passed in as either light or dark
   const theme = useMemo(
     () => ({

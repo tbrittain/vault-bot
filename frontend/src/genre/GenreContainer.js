@@ -39,7 +39,7 @@ const GenreContainer = () => {
   everyNoiseGenre = everyNoiseGenre.replaceAll(" ", "");
   everyNoiseGenre = everyNoiseGenre.replaceAll("&", "");
   everyNoiseGenre = everyNoiseGenre.replaceAll("-", "");
-  const everyNoiseLink = `http://everynoise.com/engenremap-${everyNoiseGenre}.html`;
+  const everyNoiseLink = `https://everynoise.com/engenremap-${everyNoiseGenre}.html`;
   processing = false;
 
   if (loading || processing) {

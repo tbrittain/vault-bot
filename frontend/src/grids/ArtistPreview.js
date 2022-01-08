@@ -2,7 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import gridStyles from "./GridStyles";
-import { Avatar, Fade, makeStyles, Paper, Tooltip } from "@mui/material";
+import { Avatar, Fade, Paper, Tooltip } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import "react-lazy-load-image-component/src/effects/opacity.css";
 
 const darkTooltipTheme = makeStyles((theme) => ({
@@ -19,7 +20,7 @@ const DarkTooltip = (props) => {
   // FIXME: https://mui.com/customization/how-to-customize/
   return (
     <Tooltip classes={classes} {...props}>
-      {children}
+      {props.children}
     </Tooltip>
   );
 };

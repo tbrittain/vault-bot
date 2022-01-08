@@ -1,4 +1,5 @@
-import { alpha, makeStyles } from "@mui/material";
+import { makeStyles } from "@mui/styles";
+import { alpha } from "@mui/material";
 
 const genreListStyles = makeStyles((theme) => ({
   search: {

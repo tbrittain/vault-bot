@@ -4,7 +4,8 @@ import { Link } from "react-router-dom";
 import LoadingScreen from "../loading/LoadingScreen";
 import minTommss from "../utils/minTommss";
 import songListStyles from "./SongListStyles";
-import { Alert, Avatar, withStyles } from "@mui/material";
+import { Alert, Avatar } from "@mui/material";
+import { withStyles } from "@mui/styles";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 
 const QUERY = gql`

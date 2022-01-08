@@ -1,4 +1,8 @@
 import { createTheme } from "@mui/material";
+import "@fontsource/rubik/300.css";
+import "@fontsource/rubik/400.css";
+import "@fontsource/rubik/500.css";
+import "@fontsource/rubik/700.css";
 
 const darkTheme = createTheme({
   palette: {
@@ -23,20 +27,7 @@ const darkTheme = createTheme({
     },
   },
   typography: {
-    fontFamily: [
-      "Rubik",
-      "-apple-system",
-      "BlinkMacSystemFont",
-      "Segoe UI",
-      "Roboto",
-      "Oxygen",
-      "Ubuntu",
-      "Cantarell",
-      "Fira Sans",
-      "Droid Sans",
-      "Helvetica Neue",
-      "sans-serif",
-    ],
+    fontFamily: "Rubik, sans-serif",
     h1: {
       fontSize: "3.2rem",
     },

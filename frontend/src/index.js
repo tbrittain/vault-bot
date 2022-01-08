@@ -17,8 +17,6 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-// https://localforage.github.io/localForage/#localforage
-
 render(
   <React.StrictMode>
     <BrowserRouter forceRefresh={false}>

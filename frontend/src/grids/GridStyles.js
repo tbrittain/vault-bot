@@ -1,4 +1,4 @@
-import { makeStyles } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 
 const gridStyles = makeStyles((theme) => ({
   gridList: {
