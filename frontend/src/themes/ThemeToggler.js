@@ -9,8 +9,19 @@ export const ColorModeContext = createContext({
 
 export default function ThemeToggler({ children }) {
   const prefersDarkMode = useMemo(() => {
-    const prefersDarkMode = localStorage.getItem("prefersDarkMode");
-    return prefersDarkMode === "true";
+    let preference;
+
+    localStorage.getItem("prefersDarkMode") !== null
+      ? (preference = localStorage.getItem("prefersDarkMode"))
+      : (preference = window.matchMedia(
+          "(prefers-color-scheme: dark)"
+        ).matches);
+
+    if (localStorage.getItem("prefersDarkMode") === null) {
+      localStorage.setItem("prefersDarkMode", preference);
+    }
+
+    return preference === "true";
   }, []);
 
   const [mode, setMode] = useState(prefersDarkMode ? "dark" : "light");

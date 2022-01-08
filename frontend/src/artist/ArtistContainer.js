@@ -11,6 +11,7 @@ const QUERY = gql`
   query ($artistId: String!) {
     getArtist(id: $artistId) {
       name
+      id
       art
       genres {
         genre

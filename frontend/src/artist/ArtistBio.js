@@ -12,6 +12,7 @@ import {
 const QUERY = gql`
   query ($artistId: String!) {
     getArtist(id: $artistId) {
+      id
       wikiBio {
         bio
         url
