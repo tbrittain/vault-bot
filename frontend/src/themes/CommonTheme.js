@@ -1,35 +1,38 @@
-export const commonTypography = {
-  fontFamily: "Rubik, sans-serif",
-  h1: {
-    fontSize: "3.2rem",
+export const commonTheme = {
+  typography: {
+    fontFamily: "Rubik, sans-serif",
+    h1: {
+      fontSize: "3.2rem",
+    },
+    h2: {
+      fontSize: "2.8rem",
+    },
+    h3: {
+      fontSize: "2.6rem",
+    },
+    h4: {
+      fontSize: "2.4rem",
+    },
+    h5: {
+      fontSize: "2.2rem",
+    },
+    h6: {
+      fontSize: "2rem",
+    },
+    fontWeightLight: 300,
+    fontWeightRegular: 400,
+    fontWeightBold: 800,
   },
-  h2: {
-    fontSize: "2.8rem",
-  },
-  h3: {
-    fontSize: "2.6rem",
-  },
-  h4: {
-    fontSize: "2.4rem",
-  },
-  h5: {
-    fontSize: "2.2rem",
-  },
-  h6: {
-    fontSize: "2rem",
-  },
-};
-
-export const commonOverrides = {
-  MuiBreadcrumbs: {
-    ol: {
-      justifyContent: "center",
+  overrides: {
+    MuiBreadcrumbs: {
+      ol: {
+        justifyContent: "center",
+      },
     },
   },
-};
-
-export const commonProps = {
-  MuiPaper: {
-    square: true,
+  props: {
+    MuiPaper: {
+      square: true,
+    },
   },
 };

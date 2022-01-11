@@ -17,7 +17,7 @@ const headerStyles = makeStyles((theme) => ({
     color:
       theme.palette.mode === "light"
         ? theme.palette.secondary.dark
-        : theme.palette.primary.contrastText,
+        : theme.palette.primary.main,
     fontFamily: "Rubik",
     fontWeight: 800,
     transition: "0.3s",
