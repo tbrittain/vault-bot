@@ -40,10 +40,10 @@ const columns = [
         <Paper>
           <Typography
             variant="body1"
-            style={{
+            sx={{
               textTransform: "capitalize",
               margin: 5,
-              fontWeight: 300,
+              fontWeight: "fontWeightLight",
             }}
           >
             {params.value}

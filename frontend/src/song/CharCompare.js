@@ -45,9 +45,9 @@ const CharCompare = (props) => {
       <GlobalCss />
       <Typography
         variant="h6"
-        style={{
+        sx={{
           textTransform: "capitalize",
-          fontWeight: 300,
+          fontWeight: "fontWeightLight",
         }}
       >
         {name}

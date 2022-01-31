@@ -167,7 +167,7 @@ const SongDetails = (props) => {
                 }}
               >
                 {props.name}{" "}
-                <Box component="span" fontWeight="300">
+                <Box component="span" sx={{ fontWeight: "fontWeightLight" }}>
                   by
                 </Box>{" "}
                 {props.artistName}
@@ -179,7 +179,7 @@ const SongDetails = (props) => {
                   paddingTop: 10,
                 }}
               >
-                <Box component="span" fontWeight="300">
+                <Box component="span" sx={{ fontWeight: "fontWeightLight" }}>
                   from the album
                 </Box>{" "}
                 {props.album}

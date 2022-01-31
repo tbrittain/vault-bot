@@ -54,13 +54,13 @@ function Header() {
             <Typography
               variant="h6"
               className={classes.title}
-              style={{
-                fontWeight: 800,
+              sx={{
+                fontWeight: "fontWeightBold",
               }}
             >
               <i
                 style={{
-                  fontWeight: 800,
+                  fontWeight: theme.typography.fontWeightBold,
                 }}
               >
                 VaultBot
@@ -79,7 +79,7 @@ function Header() {
               className={classes.menuButton}
               component={Link}
               to="/songs"
-              style={{
+              sx={{
                 padding: 5,
               }}
             >
@@ -90,7 +90,7 @@ function Header() {
               className={classes.menuButton}
               component={Link}
               to="/artists"
-              style={{
+              sx={{
                 padding: 5,
               }}
             >
@@ -101,7 +101,7 @@ function Header() {
               className={classes.menuButton}
               component={Link}
               to="/genres"
-              style={{
+              sx={{
                 padding: 5,
               }}
             >

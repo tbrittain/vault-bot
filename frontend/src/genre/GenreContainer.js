@@ -74,7 +74,7 @@ const GenreContainer = () => {
         <Typography
           variant="h6"
           style={{
-            fontWeight: 300,
+            fontWeight: theme.typography.fontWeightBold,
             color: theme.palette.getContrastText(genreToMuiColor(genreName)),
           }}
         >

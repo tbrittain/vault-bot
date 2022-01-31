@@ -1,6 +1,6 @@
 import { makeStyles } from "@mui/styles";
 
-const genreStyles = makeStyles(() => ({
+const genreStyles = makeStyles((theme) => ({
   title: {
     textAlign: "center",
     padding: 15,
@@ -9,7 +9,7 @@ const genreStyles = makeStyles(() => ({
   },
   genreTitle: {
     textTransform: "capitalize",
-    fontWeight: 800,
+    fontWeight: theme.typography.fontWeightBold,
   },
 }));
 

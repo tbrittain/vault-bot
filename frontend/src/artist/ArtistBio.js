@@ -1,13 +1,8 @@
 import React from "react";
 import artistStyles from "./ArtistStyles";
 import { gql, useQuery } from "@apollo/client";
-import {
-  Alert,
-  CircularProgress,
-  Paper,
-  Typography,
-  useTheme,
-} from "@mui/material";
+import { Alert, CircularProgress, Paper, Typography } from "@mui/material";
+import { useTheme } from "@mui/styles";
 
 const QUERY = gql`
   query ($artistId: String!) {
@@ -72,8 +67,8 @@ const ArtistBio = (props) => {
       <Typography variant="h1">Artist Bio</Typography>
       <Typography
         variant="subtitle2"
-        style={{
-          color: theme.palette.secondary.main,
+        sx={{
+          color: "secondary.main",
         }}
       >
         <i>Experimental</i>
@@ -87,14 +82,14 @@ const ArtistBio = (props) => {
         <Paper
           elevation={3}
           className={classes.artistBio}
-          style={{
-            backgroundColor: theme.palette.primary.main,
+          sx={{
+            backgroundColor: "primary.main",
           }}
         >
           <Typography
             variant="body1"
-            style={{
-              fontWeight: 300,
+            sx={{
+              fontWeight: "fontWeightLight",
               color:
                 theme.palette.mode === "light"
                   ? theme.palette.secondary.main
@@ -110,8 +105,8 @@ const ArtistBio = (props) => {
           />
           <Typography
             variant="body1"
-            style={{
-              fontWeight: 300,
+            sx={{
+              fontWeight: "fontWeightLight",
               textAlign: "center",
             }}
           >

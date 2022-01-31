@@ -19,7 +19,7 @@ const headerStyles = makeStyles((theme) => ({
         ? theme.palette.secondary.dark
         : theme.palette.primary.main,
     fontFamily: "Rubik",
-    fontWeight: 800,
+    fontWeight: theme.typography.fontWeightBold,
     transition: "0.3s",
     "&:hover": {
       color: theme.palette.secondary.light,

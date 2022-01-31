@@ -29,7 +29,7 @@ const homeStyles = makeStyles((theme) => ({
   },
   animateText: {
     fontSize: "5em",
-    fontWeight: 800,
+    fontWeight: theme.typography.fontWeightBold,
     width: "100%",
     height: "6vw",
     [theme.breakpoints.down("sm")]: {
@@ -38,7 +38,7 @@ const homeStyles = makeStyles((theme) => ({
     },
   },
   statDescription: {
-    fontWeight: 300,
+    fontWeight: theme.typography.fontWeightLight,
     [theme.breakpoints.down("sm")]: {
       fontSize: "2ch",
       textAlign: "center",
@@ -55,7 +55,7 @@ const homeStyles = makeStyles((theme) => ({
     },
   },
   numberHighlight: {
-    fontWeight: 800,
+    fontWeight: theme.typography.fontWeightBold,
     color: theme.palette.primary.dark,
     marginLeft: 5,
     [theme.breakpoints.down("sm")]: {
@@ -68,7 +68,7 @@ const homeStyles = makeStyles((theme) => ({
       theme.palette.mode === "light"
         ? theme.palette.secondary.main
         : theme.palette.primary.contrastText,
-    fontWeight: 800,
+    fontWeight: theme.typography.fontWeightBold,
     transition: "0.3s",
     margin: 5,
     "&:hover": {
@@ -104,7 +104,7 @@ const homeStyles = makeStyles((theme) => ({
       theme.palette.mode === "light"
         ? theme.palette.secondary.main
         : theme.palette.primary.contrastText,
-    fontWeight: 300,
+    fontWeight: theme.typography.fontWeightLight,
     zIndex: 27,
   },
   genreContainer: {

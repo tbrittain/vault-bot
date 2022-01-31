@@ -57,17 +57,29 @@ const SongHistory = (props) => {
           return (
             <ListItem key={index} divider={!finalItem}>
               <ListItemText>
-                <Typography variant="subtitle1" style={{ fontSize: "1.3rem" }}>
+                <Typography
+                  variant="subtitle1"
+                  sx={{ fontSize: "1.3rem", fontWeight: "fontWeightLight" }}
+                >
                   {index + 1}.{" "}
-                  <Box display="inline" style={{ fontWeight: "bold" }}>
+                  <Box
+                    display="inline"
+                    sx={{ fontWeight: "fontWeightRegular" }}
+                  >
                     {historyEntry.addedBy}
                   </Box>{" "}
                   added this song on{" "}
-                  <Box display="inline" style={{ fontWeight: "bold" }}>
+                  <Box
+                    display="inline"
+                    sx={{ fontWeight: "fontWeightRegular" }}
+                  >
                     {dateTime.toLocaleDateString()}
                   </Box>{" "}
                   at{" "}
-                  <Box display="inline" style={{ fontWeight: "bold" }}>
+                  <Box
+                    display="inline"
+                    sx={{ fontWeight: "fontWeightRegular" }}
+                  >
                     {dateTime.toLocaleTimeString()}
                   </Box>
                 </Typography>

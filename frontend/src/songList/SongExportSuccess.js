@@ -19,9 +19,9 @@ const SongExportSuccess = (props) => {
     >
       <Typography
         variant="h2"
-        style={{
+        sx={{
           margin: 15,
-          fontWeight: 800,
+          fontWeight: "fontWeightBold",
         }}
       >
         <i>Success!</i>

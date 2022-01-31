@@ -29,7 +29,7 @@ const GenreGrid = (props) => {
               : 4
           }
         >
-          {props.genres.map((genre) => (
+          {props.genres.map((genre) => ( // TODO: overflow is broken on song page
             <ImageList key={genre} className={classes.tile}>
               <Button
                 variant="contained"

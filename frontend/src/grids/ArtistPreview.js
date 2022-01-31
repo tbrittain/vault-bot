@@ -10,7 +10,7 @@ const darkTooltipTheme = makeStyles((theme) => ({
   tooltip: {
     backgroundColor: "rgba(0, 0, 0, 0.78)",
     fontSize: theme.typography.pxToRem(16),
-    fontWeight: 800,
+    fontWeight: theme.typography.fontWeightBold,
   },
 }));
 

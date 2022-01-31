@@ -115,7 +115,10 @@ export default function SimilarSongs(props) {
                     className={`${classes.albumText} ${classes.similarSongArtistText}`}
                   >
                     by{" "}
-                    <Box display="inline" style={{ fontWeight: "bold" }}>
+                    <Box
+                      display="inline"
+                      sx={{ fontWeight: "fontWeightRegular" }}
+                    >
                       {song.song.artist.name}
                     </Box>
                   </Typography>

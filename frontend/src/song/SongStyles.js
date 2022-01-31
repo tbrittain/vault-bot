@@ -66,7 +66,7 @@ const songStyles = makeStyles((theme) => ({
     color: theme.palette.secondary.main,
     transition: "0.3s",
     lineHeight: 1,
-    fontWeight: 800,
+    fontWeight: theme.typography.fontWeightBold,
     marginTop: "1rem",
     "&:hover": {
       color: theme.palette.primary.main,
@@ -191,6 +191,7 @@ const songStyles = makeStyles((theme) => ({
     },
   },
   similarSongArtistText: {
+    fontWeight: theme.typography.fontWeightLight,
     fontSize: "1.5rem",
     [theme.breakpoints.down("sm")]: {
       fontSize: "1.1rem",
@@ -210,7 +211,7 @@ const songStyles = makeStyles((theme) => ({
   },
   similarSongScoreText: {
     fontSize: "1.5rem",
-    fontWeight: "bold",
+    fontWeight: theme.typography.fontWeightRegular,
     [theme.breakpoints.down("sm")]: {
       fontSize: "1.15rem",
     },

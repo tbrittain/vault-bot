@@ -2,7 +2,7 @@ import { makeStyles } from "@mui/styles";
 
 const pageNotFoundStyles = makeStyles((theme) => ({
   title: {
-    fontWeight: 800,
+    fontWeight: theme.typography.fontWeightBold,
     color: theme.palette.secondary.main,
     textAlign: "center",
   },

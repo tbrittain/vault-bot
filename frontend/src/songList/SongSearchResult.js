@@ -43,15 +43,16 @@ const SongSearchResult = (props) => {
         >
           <Typography
             variant="subtitle1"
-            style={{
+            sx={{
               textDecoration: "none",
               lineHeight: "inherit",
+              fontWeight: "fontWeightLight",
             }}
           >
             {beginText}
             <u>{underline}</u>
             {endText}
-            <Box component="span" fontWeight="300">
+            <Box component="span" sx={{ fontWeight: "fontWeightLight" }}>
               {" "}
               by
             </Box>{" "}
@@ -59,11 +60,12 @@ const SongSearchResult = (props) => {
           </Typography>
           <Typography
             variant="body2"
-            style={{
+            sx={{
               textDecoration: "none",
+              fontWeight: "fontWeightLight",
             }}
           >
-            <Box component="span" fontWeight="300">
+            <Box component="span" sx={{ fontWeight: "fontWeightLight" }}>
               from the album
             </Box>{" "}
             {props.album}

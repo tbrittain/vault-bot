@@ -14,8 +14,8 @@ const ArtistAlbumSong = (props) => {
     >
       <Typography
         variant="body1"
-        style={{
-          fontWeight: 300,
+        sx={{
+          fontWeight: "fontWeightBold",
         }}
         className={classes.artistSongName}
       >

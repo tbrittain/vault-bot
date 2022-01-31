@@ -67,11 +67,11 @@ const SongChars = (props) => {
           >
             <Typography
               variant="subtitle1"
-              style={{
+              sx={{
                 lineHeight: "inherit",
                 marginBottom: 10,
                 fontSize: "2ch",
-                fontWeight: 300,
+                fontWeight: "fontWeightLight",
               }}
             >
               {props.songName}
@@ -86,10 +86,10 @@ const SongChars = (props) => {
           >
             <Typography
               variant="subtitle1"
-              style={{
+              sx={{
                 lineHeight: "inherit",
                 fontSize: "2ch",
-                fontWeight: 300,
+                fontWeight: "fontWeightLight",
               }}
             >
               Total song average
@@ -100,8 +100,8 @@ const SongChars = (props) => {
           <div className={classes.songComparison}>
             <Typography
               variant="h6"
-              style={{
-                fontWeight: 300,
+              sx={{
+                fontWeight: "fontWeightLight",
                 lineHeight: "inherit",
               }}
             >
@@ -150,7 +150,7 @@ const SongChars = (props) => {
             <Typography
               variant="h6"
               style={{
-                fontWeight: 300,
+                fontWeight: "fontWeightLight",
                 lineHeight: "inherit",
               }}
             >

@@ -11,7 +11,7 @@ const artistStyles = makeStyles((theme) => ({
     boxShadow: `0px 0px 4px ${theme.palette.primary.main}`,
   },
   artistName: {
-    fontWeight: 800,
+    fontWeight: theme.typography.fontWeightBold,
     color:
       theme.palette.mode === "light"
         ? theme.palette.secondary.main
@@ -74,7 +74,7 @@ const artistStyles = makeStyles((theme) => ({
   albumText: {
     lineHeight: "inherit",
     color: theme.palette.secondary.main,
-    fontWeight: 300,
+    fontWeight: theme.typography.fontWeightLight,
     padding: 3,
   },
   albumArt: {

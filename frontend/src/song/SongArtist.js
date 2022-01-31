@@ -31,8 +31,8 @@ const SongArtist = (props) => {
       <div className={`${classes.containerItem} ${classes.genreContainer}`}>
         <Typography
           variant="h6"
-          style={{
-            fontWeight: 300,
+          sx={{
+            fontWeight: "fontWeightLight",
           }}
         >
           Genres

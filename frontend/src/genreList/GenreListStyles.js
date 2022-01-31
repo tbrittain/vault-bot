@@ -27,7 +27,7 @@ const genreListStyles = makeStyles((theme) => ({
   },
   inputRoot: {
     color: "inherit",
-    fontWeight: 300,
+    fontWeight: theme.typography.fontWeightLight,
   },
   inputInput: {
     padding: theme.spacing(1, 1, 1, 0),

@@ -209,8 +209,8 @@ const SongExport = (props) => {
         >
           <Typography
             variant="h6"
-            style={{
-              fontWeight: 300,
+            sx={{
+              fontWeight: "fontWeightLight",
             }}
           >
             Songs to export
