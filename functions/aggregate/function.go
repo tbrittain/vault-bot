@@ -5,26 +5,36 @@ import (
 	"fmt"
 	"html"
 	"net/http"
-
-	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
 )
 
-func init() {
-	functions.HTTP("HelloHTTP", helloHTTP)
-}
+// https://cloud.google.com/functions/docs/concepts/go-runtime
+// https://cloud.google.com/functions/docs/writing#functions-writing-file-structuring-go
+// https://cloud.google.com/functions/docs/writing/background
+// https://cloud.google.com/functions/docs/writing/http
 
-// helloHTTP is an HTTP Cloud Function with a request parameter.
-func helloHTTP(w http.ResponseWriter, r *http.Request) {
+// HelloHTTP is an HTTP Cloud Function with a request parameter.
+func HelloHTTP(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(r.Method)
+	fmt.Println(r.URL)
 	var d struct {
 		Name string `json:"name"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
-		fmt.Fprint(w, "Hello, World!")
+		_, err := fmt.Fprint(w, "Hello, World!")
+		if err != nil {
+			return
+		}
 		return
 	}
 	if d.Name == "" {
-		fmt.Fprint(w, "Hello, World!")
+		_, err := fmt.Fprint(w, "Hello, World!")
+		if err != nil {
+			return
+		}
 		return
 	}
-	fmt.Fprintf(w, "Hello, %s!", html.EscapeString(d.Name))
+	_, err := fmt.Fprintf(w, "Hello, %s!", html.EscapeString(d.Name))
+	if err != nil {
+		return
+	}
 }
