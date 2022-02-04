@@ -3,6 +3,7 @@ package aggregate
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/jackc/pgx/v4"
 	"html"
 	"net/http"
 )
@@ -16,9 +17,11 @@ import (
 func HelloHTTP(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(r.Method)
 	fmt.Println(r.URL)
+
 	var d struct {
 		Name string `json:"name"`
 	}
+
 	if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
 		_, err := fmt.Fprint(w, "Hello, World!")
 		if err != nil {
