@@ -2,19 +2,19 @@ package aggregate
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"github.com/georgysavva/scany/pgxscan"
 	"github.com/jackc/pgx/v4"
 	"github.com/tbrittain/vault-bot/functions/config"
 	"net/http"
 	"os"
 )
 
-// https://cloud.google.com/functions/docs/concepts/go-runtime
-// https://cloud.google.com/functions/docs/writing#functions-writing-file-structuring-go
-// https://cloud.google.com/functions/docs/writing/background
-// https://cloud.google.com/functions/docs/writing/http
-
 func HelloHTTP(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(r.Header)
+	fmt.Println(r.UserAgent())
+
 	config.LoadEnvVars()
 
 	conn, err := dbConnect()
@@ -45,22 +45,36 @@ func HelloHTTP(w http.ResponseWriter, r *http.Request) {
 			FROM songs s
 			JOIN artists a ON s.artist_id = a.id
 			WHERE RANDOM() < 0.01
-			LIMIT 1;`
+			LIMIT 5;`
 
-	rows, err := conn.Query(context.Background(), sql)
+	var songs []*SongExample
+	err = pgxscan.Select(context.Background(), conn, &songs, sql)
 	if err != nil {
-		_, err := fmt.Fprintf(os.Stderr, "Error querying DB: %v\n", err)
+		_, err := fmt.Fprintf(os.Stderr, "Error retrieving database rows: %v\n", err)
 		if err != nil {
 			return
 		}
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+
+	jsonResponse, err := json.Marshal(songs)
+	if err != nil {
+		_, err := fmt.Fprintf(os.Stderr, "Error marshalling response: %v\n", err)
+		if err != nil {
+			return
+		}
 	}
 
-	w.Header().Set("Content-Type", "application/json")
+	_, err = w.Write(jsonResponse)
+	if err != nil {
+		_, err := fmt.Fprintf(os.Stderr, "Error writing response: %v\n", err)
+		if err != nil {
+			return
+		}
+	}
 }
 
-type SongExampleResponse struct {
+type SongExample struct {
 	SongId     string `json:"song_id"`
 	Name       string `json:"name"`
 	Album      string `json:"album"`
