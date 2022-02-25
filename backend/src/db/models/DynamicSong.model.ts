@@ -1,16 +1,15 @@
 import {
-  Table,
   Column,
+  ForeignKey,
   Model,
   PrimaryKey,
-  BelongsTo,
-  ForeignKey
+  Table
 } from 'sequelize-typescript'
 import Artist from './Artist.model'
-import { TableOptions } from './interfaces/TableOptions'
+import { ITableOptions } from './interfaces/ITableOptions'
 import Song from './Song.model'
 
-const DynamicSongOptions: TableOptions = {
+const DynamicSongOptions: ITableOptions = {
   tableName: 'dynamic',
   timestamps: false,
   underscored: true

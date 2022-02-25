@@ -1,22 +1,25 @@
-import React, { useState, useEffect } from 'react'
-import {
-  Paper,
-  AppBar,
-  Toolbar,
-  InputBase,
-  Popper,
-  Fade,
-  ClickAwayListener
-} from '@material-ui/core'
-import SearchIcon from '@material-ui/icons/Search'
+import React, { useEffect, useState } from 'react'
+import SearchIcon from '@mui/icons-material/Search'
 import songListStyles from './SongListStyles'
 import SongSearchContainer from './SongSearchContainer'
 import SongList from './SongList'
+import useDebounce from '../hooks/useDebounce'
+import {
+  AppBar,
+  ClickAwayListener,
+  Fade,
+  InputBase,
+  Paper,
+  Popper,
+  Toolbar,
+} from '@mui/material'
 
 const SongViewer = (props) => {
   const classes = songListStyles()
   const { trackSelection, setTrackSelection } = props
   const [search, setSearch] = useState('')
+  const debouncedSearch = useDebounce(search, 250)
+
   const [anchorEl, setAnchorEl] = useState(null)
 
   const handleChange = (event) => {
@@ -24,7 +27,7 @@ const SongViewer = (props) => {
     setAnchorEl(event.currentTarget)
   }
 
-  const handleClickAway = (event) => {
+  const handleClickAway = () => {
     setAnchorEl(null)
     setSearch('')
   }
@@ -33,16 +36,12 @@ const SongViewer = (props) => {
   const open = Boolean(anchorEl && search.length >= minSearchLength)
 
   useEffect(() => {
-    localStorage.setItem('exportStep', 0) // eslint-disable-line
+    localStorage.setItem('exportStep', 0)
   }, [])
 
   return (
-    <Paper
-      elevation={3}
-    >
-      <AppBar
-        position='static'
-      >
+    <Paper elevation={3}>
+      <AppBar position="static">
         <Toolbar>
           <div className={classes.search}>
             <div className={classes.searchIcon}>
@@ -50,26 +49,26 @@ const SongViewer = (props) => {
             </div>
             <InputBase
               InputLabelProps={{ shrink: true }}
-              placeholder='Search for a song...'
+              placeholder="Search for a song..."
               classes={{
                 root: classes.inputRoot,
-                input: classes.inputInput
+                input: classes.inputInput,
               }}
               value={search}
               onChange={handleChange}
             />
             <ClickAwayListener onClickAway={handleClickAway}>
               <Popper
-                placement='bottom-start'
+                placement="bottom-start"
                 disablePortal={false}
                 modifiers={{
                   flip: {
-                    enabled: true
+                    enabled: true,
                   },
                   preventOverflow: {
                     enabled: true,
-                    boundariesElement: 'scrollParent'
-                  }
+                    boundariesElement: 'scrollParent',
+                  },
                 }}
                 open={open}
                 anchorEl={anchorEl}
@@ -77,16 +76,10 @@ const SongViewer = (props) => {
               >
                 {({ TransitionProps }) => (
                   <Fade {...TransitionProps} timeout={350}>
-                    <Paper
-                      elevation={0}
-                      style={{
-                        background: 'none'
-                      }}
-                    >
-                      {search.length >= minSearchLength &&
-                        <SongSearchContainer
-                          searchQuery={search}
-                        />}
+                    <Paper elevation={0}>
+                      {debouncedSearch.length >= minSearchLength && (
+                        <SongSearchContainer searchQuery={debouncedSearch} />
+                      )}
                     </Paper>
                   </Fade>
                 )}

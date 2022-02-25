@@ -1,21 +1,22 @@
-import React, { useEffect, useState, useCallback } from 'react'
-import { useQuery, gql } from '@apollo/client'
-import { Alert, AlertTitle } from '@material-ui/lab'
+import React, { useCallback, useEffect, useState } from 'react'
+import { gql, useQuery } from '@apollo/client'
 import Spotify from '../utils/Spotify'
+import CancelIcon from '@mui/icons-material/Cancel'
+import RestoreIcon from '@mui/icons-material/Restore'
+import songListStyles from './SongListStyles'
 import {
+  Alert,
+  AlertTitle,
   Avatar,
-  TextField,
-  Paper,
-  Typography,
   Button,
   CircularProgress,
   Grid,
   IconButton,
-  LinearProgress
-} from '@material-ui/core'
-import CancelIcon from '@material-ui/icons/Cancel'
-import RestoreIcon from '@material-ui/icons/Restore'
-import songListStyles from './SongListStyles'
+  LinearProgress,
+  Paper,
+  TextField,
+  Typography,
+} from '@mui/material'
 
 const QUERY = gql`
   query {
@@ -28,6 +29,8 @@ const QUERY = gql`
   }
 `
 
+// TODO: Will separate this from the song list component
+
 const SongExport = (props) => {
   const classes = songListStyles()
   const { songIds, setActiveStep, setSelectionModel } = props
@@ -37,7 +40,7 @@ const SongExport = (props) => {
     localStorage.getItem('playlistName') || '' // eslint-disable-line
   )
   const [trackUris, setTrackUris] = useState([])
-  const [spotifyResponseStatus, setSpotifyResponseStatus] = useState(null)
+  const [spotifyResponseStatus, setSpotifyResponseStatus] = useState(0)
   const [exporting, setExporting] = useState(false)
 
   // form validation
@@ -45,7 +48,8 @@ const SongExport = (props) => {
   const invalidNameChars = /[^a-zA-Z 0-9]+/g.test(playlistName)
   const invalidName = invalidNameLength || invalidNameChars
   const invalidPlaylistLength = trackUris.length === 0
-  const invalidExport = invalidName || playlistName.length === 0 || invalidPlaylistLength
+  const invalidExport =
+    invalidName || playlistName.length === 0 || invalidPlaylistLength
 
   const { loading, error, data } = useQuery(QUERY)
 
@@ -54,10 +58,12 @@ const SongExport = (props) => {
   }
 
   const handleRemoveSong = (event) => {
-    setTrackUris(trackUris.filter(track => track !== event.currentTarget.value))
+    setTrackUris(
+      trackUris.filter((track) => track !== event.currentTarget.value)
+    )
   }
 
-  const handleRestore = (event) => {
+  const handleRestore = () => {
     setTrackUris(songIds)
   }
 
@@ -78,7 +84,9 @@ const SongExport = (props) => {
 
   useEffect(() => {
     localStorage.setItem('exportStep', 1) // eslint-disable-line
-    const cachedTrackSelection = localStorage.getItem('trackSelection').split(',') // eslint-disable-line
+    const cachedTrackSelection = localStorage
+      .getItem('trackSelection')
+      .split(',') // eslint-disable-line
     setTrackUris(cachedTrackSelection)
   }, [])
 
@@ -86,7 +94,8 @@ const SongExport = (props) => {
     localStorage.setItem('playlistName', playlistName) // eslint-disable-line
   }, [playlistName])
 
-  useEffect(() => { // this exits the component and into the success component
+  useEffect(() => {
+    // this exits the component and into the success component
     if (spotifyResponseStatus === 201) {
       cleanUpBeforeDismount()
       setActiveStep(2)
@@ -98,7 +107,7 @@ const SongExport = (props) => {
     const save = await Spotify.savePlaylist(playlistName, trackUris)
     setExporting(false)
     setSpotifyResponseStatus(Number(save.status))
-    // setTimeout(() => {
+    // setTimeout(() => { // mock delay
     //   setExporting(false)
     //   setSpotifyResponseStatus(201)
     // }, 3000)
@@ -107,7 +116,9 @@ const SongExport = (props) => {
   let processing = true
   let formattedData
   if (data) {
-    formattedData = data.getTracks.filter(result => trackUris.includes(result.id))
+    formattedData = data.getTracks.filter((result) =>
+      trackUris.includes(result.id)
+    )
     processing = false
   }
   if (loading || processing) {
@@ -119,15 +130,15 @@ const SongExport = (props) => {
           alignItems: 'center',
           userSelect: 'none',
           '& > * + *': {
-            margin: 'auto auto'
-          }
+            margin: 'auto auto',
+          },
         }}
       >
         <CircularProgress />
         <Typography
-          variant='body2'
+          variant="body2"
           style={{
-            marginTop: 5
+            marginTop: 5,
           }}
         >
           Loading tracks to export...
@@ -138,33 +149,25 @@ const SongExport = (props) => {
 
   if (error) {
     return (
-      <Alert severity='error'>An error occurred during data retrieval :(</Alert>
+      <Alert severity="error">An error occurred during data retrieval :(</Alert>
     )
   }
 
   return (
-    <Paper
-      className={classes.exportContainer}
-      elevation={3}
-    >
-      <Typography
-        variant='h2'
-        className={classes.songExportTitle}
-      >
+    <Paper className={classes.exportContainer} elevation={3}>
+      <Typography variant="h2" className={classes.songExportTitle}>
         Export to Spotify
       </Typography>
-      <div
-        className={classes.userPlaylist}
-      >
+      <div className={classes.userPlaylist}>
         <TextField
           required
           error={invalidName}
           className={classes.playlistInput}
-          label='Playlist Name'
-          placeholder='My playlist'
-          variant='outlined'
-          color='primary'
-          size='normal'
+          label="Playlist Name"
+          placeholder="My playlist"
+          variant="outlined"
+          color="primary"
+          size="normal"
           InputLabelProps={{ shrink: true }}
           fullWidth
           helperText={textFieldErrorMessage}
@@ -172,72 +175,71 @@ const SongExport = (props) => {
           onChange={handlePlaylistNameChange}
         />
         <Button
-          variant='contained'
+          variant="contained"
           disabled={invalidExport}
-          color='primary'
+          color="primary"
           onClick={savePlaylist}
         >
           Export to Spotify
         </Button>
-        {exporting &&
-          <LinearProgress
-            color='secondary'
-          />}
+        {exporting && <LinearProgress color="secondary" />}
       </div>
-      {spotifyResponseStatus && spotifyResponseStatus !== 201 &&
+      {spotifyResponseStatus && spotifyResponseStatus !== 201 && (
         <Alert
           open={spotifyResponseStatus && spotifyResponseStatus !== 201}
           elevation={8}
-          severity='error'
+          severity="error"
         >
           <AlertTitle>Error</AlertTitle>
-          Something went wrong with the playlist export. Try again. Sorry about that :(
-        </Alert>}
+          Something went wrong with the playlist export. Try again. Sorry about
+          that :(
+        </Alert>
+      )}
       <div
         style={{
           width: '100%',
-          textAlign: 'center'
+          textAlign: 'center',
         }}
       >
         <div
           style={{
             display: 'flex',
-            justifyContent: 'center'
+            justifyContent: 'center',
           }}
         >
           <Typography
-            variant='h6'
-            style={{
-              fontWeight: 300
+            variant="h6"
+            sx={{
+              fontWeight: 'fontWeightLight',
             }}
           >
             Songs to export
           </Typography>
-          {trackUris.length !== songIds.length && trackUris.length > 0 &&
+          {trackUris.length !== songIds.length && trackUris.length > 0 && (
             <IconButton>
               <RestoreIcon
-                color='primary'
-                fontSize='medium'
-                onClick={handleRestore}
-              />
-            </IconButton>}
-        </div>
-        {invalidPlaylistLength &&
-          <Alert severity='error'>
-            All tracks have been removed! Revert to the original track selections?
-            <IconButton size='small'>
-              <RestoreIcon
-                color='error'
+                color="primary"
+                fontSize="medium"
                 onClick={handleRestore}
               />
             </IconButton>
-          </Alert>}
+          )}
+        </div>
+        {invalidPlaylistLength && (
+          <Alert severity="error">
+            All tracks have been removed! Revert to the original track
+            selections?
+            <IconButton size="small">
+              <RestoreIcon color="error" onClick={handleRestore} />
+            </IconButton>
+          </Alert>
+        )}
         <Grid
           className={classes.songListToExport}
           container
-          justifyContent='center'
+          justifyContent="center"
         >
-          {formattedData.map(song => {
+          {formattedData.map((song) => {
             return (
               <Paper
                 className={classes.songToExport}
@@ -249,25 +251,23 @@ const SongExport = (props) => {
                   src={song.art}
                   alt={song.album}
                   style={{
-                    margin: 3
+                    margin: 3,
                   }}
                 />
                 <Typography
-                  variant='body2'
+                  variant="body2"
                   style={{
-                    marginRight: 3
+                    marginRight: 3,
                   }}
                 >
                   {song.name}
                 </Typography>
                 <IconButton
-                  size='small'
+                  size="small"
                   value={song.id}
                   onClick={handleRemoveSong}
                 >
-                  <CancelIcon
-                    color='secondary'
-                  />
+                  <CancelIcon color="secondary" />
                 </IconButton>
               </Paper>
             )

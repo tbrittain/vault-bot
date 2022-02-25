@@ -1,20 +1,20 @@
-export interface GetArtistsArgs {
+export interface IArtistInfo {
   id?: string
   name?: string
 }
 
-export interface FindArtistsLikeArgs {
+export interface IFindArtistsLikeArgs {
   searchQuery: string
 }
 
-export interface ArtistSongsParent {
+export interface IArtistSongsParent {
   id: string
 }
 
-export interface ArtistGenresParent {
+export interface IArtistGenresParent {
   id: string
 }
 
-export interface ArtistWikiBioParent {
+export interface IArtistWikiBioParent {
   name: string
 }

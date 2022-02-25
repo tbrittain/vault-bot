@@ -1,42 +1,26 @@
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@mui/styles'
 
 const gridStyles = makeStyles((theme) => ({
-  gridList: {
-    flexWrap: 'wrap',
-    transform: 'translateZ(0)',
-    margin: 0
-  },
+  gridList: {},
   gridContainer: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'space-around',
-    overflow: 'hidden',
-    backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing(2)
+    padding: theme.spacing(2),
   },
   tile: {
-    minWidth: 150,
-    height: '-moz-fit-content',
-    margin: 'auto',
-    display: 'flex',
-    justifyContent: 'center'
+    gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr)) !important',
+    minWidth: '10vw',
+    overflow: 'hidden',
   },
   button: {
-    width: '10vw',
-    minWidth: 125,
-    minHeight: 75
-  },
-  buttonContent: {
-    flexDirection: 'column',
-    alignItems: 'center'
+    minWidth: '10vw',
+    height: '75px !important',
+    wordBreak: 'initial',
   },
   artistGrid: {
     display: 'flex',
     flexFlow: 'row wrap',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
-  artistCard: {
-  },
+  artistCard: {},
   artistArt: {
     height: '12vw',
     width: '12vw',
@@ -47,9 +31,9 @@ const gridStyles = makeStyles((theme) => ({
     '&:hover': {
       transform: 'scale(1.75)',
       zIndex: 10,
-      boxShadow: '0px 0px 2px #adadad'
-    }
-  }
+      boxShadow: '0px 0px 2px #adadad',
+    },
+  },
 }))
 
 export default gridStyles

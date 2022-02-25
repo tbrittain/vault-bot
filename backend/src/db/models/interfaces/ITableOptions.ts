@@ -1,4 +1,4 @@
-export interface TableOptions {
+export interface ITableOptions {
   tableName: string
   timestamps: boolean
   underscored: boolean

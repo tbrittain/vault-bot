@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-const easeOutQuad = t => t * (2 - t)
+const easeOutQuad = (t) => t * (2 - t)
 const frameDuration = 1000 / 60
 
 const CountUpAnimation = ({ children, duration = 2000 }) => {
@@ -19,6 +19,8 @@ const CountUpAnimation = ({ children, duration = 2000 }) => {
         clearInterval(counter)
       }
     }, frameDuration)
+
+    return () => clearInterval(counter)
   }, [countTo, duration])
 
   return Math.floor(count)

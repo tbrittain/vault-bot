@@ -1,11 +1,7 @@
 import React from 'react'
-import {
-  Typography,
-  Paper,
-  Avatar
-} from '@material-ui/core'
 import ArtistAlbumSongs from './ArtistAlbumSongs'
 import artistStyles from './ArtistStyles'
+import { Avatar, Typography } from '@mui/material'
 
 const ArtistAlbum = (props) => {
   const classes = artistStyles()
@@ -15,47 +11,33 @@ const ArtistAlbum = (props) => {
     backgroundPosition: 'center center',
     backgroundSize: '100vw 100vw',
     filter: 'blur(20px)',
-    '-webkit-filter': 'blur(20px)',
+    WebkitFilter: 'blur(20px)',
     overflow: 'hidden',
-    zIndex: 1
+    zIndex: 1,
+    opacity: 0.5,
   }
   return (
     <div className={classes.album}>
       <div
         className={`${classes.albumInner} ${classes.albumDetails}`}
         style={{
-          zIndex: 2
+          zIndex: 2,
         }}
       >
         <div className={classes.albumName}>
           <Avatar
             src={art}
             alt={`${art} album art`}
-            variant='square'
+            variant="square"
             className={classes.albumArt}
           />
-          <Paper
-            elevation={3}
-            style={{
-              width: '100%'
-            }}
-          >
-            <Typography
-              variant='subtitle1'
-              className={classes.albumText}
-            >
-              {name}
-            </Typography>
-          </Paper>
+          <Typography variant="subtitle1" className={classes.albumText}>
+            {name}
+          </Typography>
         </div>
-        <ArtistAlbumSongs
-          songs={songs}
-        />
+        <ArtistAlbumSongs songs={songs} />
       </div>
-      <div
-        className={classes.albumInner}
-        style={backgroundStyling}
-      />
+      <div className={classes.albumInner} style={backgroundStyling} />
     </div>
   )
 }

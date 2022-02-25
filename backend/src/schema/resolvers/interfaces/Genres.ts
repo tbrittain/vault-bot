@@ -1,7 +1,7 @@
-export interface GetArtistsFromGenreArgs {
+export interface IGetArtistsFromGenreArgs {
   genreName: string
 }
 
-export interface FindGenresLikeArgs {
+export interface IFindGenresLikeArgs {
   searchQuery: string
 }

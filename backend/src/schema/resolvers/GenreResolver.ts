@@ -2,8 +2,8 @@ import { Op, Sequelize } from 'sequelize'
 import ArtistGenre from '../../db/models/ArtistGenre.model'
 import Artist from '../../db/models/Artist.model'
 import {
-  GetArtistsFromGenreArgs,
-  FindGenresLikeArgs
+  IFindGenresLikeArgs,
+  IGetArtistsFromGenreArgs
 } from './interfaces/Genres'
 
 export default {
@@ -25,7 +25,7 @@ export default {
       }
       return genres
     },
-    async getArtistsFromGenre(_parent, args: GetArtistsFromGenreArgs) {
+    async getArtistsFromGenre(_parent, args: IGetArtistsFromGenreArgs) {
       const { genreName } = args
       const results = await Artist.findAll({
         include: {
@@ -39,12 +39,10 @@ export default {
       if (artists.length > 0) {
         return artists
       } else {
-        throw new SyntaxError(
-          `No artists found matching provided genre: ${escape(genreName)}`
-        )
+        throw new SyntaxError('No artists found matching provided genre')
       }
     },
-    async findGenresLike(_parent, args: FindGenresLikeArgs) {
+    async findGenresLike(_parent, args: IFindGenresLikeArgs) {
       const { searchQuery } = args
       let results = await ArtistGenre.findAll({
         limit: 25,

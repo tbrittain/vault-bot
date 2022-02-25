@@ -1,10 +1,10 @@
 import HistTrack from '../../db/models/HistTrack.model'
 import { Op } from 'sequelize'
-import { GetHistTrackingArgs } from './interfaces/HistTracking'
+import { IGetHistTrackingArgs } from './interfaces/HistTracking'
 
 export default {
   Query: {
-    async getHistTracking(_parent, args: GetHistTrackingArgs) {
+    async getHistTracking(_parent, args: IGetHistTrackingArgs) {
       let endDate: Date
       if (args.endDate) {
         endDate = new Date(args.endDate)

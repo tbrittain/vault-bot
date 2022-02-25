@@ -10,9 +10,7 @@ const genreToHsl = (genreName) => {
   const g = Math.abs(lastChar.charCodeAt(0) - 97)
   const b = Math.abs(middleChar.charCodeAt(0) - 97)
 
-  const hue = (
-    (r * 7) + (g * 3) + (b * 5)
-  ) % 360
+  const hue = (r * 7 + g * 3 + b * 5) % 360
 
   let saturation = r
   let lightness = b

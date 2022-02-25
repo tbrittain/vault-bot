@@ -5,7 +5,7 @@ const ArtistAlbums = (props) => {
   const { albumSongs } = props
   return (
     <div>
-      {Object.keys(albumSongs).map(album => {
+      {Object.keys(albumSongs).map((album) => {
         return (
           <ArtistAlbum
             key={albumSongs[album].name}

@@ -3,18 +3,18 @@ import Song from '../../db/models/Song.model'
 import Artist from '../../db/models/Artist.model'
 import { Op } from 'sequelize'
 import {
-  GetArtistsArgs,
-  FindArtistsLikeArgs,
-  ArtistSongsParent,
-  ArtistGenresParent,
-  ArtistWikiBioParent
+  IArtistGenresParent,
+  IArtistInfo,
+  IArtistSongsParent,
+  IArtistWikiBioParent,
+  IFindArtistsLikeArgs
 } from './interfaces/Artists'
-import removeAccents from '../../utils/RemoveAccents'
+
 const axios = require('axios').default
 
 export default {
   Query: {
-    async getArtist(_parent, args: GetArtistsArgs) {
+    async getArtist(_parent, args: IArtistInfo) {
       if (!args.id && !args.name) {
         throw new SyntaxError(
           'Either an artist ID or artist name must be provided'
@@ -65,9 +65,8 @@ export default {
       result = JSON.parse(JSON.stringify(result))
       return result
     },
-    async findArtistsLike(_parent, args: FindArtistsLikeArgs) {
-      let { searchQuery } = args
-      searchQuery = escape(searchQuery)
+    async findArtistsLike(_parent, args: IFindArtistsLikeArgs) {
+      const { searchQuery } = args
       let result = await Artist.findAll({
         limit: 25,
         where: {
@@ -81,7 +80,7 @@ export default {
     }
   },
   Artist: {
-    async songs(parent: ArtistSongsParent) {
+    async songs(parent: IArtistSongsParent) {
       const artistId = parent.id
 
       let result = await Song.findAll({
@@ -98,7 +97,7 @@ export default {
       result = JSON.parse(JSON.stringify(result))
       return result
     },
-    async genres(parent: ArtistGenresParent) {
+    async genres(parent: IArtistGenresParent) {
       const artistId = parent.id
 
       let result = await ArtistGenre.findAll({
@@ -111,7 +110,7 @@ export default {
       result = JSON.parse(JSON.stringify(result))
       return result
     },
-    async wikiBio(parent: ArtistWikiBioParent) {
+    async wikiBio(parent: IArtistWikiBioParent) {
       const originalArtistName = String(parent.name)
       const FIND_WIKI_ARTICLE_URL =
         'https://en.wikipedia.org/w/api.php?action=query&origin=*&format=json&generator=search&gsrnamespace=0&gsrlimit=10&gsrsearch='
@@ -141,16 +140,16 @@ export default {
         'multi-instrumentalist'
       ]
 
-      // remove accented characters, which leads to error code 400 in wikipedia request
-      let artistNameNoSymbols = removeAccents(originalArtistName)
-      artistNameNoSymbols = artistNameNoSymbols.replace('.', '')
-      artistNameNoSymbols = artistNameNoSymbols.replace('&', '')
+      // URL-friendly version of the artist name
+      const encodedArtistName = encodeURIComponent(
+        originalArtistName.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      )
 
       let articles = await axios
-        .get(`${FIND_WIKI_ARTICLE_URL}'${artistNameNoSymbols}'`, {
+        .get(`${FIND_WIKI_ARTICLE_URL}'${encodedArtistName}'`, {
           headers: {
             'User-Agent':
-              'VaultBot GraphQL Backend/2.0.0 +https://vaultbot.tbrittain.com/'
+              'VaultBot GraphQL Backend/2.1.0 +https://vaultbot.tbrittain.com/'
           }
         })
         .then((res) => res.data.query.pages)
@@ -181,7 +180,7 @@ export default {
           const lowerCaseTitle = String(result.title).toLowerCase()
           if (
             lowerCaseTitle.includes(
-              `${artistNameNoSymbols.toLowerCase()} (${keyword})`
+              `${originalArtistName.toLowerCase()} (${keyword})`
             )
           ) {
             articleFound = true
@@ -206,7 +205,7 @@ export default {
           .get(`${WIKI_ARTICLE_CONTENT_URL}${artistArticleId}`, {
             headers: {
               'User-Agent':
-                'VaultBot GraphQL Backend/2.0.0 +https://vaultbot.tbrittain.com/'
+                'VaultBot GraphQL Backend/2.1.0 +https://vaultbot.tbrittain.com/'
             }
           })
           .then((res) => res.data.query.pages)
@@ -222,15 +221,16 @@ export default {
       } else {
         /*
         Parse through the articles from existing results for keywords
-        Generally the top result is going to be the artist if the artist
-        is popular enough to not have a keyword in the page title
+        Generally the top result (the lowest index article) is going
+        to be the artist if the artist is popular enough to not have
+        a keyword in the page title
         */
-        for (const result of articles) {
+        for (const article of articles) {
           const articleContent = await axios
-            .get(`${WIKI_ARTICLE_CONTENT_URL}${result.pageid}`, {
+            .get(`${WIKI_ARTICLE_CONTENT_URL}${article.pageid}`, {
               headers: {
                 'User-Agent':
-                  'VaultBot GraphQL Backend/2.0.0 +https://vaultbot.tbrittain.com/'
+                  'VaultBot GraphQL Backend/2.1.0 +https://vaultbot.tbrittain.com/'
               }
             })
             .then((res) => res.data.query.pages)
@@ -238,7 +238,7 @@ export default {
             .catch((err) => console.error(err))
 
           let rawArticle = String(articleContent.extract).toLowerCase()
-          rawArticle = rawArticle.replace(/[^a-zA-Z0-9_ -]/g, '')
+          rawArticle = rawArticle.replace(/[^a-zA-Z0-9À-ÿ_ -]/g, '')
 
           const lowerCaseArtist = String(originalArtistName).toLowerCase()
 
@@ -248,7 +248,9 @@ export default {
               rawArticle.includes(` ${lowerCaseArtist} `) ||
               rawArticle.includes(`${lowerCaseArtist} `)
             if (articleIncludesKeyword && articleIncludesArtistName) {
-              // issues when artist name is their real name (but not full name)
+              // Known issue when artist name is their real name (but not full name)
+              // https://github.com/tbrittain/vault-bot/issues/24
+
               artistPageName = articleContent.title.replace(' ', '_')
               const articleLink = `https://en.wikipedia.org/wiki/${artistPageName}`
               return {

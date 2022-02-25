@@ -1,23 +1,18 @@
 import React from 'react'
-import {
-  Typography,
-  CircularProgress,
-  Grid
-} from '@material-ui/core'
 import homeStyles from './HomeStyles'
-import { useQuery, gql } from '@apollo/client'
-import { Alert } from '@material-ui/lab'
+import { gql, useQuery } from '@apollo/client'
 import CountUpAnimation from '../effects/CountUpAnimation'
 import './textAnimate.css'
+import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
 
 const QUERY = gql`
   query {
     getCurrentOverallStats {
-        dynamicNumTracks
-        archiveNumTracks
-        totalNumTracks
-        totalNumArtists
-        totalNumGenres
+      dynamicNumTracks
+      archiveNumTracks
+      totalNumTracks
+      totalNumArtists
+      totalNumGenres
     }
   }
 `
@@ -45,15 +40,15 @@ const GeneralStats = () => {
           alignItems: 'center',
           userSelect: 'none',
           '& > * + *': {
-            margin: 'auto auto'
-          }
+            margin: 'auto auto',
+          },
         }}
       >
         <CircularProgress />
         <Typography
-          variant='body2'
+          variant="body2"
           style={{
-            marginTop: 5
+            marginTop: 5,
           }}
         >
           Loading stats...
@@ -64,62 +59,45 @@ const GeneralStats = () => {
 
   if (error) {
     return (
-      <Alert severity='error'>An error occurred during data retrieval :(</Alert>
+      <Alert severity="error">An error occurred during data retrieval :(</Alert>
     )
   }
 
   if (formattedData) {
     return (
-      <div
-        className={classes.generalStats}
-      >
+      <div className={classes.generalStats}>
         <div
           style={{
-            width: '100%'
+            width: '100%',
           }}
         >
-          <svg
-            className={classes.animateText}
-          >
-            <symbol id='s-text'>
-              <text
-                text-anchor='middle'
-                x='50%'
-                y='80%'
-              >
+          <svg className={classes.animateText}>
+            <symbol id="s-text">
+              <text textAnchor="middle" x="50%" y="80%">
                 At a Glance:
               </text>
             </symbol>
-            <g className='g-ants'>
-              <use xlinkHref='#s-text' className='textCopy' />
-              <use xlinkHref='#s-text' className='textCopy' />
-              <use xlinkHref='#s-text' className='textCopy' />
-              <use xlinkHref='#s-text' className='textCopy' />
-              <use xlinkHref='#s-text' className='textCopy' />
+            <g className="g-ants">
+              <use xlinkHref="#s-text" className="textCopy" />
+              <use xlinkHref="#s-text" className="textCopy" />
+              <use xlinkHref="#s-text" className="textCopy" />
+              <use xlinkHref="#s-text" className="textCopy" />
+              <use xlinkHref="#s-text" className="textCopy" />
             </g>
           </svg>
         </div>
         <Grid
           className={classes.statsContainer}
           container
-          direction='column'
-          justifyContent='space-between'
-          alignItems='center'
+          direction="column"
+          justifyContent="space-between"
+          alignItems="center"
         >
-          <Grid
-            item
-            className={classes.animateContainer}
-          >
-            <Typography
-              variant='h6'
-              className={classes.statDescription}
-            >
+          <Grid item className={classes.animateContainer}>
+            <Typography variant="h6" className={classes.statDescription}>
               Tracks in dynamic playlist:
             </Typography>
-            <Typography
-              variant='h6'
-              className={classes.numberHighlight}
-            >
+            <Typography variant="h6" className={classes.numberHighlight}>
               <i>
                 <CountUpAnimation>
                   {Number(formattedData.dynamicNumTracks)}
@@ -131,19 +109,13 @@ const GeneralStats = () => {
             item
             className={classes.animateContainer}
             style={{
-              animationDelay: '0.25s'
+              animationDelay: '0.25s',
             }}
           >
-            <Typography
-              variant='h6'
-              className={classes.statDescription}
-            >
+            <Typography variant="h6" className={classes.statDescription}>
               Tracks in archive playlist:
             </Typography>
-            <Typography
-              variant='h6'
-              className={classes.numberHighlight}
-            >
+            <Typography variant="h6" className={classes.numberHighlight}>
               <i>
                 <CountUpAnimation>
                   {Number(formattedData.archiveNumTracks)}
@@ -155,19 +127,13 @@ const GeneralStats = () => {
             item
             className={classes.animateContainer}
             style={{
-              animationDelay: '0.5s'
+              animationDelay: '0.5s',
             }}
           >
-            <Typography
-              variant='h6'
-              className={classes.statDescription}
-            >
+            <Typography variant="h6" className={classes.statDescription}>
               Unique tracks:
             </Typography>
-            <Typography
-              variant='h6'
-              className={classes.numberHighlight}
-            >
+            <Typography variant="h6" className={classes.numberHighlight}>
               <i>
                 <CountUpAnimation>
                   {Number(formattedData.totalNumTracks)}
@@ -179,19 +145,13 @@ const GeneralStats = () => {
             item
             className={classes.animateContainer}
             style={{
-              animationDelay: '0.75s'
+              animationDelay: '0.75s',
             }}
           >
-            <Typography
-              variant='h6'
-              className={classes.statDescription}
-            >
+            <Typography variant="h6" className={classes.statDescription}>
               Unique artists:
             </Typography>
-            <Typography
-              variant='h6'
-              className={classes.numberHighlight}
-            >
+            <Typography variant="h6" className={classes.numberHighlight}>
               <i>
                 <CountUpAnimation>
                   {Number(formattedData.totalNumArtists)}
@@ -207,24 +167,18 @@ const GeneralStats = () => {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              textAlign: 'center'
+              textAlign: 'center',
             }}
           >
             <div
               style={{
-                display: 'inline-flex'
+                display: 'inline-flex',
               }}
             >
-              <Typography
-                variant='h6'
-                className={classes.statDescription}
-              >
+              <Typography variant="h6" className={classes.statDescription}>
                 Unique genres:
               </Typography>
-              <Typography
-                variant='h6'
-                className={classes.numberHighlight}
-              >
+              <Typography variant="h6" className={classes.numberHighlight}>
                 <i>
                   <CountUpAnimation>
                     {Number(formattedData.totalNumGenres)}
@@ -234,15 +188,21 @@ const GeneralStats = () => {
             </div>
             <div>
               <Typography
-                variant='subtitle1'
+                variant="subtitle1"
                 style={{
-                  color: 'grey'
+                  color: 'grey',
                 }}
               >
-                <i>({((Number(formattedData.totalNumGenres) / 5508) * 100).toFixed(2)}% of total genres tracked by Spotify!)</i>
+                <i>
+                  (
+                  {(
+                    (Number(formattedData.totalNumGenres) / 5508) *
+                    100
+                  ).toFixed(2)}
+                  % of total genres tracked by Spotify!)
+                </i>
               </Typography>
             </div>
-
           </Grid>
         </Grid>
       </div>

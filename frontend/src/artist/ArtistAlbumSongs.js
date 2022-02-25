@@ -10,19 +10,14 @@ const ArtistAlbumSongs = (props) => {
       style={{
         width: '100%',
         display: 'flex',
-        justifyContent: 'center'
+        justifyContent: 'center',
       }}
     >
       <div className={classes.albumSongGrid}>
-        {songs.map(song => (
-          <ArtistAlbumSong
-            key={song.id}
-            id={song.id}
-            name={song.name}
-          />
+        {songs.map((song) => (
+          <ArtistAlbumSong key={song.id} id={song.id} name={song.name} />
         ))}
       </div>
-
     </div>
   )
 }

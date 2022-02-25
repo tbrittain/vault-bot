@@ -1,12 +1,8 @@
 import React from 'react'
-import { useQuery, gql } from '@apollo/client'
-import {
-  CircularProgress,
-  Typography
-} from '@material-ui/core'
-import { Alert } from '@material-ui/lab'
+import { gql, useQuery } from '@apollo/client'
 import CharCompare from './CharCompare'
 import songStyles from './SongStyles'
+import { Alert, CircularProgress, Typography } from '@mui/material'
 
 const QUERY = gql`
   query {
@@ -23,6 +19,10 @@ const QUERY = gql`
     }
   }
 `
+
+// TODO: replace with radar chart
+// https://www.chartjs.org/docs/latest/charts/radar.html
+
 const SongChars = (props) => {
   const { loading, error, data } = useQuery(QUERY)
   const classes = songStyles()
@@ -36,12 +36,16 @@ const SongChars = (props) => {
 
   if (loading || processing) {
     return (
-      <CircularProgress />
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <CircularProgress />
+      </div>
     )
   }
 
   if (error) {
-    <Alert severity='error'>An error occurred during data retrieval :(</Alert>
+    return (
+      <Alert severity="error">An error occurred during data retrieval :(</Alert>
+    )
   }
 
   if (formattedData) {
@@ -50,26 +54,24 @@ const SongChars = (props) => {
         className={classes.innerContainer}
         style={{
           flexDirection: 'column',
-          marginTop: 10
+          marginTop: 10,
         }}
       >
-        <div
-          className={classes.songComparisonSmall}
-        >
+        <div className={classes.songComparisonSmall}>
           <div
             style={{
               width: '50%',
               margin: 'auto',
-              textAlign: 'left'
+              textAlign: 'left',
             }}
           >
             <Typography
-              variant='subtitle1'
-              style={{
+              variant="subtitle1"
+              sx={{
                 lineHeight: 'inherit',
                 marginBottom: 10,
                 fontSize: '2ch',
-                fontWeight: 300
+                fontWeight: 'fontWeightLight',
               }}
             >
               {props.songName}
@@ -79,32 +81,28 @@ const SongChars = (props) => {
             style={{
               width: '50%',
               margin: 'auto',
-              textAlign: 'right'
+              textAlign: 'right',
             }}
           >
             <Typography
-              variant='subtitle1'
-              style={{
+              variant="subtitle1"
+              sx={{
                 lineHeight: 'inherit',
                 fontSize: '2ch',
-                fontWeight: 300
+                fontWeight: 'fontWeightLight',
               }}
             >
               Total song average
             </Typography>
           </div>
         </div>
-        <div
-          style={{ display: 'flex' }}
-        >
-          <div
-            className={classes.songComparison}
-          >
+        <div style={{ display: 'flex' }}>
+          <div className={classes.songComparison}>
             <Typography
-              variant='h6'
-              style={{
-                fontWeight: 300,
-                lineHeight: 'inherit'
+              variant="h6"
+              sx={{
+                fontWeight: 'fontWeightLight',
+                lineHeight: 'inherit',
               }}
             >
               {props.songName}
@@ -114,48 +112,46 @@ const SongChars = (props) => {
             style={{
               display: 'flex',
               flexDirection: 'column',
-              margin: 15
+              margin: 15,
             }}
           >
             <CharCompare
-              name='length'
+              name="length"
               avgStat={formattedData.length}
               stat={props.details.length}
             />
             <CharCompare
-              name='tempo'
+              name="tempo"
               avgStat={formattedData.tempo}
               stat={props.details.tempo}
             />
             <CharCompare
-              name='energy'
+              name="energy"
               avgStat={formattedData.energy}
               stat={props.details.energy}
             />
             <CharCompare
-              name='danceability'
+              name="danceability"
               avgStat={formattedData.danceability}
               stat={props.details.danceability}
             />
             <CharCompare
-              name='valence'
+              name="valence"
               avgStat={formattedData.valence}
               stat={props.details.valence}
             />
             <CharCompare
-              name='loudness'
+              name="loudness"
               avgStat={formattedData.loudness}
               stat={props.details.loudness}
             />
           </div>
-          <div
-            className={classes.songComparison}
-          >
+          <div className={classes.songComparison}>
             <Typography
-              variant='h6'
-              style={{
-                fontWeight: 300,
-                lineHeight: 'inherit'
+              variant="h6"
+              sx={{
+                fontWeight: 'fontWeightLight',
+                lineHeight: 'inherit',
               }}
             >
               Total song average
