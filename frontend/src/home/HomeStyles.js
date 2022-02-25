@@ -68,9 +68,9 @@ const homeStyles = makeStyles((theme) => ({
       theme.palette.mode === 'light'
         ? theme.palette.secondary.main
         : theme.palette.primary.contrastText,
-    fontWeight: theme.typography.fontWeightBold,
     transition: '0.3s',
     margin: 5,
+    paddingRight: 5,
     '&:hover': {
       color: theme.palette.secondary.light,
     },
@@ -90,8 +90,8 @@ const homeStyles = makeStyles((theme) => ({
     height: '12vw',
     margin: 15,
     boxShadow: '0px 0px 4px #adadad',
-    minHeight: 75,
-    minWidth: 75,
+    minHeight: 125,
+    minWidth: 125,
     [theme.breakpoints.down('sm')]: {
       minHeight: 175,
       minWidth: 175,

@@ -8,6 +8,7 @@ import {
   Box,
   CircularProgress,
   Typography,
+  useMediaQuery,
   useTheme,
 } from '@mui/material'
 
@@ -34,6 +35,7 @@ export default function SimilarSongs(props) {
   const { loading, error, data } = useQuery(QUERY, {
     variables: { getSimilarTracksId: songId },
   })
+  const isMobile = useMediaQuery('(max-width:400px)')
 
   const classes = songStyles()
   const theme = useTheme()
@@ -62,11 +64,13 @@ export default function SimilarSongs(props) {
 
   if (formattedData.length === 0) {
     return (
-      <Box className={classes.noSongs}>
+      <Box>
         <Typography variant="h6">No similar songs found :(</Typography>
       </Box>
     )
   }
+
+  console.log(isMobile)
 
   return (
     <div
@@ -91,18 +95,21 @@ export default function SimilarSongs(props) {
               }}
             >
               <div className={classes.similarSongDetails}>
-                <Avatar
-                  src={song.song.art}
-                  alt={song.song.name}
-                  className={classes.similarSongArt}
-                />
+                {!isMobile && (
+                  <Avatar
+                    src={song.song.art}
+                    alt={song.song.name}
+                    className={classes.similarSongArt}
+                  />
+                )}
                 <div style={{ width: '80%' }}>
                   <Typography
                     variant="h6"
-                    className={`${classes.albumText} ${classes.similarSongSongText}`}
-                    style={{
+                    className={classes.albumText}
+                    sx={{
                       textDecoration: 'none',
                       lineHeight: '1.15',
+                      fontWeight: 'fontWeightRegular',
                       [theme.breakpoints.down('sm')]: {
                         fontSize: '1.5rem',
                       },
@@ -112,12 +119,23 @@ export default function SimilarSongs(props) {
                   </Typography>
                   <Typography
                     variant="h6"
-                    className={`${classes.albumText} ${classes.similarSongArtistText}`}
+                    className={classes.albumText}
+                    sx={{
+                      fontWeight: 'fontWeightLight',
+                      [theme.breakpoints.down('sm')]: {
+                        fontSize: '1.5rem',
+                      },
+                    }}
                   >
                     by{' '}
                     <Box
                       display="inline"
-                      sx={{ fontWeight: 'fontWeightRegular' }}
+                      sx={{
+                        fontWeight: 'fontWeightRegular',
+                        [theme.breakpoints.down('sm')]: {
+                          fontSize: '1.5rem',
+                        },
+                      }}
                     >
                       {song.song.artist.name}
                     </Box>

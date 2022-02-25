@@ -58,6 +58,10 @@ const SongDetails = (props) => {
     }
   }
 
+  const tabStyle = {
+    fontWeight: 'fontWeightLight',
+  }
+
   return (
     <Paper elevation={3} className={classes.outerContainer}>
       <AppBar position="static" className={classes.navBar}>
@@ -69,11 +73,15 @@ const SongDetails = (props) => {
           onChange={handleChange}
           aria-label="Song details navbar"
           centered
+          textColor="secondary"
+          indicatorColor="secondary"
+          variant="scrollable"
+          scrollButtons="auto"
         >
-          <Tab label="Details" />
-          <Tab label="Characteristics" />
-          <Tab label="Similar Songs" />
-          <Tab label="History" />
+          <Tab label="Details" sx={tabStyle} />
+          <Tab label="Characteristics" sx={tabStyle} />
+          <Tab label="Similar Songs" sx={tabStyle} />
+          <Tab label="History" sx={tabStyle} />
         </Tabs>
       </AppBar>
       <SwipeableViews
@@ -117,7 +125,7 @@ const SongDetails = (props) => {
                       <IconButton
                         size="medium"
                         color="primary"
-                        style={{
+                        sx={{
                           backgroundColor: 'rgba(0, 0, 0, 0.4)',
                         }}
                         onClick={stopSound}
@@ -162,7 +170,7 @@ const SongDetails = (props) => {
             >
               <Typography
                 variant="h4"
-                style={{
+                sx={{
                   lineHeight: 'inherit',
                 }}
               >
@@ -174,9 +182,11 @@ const SongDetails = (props) => {
               </Typography>
               <Typography
                 variant="h6"
-                style={{
+                sx={{
                   lineHeight: 'inherit',
-                  paddingTop: 10,
+                  [theme.breakpoints.up('sm')]: {
+                    paddingTop: 3,
+                  },
                 }}
               >
                 <Box component="span" sx={{ fontWeight: 'fontWeightLight' }}>
@@ -188,10 +198,11 @@ const SongDetails = (props) => {
                 variant="contained"
                 component="a"
                 href={songLink}
-                style={{
+                sx={{
                   marginTop: 10,
                   backgroundColor: 'rgb(35, 207, 95)',
                   color: 'white',
+                  fontWeight: 'fontWeightLight',
                 }}
               >
                 Open on Spotify

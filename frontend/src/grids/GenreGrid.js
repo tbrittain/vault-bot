@@ -5,6 +5,7 @@ import genreToMuiColor from '../utils/genreToMuiColor'
 import {
   Button,
   ImageList,
+  ImageListItem,
   lighten,
   Typography,
   useMediaQuery,
@@ -18,7 +19,7 @@ const GenreGrid = (props) => {
 
   return (
     <div className={classes.gridContainer}>
-      {props.genres !== undefined && (
+      {props?.genres && (
         <ImageList
           className={classes.gridList}
           cols={
@@ -29,39 +30,35 @@ const GenreGrid = (props) => {
               : 4
           }
         >
-          {props.genres.map(
-            (
-              genre // TODO: overflow is broken on song page
-            ) => (
-              <ImageList key={genre} className={classes.tile}>
-                <Button
-                  variant="contained"
-                  size="large"
-                  className={classes.button}
-                  component={Link}
-                  to={`/genres/${genre}`}
-                  lang="en"
+          {props.genres.map((genre) => (
+            <ImageListItem key={genre} className={classes.tile}>
+              <Button
+                variant="contained"
+                size="large"
+                className={classes.button}
+                component={Link}
+                to={`/genres/${genre}`}
+                lang="en"
+                sx={{
+                  backgroundColor: genreToMuiColor(genre),
+                  '&:hover': {
+                    backgroundColor: lighten(genreToMuiColor(genre), 0.25),
+                  },
+                }}
+              >
+                <Typography
+                  variant="body1"
                   sx={{
-                    backgroundColor: genreToMuiColor(genre),
-                    '&:hover': {
-                      backgroundColor: lighten(genreToMuiColor(genre), 0.25),
-                    },
+                    color: theme.palette.getContrastText(
+                      genreToMuiColor(genre)
+                    ),
                   }}
                 >
-                  <Typography
-                    variant="body1"
-                    sx={{
-                      color: theme.palette.getContrastText(
-                        genreToMuiColor(genre)
-                      ),
-                    }}
-                  >
-                    {genre}
-                  </Typography>
-                </Button>
-              </ImageList>
-            )
-          )}
+                  {genre}
+                </Typography>
+              </Button>
+            </ImageListItem>
+          ))}
         </ImageList>
       )}
       {typeof props.genres === 'undefined' && (

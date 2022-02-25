@@ -15,7 +15,7 @@ const SongArtist = (props) => {
           className={classes.artistArt}
           component={Link}
           to={`/artists/${props.id}`}
-          style={{
+          sx={{
             marginBottom: '0.5rem',
           }}
         />

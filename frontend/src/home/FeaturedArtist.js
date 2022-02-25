@@ -102,7 +102,12 @@ const FeaturedArtist = () => {
             lineHeight: 'inherit',
           }}
         >
-          Featured artist for {dateToday.toLocaleDateString()}
+          Featured artist for{' '}
+          {dateToday.toLocaleDateString(undefined, {
+            weekday: 'long',
+            month: 'long',
+            day: 'numeric',
+          })}
         </Typography>
       </div>
       <div>
@@ -141,6 +146,9 @@ const FeaturedArtist = () => {
                 to={`/artists/${formattedData.id}`}
                 variant="h2"
                 className={classes.featuredArtistName}
+                sx={{
+                  fontWeight: 'bold',
+                }}
               >
                 <i>{formattedData.name}</i>
               </Typography>

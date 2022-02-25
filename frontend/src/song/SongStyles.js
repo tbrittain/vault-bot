@@ -7,14 +7,12 @@ const songStyles = makeStyles((theme) => ({
     animationIterationCount: 'infinite',
   },
   albumArt: {
-    width: 'calc(12vw + 5rem)',
-    height: 'calc(12vw + 5rem)',
     margin: theme.spacing(4),
     boxShadow: '0px 0px 4px #adadad',
+    minWidth: 175,
+    minHeight: 175,
     [theme.breakpoints.down('sm')]: {
       margin: theme.spacing(2),
-      minWidth: 175,
-      minHeight: 175,
     },
   },
   outerContainer: {
@@ -77,10 +75,8 @@ const songStyles = makeStyles((theme) => ({
     height: '12vw',
     margin: 'auto',
     boxShadow: '0px 0px 4px #adadad',
-    [theme.breakpoints.down('sm')]: {
-      minWidth: 150,
-      minHeight: 150,
-    },
+    minWidth: 150,
+    minHeight: 150,
   },
   genreContainer: {
     width: '65%',
@@ -123,7 +119,7 @@ const songStyles = makeStyles((theme) => ({
     margin: 5,
     textDecoration: 'none',
     transition: '0.3s',
-    padding: '0 3%',
+    padding: 5,
     height: 'fit-content',
     lineHeight: 'inherit',
     '&:hover': {
@@ -176,25 +172,15 @@ const songStyles = makeStyles((theme) => ({
     width: '100%',
   },
   similarSongArt: {
-    width: '8vw',
-    height: '8vw',
     marginLeft: '1rem',
+    marginRight: '1rem',
     boxShadow: '0px 0px 4px #adadad',
-    [theme.breakpoints.down('sm')]: {
-      minWidth: 75,
-      minHeight: 75,
-    },
+    minWidth: 75,
+    minHeight: 75,
   },
   similarSongSongText: {
     [theme.breakpoints.down('sm')]: {
       fontSize: '1.5rem',
-    },
-  },
-  similarSongArtistText: {
-    fontWeight: theme.typography.fontWeightLight,
-    fontSize: '1.5rem',
-    [theme.breakpoints.down('sm')]: {
-      fontSize: '1.1rem',
     },
   },
   similarSongScore: {

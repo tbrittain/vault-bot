@@ -79,6 +79,9 @@ function Header() {
               className={classes.menuButton}
               component={Link}
               to="/songs"
+              sx={{
+                fontWeight: 'fontWeightLight',
+              }}
             >
               Songs
             </Button>
@@ -87,6 +90,9 @@ function Header() {
               className={classes.menuButton}
               component={Link}
               to="/artists"
+              sx={{
+                fontWeight: 'fontWeightLight',
+              }}
             >
               Artists
             </Button>
@@ -95,6 +101,9 @@ function Header() {
               className={classes.menuButton}
               component={Link}
               to="/genres"
+              sx={{
+                fontWeight: 'fontWeightLight',
+              }}
             >
               Genres
             </Button>
