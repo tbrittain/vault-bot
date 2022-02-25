@@ -28,7 +28,7 @@ const homeStyles = makeStyles((theme) => ({
     zIndex: 50,
   },
   animateText: {
-    fontSize: '5em',
+    fontSize: '4em',
     fontWeight: theme.typography.fontWeightBold,
     width: '100%',
     height: '6vw',

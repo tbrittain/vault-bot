@@ -19,6 +19,7 @@ import {
   Tab,
   Tabs,
   Typography,
+  useMediaQuery,
   useTheme,
 } from '@mui/material'
 
@@ -29,6 +30,7 @@ const SongDetails = (props) => {
 
   const [value, setValue] = useState(0)
   const [playing, setPlaying] = useState(false)
+  const isMobile = useMediaQuery('(max-width:525px)')
 
   const handleChange = (event, newValue) => {
     setValue(newValue)
@@ -62,6 +64,12 @@ const SongDetails = (props) => {
     fontWeight: 'fontWeightLight',
   }
 
+  const mobileTabProps = {
+    variant: 'scrollable',
+    scrollButtons: true,
+    allowScrollButtonsMobile: true,
+  }
+
   return (
     <Paper elevation={3} className={classes.outerContainer}>
       <AppBar position="static" className={classes.navBar}>
@@ -71,12 +79,10 @@ const SongDetails = (props) => {
         <Tabs
           value={value}
           onChange={handleChange}
-          aria-label="Song details navbar"
           centered
           textColor="secondary"
           indicatorColor="secondary"
-          variant="scrollable"
-          scrollButtons="auto"
+          {...(isMobile ? mobileTabProps : {})}
         >
           <Tab label="Details" sx={tabStyle} />
           <Tab label="Characteristics" sx={tabStyle} />

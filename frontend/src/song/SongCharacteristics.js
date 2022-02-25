@@ -149,7 +149,7 @@ const SongChars = (props) => {
           <div className={classes.songComparison}>
             <Typography
               variant="h6"
-              style={{
+              sx={{
                 fontWeight: 'fontWeightLight',
                 lineHeight: 'inherit',
               }}
