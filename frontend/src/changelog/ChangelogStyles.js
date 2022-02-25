@@ -1,14 +1,14 @@
-import { makeStyles } from "@mui/styles";
+import { makeStyles } from '@mui/styles'
 
 const changeLogStyles = makeStyles(() => ({
   changeLogContainer: {
-    maxHeight: "80vh",
-    overflow: "auto",
+    maxHeight: '80vh',
+    overflow: 'auto',
   },
   post: {
-    margin: "2%",
-    padding: "2%",
+    margin: '2%',
+    padding: '2%',
   },
-}));
+}))
 
-export default changeLogStyles;
+export default changeLogStyles

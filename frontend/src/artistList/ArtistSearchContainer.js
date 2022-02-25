@@ -1,8 +1,8 @@
-import React from "react";
-import artistListStyles from "./ArtistListStyles";
-import { gql, useQuery } from "@apollo/client";
-import ArtistSearchResult from "./ArtistSearchResult";
-import { Alert, Grid, Paper, Typography } from "@mui/material";
+import React from 'react'
+import artistListStyles from './ArtistListStyles'
+import { gql, useQuery } from '@apollo/client'
+import ArtistSearchResult from './ArtistSearchResult'
+import { Alert, Grid, Paper, Typography } from '@mui/material'
 
 const QUERY = gql`
   query ($searchQuery: String!) {
@@ -12,25 +12,25 @@ const QUERY = gql`
       art
     }
   }
-`;
+`
 
 const ArtistSearchContainer = (props) => {
-  const classes = artistListStyles();
-  const { searchQuery } = props;
+  const classes = artistListStyles()
+  const { searchQuery } = props
   const { error, data } = useQuery(QUERY, {
     variables: {
       searchQuery,
     },
-  });
-  let formattedData;
+  })
+  let formattedData
   if (data) {
-    formattedData = data.findArtistsLike;
+    formattedData = data.findArtistsLike
   }
 
   if (error) {
     return (
       <Alert severity="error">An error occurred during data retrieval :(</Alert>
-    );
+    )
   }
 
   return (
@@ -57,7 +57,7 @@ const ArtistSearchContainer = (props) => {
         </Grid>
       )}
     </Grid>
-  );
-};
+  )
+}
 
-export default ArtistSearchContainer;
+export default ArtistSearchContainer

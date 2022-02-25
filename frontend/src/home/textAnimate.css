@@ -8,38 +8,40 @@
   stroke: white;
   stroke-dasharray: 6% 29%;
   stroke-width: 3px;
-  stroke-dashoffset: 0%;
+  stroke-dashoffset: 0;
   animation: stroke-offset 7.5s infinite linear;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   user-select: none;
 }
 
-.textCopy:nth-child(1){
-stroke: #BCE7FD;
-animation-delay: -1;
+.textCopy:nth-child(1) {
+  stroke: #bce7fd;
+  animation-delay: -1s;
 }
 
-.textCopy:nth-child(2){
-stroke: #94CBE7;
-animation-delay: -2s;
+.textCopy:nth-child(2) {
+  stroke: #94cbe7;
+  animation-delay: -2s;
 }
 
-.textCopy:nth-child(3){
-stroke: #6CAFD0;
-animation-delay: -3s;
+.textCopy:nth-child(3) {
+  stroke: #6cafd0;
+  animation-delay: -3s;
 }
 
-.textCopy:nth-child(4){
-stroke: #4392BA;
-animation-delay: -4s;
+.textCopy:nth-child(4) {
+  stroke: #4392ba;
+  animation-delay: -4s;
 }
 
-.textCopy:nth-child(5){
-stroke: #1B76A3;
-animation-delay: -5s;
+.textCopy:nth-child(5) {
+  stroke: #1b76a3;
+  animation-delay: -5s;
 }
 
-@keyframes stroke-offset{
-100% {stroke-dashoffset: -35%;}
+@keyframes stroke-offset {
+  100% {
+    stroke-dashoffset: -35%;
+  }
 }

@@ -1,12 +1,12 @@
-import React from "react";
-import footerStyles from "./FooterStyles";
-import { Typography } from "@mui/material";
+import React from 'react'
+import footerStyles from './FooterStyles'
+import { Typography } from '@mui/material'
 
 function Copyright() {
-  const classes = footerStyles();
+  const classes = footerStyles()
   return (
     <Typography variant="body2" color="textSecondary" align="center">
-      {"Copyright © "}
+      {'Copyright © '}
       <a
         href="https://tbrittain.com/"
         target="_blank"
@@ -14,10 +14,10 @@ function Copyright() {
         className={classes.copyrightLink}
       >
         Trey Brittain
-      </a>{" "}
+      </a>{' '}
       {new Date().getFullYear()}.
     </Typography>
-  );
+  )
 }
 
-export default Copyright;
+export default Copyright

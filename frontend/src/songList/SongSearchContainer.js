@@ -1,8 +1,8 @@
-import React from "react";
-import songListStyles from "./SongListStyles";
-import { gql, useQuery } from "@apollo/client";
-import SongSearchResult from "./SongSearchResult";
-import { Alert, Grid, Paper, Typography } from "@mui/material";
+import React from 'react'
+import songListStyles from './SongListStyles'
+import { gql, useQuery } from '@apollo/client'
+import SongSearchResult from './SongSearchResult'
+import { Alert, Grid, Paper, Typography } from '@mui/material'
 
 const QUERY = gql`
   query ($searchQuery: String!) {
@@ -16,25 +16,25 @@ const QUERY = gql`
       }
     }
   }
-`;
+`
 
 const SongSearchContainer = (props) => {
-  const classes = songListStyles();
-  const { searchQuery } = props;
+  const classes = songListStyles()
+  const { searchQuery } = props
   const { error, data } = useQuery(QUERY, {
     variables: {
       searchQuery,
     },
-  });
-  let formattedData;
+  })
+  let formattedData
   if (data) {
-    formattedData = data.findTracksLike;
+    formattedData = data.findTracksLike
   }
 
   if (error) {
     return (
       <Alert severity="error">An error occurred during data retrieval :(</Alert>
-    );
+    )
   }
 
   return (
@@ -63,7 +63,7 @@ const SongSearchContainer = (props) => {
         </Grid>
       )}
     </Grid>
-  );
-};
+  )
+}
 
-export default SongSearchContainer;
+export default SongSearchContainer

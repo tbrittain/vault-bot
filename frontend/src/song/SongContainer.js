@@ -1,10 +1,10 @@
-import React from "react";
-import { useParams } from "react-router-dom";
-import { gql, useQuery } from "@apollo/client";
-import SongDetails from "./SongDetails";
-import SongArtist from "./SongArtist";
-import LoadingScreen from "../loading/LoadingScreen";
-import { Alert, Grid, Typography } from "@mui/material";
+import React from 'react'
+import { useParams } from 'react-router-dom'
+import { gql, useQuery } from '@apollo/client'
+import SongDetails from './SongDetails'
+import SongArtist from './SongArtist'
+import LoadingScreen from '../loading/LoadingScreen'
+import { Alert, Grid, Typography } from '@mui/material'
 
 const QUERY = gql`
   query ($songId: String!) {
@@ -35,37 +35,37 @@ const QUERY = gql`
       }
     }
   }
-`;
+`
 
 const SongContainer = () => {
-  const { songId } = useParams();
+  const { songId } = useParams()
   const { loading, error, data } = useQuery(QUERY, {
     variables: {
       songId,
     },
-  });
+  })
 
-  let formattedData;
-  let artistGenres;
-  let processing = true;
+  let formattedData
+  let artistGenres
+  let processing = true
   if (data) {
-    formattedData = data;
-    formattedData = data.getTrack;
+    formattedData = data
+    formattedData = data.getTrack
     if (formattedData.artist.genres.length > 0) {
-      artistGenres = formattedData.artist.genres;
-      artistGenres = artistGenres.map((genreObject) => genreObject.genre);
+      artistGenres = formattedData.artist.genres
+      artistGenres = artistGenres.map((genreObject) => genreObject.genre)
     }
-    processing = false;
+    processing = false
   }
 
   if (loading || processing) {
-    return <LoadingScreen text="Loading song..." />;
+    return <LoadingScreen text="Loading song..." />
   }
 
   if (error) {
     return (
       <Alert severity="error">An error occurred during data retrieval :(</Alert>
-    );
+    )
   }
 
   return (
@@ -91,7 +91,7 @@ const SongContainer = () => {
         />
       </Grid>
     </>
-  );
-};
+  )
+}
 
-export default SongContainer;
+export default SongContainer

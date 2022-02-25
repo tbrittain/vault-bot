@@ -1,6 +1,6 @@
-import React from "react";
-import ArtistViewer from "./ArtistViewer";
-import { Typography } from "@mui/material";
+import React from 'react'
+import ArtistViewer from './ArtistViewer'
+import { Typography } from '@mui/material'
 
 const ArtistListContainer = () => {
   return (
@@ -11,7 +11,7 @@ const ArtistListContainer = () => {
       </Typography>
       <ArtistViewer />
     </div>
-  );
-};
+  )
+}
 
-export default ArtistListContainer;
+export default ArtistListContainer

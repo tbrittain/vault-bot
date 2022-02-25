@@ -1,5 +1,5 @@
-import React from "react";
-import tableStyles from "./TableStyles";
+import React from 'react'
+import tableStyles from './TableStyles'
 import {
   Paper,
   Table,
@@ -9,10 +9,10 @@ import {
   TableHead,
   TableRow,
   Typography,
-} from "@mui/material";
+} from '@mui/material'
 
 const SongCharTable = (props) => {
-  const classes = tableStyles();
+  const classes = tableStyles()
   return (
     <TableContainer component={Paper}>
       <Table className={classes.table} size="small" aria-label="genre table">
@@ -38,7 +38,7 @@ const SongCharTable = (props) => {
         </TableBody>
       </Table>
     </TableContainer>
-  );
-};
+  )
+}
 
-export default SongCharTable;
+export default SongCharTable

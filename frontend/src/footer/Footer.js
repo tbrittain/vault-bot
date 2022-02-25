@@ -1,11 +1,11 @@
-import React from "react";
-import Copyright from "./Copyright";
-import { Link } from "react-router-dom";
-import footerStyles from "./FooterStyles";
-import { Breadcrumbs } from "@mui/material";
+import React from 'react'
+import Copyright from './Copyright'
+import { Link } from 'react-router-dom'
+import footerStyles from './FooterStyles'
+import { Breadcrumbs } from '@mui/material'
 
 const Footer = () => {
-  const classes = footerStyles();
+  const classes = footerStyles()
   return (
     <div className={classes.footer}>
       <Breadcrumbs className={classes.footerActions}>
@@ -26,7 +26,7 @@ const Footer = () => {
       </Breadcrumbs>
       <Copyright />
     </div>
-  );
-};
+  )
+}
 
-export default Footer;
+export default Footer

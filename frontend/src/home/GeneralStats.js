@@ -1,9 +1,9 @@
-import React from "react";
-import homeStyles from "./HomeStyles";
-import { gql, useQuery } from "@apollo/client";
-import CountUpAnimation from "../effects/CountUpAnimation";
-import "./textAnimate.css";
-import { Alert, CircularProgress, Grid, Typography } from "@mui/material";
+import React from 'react'
+import homeStyles from './HomeStyles'
+import { gql, useQuery } from '@apollo/client'
+import CountUpAnimation from '../effects/CountUpAnimation'
+import './textAnimate.css'
+import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
 
 const QUERY = gql`
   query {
@@ -15,32 +15,32 @@ const QUERY = gql`
       totalNumGenres
     }
   }
-`;
+`
 
 const GeneralStats = () => {
-  const classes = homeStyles();
+  const classes = homeStyles()
   const { loading, error, data } = useQuery(QUERY, {
     // fetchPolicy: 'no-cache',
     // pollInterval: 30000 // TODO: fix polling occurring even when component not mounted???
-  });
+  })
 
-  let formattedData;
-  let processing = true;
+  let formattedData
+  let processing = true
   if (data) {
-    formattedData = data.getCurrentOverallStats;
-    processing = false;
+    formattedData = data.getCurrentOverallStats
+    processing = false
   }
 
   if (loading || processing) {
     return (
       <div
         style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          userSelect: "none",
-          "& > * + *": {
-            margin: "auto auto",
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          userSelect: 'none',
+          '& > * + *': {
+            margin: 'auto auto',
           },
         }}
       >
@@ -54,13 +54,13 @@ const GeneralStats = () => {
           Loading stats...
         </Typography>
       </div>
-    );
+    )
   }
 
   if (error) {
     return (
       <Alert severity="error">An error occurred during data retrieval :(</Alert>
-    );
+    )
   }
 
   if (formattedData) {
@@ -68,7 +68,7 @@ const GeneralStats = () => {
       <div className={classes.generalStats}>
         <div
           style={{
-            width: "100%",
+            width: '100%',
           }}
         >
           <svg className={classes.animateText}>
@@ -109,7 +109,7 @@ const GeneralStats = () => {
             item
             className={classes.animateContainer}
             style={{
-              animationDelay: "0.25s",
+              animationDelay: '0.25s',
             }}
           >
             <Typography variant="h6" className={classes.statDescription}>
@@ -127,7 +127,7 @@ const GeneralStats = () => {
             item
             className={classes.animateContainer}
             style={{
-              animationDelay: "0.5s",
+              animationDelay: '0.5s',
             }}
           >
             <Typography variant="h6" className={classes.statDescription}>
@@ -145,7 +145,7 @@ const GeneralStats = () => {
             item
             className={classes.animateContainer}
             style={{
-              animationDelay: "0.75s",
+              animationDelay: '0.75s',
             }}
           >
             <Typography variant="h6" className={classes.statDescription}>
@@ -163,16 +163,16 @@ const GeneralStats = () => {
             item
             className={classes.animateContainer}
             style={{
-              animationDelay: "1s",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              textAlign: "center",
+              animationDelay: '1s',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              textAlign: 'center',
             }}
           >
             <div
               style={{
-                display: "inline-flex",
+                display: 'inline-flex',
               }}
             >
               <Typography variant="h6" className={classes.statDescription}>
@@ -190,7 +190,7 @@ const GeneralStats = () => {
               <Typography
                 variant="subtitle1"
                 style={{
-                  color: "grey",
+                  color: 'grey',
                 }}
               >
                 <i>
@@ -206,8 +206,8 @@ const GeneralStats = () => {
           </Grid>
         </Grid>
       </div>
-    );
+    )
   }
-};
+}
 
-export default GeneralStats;
+export default GeneralStats

@@ -1,8 +1,8 @@
-import React from "react";
-import { gql, useQuery } from "@apollo/client";
-import CharCompare from "./CharCompare";
-import songStyles from "./SongStyles";
-import { Alert, CircularProgress, Typography } from "@mui/material";
+import React from 'react'
+import { gql, useQuery } from '@apollo/client'
+import CharCompare from './CharCompare'
+import songStyles from './SongStyles'
+import { Alert, CircularProgress, Typography } from '@mui/material'
 
 const QUERY = gql`
   query {
@@ -18,34 +18,34 @@ const QUERY = gql`
       valence
     }
   }
-`;
+`
 
 // TODO: replace with radar chart
 // https://www.chartjs.org/docs/latest/charts/radar.html
 
 const SongChars = (props) => {
-  const { loading, error, data } = useQuery(QUERY);
-  const classes = songStyles();
+  const { loading, error, data } = useQuery(QUERY)
+  const classes = songStyles()
 
-  let formattedData;
-  let processing = true;
+  let formattedData
+  let processing = true
   if (data) {
-    formattedData = data.getAvgTrackDetails;
-    processing = false;
+    formattedData = data.getAvgTrackDetails
+    processing = false
   }
 
   if (loading || processing) {
     return (
-      <div style={{ display: "flex", justifyContent: "center" }}>
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
         <CircularProgress />
       </div>
-    );
+    )
   }
 
   if (error) {
     return (
       <Alert severity="error">An error occurred during data retrieval :(</Alert>
-    );
+    )
   }
 
   if (formattedData) {
@@ -53,25 +53,25 @@ const SongChars = (props) => {
       <div
         className={classes.innerContainer}
         style={{
-          flexDirection: "column",
+          flexDirection: 'column',
           marginTop: 10,
         }}
       >
         <div className={classes.songComparisonSmall}>
           <div
             style={{
-              width: "50%",
-              margin: "auto",
-              textAlign: "left",
+              width: '50%',
+              margin: 'auto',
+              textAlign: 'left',
             }}
           >
             <Typography
               variant="subtitle1"
               sx={{
-                lineHeight: "inherit",
+                lineHeight: 'inherit',
                 marginBottom: 10,
-                fontSize: "2ch",
-                fontWeight: "fontWeightLight",
+                fontSize: '2ch',
+                fontWeight: 'fontWeightLight',
               }}
             >
               {props.songName}
@@ -79,30 +79,30 @@ const SongChars = (props) => {
           </div>
           <div
             style={{
-              width: "50%",
-              margin: "auto",
-              textAlign: "right",
+              width: '50%',
+              margin: 'auto',
+              textAlign: 'right',
             }}
           >
             <Typography
               variant="subtitle1"
               sx={{
-                lineHeight: "inherit",
-                fontSize: "2ch",
-                fontWeight: "fontWeightLight",
+                lineHeight: 'inherit',
+                fontSize: '2ch',
+                fontWeight: 'fontWeightLight',
               }}
             >
               Total song average
             </Typography>
           </div>
         </div>
-        <div style={{ display: "flex" }}>
+        <div style={{ display: 'flex' }}>
           <div className={classes.songComparison}>
             <Typography
               variant="h6"
               sx={{
-                fontWeight: "fontWeightLight",
-                lineHeight: "inherit",
+                fontWeight: 'fontWeightLight',
+                lineHeight: 'inherit',
               }}
             >
               {props.songName}
@@ -110,8 +110,8 @@ const SongChars = (props) => {
           </div>
           <div
             style={{
-              display: "flex",
-              flexDirection: "column",
+              display: 'flex',
+              flexDirection: 'column',
               margin: 15,
             }}
           >
@@ -150,8 +150,8 @@ const SongChars = (props) => {
             <Typography
               variant="h6"
               style={{
-                fontWeight: "fontWeightLight",
-                lineHeight: "inherit",
+                fontWeight: 'fontWeightLight',
+                lineHeight: 'inherit',
               }}
             >
               Total song average
@@ -159,8 +159,8 @@ const SongChars = (props) => {
           </div>
         </div>
       </div>
-    );
+    )
   }
-};
+}
 
-export default SongChars;
+export default SongChars

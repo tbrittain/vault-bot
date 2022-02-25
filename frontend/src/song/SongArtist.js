@@ -1,11 +1,11 @@
-import React from "react";
-import songStyles from "./SongStyles";
-import { Link } from "react-router-dom";
-import GenreGrid from "../grids/GenreGrid";
-import { Avatar, Paper, Typography } from "@mui/material";
+import React from 'react'
+import songStyles from './SongStyles'
+import { Link } from 'react-router-dom'
+import GenreGrid from '../grids/GenreGrid'
+import { Avatar, Paper, Typography } from '@mui/material'
 
 const SongArtist = (props) => {
-  const classes = songStyles();
+  const classes = songStyles()
   return (
     <Paper elevation={3} className={classes.artistContainer}>
       <div className={classes.containerItem}>
@@ -16,7 +16,7 @@ const SongArtist = (props) => {
           component={Link}
           to={`/artists/${props.id}`}
           style={{
-            marginBottom: "0.5rem",
+            marginBottom: '0.5rem',
           }}
         />
         <Typography
@@ -32,7 +32,7 @@ const SongArtist = (props) => {
         <Typography
           variant="h6"
           sx={{
-            fontWeight: "fontWeightLight",
+            fontWeight: 'fontWeightLight',
           }}
         >
           Genres
@@ -40,7 +40,7 @@ const SongArtist = (props) => {
         <GenreGrid genres={props.genres} />
       </div>
     </Paper>
-  );
-};
+  )
+}
 
-export default SongArtist;
+export default SongArtist

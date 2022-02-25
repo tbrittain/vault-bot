@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import SearchIcon from "@mui/icons-material/Search";
-import genreListStyles from "./GenreListStyles";
-import GenreSearchContainer from "./GenreSearchContainer";
-import GenreList from "./GenreList";
-import useDebounce from "../hooks/useDebounce";
+import React, { useState } from 'react'
+import SearchIcon from '@mui/icons-material/Search'
+import genreListStyles from './GenreListStyles'
+import GenreSearchContainer from './GenreSearchContainer'
+import GenreList from './GenreList'
+import useDebounce from '../hooks/useDebounce'
 import {
   AppBar,
   ClickAwayListener,
@@ -12,27 +12,27 @@ import {
   Paper,
   Popper,
   Toolbar,
-} from "@mui/material";
+} from '@mui/material'
 
 const GenreViewer = () => {
-  const classes = genreListStyles();
-  const [search, setSearch] = useState("");
-  const debouncedSearch = useDebounce(search, 250);
+  const classes = genreListStyles()
+  const [search, setSearch] = useState('')
+  const debouncedSearch = useDebounce(search, 250)
 
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null)
 
   const handleChange = (event) => {
-    setSearch(event.target.value);
-    setAnchorEl(event.currentTarget);
-  };
+    setSearch(event.target.value)
+    setAnchorEl(event.currentTarget)
+  }
 
   const handleClickAway = () => {
-    setAnchorEl(null);
-    setSearch("");
-  };
+    setAnchorEl(null)
+    setSearch('')
+  }
 
-  const minSearchLength = 3;
-  const open = Boolean(anchorEl && search.length >= minSearchLength);
+  const minSearchLength = 3
+  const open = Boolean(anchorEl && search.length >= minSearchLength)
 
   return (
     <Paper elevation={3}>
@@ -62,7 +62,7 @@ const GenreViewer = () => {
                   },
                   preventOverflow: {
                     enabled: true,
-                    boundariesElement: "scrollParent",
+                    boundariesElement: 'scrollParent',
                   },
                 }}
                 open={open}
@@ -74,7 +74,7 @@ const GenreViewer = () => {
                     <Paper
                       elevation={0}
                       style={{
-                        background: "none",
+                        background: 'none',
                       }}
                     >
                       {debouncedSearch.length >= minSearchLength && (
@@ -90,7 +90,7 @@ const GenreViewer = () => {
       </AppBar>
       <GenreList />
     </Paper>
-  );
-};
+  )
+}
 
-export default GenreViewer;
+export default GenreViewer

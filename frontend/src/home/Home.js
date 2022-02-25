@@ -1,33 +1,33 @@
-import React, { useState } from "react";
-import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
-import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import homeStyles from "./HomeStyles";
-import GeneralStats from "./GeneralStats";
-import FeaturedArtist from "./FeaturedArtist";
-import SwipeableViews from "react-swipeable-views";
-import { autoPlay } from "react-swipeable-views-utils";
-import "./override.css";
-import { Button, MobileStepper, Paper, useTheme } from "@mui/material";
+import React, { useState } from 'react'
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft'
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
+import homeStyles from './HomeStyles'
+import GeneralStats from './GeneralStats'
+import FeaturedArtist from './FeaturedArtist'
+import SwipeableViews from 'react-swipeable-views'
+import { autoPlay } from 'react-swipeable-views-utils'
+import './override.css'
+import { Button, MobileStepper, Paper, useTheme } from '@mui/material'
 
-const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
+const AutoPlaySwipeableViews = autoPlay(SwipeableViews)
 
 const Home = () => {
-  const classes = homeStyles();
-  const [activeStep, setActiveStep] = useState(0);
-  const maxSteps = 2;
-  const theme = useTheme();
+  const classes = homeStyles()
+  const [activeStep, setActiveStep] = useState(0)
+  const maxSteps = 2
+  const theme = useTheme()
 
   const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  };
+    setActiveStep((prevActiveStep) => prevActiveStep + 1)
+  }
 
   const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
+    setActiveStep((prevActiveStep) => prevActiveStep - 1)
+  }
 
   const handleStepChange = (step) => {
-    setActiveStep(step);
-  };
+    setActiveStep(step)
+  }
 
   // TODO: make current homepage the mobile version
   return (
@@ -35,9 +35,9 @@ const Home = () => {
       <AutoPlaySwipeableViews
         interval={15000}
         style={{
-          height: "100%",
+          height: '100%',
         }}
-        axis={theme.direction === "rtl" ? "x-reverse" : "x"}
+        axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
         index={activeStep}
         onChangeIndex={handleStepChange}
         enableMouseEvents
@@ -58,7 +58,7 @@ const Home = () => {
             disabled={activeStep === maxSteps - 1}
           >
             Next
-            {theme.direction === "rtl" ? (
+            {theme.direction === 'rtl' ? (
               <KeyboardArrowLeftIcon />
             ) : (
               <KeyboardArrowRightIcon />
@@ -67,7 +67,7 @@ const Home = () => {
         }
         backButton={
           <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
-            {theme.direction === "rtl" ? (
+            {theme.direction === 'rtl' ? (
               <KeyboardArrowRightIcon />
             ) : (
               <KeyboardArrowLeftIcon />
@@ -77,7 +77,7 @@ const Home = () => {
         }
       />
     </Paper>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home

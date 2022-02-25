@@ -1,27 +1,27 @@
-import React, { useEffect } from "react";
-import { LinearProgress, Paper, Typography } from "@mui/material";
+import React, { useEffect } from 'react'
+import { LinearProgress, Paper, Typography } from '@mui/material'
 
 // TODO: Should use some sort of redirect instead of having this component
 
 const SongExportSuccess = (props) => {
-  const { setActiveStep } = props;
+  const { setActiveStep } = props
   useEffect(() => {
     setTimeout(() => {
-      setActiveStep(0);
-    }, 5000);
-  }, [setActiveStep]);
+      setActiveStep(0)
+    }, 5000)
+  }, [setActiveStep])
   return (
     <Paper
       elevation={3}
       style={{
-        textAlign: "center",
+        textAlign: 'center',
       }}
     >
       <Typography
         variant="h2"
         sx={{
           margin: 15,
-          fontWeight: "fontWeightBold",
+          fontWeight: 'fontWeightBold',
         }}
       >
         <i>Success!</i>
@@ -44,7 +44,7 @@ const SongExportSuccess = (props) => {
       </Typography>
       <LinearProgress />
     </Paper>
-  );
-};
+  )
+}
 
-export default SongExportSuccess;
+export default SongExportSuccess

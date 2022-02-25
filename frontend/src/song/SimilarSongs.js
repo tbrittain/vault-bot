@@ -1,7 +1,7 @@
-import React from "react";
-import { gql, useQuery } from "@apollo/client";
-import songStyles from "./SongStyles";
-import { Link } from "react-router-dom";
+import React from 'react'
+import { gql, useQuery } from '@apollo/client'
+import songStyles from './SongStyles'
+import { Link } from 'react-router-dom'
 import {
   Alert,
   Avatar,
@@ -9,7 +9,7 @@ import {
   CircularProgress,
   Typography,
   useTheme,
-} from "@mui/material";
+} from '@mui/material'
 
 const QUERY = gql`
   query getSimilarTracks($getSimilarTracksId: String!) {
@@ -27,37 +27,37 @@ const QUERY = gql`
       score
     }
   }
-`;
+`
 
 export default function SimilarSongs(props) {
-  const { songId } = props;
+  const { songId } = props
   const { loading, error, data } = useQuery(QUERY, {
     variables: { getSimilarTracksId: songId },
-  });
+  })
 
-  const classes = songStyles();
-  const theme = useTheme();
+  const classes = songStyles()
+  const theme = useTheme()
 
-  let formattedData;
-  let processing = true;
+  let formattedData
+  let processing = true
 
   if (data) {
-    formattedData = data.getSimilarTracks;
-    processing = false;
+    formattedData = data.getSimilarTracks
+    processing = false
   }
 
   if (loading || processing) {
     return (
-      <div style={{ display: "flex", justifyContent: "center" }}>
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
         <CircularProgress />
       </div>
-    );
+    )
   }
 
   if (error) {
     return (
       <Alert severity="error">An error occurred during data retrieval :(</Alert>
-    );
+    )
   }
 
   if (formattedData.length === 0) {
@@ -65,13 +65,13 @@ export default function SimilarSongs(props) {
       <Box className={classes.noSongs}>
         <Typography variant="h6">No similar songs found :(</Typography>
       </Box>
-    );
+    )
   }
 
   return (
     <div
       className={classes.innerContainer}
-      style={{ flexDirection: "column", width: "100%" }}
+      style={{ flexDirection: 'column', width: '100%' }}
     >
       {formattedData.map((song) => (
         <div key={song.song.id} className={classes.similarSong}>
@@ -79,15 +79,15 @@ export default function SimilarSongs(props) {
             className={classes.similarSongInner}
             style={{
               zIndex: 2,
-              display: "flex",
-              justifyContent: "space-between",
+              display: 'flex',
+              justifyContent: 'space-between',
             }}
           >
             <Link
               to={`/songs/${song.song.id}`}
               style={{
-                textDecoration: "none",
-                width: "100%",
+                textDecoration: 'none',
+                width: '100%',
               }}
             >
               <div className={classes.similarSongDetails}>
@@ -96,15 +96,15 @@ export default function SimilarSongs(props) {
                   alt={song.song.name}
                   className={classes.similarSongArt}
                 />
-                <div style={{ width: "80%" }}>
+                <div style={{ width: '80%' }}>
                   <Typography
                     variant="h6"
                     className={`${classes.albumText} ${classes.similarSongSongText}`}
                     style={{
-                      textDecoration: "none",
-                      lineHeight: "1.15",
-                      [theme.breakpoints.down("sm")]: {
-                        fontSize: "1.5rem",
+                      textDecoration: 'none',
+                      lineHeight: '1.15',
+                      [theme.breakpoints.down('sm')]: {
+                        fontSize: '1.5rem',
                       },
                     }}
                   >
@@ -114,10 +114,10 @@ export default function SimilarSongs(props) {
                     variant="h6"
                     className={`${classes.albumText} ${classes.similarSongArtistText}`}
                   >
-                    by{" "}
+                    by{' '}
                     <Box
                       display="inline"
-                      sx={{ fontWeight: "fontWeightRegular" }}
+                      sx={{ fontWeight: 'fontWeightRegular' }}
                     >
                       {song.song.artist.name}
                     </Box>
@@ -127,9 +127,9 @@ export default function SimilarSongs(props) {
             </Link>
             <div
               style={{
-                display: "flex",
-                alignItems: "center",
-                marginRight: "1rem",
+                display: 'flex',
+                alignItems: 'center',
+                marginRight: '1rem',
               }}
             >
               <Avatar
@@ -140,11 +140,11 @@ export default function SimilarSongs(props) {
                       ? theme.palette.getContrastText(
                           `hsl(${song.score * 5.4}, 100%, 50%)`
                         )
-                      : theme.palette.getContrastText("hsl(351, 100%, 50%)"),
+                      : theme.palette.getContrastText('hsl(351, 100%, 50%)'),
                   backgroundColor:
                     song.score > 65
                       ? `hsl(${song.score * 5.4}, 100%, 50%)`
-                      : "hsl(351, 100%, 50%)",
+                      : 'hsl(351, 100%, 50%)',
                 }}
               >
                 <Typography
@@ -160,11 +160,11 @@ export default function SimilarSongs(props) {
             className={classes.similarSongInner}
             style={{
               backgroundImage: `url(${song.song.art})`,
-              backgroundPosition: "center center",
-              backgroundSize: "100vw 100vw",
-              filter: "blur(20px)",
-              WebkitFilter: "blur(20px)",
-              overflow: "hidden",
+              backgroundPosition: 'center center',
+              backgroundSize: '100vw 100vw',
+              filter: 'blur(20px)',
+              WebkitFilter: 'blur(20px)',
+              overflow: 'hidden',
               zIndex: 1,
               opacity: 0.5,
             }}
@@ -172,5 +172,5 @@ export default function SimilarSongs(props) {
         </div>
       ))}
     </div>
-  );
+  )
 }

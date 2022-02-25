@@ -1,16 +1,16 @@
-import React from "react";
-import artistStyles from "./ArtistStyles";
-import ArtistAlbumSong from "./ArtistAlbumSong";
+import React from 'react'
+import artistStyles from './ArtistStyles'
+import ArtistAlbumSong from './ArtistAlbumSong'
 
 const ArtistAlbumSongs = (props) => {
-  const classes = artistStyles();
-  const { songs } = props;
+  const classes = artistStyles()
+  const { songs } = props
   return (
     <div
       style={{
-        width: "100%",
-        display: "flex",
-        justifyContent: "center",
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
       }}
     >
       <div className={classes.albumSongGrid}>
@@ -19,7 +19,7 @@ const ArtistAlbumSongs = (props) => {
         ))}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ArtistAlbumSongs;
+export default ArtistAlbumSongs

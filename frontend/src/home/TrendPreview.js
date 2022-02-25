@@ -1,8 +1,8 @@
-import React from "react";
-import { gql, useQuery } from "@apollo/client";
-import { Scatter } from "react-chartjs-2";
-import genreToMuiColor from "../utils/genreToMuiColor";
-import "chartjs-adapter-date-fns";
+import React from 'react'
+import { gql, useQuery } from '@apollo/client'
+import { Scatter } from 'react-chartjs-2'
+import genreToMuiColor from '../utils/genreToMuiColor'
+import 'chartjs-adapter-date-fns'
 
 const QUERY = gql`
   query ($startDate: String!) {
@@ -12,26 +12,26 @@ const QUERY = gql`
       count
     }
   }
-`;
+`
 
 // declare date outside of component
-const oneWeekAgo = new Date();
-oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+const oneWeekAgo = new Date()
+oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
 
 const TrendPreview = () => {
   const { loading, error, data } = useQuery(QUERY, {
     variables: {
       startDate: oneWeekAgo.toISOString(),
     },
-  });
+  })
 
   // https://blog.bitsrc.io/customizing-chart-js-in-react-2199fa81530a
 
-  let processing = true;
-  let formattedData;
+  let processing = true
+  let formattedData
 
   if (data) {
-    const datasets = {};
+    const datasets = {}
     for (const result of data.getHistGenres) {
       if (!Object.keys(datasets).includes(result.genre)) {
         datasets[result.genre] = {
@@ -39,86 +39,86 @@ const TrendPreview = () => {
           data: [],
           borderColor: genreToMuiColor(result.genre),
           backgroundColor: genreToMuiColor(result.genre),
-          cubicInterpolationMode: "monotone",
+          cubicInterpolationMode: 'monotone',
           tension: 0.4,
           showLine: true,
-        };
+        }
       }
 
-      const dataDate = new Date(result.updatedAt);
+      const dataDate = new Date(result.updatedAt)
       datasets[result.genre].data.push({
         x: dataDate,
         y: result.count,
-      });
+      })
     }
-    delete datasets.total;
+    delete datasets.total
     formattedData = {
       datasets: Object.values(datasets),
-    };
+    }
   }
 
-  let delayed;
+  let delayed
   const options = {
     responsive: true,
     maintainAspectRatio: false,
     spanGaps: 1000 * 60 * 60 * 24 * 2, // 2 days,
     interaction: {
-      mode: "nearest",
+      mode: 'nearest',
     },
     animation: {
       onComplete: () => {
-        delayed = true;
+        delayed = true
       },
     },
     plugins: {
       title: {
-        text: "Top 10 genres in the dynamic playlist over the past week",
+        text: 'Top 10 genres in the dynamic playlist over the past week',
         display: true,
       },
       legend: {
-        position: "bottom",
+        position: 'bottom',
       },
       tooltip: {
         callbacks: {
           label: (tooltipItem, data) => {
-            return `${tooltipItem.dataset.label}: ${tooltipItem.formattedValue} songs`;
+            return `${tooltipItem.dataset.label}: ${tooltipItem.formattedValue} songs`
           },
         },
       },
     },
     scales: {
       x: {
-        type: "timeseries",
+        type: 'timeseries',
         time: {
-          unit: "day",
+          unit: 'day',
         },
-        parsing: "false",
+        parsing: 'false',
         title: {
           display: true,
-          text: "Date",
+          text: 'Date',
         },
       },
       y: {
         title: {
           display: true,
-          text: "Number of songs",
+          text: 'Number of songs',
         },
       },
     },
-  };
+  }
 
-  processing = false;
+  processing = false
 
   if (loading || processing) {
     return (
       <div
         style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          userSelect: "none",
-          "& > * + *": {
-            margin: "auto auto",
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          userSelect: 'none',
+          '& > * + *': {
+            margin: 'auto auto',
           },
         }}
       >
@@ -132,20 +132,20 @@ const TrendPreview = () => {
           Loading stats...
         </Typography>
       </div>
-    );
+    )
   }
 
   if (error) {
     return (
       <Alert severity="error">An error occurred during data retrieval :(</Alert>
-    );
+    )
   }
 
   return (
     <>
       <Scatter data={formattedData} options={options} />
     </>
-  );
-};
+  )
+}
 
-export default TrendPreview;
+export default TrendPreview

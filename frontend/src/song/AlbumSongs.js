@@ -1,9 +1,9 @@
-import React from "react";
-import { gql, useQuery } from "@apollo/client";
-import { useParams } from "react-router-dom";
-import AlbumSong from "./AlbumSong";
-import songStyles from "./SongStyles";
-import { Typography } from "@mui/material";
+import React from 'react'
+import { gql, useQuery } from '@apollo/client'
+import { useParams } from 'react-router-dom'
+import AlbumSong from './AlbumSong'
+import songStyles from './SongStyles'
+import { Typography } from '@mui/material'
 
 const QUERY = gql`
   query ($artistId: String!, $album: String!) {
@@ -13,23 +13,23 @@ const QUERY = gql`
       art
     }
   }
-`;
+`
 
 const AlbumSongs = (props) => {
-  const classes = songStyles();
-  const { songId } = useParams();
-  const { artistId, album } = props;
+  const classes = songStyles()
+  const { songId } = useParams()
+  const { artistId, album } = props
   const { data } = useQuery(QUERY, {
     variables: {
       artistId,
       album,
     },
-  });
+  })
 
-  let formattedData;
+  let formattedData
   if (data) {
-    formattedData = data.getTracksFromAlbum;
-    formattedData = formattedData.filter((song) => song.id !== songId);
+    formattedData = data.getTracksFromAlbum
+    formattedData = formattedData.filter((song) => song.id !== songId)
   }
   return (
     <div>
@@ -38,7 +38,7 @@ const AlbumSongs = (props) => {
           <Typography
             variant="subtitle1"
             style={{
-              textAlign: "center",
+              textAlign: 'center',
             }}
           >
             Other songs from this album tracked by VaultBot:
@@ -56,7 +56,7 @@ const AlbumSongs = (props) => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default AlbumSongs;
+export default AlbumSongs

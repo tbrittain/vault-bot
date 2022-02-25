@@ -1,6 +1,6 @@
-import React from "react";
-import GenreViewer from "./GenreViewer";
-import { Typography } from "@mui/material";
+import React from 'react'
+import GenreViewer from './GenreViewer'
+import { Typography } from '@mui/material'
 
 const GenreListContainer = () => {
   return (
@@ -11,7 +11,7 @@ const GenreListContainer = () => {
       </Typography>
       <GenreViewer />
     </div>
-  );
-};
+  )
+}
 
-export default GenreListContainer;
+export default GenreListContainer

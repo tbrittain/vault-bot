@@ -1,11 +1,11 @@
-import React, { useContext, useEffect } from "react";
-import { Link } from "react-router-dom";
-import headerStyles from "./HeaderStyles";
-import VaultBotLogo from "../assets/VaultBotLogo.svg";
-import { ColorModeContext } from "../themes/ThemeToggler";
-import Brightness4Icon from "@mui/icons-material/Brightness4";
-import Brightness7Icon from "@mui/icons-material/Brightness7";
-import VolumeUpIcon from "@mui/icons-material/VolumeUp";
+import React, { useContext, useEffect } from 'react'
+import { Link } from 'react-router-dom'
+import headerStyles from './HeaderStyles'
+import VaultBotLogo from '../assets/VaultBotLogo.svg'
+import { ColorModeContext } from '../themes/ThemeToggler'
+import Brightness4Icon from '@mui/icons-material/Brightness4'
+import Brightness7Icon from '@mui/icons-material/Brightness7'
+import VolumeUpIcon from '@mui/icons-material/VolumeUp'
 import {
   AppBar,
   Box,
@@ -20,21 +20,21 @@ import {
   Toolbar,
   Typography,
   useTheme,
-} from "@mui/material";
+} from '@mui/material'
 
 function Header() {
-  const classes = headerStyles();
-  const colorMode = useContext(ColorModeContext);
-  const theme = useTheme();
+  const classes = headerStyles()
+  const colorMode = useContext(ColorModeContext)
+  const theme = useTheme()
 
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const open = Boolean(anchorEl);
-  const id = open ? "volume-popover" : undefined;
+  const [anchorEl, setAnchorEl] = React.useState(null)
+  const open = Boolean(anchorEl)
+  const id = open ? 'volume-popover' : undefined
 
   useEffect(() => {
-    console.log(`open: ${open}`);
-    console.log(`anchorEl: ${anchorEl}`);
-  }, [open, anchorEl]);
+    console.log(`open: ${open}`)
+    console.log(`anchorEl: ${anchorEl}`)
+  }, [open, anchorEl])
 
   // TODO: https://www.w3schools.com/jsref/prop_audio_volume.asp
   // https://mui.com/components/slider/
@@ -48,14 +48,14 @@ function Header() {
               src={VaultBotLogo}
               alt="VaultBot logo"
               style={{
-                height: "3.25rem",
+                height: '3.25rem',
               }}
             />
             <Typography
               variant="h6"
               className={classes.title}
               sx={{
-                fontWeight: "fontWeightBold",
+                fontWeight: 'fontWeightBold',
               }}
             >
               <i
@@ -103,7 +103,7 @@ function Header() {
               onClick={colorMode.toggleColorMode}
               color="inherit"
             >
-              {theme.palette.mode === "dark" ? (
+              {theme.palette.mode === 'dark' ? (
                 <Brightness7Icon />
               ) : (
                 <Brightness4Icon />
@@ -118,8 +118,8 @@ function Header() {
             </IconButton>
             <ClickAwayListener
               onClickAway={() => {
-                console.log("ClickAwayListener"); // FIXME
-                setAnchorEl(null);
+                console.log('ClickAwayListener') // FIXME
+                setAnchorEl(null)
               }}
             >
               <Popper
@@ -131,7 +131,7 @@ function Header() {
                   },
                   preventOverflow: {
                     enabled: true,
-                    boundariesElement: "scrollParent",
+                    boundariesElement: 'scrollParent',
                   },
                 }}
                 open={open}
@@ -160,7 +160,7 @@ function Header() {
         </Toolbar>
       </AppBar>
     </header>
-  );
+  )
 }
 
-export default Header;
+export default Header

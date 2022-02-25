@@ -1,8 +1,8 @@
-import React from "react";
-import genreListStyles from "./GenreListStyles";
-import { gql, useQuery } from "@apollo/client";
-import GenreSearchResult from "./GenreSearchResult";
-import { Alert, Grid, Paper, Typography } from "@mui/material";
+import React from 'react'
+import genreListStyles from './GenreListStyles'
+import { gql, useQuery } from '@apollo/client'
+import GenreSearchResult from './GenreSearchResult'
+import { Alert, Grid, Paper, Typography } from '@mui/material'
 
 const QUERY = gql`
   query ($searchQuery: String!) {
@@ -10,25 +10,25 @@ const QUERY = gql`
       genre
     }
   }
-`;
+`
 
 const GenreSearchContainer = (props) => {
-  const classes = genreListStyles();
-  const { searchQuery } = props;
+  const classes = genreListStyles()
+  const { searchQuery } = props
   const { error, data } = useQuery(QUERY, {
     variables: {
       searchQuery,
     },
-  });
-  let formattedData;
+  })
+  let formattedData
   if (data) {
-    formattedData = data.findGenresLike;
+    formattedData = data.findGenresLike
   }
 
   if (error) {
     return (
       <Alert severity="error">An error occurred during data retrieval :(</Alert>
-    );
+    )
   }
 
   return (
@@ -53,7 +53,7 @@ const GenreSearchContainer = (props) => {
         </Grid>
       )}
     </Grid>
-  );
-};
+  )
+}
 
-export default GenreSearchContainer;
+export default GenreSearchContainer

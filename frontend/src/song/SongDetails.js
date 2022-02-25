@@ -1,14 +1,14 @@
-import React, { useState } from "react";
-import SwipeableViews from "react-swipeable-views";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import PauseIcon from "@mui/icons-material/Pause";
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
-import AlbumSongs from "./AlbumSongs";
-import SongChars from "./SongCharacteristics";
-import songStyles from "./SongStyles";
-import TabPanel from "../tabpanel/TabPanel";
-import SimilarSongs from "./SimilarSongs";
-import SongHistory from "./SongHistory";
+import React, { useState } from 'react'
+import SwipeableViews from 'react-swipeable-views'
+import PlayArrowIcon from '@mui/icons-material/PlayArrow'
+import PauseIcon from '@mui/icons-material/Pause'
+import OpenInNewIcon from '@mui/icons-material/OpenInNew'
+import AlbumSongs from './AlbumSongs'
+import SongChars from './SongCharacteristics'
+import songStyles from './SongStyles'
+import TabPanel from '../tabpanel/TabPanel'
+import SimilarSongs from './SimilarSongs'
+import SongHistory from './SongHistory'
 import {
   AppBar,
   Avatar,
@@ -20,43 +20,43 @@ import {
   Tabs,
   Typography,
   useTheme,
-} from "@mui/material";
+} from '@mui/material'
 
 const SongDetails = (props) => {
-  const classes = songStyles();
-  const theme = useTheme();
-  const songLink = `spotify:track:${props.id}`;
+  const classes = songStyles()
+  const theme = useTheme()
+  const songLink = `spotify:track:${props.id}`
 
-  const [value, setValue] = useState(0);
-  const [playing, setPlaying] = useState(false);
+  const [value, setValue] = useState(0)
+  const [playing, setPlaying] = useState(false)
 
   const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
+    setValue(newValue)
+  }
   const handleChangeIndex = (index) => {
-    setValue(index);
-  };
+    setValue(index)
+  }
 
   const playSound = () => {
     try {
-      const soundFile = document.getElementById("songPreview");
-      soundFile.play();
-      setPlaying(true);
+      const soundFile = document.getElementById('songPreview')
+      soundFile.play()
+      setPlaying(true)
     } catch (err) {
-      console.error(err);
+      console.error(err)
     }
-  };
+  }
 
   const stopSound = () => {
     try {
-      const soundFile = document.getElementById("songPreview");
-      soundFile.pause();
-      soundFile.currentTime = 0;
-      setPlaying(false);
+      const soundFile = document.getElementById('songPreview')
+      soundFile.pause()
+      soundFile.currentTime = 0
+      setPlaying(false)
     } catch (err) {
-      console.error(err);
+      console.error(err)
     }
-  };
+  }
 
   return (
     <Paper elevation={3} className={classes.outerContainer}>
@@ -77,7 +77,7 @@ const SongDetails = (props) => {
         </Tabs>
       </AppBar>
       <SwipeableViews
-        axis={theme.direction === "rtl" ? "x-reverse" : "x"}
+        axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
         index={value}
         onChangeIndex={handleChangeIndex}
       >
@@ -88,16 +88,16 @@ const SongDetails = (props) => {
               {props.songPreview && (
                 <div
                   style={{
-                    display: "grid",
-                    gridTemplate: "1fr / 1fr",
+                    display: 'grid',
+                    gridTemplate: '1fr / 1fr',
                   }}
                 >
                   <div
                     style={{
-                      gridColumn: "1 / 1",
-                      gridRow: "1 / 1",
-                      display: "flex",
-                      margin: "auto",
+                      gridColumn: '1 / 1',
+                      gridRow: '1 / 1',
+                      display: 'flex',
+                      margin: 'auto',
                       zIndex: 51,
                     }}
                   >
@@ -106,7 +106,7 @@ const SongDetails = (props) => {
                         size="medium"
                         color="primary"
                         style={{
-                          backgroundColor: "rgba(0, 0, 0, 0.4)",
+                          backgroundColor: 'rgba(0, 0, 0, 0.4)',
                         }}
                         onClick={playSound}
                       >
@@ -118,7 +118,7 @@ const SongDetails = (props) => {
                         size="medium"
                         color="primary"
                         style={{
-                          backgroundColor: "rgba(0, 0, 0, 0.4)",
+                          backgroundColor: 'rgba(0, 0, 0, 0.4)',
                         }}
                         onClick={stopSound}
                       >
@@ -128,8 +128,8 @@ const SongDetails = (props) => {
                   </div>
                   <div
                     style={{
-                      gridColumn: "1 / 1",
-                      gridRow: "1 / 1",
+                      gridColumn: '1 / 1',
+                      gridRow: '1 / 1',
                       zIndex: 50,
                     }}
                   >
@@ -140,7 +140,7 @@ const SongDetails = (props) => {
                           ? `${classes.albumArt} ${classes.albumArtRotate}`
                           : classes.albumArt
                       }
-                      alt={props.album + " album art"}
+                      alt={props.album + ' album art'}
                       src={props.art}
                       variant="circular"
                     />
@@ -151,7 +151,7 @@ const SongDetails = (props) => {
                 <Avatar
                   id="albumArt"
                   className={classes.albumArt}
-                  alt={props.album + " album art"}
+                  alt={props.album + ' album art'}
                   src={props.art}
                   variant="circular"
                 />
@@ -163,25 +163,25 @@ const SongDetails = (props) => {
               <Typography
                 variant="h4"
                 style={{
-                  lineHeight: "inherit",
+                  lineHeight: 'inherit',
                 }}
               >
-                {props.name}{" "}
-                <Box component="span" sx={{ fontWeight: "fontWeightLight" }}>
+                {props.name}{' '}
+                <Box component="span" sx={{ fontWeight: 'fontWeightLight' }}>
                   by
-                </Box>{" "}
+                </Box>{' '}
                 {props.artistName}
               </Typography>
               <Typography
                 variant="h6"
                 style={{
-                  lineHeight: "inherit",
+                  lineHeight: 'inherit',
                   paddingTop: 10,
                 }}
               >
-                <Box component="span" sx={{ fontWeight: "fontWeightLight" }}>
+                <Box component="span" sx={{ fontWeight: 'fontWeightLight' }}>
                   from the album
-                </Box>{" "}
+                </Box>{' '}
                 {props.album}
               </Typography>
               <Button
@@ -190,8 +190,8 @@ const SongDetails = (props) => {
                 href={songLink}
                 style={{
                   marginTop: 10,
-                  backgroundColor: "rgb(35, 207, 95)",
-                  color: "white",
+                  backgroundColor: 'rgb(35, 207, 95)',
+                  color: 'white',
                 }}
               >
                 Open on Spotify
@@ -218,7 +218,7 @@ const SongDetails = (props) => {
         </TabPanel>
       </SwipeableViews>
     </Paper>
-  );
-};
+  )
+}
 
-export default SongDetails;
+export default SongDetails

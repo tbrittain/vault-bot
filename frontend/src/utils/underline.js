@@ -1,9 +1,7 @@
 const extractUnderline = (userInput, textToInterpolate) => {
   const stringUserInput = String(userInput)
   const stringText = String(textToInterpolate)
-  const startQueryIndex = stringText
-    .toLowerCase()
-    .indexOf(stringUserInput)
+  const startQueryIndex = stringText.toLowerCase().indexOf(stringUserInput)
   const endQueryIndex = startQueryIndex + (userInput.length - 1)
   let beginText
   let endText

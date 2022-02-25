@@ -1,10 +1,10 @@
-import React from "react";
-import PostContainer from "./PostContainer";
-import changeLogStyles from "./ChangelogStyles";
-import { Paper, Typography } from "@mui/material";
+import React from 'react'
+import PostContainer from './PostContainer'
+import changeLogStyles from './ChangelogStyles'
+import { Paper, Typography } from '@mui/material'
 
 const Changelog = () => {
-  const classes = changeLogStyles();
+  const classes = changeLogStyles()
   return (
     <>
       <Typography variant="h1">Changelog</Typography>
@@ -12,7 +12,7 @@ const Changelog = () => {
         <PostContainer />
       </Paper>
     </>
-  );
-};
+  )
+}
 
-export default Changelog;
+export default Changelog

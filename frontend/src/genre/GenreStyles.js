@@ -1,16 +1,16 @@
-import { makeStyles } from "@mui/styles";
+import { makeStyles } from '@mui/styles'
 
 const genreStyles = makeStyles((theme) => ({
   title: {
-    textAlign: "center",
+    textAlign: 'center',
     padding: 15,
     marginTop: 10,
     marginBottom: 10,
   },
   genreTitle: {
-    textTransform: "capitalize",
+    textTransform: 'capitalize',
     fontWeight: theme.typography.fontWeightBold,
   },
-}));
+}))
 
-export default genreStyles;
+export default genreStyles

@@ -1,8 +1,8 @@
-import React from "react";
-import artistStyles from "./ArtistStyles";
-import { gql, useQuery } from "@apollo/client";
-import { Alert, CircularProgress, Paper, Typography } from "@mui/material";
-import { useTheme } from "@mui/styles";
+import React from 'react'
+import artistStyles from './ArtistStyles'
+import { gql, useQuery } from '@apollo/client'
+import { Alert, CircularProgress, Paper, Typography } from '@mui/material'
+import { useTheme } from '@mui/styles'
 
 const QUERY = gql`
   query ($artistId: String!) {
@@ -14,38 +14,38 @@ const QUERY = gql`
       }
     }
   }
-`;
+`
 
 const ArtistBio = (props) => {
-  const classes = artistStyles();
-  const { artistId } = props;
-  const theme = useTheme();
+  const classes = artistStyles()
+  const { artistId } = props
+  const theme = useTheme()
   const { loading, error, data } = useQuery(QUERY, {
     variables: {
       artistId,
     },
-  });
+  })
 
-  let bio;
-  let url;
-  let processing = true;
+  let bio
+  let url
+  let processing = true
   if (data) {
     if (data.getArtist.wikiBio) {
-      bio = data.getArtist.wikiBio.bio;
-      url = data.getArtist.wikiBio.url;
+      bio = data.getArtist.wikiBio.bio
+      url = data.getArtist.wikiBio.url
     }
-    processing = false;
+    processing = false
   }
 
   if (loading || processing) {
     return (
       <div
         style={{
-          margin: "auto",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          padding: "3%",
+          margin: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          padding: '3%',
         }}
       >
         <CircularProgress />
@@ -53,13 +53,13 @@ const ArtistBio = (props) => {
           Searching for artist biography...
         </Typography>
       </div>
-    );
+    )
   }
 
   if (error) {
     return (
       <Alert severity="error">An error occurred during data retrieval :(</Alert>
-    );
+    )
   }
 
   return (
@@ -68,7 +68,7 @@ const ArtistBio = (props) => {
       <Typography
         variant="subtitle2"
         sx={{
-          color: "secondary.main",
+          color: 'secondary.main',
         }}
       >
         <i>Experimental</i>
@@ -83,15 +83,15 @@ const ArtistBio = (props) => {
           elevation={3}
           className={classes.artistBio}
           sx={{
-            backgroundColor: "primary.main",
+            backgroundColor: 'primary.main',
           }}
         >
           <Typography
             variant="body1"
             sx={{
-              fontWeight: "fontWeightLight",
+              fontWeight: 'fontWeightLight',
               color:
-                theme.palette.mode === "light"
+                theme.palette.mode === 'light'
                   ? theme.palette.secondary.main
                   : theme.palette.primary.contrastText,
             }}
@@ -106,11 +106,11 @@ const ArtistBio = (props) => {
           <Typography
             variant="body1"
             sx={{
-              fontWeight: "fontWeightLight",
-              textAlign: "center",
+              fontWeight: 'fontWeightLight',
+              textAlign: 'center',
             }}
           >
-            See more on{" "}
+            See more on{' '}
             <a
               href={url}
               className={classes.link}
@@ -123,7 +123,7 @@ const ArtistBio = (props) => {
         </Paper>
       )}
     </>
-  );
-};
+  )
+}
 
-export default ArtistBio;
+export default ArtistBio
