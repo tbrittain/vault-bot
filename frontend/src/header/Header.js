@@ -79,9 +79,6 @@ function Header() {
               className={classes.menuButton}
               component={Link}
               to="/songs"
-              sx={{
-                padding: 5,
-              }}
             >
               Songs
             </Button>
@@ -90,9 +87,6 @@ function Header() {
               className={classes.menuButton}
               component={Link}
               to="/artists"
-              sx={{
-                padding: 5,
-              }}
             >
               Artists
             </Button>
@@ -101,9 +95,6 @@ function Header() {
               className={classes.menuButton}
               component={Link}
               to="/genres"
-              sx={{
-                padding: 5,
-              }}
             >
               Genres
             </Button>

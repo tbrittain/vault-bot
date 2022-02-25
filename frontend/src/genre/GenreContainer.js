@@ -1,13 +1,13 @@
-import React from "react";
-import { useParams } from "react-router-dom";
-import { gql, useQuery } from "@apollo/client";
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
-import LoadingScreen from "../loading/LoadingScreen";
-import ArtistGrid from "../grids/ArtistGrid";
-import CountUpAnimation from "../effects/CountUpAnimation";
-import genreStyles from "./GenreStyles";
-import genreToMuiColor from "../utils/genreToMuiColor";
-import { Alert, Button, Paper, Typography, useTheme } from "@mui/material";
+import React from 'react'
+import { useParams } from 'react-router-dom'
+import { gql, useQuery } from '@apollo/client'
+import OpenInNewIcon from '@mui/icons-material/OpenInNew'
+import LoadingScreen from '../loading/LoadingScreen'
+import ArtistGrid from '../grids/ArtistGrid'
+import CountUpAnimation from '../effects/CountUpAnimation'
+import genreStyles from './GenreStyles'
+import genreToMuiColor from '../utils/genreToMuiColor'
+import { Alert, Button, Paper, Typography, useTheme } from '@mui/material'
 
 const QUERY = gql`
   query ($genreName: String!) {
@@ -17,39 +17,39 @@ const QUERY = gql`
       art
     }
   }
-`;
+`
 
 const GenreContainer = () => {
-  const classes = genreStyles();
-  const theme = useTheme();
-  const { genreName } = useParams();
+  const classes = genreStyles()
+  const theme = useTheme()
+  const { genreName } = useParams()
   const { loading, error, data } = useQuery(QUERY, {
     variables: {
       genreName,
     },
-  });
+  })
 
-  let formattedData;
-  let processing = true;
+  let formattedData
+  let processing = true
   if (data) {
-    formattedData = data.getArtistsFromGenre;
+    formattedData = data.getArtistsFromGenre
   }
 
-  let everyNoiseGenre = genreName;
-  everyNoiseGenre = everyNoiseGenre.replaceAll(" ", "");
-  everyNoiseGenre = everyNoiseGenre.replaceAll("&", "");
-  everyNoiseGenre = everyNoiseGenre.replaceAll("-", "");
-  const everyNoiseLink = `https://everynoise.com/engenremap-${everyNoiseGenre}.html`;
-  processing = false;
+  let everyNoiseGenre = genreName
+  everyNoiseGenre = everyNoiseGenre.replaceAll(' ', '')
+  everyNoiseGenre = everyNoiseGenre.replaceAll('&', '')
+  everyNoiseGenre = everyNoiseGenre.replaceAll('-', '')
+  const everyNoiseLink = `https://everynoise.com/engenremap-${everyNoiseGenre}.html`
+  processing = false
 
   if (loading || processing) {
-    return <LoadingScreen text="Loading genre..." />;
+    return <LoadingScreen text="Loading genre..." />
   }
 
-  if (error || data === "undefined") {
+  if (error || data === 'undefined') {
     return (
       <Alert severity="error">An error occurred during data retrieval :(</Alert>
-    );
+    )
   }
 
   return (
@@ -78,7 +78,7 @@ const GenreContainer = () => {
             color: theme.palette.getContrastText(genreToMuiColor(genreName)),
           }}
         >
-          {formattedData && "Total artists: "}
+          {formattedData && 'Total artists: '}
           {formattedData.length >= 20 && (
             <CountUpAnimation>{Number(formattedData.length)}</CountUpAnimation>
           )}
@@ -104,7 +104,7 @@ const GenreContainer = () => {
       </Paper>
       <ArtistGrid artists={formattedData} />
     </>
-  );
-};
+  )
+}
 
-export default GenreContainer;
+export default GenreContainer
