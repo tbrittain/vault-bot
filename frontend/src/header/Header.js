@@ -1,22 +1,16 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext } from 'react'
 import { Link } from 'react-router-dom'
 import headerStyles from './HeaderStyles'
 import VaultBotLogo from '../assets/VaultBotLogo.svg'
 import { ColorModeContext } from '../themes/ThemeToggler'
 import Brightness4Icon from '@mui/icons-material/Brightness4'
 import Brightness7Icon from '@mui/icons-material/Brightness7'
-import VolumeUpIcon from '@mui/icons-material/VolumeUp'
 import {
   AppBar,
   Box,
   Button,
   ButtonGroup,
-  ClickAwayListener,
-  Fade,
   IconButton,
-  Paper,
-  Popper,
-  Slider,
   Toolbar,
   Typography,
   useTheme,
@@ -26,18 +20,6 @@ function Header() {
   const classes = headerStyles()
   const colorMode = useContext(ColorModeContext)
   const theme = useTheme()
-
-  const [anchorEl, setAnchorEl] = React.useState(null)
-  const open = Boolean(anchorEl)
-  const id = open ? 'volume-popover' : undefined
-
-  useEffect(() => {
-    console.log(`open: ${open}`)
-    console.log(`anchorEl: ${anchorEl}`)
-  }, [open, anchorEl])
-
-  // TODO: https://www.w3schools.com/jsref/prop_audio_volume.asp
-  // https://mui.com/components/slider/
 
   return (
     <header className={classes.header}>
@@ -118,53 +100,6 @@ function Header() {
                 <Brightness4Icon />
               )}
             </IconButton>
-            <IconButton
-              sx={{ ml: 1 }}
-              color="inherit"
-              onClick={(e) => setAnchorEl(e.currentTarget)}
-            >
-              <VolumeUpIcon />
-            </IconButton>
-            <ClickAwayListener
-              onClickAway={() => {
-                console.log('ClickAwayListener') // FIXME
-                setAnchorEl(null)
-              }}
-            >
-              <Popper
-                placement="bottom-start"
-                disablePortal={false}
-                modifiers={{
-                  flip: {
-                    enabled: true,
-                  },
-                  preventOverflow: {
-                    enabled: true,
-                    boundariesElement: 'scrollParent',
-                  },
-                }}
-                open={open}
-                anchorEl={anchorEl}
-                transition
-              >
-                {({ TransitionProps }) => (
-                  <Fade {...TransitionProps} timeout={350}>
-                    <Paper elevation={0}>
-                      <Slider
-                        id={id}
-                        orientation="vertical"
-                        defaultValue={0.5}
-                        valueLabelDisplay="auto"
-                        step={0.1}
-                        marks
-                        min={0}
-                        max={1}
-                      />
-                    </Paper>
-                  </Fade>
-                )}
-              </Popper>
-            </ClickAwayListener>
           </ButtonGroup>
         </Toolbar>
       </AppBar>
