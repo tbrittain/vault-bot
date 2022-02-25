@@ -1,19 +1,20 @@
 import Song from '../../db/models/Song.model'
-import ArchiveSong from '../../db/models/ArchiveSong.model'
 import Artist from '../../db/models/Artist.model'
-import { Sequelize, Op } from 'sequelize'
+import { Op, Sequelize } from 'sequelize'
 import {
-  FindTracksLikeArgs,
-  GetArtchiveTracksArgs,
-  GetSongsFromAlbumArgs,
-  GetTrackArgs,
-  SongArtist,
-  SongDetails
+  IFindTracksLikeArgs,
+  IGetSimilarTracksArgs,
+  IGetTrackArgs,
+  IGetTracksFromAlbumArgs,
+  ISongArtist,
+  ISongDetails
 } from './interfaces/Songs'
+import { getSimilarSongs } from '../../db/utils/SongSimilarity'
+import ArchiveSong from '../../db/models/ArchiveSong.model'
 
 export default {
   Query: {
-    async getTrack(_parent, args: GetTrackArgs) {
+    async getTrack(_parent, args: IGetTrackArgs) {
       const { id } = args
       let result = await Song.findAll({
         where: {
@@ -31,7 +32,7 @@ export default {
       result = JSON.parse(JSON.stringify(result))
       return result
     },
-    async getSongsFromAlbum(_parent, args: GetSongsFromAlbumArgs) {
+    async getTracksFromAlbum(_parent, args: IGetTracksFromAlbumArgs) {
       const { album, artistId } = args
       let result = await Song.findAll({
         where: {
@@ -42,9 +43,8 @@ export default {
       result = JSON.parse(JSON.stringify(result))
       return result
     },
-    async findTracksLike(_parent, args: FindTracksLikeArgs) {
-      let { searchQuery } = args
-      searchQuery = escape(searchQuery)
+    async findTracksLike(_parent, args: IFindTracksLikeArgs) {
+      const { searchQuery } = args
       let result = await Song.findAll({
         limit: 25,
         where: {
@@ -55,92 +55,6 @@ export default {
       }).catch((err) => console.error(err))
       result = JSON.parse(JSON.stringify(result))
       return result
-    },
-    async getArchiveTracks(_parent, args: GetArtchiveTracksArgs) {
-      let startDate: Date, endDate: Date
-
-      // argument validation
-      if (args.startDate) {
-        startDate = new Date(args.startDate)
-        if (!(startDate instanceof Date && !isNaN(startDate.getTime()))) {
-          throw new SyntaxError('Invalid startDate')
-        }
-      }
-      if (args.endDate) {
-        endDate = new Date(args.endDate)
-        if (!(endDate instanceof Date && !isNaN(endDate.getTime()))) {
-          throw new SyntaxError('Invalid endDate')
-        }
-      }
-
-      if (startDate > endDate) {
-        throw new SyntaxError('startDate must be earlier in time than endDate')
-      }
-
-      // construct condition based on dates provided
-      let condition: {
-        addedAt:
-          | { [Op.between]: string[] }
-          | { [Op.gte]: string }
-          | { [Op.lte]: string }
-      }
-      if (startDate && endDate) {
-        condition = {
-          addedAt: {
-            [Op.between]: [startDate.toISOString(), endDate.toISOString()]
-          }
-        }
-      } else if (startDate && !endDate) {
-        condition = {
-          addedAt: {
-            [Op.gte]: startDate.toISOString()
-          }
-        }
-      } else if (!startDate && endDate) {
-        condition = {
-          addedAt: {
-            [Op.lte]: endDate.toISOString()
-          }
-        }
-      }
-
-      let result: void | ArchiveSong[]
-      if (condition) {
-        result = await ArchiveSong.findAll({
-          where: condition,
-          include: [
-            {
-              model: Song
-            }
-          ]
-        }).catch((err) => console.error(err))
-      } else {
-        result = await ArchiveSong.findAll({
-          include: [
-            {
-              model: Song
-            }
-          ]
-        })
-      }
-      let songs = JSON.parse(JSON.stringify(result))
-
-      // TODO: can filter songs by characteristics here
-      // TODO: may also want to consider filtering by genre?
-      // TODO: could also resolve SongDetails with the info retrieved here
-      songs = songs.map((song) => {
-        return {
-          id: song.song.id,
-          artistId: song.song.artistId,
-          name: song.song.name,
-          album: song.song.album,
-          art: song.song.art,
-          previewUrl: song.song.previewUrl,
-          addedBy: song.addedBy,
-          addedAt: song.addedAt
-        }
-      })
-      return songs
     },
     async getAvgTrackDetails() {
       let result = await Song.findAll({
@@ -161,11 +75,33 @@ export default {
       }).catch((err) => console.error(err))
       result = JSON.parse(JSON.stringify(result))[0]
       return result
+    },
+    async getSimilarTracks(_parent, args: IGetSimilarTracksArgs) {
+      let { id, limit } = args
+      if (typeof limit !== 'number') {
+        limit = 10
+      }
+
+      if (limit < 1 || limit > 100) {
+        throw new SyntaxError('limit must be between 1 and 100')
+      }
+
+      return await getSimilarSongs(id, limit)
+    },
+    async getWhenTrackAddedByUsers(_parent, args: IGetTrackArgs) {
+      let { id } = args
+      return await ArchiveSong.findAll({
+        where: {
+          songId: id
+        }
+      })
+        .then((res) => JSON.parse(JSON.stringify(res)))
+        .catch((err) => console.error(err))
     }
   },
   Song: {
-    async details(parent: SongDetails) {
-      const details = {
+    async details(parent: ISongDetails) {
+      return {
         length: parent.length,
         tempo: parent.tempo,
         danceability: parent.danceability,
@@ -176,9 +112,8 @@ export default {
         liveness: parent.liveness,
         valence: parent.valence
       }
-      return details
     },
-    async artist(parent: SongArtist) {
+    async artist(parent: ISongArtist) {
       const { artistId } = parent
       let result = await Artist.findOne({
         where: {
@@ -188,6 +123,16 @@ export default {
 
       result = JSON.parse(JSON.stringify(result))
       return result
+    },
+    async history(parent: IGetTrackArgs) {
+      const { id } = parent
+      return await ArchiveSong.findAll({
+        where: {
+          songId: id
+        }
+      })
+        .then((res) => JSON.parse(JSON.stringify(res)))
+        .catch((err) => console.error(err))
     }
   }
 }

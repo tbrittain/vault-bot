@@ -10,8 +10,7 @@ export default gql`
     art: String
     previewUrl: String
     details: SongDetails!
-    addedBy: String
-    addedAt: String
+    history: [SongHistory!]
   }
 
   type SongDetails {
@@ -24,5 +23,15 @@ export default gql`
     instrumentalness: Float!
     liveness: Float!
     valence: Float!
+  }
+
+  type SimilarSong {
+    song: Song!
+    score: Float!
+  }
+
+  type SongHistory {
+    addedBy: String!
+    addedAt: String!
   }
 `

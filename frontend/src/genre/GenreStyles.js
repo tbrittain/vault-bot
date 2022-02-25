@@ -1,16 +1,16 @@
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@mui/styles'
 
 const genreStyles = makeStyles((theme) => ({
   title: {
     textAlign: 'center',
     padding: 15,
     marginTop: 10,
-    marginBottom: 10
+    marginBottom: 10,
   },
   genreTitle: {
     textTransform: 'capitalize',
-    fontWeight: 800
-  }
+    fontWeight: theme.typography.fontWeightBold,
+  },
 }))
 
 export default genreStyles

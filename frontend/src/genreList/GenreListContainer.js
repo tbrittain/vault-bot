@@ -1,20 +1,12 @@
 import React from 'react'
-import {
-  Typography
-} from '@material-ui/core'
 import GenreViewer from './GenreViewer'
+import { Typography } from '@mui/material'
 
 const GenreListContainer = () => {
   return (
     <div>
-      <Typography
-        variant='h1'
-      >
-        Genres
-      </Typography>
-      <Typography
-        variant='subtitle1'
-      >
+      <Typography variant="h1">Genres</Typography>
+      <Typography variant="subtitle1">
         Total list of all the genres tracked by VaultBot
       </Typography>
       <GenreViewer />

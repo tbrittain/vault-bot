@@ -1,8 +1,8 @@
-import { Table, Column, Model, PrimaryKey, HasMany } from 'sequelize-typescript'
+import { Column, HasMany, Model, PrimaryKey, Table } from 'sequelize-typescript'
 import ArtistGenre from './ArtistGenre.model'
-import { TableOptions } from './interfaces/TableOptions'
+import { ITableOptions } from './interfaces/ITableOptions'
 
-const ArtistOptions: TableOptions = {
+const ArtistOptions: ITableOptions = {
   tableName: 'artists',
   timestamps: false,
   underscored: true

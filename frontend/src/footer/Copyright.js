@@ -1,28 +1,21 @@
 import React from 'react'
-import {
-  Typography
-} from '@material-ui/core'
 import footerStyles from './FooterStyles'
+import { Typography } from '@mui/material'
 
-function Copyright () {
+function Copyright() {
   const classes = footerStyles()
   return (
-    <Typography
-      variant='body2'
-      color='textSecondary'
-      align='center'
-    >
+    <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
       <a
-        href='https://tbrittain.com/'
-        target='_blank'
-        rel='noopener noreferrer'
+        href="https://tbrittain.com/"
+        target="_blank"
+        rel="noopener noreferrer"
         className={classes.copyrightLink}
       >
         Trey Brittain
       </a>{' '}
-      {new Date().getFullYear()}
-      .
+      {new Date().getFullYear()}.
     </Typography>
   )
 }

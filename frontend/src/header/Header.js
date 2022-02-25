@@ -1,18 +1,26 @@
-import React from "react";
+import React, { useContext } from 'react'
+import { Link } from 'react-router-dom'
+import headerStyles from './HeaderStyles'
+import VaultBotLogo from '../assets/VaultBotLogo.svg'
+import { ColorModeContext } from '../themes/ThemeToggler'
+import Brightness4Icon from '@mui/icons-material/Brightness4'
+import Brightness7Icon from '@mui/icons-material/Brightness7'
 import {
   AppBar,
   Box,
   Button,
   ButtonGroup,
+  IconButton,
   Toolbar,
   Typography,
-} from "@material-ui/core";
-import { Link } from "react-router-dom";
-import headerStyles from "./HeaderStyles";
-import VaultBotLogo from "../assets/VaultBotLogo.svg";
+  useTheme,
+} from '@mui/material'
 
 function Header() {
-  const classes = headerStyles();
+  const classes = headerStyles()
+  const colorMode = useContext(ColorModeContext)
+  const theme = useTheme()
+
   return (
     <header className={classes.header}>
       <AppBar position="fixed" className={classes.headerContainer}>
@@ -22,19 +30,19 @@ function Header() {
               src={VaultBotLogo}
               alt="VaultBot logo"
               style={{
-                height: "3.25rem",
+                height: '3.25rem',
               }}
             />
             <Typography
               variant="h6"
               className={classes.title}
-              style={{
-                fontWeight: 800,
+              sx={{
+                fontWeight: 'fontWeightBold',
               }}
             >
               <i
                 style={{
-                  fontWeight: 800,
+                  fontWeight: theme.typography.fontWeightBold,
                 }}
               >
                 VaultBot
@@ -45,7 +53,7 @@ function Header() {
             variant="text"
             color="primary"
             aria-label="text primary button group"
-            size="large"
+            size="medium"
             className={classes.actionButtons}
           >
             <Button
@@ -53,8 +61,8 @@ function Header() {
               className={classes.menuButton}
               component={Link}
               to="/songs"
-              style={{
-                padding: 5,
+              sx={{
+                fontWeight: 'fontWeightLight',
               }}
             >
               Songs
@@ -64,8 +72,8 @@ function Header() {
               className={classes.menuButton}
               component={Link}
               to="/artists"
-              style={{
-                padding: 5,
+              sx={{
+                fontWeight: 'fontWeightLight',
               }}
             >
               Artists
@@ -75,17 +83,28 @@ function Header() {
               className={classes.menuButton}
               component={Link}
               to="/genres"
-              style={{
-                padding: 5,
+              sx={{
+                fontWeight: 'fontWeightLight',
               }}
             >
               Genres
             </Button>
+            <IconButton
+              sx={{ ml: 1 }}
+              onClick={colorMode.toggleColorMode}
+              color="inherit"
+            >
+              {theme.palette.mode === 'dark' ? (
+                <Brightness7Icon />
+              ) : (
+                <Brightness4Icon />
+              )}
+            </IconButton>
           </ButtonGroup>
         </Toolbar>
       </AppBar>
     </header>
-  );
+  )
 }
 
-export default Header;
+export default Header

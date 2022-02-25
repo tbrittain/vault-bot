@@ -1,14 +1,14 @@
 import {
-  Table,
   Column,
+  ForeignKey,
   Model,
   PrimaryKey,
-  ForeignKey
+  Table
 } from 'sequelize-typescript'
 import Artist from './Artist.model'
-import { TableOptions } from './interfaces/TableOptions'
+import { ITableOptions } from './interfaces/ITableOptions'
 
-const SongOptions: TableOptions = {
+const SongOptions: ITableOptions = {
   tableName: 'songs',
   timestamps: false,
   underscored: true

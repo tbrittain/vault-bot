@@ -1,26 +1,20 @@
 import React, { useState } from 'react'
-import {
-  Paper,
-  MobileStepper,
-  Button,
-  useTheme
-} from '@material-ui/core'
-import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft'
-import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight'
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft'
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
 import homeStyles from './HomeStyles'
 import GeneralStats from './GeneralStats'
-import TrendPreview from './TrendPreview'
 import FeaturedArtist from './FeaturedArtist'
 import SwipeableViews from 'react-swipeable-views'
 import { autoPlay } from 'react-swipeable-views-utils'
 import './override.css'
+import { Button, MobileStepper, Paper, useTheme } from '@mui/material'
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews)
 
 const Home = () => {
   const classes = homeStyles()
   const [activeStep, setActiveStep] = useState(0)
-  const maxSteps = 3
+  const maxSteps = 2
   const theme = useTheme()
 
   const handleNext = () => {
@@ -35,15 +29,13 @@ const Home = () => {
     setActiveStep(step)
   }
 
+  // TODO: make current homepage the mobile version
   return (
-    <Paper
-      className={classes.container}
-      elevation={3}
-    >
+    <Paper className={classes.container} elevation={3}>
       <AutoPlaySwipeableViews
         interval={15000}
         style={{
-          height: '100%'
+          height: '100%',
         }}
         axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
         index={activeStep}
@@ -51,23 +43,35 @@ const Home = () => {
         enableMouseEvents
       >
         <GeneralStats />
-        <TrendPreview />
+        {/*FIXME <TrendPreview />*/}
         <FeaturedArtist />
       </AutoPlaySwipeableViews>
       <MobileStepper
         steps={maxSteps}
-        position='static'
-        variant='dots'
+        position="static"
+        variant="dots"
         activeStep={activeStep}
         nextButton={
-          <Button size='small' onClick={handleNext} disabled={activeStep === maxSteps - 1}>
+          <Button
+            size="small"
+            onClick={handleNext}
+            disabled={activeStep === maxSteps - 1}
+          >
             Next
-            {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+            {theme.direction === 'rtl' ? (
+              <KeyboardArrowLeftIcon />
+            ) : (
+              <KeyboardArrowRightIcon />
+            )}
           </Button>
         }
         backButton={
-          <Button size='small' onClick={handleBack} disabled={activeStep === 0}>
-            {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+          <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
+            {theme.direction === 'rtl' ? (
+              <KeyboardArrowRightIcon />
+            ) : (
+              <KeyboardArrowLeftIcon />
+            )}
             Back
           </Button>
         }

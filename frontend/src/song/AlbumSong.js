@@ -1,10 +1,7 @@
 import React from 'react'
-import {
-  Typography,
-  Card
-} from '@material-ui/core'
 import { Link } from 'react-router-dom'
 import songStyles from './SongStyles'
+import { Card, Typography } from '@mui/material'
 
 const AlbumSong = (props) => {
   const classes = songStyles()
@@ -15,9 +12,10 @@ const AlbumSong = (props) => {
     backgroundPosition: 'center center',
     backgroundSize: '10vw 10vw',
     filter: 'blur(20px)',
-    '-webkit-filter': 'blur(20px)',
+    WebkitFilter: 'blur(20px)',
     overflow: 'hidden',
-    zIndex: -1
+    zIndex: -1,
+    opacity: 0.5,
   }
 
   return (
@@ -25,25 +23,17 @@ const AlbumSong = (props) => {
       className={classes.albumSongCard}
       style={{
         background: 'none',
-        textDecoration: 'none'
+        textDecoration: 'none',
       }}
       component={Link}
       to={`/songs/${songId}`}
     >
-      <div
-        className={classes.albumInner}
-      >
-        <Typography
-          className={classes.albumText}
-          variant='subtitle1'
-        >
+      <div className={classes.albumInner}>
+        <Typography className={classes.albumText} variant="subtitle1">
           {name}
         </Typography>
       </div>
-      <div
-        className={classes.albumInner}
-        style={backgroundStyling}
-      />
+      <div className={classes.albumInner} style={backgroundStyling} />
     </Card>
   )
 }

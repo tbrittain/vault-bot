@@ -1,21 +1,21 @@
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@mui/styles'
 
 const homeStyles = makeStyles((theme) => ({
   generalStats: {
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
   },
   container: {
     width: '100%',
-    height: '100%'
+    height: '100%',
   },
   statsContainer: {
     margin: 'auto',
     overflowY: 'hidden',
-    userSelect: 'none'
+    userSelect: 'none',
   },
   individualStat: {
-    display: 'flex'
+    display: 'flex',
   },
   animateContainer: {
     display: 'flex',
@@ -25,52 +25,55 @@ const homeStyles = makeStyles((theme) => ({
     animationTimingFunction: 'ease-out',
     animationFillMode: 'both',
     margin: 15,
-    zIndex: 50
+    zIndex: 50,
   },
   animateText: {
-    fontSize: '5em',
-    fontWeight: 800,
+    fontSize: '4em',
+    fontWeight: theme.typography.fontWeightBold,
     width: '100%',
     height: '6vw',
     [theme.breakpoints.down('sm')]: {
       fontSize: '3.5em',
-      height: '18vw'
-    }
+      height: '18vw',
+    },
   },
   statDescription: {
-    fontWeight: 300,
+    fontWeight: theme.typography.fontWeightLight,
     [theme.breakpoints.down('sm')]: {
       fontSize: '2ch',
-      textAlign: 'center'
-    }
+      textAlign: 'center',
+    },
   },
   '@keyframes slidein': {
     from: {
       opacity: 0,
-      transform: 'translateY(100%)'
+      transform: 'translateY(100%)',
     },
     to: {
       opacity: 1,
-      transform: 'translateY(0%)'
-    }
+      transform: 'translateY(0%)',
+    },
   },
   numberHighlight: {
-    fontWeight: 800,
+    fontWeight: theme.typography.fontWeightBold,
     color: theme.palette.primary.dark,
     marginLeft: 5,
     [theme.breakpoints.down('sm')]: {
-      fontSize: '2ch'
-    }
+      fontSize: '2ch',
+    },
   },
   featuredArtistName: {
     textDecoration: 'none',
-    color: theme.palette.secondary.main,
-    fontWeight: 800,
+    color:
+      theme.palette.mode === 'light'
+        ? theme.palette.secondary.main
+        : theme.palette.primary.contrastText,
     transition: '0.3s',
     margin: 5,
+    paddingRight: 5,
     '&:hover': {
-      color: theme.palette.secondary.light
-    }
+      color: theme.palette.secondary.light,
+    },
   },
   featuredArtistInfo: {
     width: '100%',
@@ -80,33 +83,36 @@ const homeStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     alignItems: 'center',
     background: 'none',
-    zIndex: 26
+    zIndex: 26,
   },
   artistArt: {
     width: '12vw',
     height: '12vw',
     margin: 15,
     boxShadow: '0px 0px 4px #adadad',
-    minHeight: 75,
-    minWidth: 75,
+    minHeight: 125,
+    minWidth: 125,
     [theme.breakpoints.down('sm')]: {
       minHeight: 175,
-      minWidth: 175
-    }
+      minWidth: 175,
+    },
   },
   title: {
     backgroundColor: theme.palette.primary.main,
     textAlign: 'center',
-    color: theme.palette.secondary.main,
-    fontWeight: 300,
-    zIndex: 27
+    color:
+      theme.palette.mode === 'light'
+        ? theme.palette.secondary.main
+        : theme.palette.primary.contrastText,
+    fontWeight: theme.typography.fontWeightLight,
+    zIndex: 27,
   },
   genreContainer: {
     [theme.breakpoints.down('sm')]: {
       maxHeight: '30vh',
-      overflow: 'auto'
-    }
-  }
+      overflow: 'auto',
+    },
+  },
 }))
 
 export default homeStyles

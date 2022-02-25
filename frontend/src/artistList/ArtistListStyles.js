@@ -1,4 +1,5 @@
-import { alpha, makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@mui/styles'
+import { alpha } from '@mui/material'
 
 const artistListStyles = makeStyles((theme) => ({
   search: {
@@ -6,14 +7,14 @@ const artistListStyles = makeStyles((theme) => ({
     borderRadius: theme.shape.borderRadius,
     backgroundColor: alpha(theme.palette.common.white, 0.15),
     '&:hover': {
-      backgroundColor: alpha(theme.palette.common.white, 0.25)
+      backgroundColor: alpha(theme.palette.common.white, 0.25),
     },
     marginLeft: 0,
     width: '100%',
     [theme.breakpoints.up('sm')]: {
       marginLeft: theme.spacing(1),
-      width: 'auto'
-    }
+      width: 'auto',
+    },
   },
   searchIcon: {
     padding: theme.spacing(0, 2),
@@ -22,11 +23,11 @@ const artistListStyles = makeStyles((theme) => ({
     pointerEvents: 'none',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   inputRoot: {
     color: 'inherit',
-    fontWeight: 300
+    fontWeight: theme.typography.fontWeightLight,
   },
   inputInput: {
     padding: theme.spacing(1, 1, 1, 0),
@@ -36,32 +37,32 @@ const artistListStyles = makeStyles((theme) => ({
     [theme.breakpoints.up('sm')]: {
       width: '20ch',
       '&:focus': {
-        width: '30ch'
-      }
-    }
+        width: '30ch',
+      },
+    },
   },
   queryResultContainer: {
     width: '35ch',
     maxHeight: '35ch',
     overflowY: 'auto',
-    background: 'none'
+    background: 'none',
   },
   artistResultItem: {
     display: 'flex',
     transition: '0.1s',
     '&:hover': {
-      outline: `2px solid ${theme.palette.primary.main}`
-    }
+      outline: `2px solid ${theme.palette.primary.main}`,
+    },
   },
   searchResultArt: {
     width: 100,
     height: 100,
-    boxShadow: '0px 0px 2px #adadad'
+    boxShadow: '0px 0px 2px #adadad',
   },
   totalArtistResults: {
     display: 'flex',
     width: '100%',
-    height: 'calc(50vh + 100px)'
+    height: 'calc(50vh + 100px)',
   },
   artistListLink: {
     color: 'black',
@@ -69,9 +70,9 @@ const artistListStyles = makeStyles((theme) => ({
     overflowWrap: 'break-word',
     transition: '0.3s',
     '&:hover': {
-      color: theme.palette.primary.main
-    }
-  }
+      color: theme.palette.primary.main,
+    },
+  },
 }))
 
 export default artistListStyles

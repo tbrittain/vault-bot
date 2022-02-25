@@ -1,16 +1,12 @@
 import React from 'react'
-import { useQuery, gql } from '@apollo/client'
-import {
-  Paper,
-  Typography
-} from '@material-ui/core'
-import { DataGrid } from '@material-ui/data-grid'
-import { Alert } from '@material-ui/lab'
+import { gql, useQuery } from '@apollo/client'
 import { Link } from 'react-router-dom'
 import LoadingScreen from '../loading/LoadingScreen'
 import genreListStyles from './GenreListStyles'
 import genreToMuiColor from '../utils/genreToMuiColor'
 import { v4 as uuidv4 } from 'uuid'
+import { Alert, Paper, Typography } from '@mui/material'
+import { DataGrid } from '@mui/x-data-grid'
 
 const QUERY = gql`
   query {
@@ -21,7 +17,7 @@ const QUERY = gql`
     }
   }
 `
-
+// FIXME - DataGrid API has changed
 const columns = [
   {
     field: 'genreName',
@@ -38,36 +34,36 @@ const columns = [
           justifyContent: 'center',
           alignItems: 'center',
           textDecoration: 'none',
-          background: genreToMuiColor(params.value)
+          background: genreToMuiColor(params.value),
         }}
       >
         <Paper>
           <Typography
-            variant='body1'
-            style={{
+            variant="body1"
+            sx={{
               textTransform: 'capitalize',
               margin: 5,
-              fontWeight: 300
+              fontWeight: 'fontWeightLight',
             }}
           >
             {params.value}
           </Typography>
         </Paper>
       </Paper>
-    )
+    ),
   },
   {
     field: 'numArtists',
     headerName: 'Artists',
     width: 150,
-    type: 'number'
+    type: 'number',
   },
   {
     field: 'rank',
     headerName: 'Rank',
     width: 150,
-    type: 'number'
-  }
+    type: 'number',
+  },
 ]
 
 const GenreList = () => {
@@ -84,21 +80,19 @@ const GenreList = () => {
         id: uuidv4(),
         genreName: genre.genre,
         numArtists: genre.numArtists,
-        rank: genre.rank
+        rank: genre.rank,
       })
     }
     processing = false
   }
 
   if (loading || processing) {
-    return (
-      <LoadingScreen text='Loading genres tracked by VaultBot...' />
-    )
+    return <LoadingScreen text="Loading genres tracked by VaultBot..." />
   }
 
   if (error) {
     return (
-      <Alert severity='error'>An error occurred during data retrieval :(</Alert>
+      <Alert severity="error">An error occurred during data retrieval :(</Alert>
     )
   }
 
@@ -106,14 +100,10 @@ const GenreList = () => {
     <div className={classes.totalGenreResults}>
       <div
         style={{
-          flexGrow: 1
+          flexGrow: 1,
         }}
       >
-        <DataGrid
-          columns={columns}
-          rows={rows}
-          rowHeight={75}
-        />
+        <DataGrid columns={columns} rows={rows} rowHeight={75} />
       </div>
     </div>
   )

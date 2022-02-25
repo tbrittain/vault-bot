@@ -1,10 +1,10 @@
 import HistGenre from '../../db/models/HistGenre.model'
 import { Op } from 'sequelize'
-import { GetHistGenresArgs } from './interfaces/HistGenres'
+import { IGetHistGenresArgs } from './interfaces/HistGenres'
 
 export default {
   Query: {
-    async getHistGenres(_parent, args: GetHistGenresArgs) {
+    async getHistGenres(_parent, args: IGetHistGenresArgs) {
       let endDate: Date
       if (args.endDate) {
         endDate = new Date(args.endDate)

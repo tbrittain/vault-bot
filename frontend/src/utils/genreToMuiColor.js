@@ -1,28 +1,51 @@
 import {
-  red, pink, purple, deepPurple,
-  indigo, blue, lightBlue, cyan,
-  teal, green, lightGreen, lime,
-  yellow, amber, orange, deepOrange,
-  grey, blueGrey
-} from '@material-ui/core/colors'
+  amber,
+  blue,
+  blueGrey,
+  cyan,
+  deepOrange,
+  deepPurple,
+  green,
+  grey,
+  indigo,
+  lightBlue,
+  lightGreen,
+  lime,
+  orange,
+  pink,
+  purple,
+  red,
+  teal,
+  yellow,
+} from '@mui/material/colors'
 
 const hues = [
-  red, pink, purple, deepPurple,
-  indigo, blue, lightBlue, cyan,
-  teal, green, lightGreen, lime,
-  yellow, amber, orange, deepOrange,
-  grey, blueGrey
+  red,
+  pink,
+  purple,
+  deepPurple,
+  indigo,
+  blue,
+  lightBlue,
+  cyan,
+  teal,
+  green,
+  lightGreen,
+  lime,
+  yellow,
+  amber,
+  orange,
+  deepOrange,
+  grey,
+  blueGrey,
 ]
 
-const shades = [
-  100, 200, 300, 400, 500,
-  600, 700, 800, 900
-]
+const shades = [100, 200, 300, 400, 500, 600, 700, 800, 900]
 
 const genreToMuiColor = (genreName) => {
   const secondChar = genreName.slice(1, 2)
   const secondLastChar = genreName.slice(-2)
-  // const middleChar = genreName.slice(
+  // const middleChar = genreName.slice( // unused
   //   Math.floor(genreName.length / 2),
   //   Math.floor(genreName.length / 2) + 1
   // )

@@ -1,11 +1,11 @@
-import path from 'path'
-import fs from 'fs'
-import { Sequelize } from 'sequelize'
-import DynamicSong from '../../db/models/DynamicSong.model'
-import ArchiveSong from '../../db/models/ArchiveSong.model'
-import Song from '../../db/models/Song.model'
-import Artist from '../../db/models/Artist.model'
-import ArtistGenre from '../../db/models/ArtistGenre.model'
+import path from "path";
+import fs from "fs";
+import { Sequelize } from "sequelize";
+import DynamicSong from "../../db/models/DynamicSong.model";
+import ArchiveSong from "../../db/models/ArchiveSong.model";
+import Song from "../../db/models/Song.model";
+import Artist from "../../db/models/Artist.model";
+import ArtistGenre from "../../db/models/ArtistGenre.model";
 
 export default {
   Query: {
@@ -68,10 +68,9 @@ export default {
       return result[0].totalNumArtists
     },
     async totalNumGenres() {
-      const result = await ArtistGenre.aggregate('genre', 'count', {
+      return await ArtistGenre.aggregate('genre', 'count', {
         distinct: true
       })
-      return result
     }
   }
 }

@@ -1,9 +1,7 @@
 import React, { useEffect } from 'react'
-import {
-  Typography,
-  Paper,
-  LinearProgress
-} from '@material-ui/core'
+import { LinearProgress, Paper, Typography } from '@mui/material'
+
+// TODO: Should use some sort of redirect instead of having this component
 
 const SongExportSuccess = (props) => {
   const { setActiveStep } = props
@@ -16,30 +14,30 @@ const SongExportSuccess = (props) => {
     <Paper
       elevation={3}
       style={{
-        textAlign: 'center'
+        textAlign: 'center',
       }}
     >
       <Typography
-        variant='h2'
-        style={{
+        variant="h2"
+        sx={{
           margin: 15,
-          fontWeight: 800
+          fontWeight: 'fontWeightBold',
         }}
       >
         <i>Success!</i>
       </Typography>
       <Typography
-        variant='h4'
+        variant="h4"
         style={{
-          margin: 15
+          margin: 15,
         }}
       >
         Playlist has been exported
       </Typography>
       <Typography
-        variant='subtitle1'
+        variant="subtitle1"
         style={{
-          margin: 15
+          margin: 15,
         }}
       >
         Returning to songs momentarily...

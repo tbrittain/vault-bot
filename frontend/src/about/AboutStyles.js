@@ -1,11 +1,11 @@
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@mui/styles'
 
 const aboutStyles = makeStyles((theme) => ({
   aboutContainer: {
-    width: '100%'
+    width: '100%',
   },
   title: {
-    textAlign: 'center'
+    textAlign: 'center',
   },
   vaultBotLogo: {
     height: '18vw',
@@ -19,16 +19,16 @@ const aboutStyles = makeStyles((theme) => ({
       margin: 'auto',
       minHeight: 175,
       minWidth: 175,
-      paddingBottom: 15
-    }
+      paddingBottom: 15,
+    },
   },
   aboutContent: {
-    margin: '3%'
+    margin: '3%',
   },
   paragraph: {
     textIndent: '3ch',
-    textAlign: 'justify'
-  }
+    textAlign: 'justify',
+  },
 }))
 
 export default aboutStyles

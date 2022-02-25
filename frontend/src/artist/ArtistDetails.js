@@ -1,22 +1,15 @@
 import React from 'react'
-import {
-  Typography,
-  Paper,
-  Avatar,
-  Button
-} from '@material-ui/core'
-import OpenInNewIcon from '@material-ui/icons/OpenInNew'
 import CountUpAnimation from '../effects/CountUpAnimation'
 import ArtistAlbums from './ArtistAlbums'
 import artistStyles from './ArtistStyles'
+import { Avatar, Button, Paper, Typography } from '@mui/material'
+import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 
 const ArtistDetails = (props) => {
   const artistLink = `spotify:artist:${props.id}`
   const classes = artistStyles()
   return (
-    <Paper
-      elevation={3}
-    >
+    <Paper elevation={3}>
       <div className={classes.artistTop}>
         <Avatar
           className={classes.artistArt}
@@ -25,55 +18,50 @@ const ArtistDetails = (props) => {
         />
         <div
           style={{
-            width: '75%'
+            width: '75%',
           }}
         >
           <Typography
-            variant='h2'
+            variant="h2"
             className={classes.artistName}
+            sx={{ fontWeight: 'bold' }}
           >
             <i
               style={{
-                textAlign: 'center'
+                textAlign: 'center',
               }}
             >
               {props.name}
             </i>
           </Typography>
         </div>
-        <Typography
-          variant='subtitle1'
-        >
-          {Number(props.numSongs) >= 20 &&
-            <CountUpAnimation>{Number(props.numSongs)}</CountUpAnimation>}
-          {Number(props.numSongs) < 20 &&
-            Number(props.numSongs)}
-          {Number(props.numSongs) > 1 &&
-            ' unique songs'}
-          {Number(props.numSongs) === 1 &&
-            ' unique song'}
+        <Typography variant="subtitle1" className={classes.artistNumSongs}>
+          {Number(props.numSongs) >= 20 && (
+            <CountUpAnimation>{Number(props.numSongs)}</CountUpAnimation>
+          )}
+          {Number(props.numSongs) < 20 && Number(props.numSongs)}
+          {Number(props.numSongs) > 1 && ' unique songs'}
+          {Number(props.numSongs) === 1 && ' unique song'}
         </Typography>
         <Button
-          variant='contained'
-          component='a'
+          variant="contained"
+          component="a"
           href={artistLink}
           style={{
             marginTop: 10,
             backgroundColor: 'rgb(35, 207, 95)',
-            color: 'white'
+            color: 'white',
           }}
         >
           Open on Spotify
           <OpenInNewIcon
             style={{
-              paddingLeft: 4
+              paddingLeft: 4,
             }}
           />
         </Button>
       </div>
-      <ArtistAlbums
-        albumSongs={props.albumSongs}
-      />
+      <ArtistAlbums albumSongs={props.albumSongs} />
     </Paper>
   )
 }

@@ -1,19 +1,17 @@
 import React from 'react'
-import {
-  Typography
-} from '@material-ui/core'
-import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
-import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import songStyles from './SongStyles'
 import minTommss from '../utils/minTommss'
-import { withStyles } from '@material-ui/core/styles'
+import { Typography } from '@mui/material'
+import { withStyles } from '@mui/styles'
 
 const GlobalCss = withStyles({
   '@global': {
     '.MuiBox-root': {
-      padding: 0
-    }
-  }
+      padding: 0,
+    },
+  },
 })(() => null)
 
 const CharCompare = (props) => {
@@ -25,9 +23,9 @@ const CharCompare = (props) => {
   const statLargerThanAvg = stat > avgStat
   let difference
   if (statLargerThanAvg === true) {
-    difference = `${Math.abs(Math.floor(100 * ((stat / avgStat) - 1)))}%`
+    difference = `${Math.abs(Math.floor(100 * (stat / avgStat - 1)))}%`
   } else {
-    difference = `${Math.abs(Math.floor(100 * ((avgStat / stat) - 1)))}%`
+    difference = `${Math.abs(Math.floor(100 * (avgStat / stat - 1)))}%`
   }
 
   if (name === 'length') {
@@ -41,15 +39,15 @@ const CharCompare = (props) => {
     <div
       style={{
         textAlign: 'center',
-        margin: 10
+        margin: 10,
       }}
     >
       <GlobalCss />
       <Typography
-        variant='h6'
-        style={{
+        variant="h6"
+        sx={{
           textTransform: 'capitalize',
-          fontWeight: 300
+          fontWeight: 'fontWeightLight',
         }}
       >
         {name}
@@ -57,14 +55,14 @@ const CharCompare = (props) => {
       <div className={classes.songCharsContainer}>
         <div
           style={{
-            gridColumn: '1 2'
+            gridColumn: '1 2',
           }}
         >
           <Typography
-            variant='h5'
+            variant="h5"
             className={classes.songChar}
             style={{
-              textAlign: 'left'
+              textAlign: 'left',
             }}
           >
             {stat}
@@ -75,44 +73,42 @@ const CharCompare = (props) => {
             gridColumn: '2 3',
             margin: 'auto auto',
             display: 'flex',
-            flexDirection: 'column'
+            flexDirection: 'column',
           }}
         >
-          {statLargerThanAvg === true &&
+          {statLargerThanAvg === true && (
             <div>
               <ArrowUpwardIcon
                 style={{
                   color: '#4dd020',
-                  fontSize: 30
+                  fontSize: 30,
                 }}
               />
-              <Typography variant='body2'>
-                {difference}
-              </Typography>
-            </div>}
-          {statLargerThanAvg === false &&
+              <Typography variant="body2">{difference}</Typography>
+            </div>
+          )}
+          {statLargerThanAvg === false && (
             <div>
               <ArrowDownwardIcon
                 style={{
                   color: '#d11f1f',
-                  fontSize: 30
+                  fontSize: 30,
                 }}
               />
-              <Typography variant='body2'>
-                {difference}
-              </Typography>
-            </div>}
+              <Typography variant="body2">{difference}</Typography>
+            </div>
+          )}
         </div>
         <div
           style={{
-            gridColumn: '3 4'
+            gridColumn: '3 4',
           }}
         >
           <Typography
-            variant='h5'
+            variant="h5"
             className={classes.songChar}
             style={{
-              textAlign: 'right'
+              textAlign: 'right',
             }}
           >
             {avgStat}

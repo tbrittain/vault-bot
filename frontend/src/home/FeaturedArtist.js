@@ -1,16 +1,16 @@
 import React from 'react'
 import homeStyles from './HomeStyles'
-import {
-  Typography,
-  CircularProgress,
-  Avatar,
-  Paper,
-  useTheme
-} from '@material-ui/core'
-import { useQuery, gql } from '@apollo/client'
-import { Alert } from '@material-ui/lab'
+import { gql, useQuery } from '@apollo/client'
 import { Link } from 'react-router-dom'
 import GenreGrid from '../grids/GenreGrid'
+import {
+  Alert,
+  Avatar,
+  CircularProgress,
+  Paper,
+  Typography,
+  useTheme,
+} from '@mui/material'
 
 const QUERY = gql`
   query {
@@ -37,7 +37,7 @@ const FeaturedArtist = () => {
   let backgroundStyling
   if (data) {
     formattedData = { ...data.getFeaturedArtist }
-    formattedData.genres = formattedData.genres.map(genre => genre.genre)
+    formattedData.genres = formattedData.genres.map((genre) => genre.genre)
     dateToday = new Date(formattedData.featured)
     processing = false
     backgroundStyling = {
@@ -45,13 +45,13 @@ const FeaturedArtist = () => {
       backgroundPosition: 'center center',
       backgroundSize: '100vw 100vw',
       filter: 'blur(20px)',
-      '-webkit-filter': 'blur(20px)',
+      WebkitFilter: 'blur(20px)',
       overflow: 'hidden',
       zIndex: 1,
       gridColumn: '1 / 1',
       gridRow: '1 / 1',
       height: '100%',
-      width: '100%'
+      width: '100%',
     }
   }
 
@@ -64,15 +64,15 @@ const FeaturedArtist = () => {
           alignItems: 'center',
           userSelect: 'none',
           '& > * + *': {
-            margin: 'auto auto'
-          }
+            margin: 'auto auto',
+          },
         }}
       >
         <CircularProgress />
         <Typography
-          variant='body2'
+          variant="body2"
           style={{
-            marginTop: 5
+            marginTop: 5,
           }}
         >
           Loading stats...
@@ -83,7 +83,7 @@ const FeaturedArtist = () => {
 
   if (error) {
     return (
-      <Alert severity='error'>An error occurred during data retrieval :(</Alert>
+      <Alert severity="error">An error occurred during data retrieval :(</Alert>
     )
   }
 
@@ -92,19 +92,22 @@ const FeaturedArtist = () => {
       style={{
         height: '100%',
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
       }}
     >
-      <div
-        className={classes.title}
-      >
+      <div className={classes.title}>
         <Typography
-          variant='h5'
+          variant="h5"
           style={{
-            lineHeight: 'inherit'
+            lineHeight: 'inherit',
           }}
         >
-          Featured artist for {dateToday.toLocaleDateString()}
+          Featured artist for{' '}
+          {dateToday.toLocaleDateString(undefined, {
+            weekday: 'long',
+            month: 'long',
+            day: 'numeric',
+          })}
         </Typography>
       </div>
       <div>
@@ -113,7 +116,7 @@ const FeaturedArtist = () => {
             display: 'grid',
             gridTemplate: '1fr / 1fr',
             placeItems: 'center',
-            background: 'none'
+            background: 'none',
           }}
         >
           <div
@@ -122,7 +125,7 @@ const FeaturedArtist = () => {
               gridColumn: '1 / 1',
               gridRow: '1 / 1',
               height: '100%',
-              width: '100%'
+              width: '100%',
             }}
           >
             <Avatar
@@ -135,29 +138,26 @@ const FeaturedArtist = () => {
             <Paper
               square={false}
               style={{
-                backgroundColor: theme.palette.primary.light
+                backgroundColor: theme.palette.primary.light,
               }}
             >
               <Typography
                 component={Link}
                 to={`/artists/${formattedData.id}`}
-                variant='h2'
+                variant="h2"
                 className={classes.featuredArtistName}
+                sx={{
+                  fontWeight: 'bold',
+                }}
               >
                 <i>{formattedData.name}</i>
               </Typography>
             </Paper>
           </div>
-          <div
-            style={backgroundStyling}
-          />
+          <div style={backgroundStyling} />
         </div>
-        <div
-          className={classes.genreContainer}
-        >
-          <GenreGrid
-            genres={formattedData.genres}
-          />
+        <div className={classes.genreContainer}>
+          <GenreGrid genres={formattedData.genres} />
         </div>
       </div>
     </div>
