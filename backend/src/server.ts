@@ -19,9 +19,6 @@ import resolvers from './schema/Resolvers'
 })()
 
 const port = process.env.PORT || 3001
-const origin = process.env.ORIGIN
-  ? new RegExp(process.env.ORIGIN)
-  : 'http://localhost:3000'
 
 const ComplexityLimitRule = createComplexityLimitRule(1500, {
   onCost: (cost: Number) => {
@@ -42,12 +39,7 @@ async function startApolloServer(typeDefs, resolvers) {
   })
 
   await server.start()
-  server.applyMiddleware({
-    app,
-    cors: {
-      origin: origin
-    }
-  })
+  server.applyMiddleware({ app })
   await new Promise<void>((resolve) => httpServer.listen(port, resolve))
 
   process.env.NODE_ENV === 'production'
