@@ -47,8 +47,6 @@ async function startApolloServer(typeDefs, resolvers) {
     : console.log(
         `🚀 GraphQL API server listening on http://localhost:${port}/graphql/`
       )
-
-  console.log(`Accepting requests from origin ${origin}`)
 }
 
 ;(async () => {
