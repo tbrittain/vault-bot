@@ -6,7 +6,6 @@ import express from 'express'
 import sequelize from './db'
 import typeDefs from './schema/TypeDefs'
 import resolvers from './schema/Resolvers'
-
 ;(async () => {
   sequelize
     .authenticate()
@@ -20,7 +19,9 @@ import resolvers from './schema/Resolvers'
 })()
 
 const port = process.env.PORT || 3001
-const origin = process.env.ORIGIN || 'http://localhost:3000'
+const origin = process.env.ORIGIN
+  ? new RegExp(process.env.ORIGIN)
+  : 'http://localhost:3000'
 
 const ComplexityLimitRule = createComplexityLimitRule(1500, {
   onCost: (cost: Number) => {
@@ -29,11 +30,6 @@ const ComplexityLimitRule = createComplexityLimitRule(1500, {
   formatErrorMessage: (cost: Number) =>
     `Query with cost ${cost} exceeds complexity limit`
 })
-
-const corsSettings = {
-  origin: origin,
-  credentials: true
-}
 
 async function startApolloServer(typeDefs, resolvers) {
   const app = express()
@@ -46,7 +42,12 @@ async function startApolloServer(typeDefs, resolvers) {
   })
 
   await server.start()
-  server.applyMiddleware({ app, cors: corsSettings })
+  server.applyMiddleware({
+    app,
+    cors: {
+      origin: origin
+    }
+  })
   await new Promise<void>((resolve) => httpServer.listen(port, resolve))
 
   process.env.NODE_ENV === 'production'
