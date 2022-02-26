@@ -6,13 +6,13 @@ import * as serviceWorker from './serviceWorker'
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
 import ThemeToggler from './themes/ThemeToggler'
 
-let { REACT_APP_BACKEND_URL } = process.env
-if (!REACT_APP_BACKEND_URL) {
-  REACT_APP_BACKEND_URL = 'http://localhost:3001/graphql'
-}
+const uri =
+  process.env.NODE_ENV === 'production'
+    ? 'https://vaultbot-graphql-c4gcu3ze4q-uc.a.run.app/graphql'
+    : 'http://localhost:3001/graphql'
 
 const client = new ApolloClient({
-  uri: REACT_APP_BACKEND_URL,
+  uri: uri,
   cache: new InMemoryCache(),
 })
 
@@ -29,7 +29,4 @@ render(
   document.getElementById('root')
 )
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister()
