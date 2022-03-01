@@ -11,6 +11,8 @@ import (
 	"os"
 )
 
+// HelloHTTP TODO: the most productive first use of these functions would
+// be to aggregate the dynamic song info into the history tables
 func HelloHTTP(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(r.Header)
 	fmt.Println(r.UserAgent())
@@ -80,6 +82,19 @@ type SongExample struct {
 	Album      string `json:"album"`
 	ArtistId   string `json:"artist_id"`
 	ArtistName string `json:"artist_name"`
+}
+
+type DynamicPlaylistAverages struct {
+	UpdatedAt    string  `json:"updated_at"`
+	PDI          float64 `json:"pdi"`
+	Popularity   float64 `json:"popularity"`
+	Danceability float64 `json:"danceability"`
+	Energy       float64 `json:"energy"`
+	Valence      float64 `json:"valence"`
+	SongLength   float64 `json:"song_length"`
+	Tempo        float64 `json:"tempo"`
+	Novelty      float64 `json:"novelty"`
+	ID           string  `json:"id"`
 }
 
 func dbConnect() (*pgx.Conn, error) {
