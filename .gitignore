@@ -6,7 +6,6 @@
 .vscode
 .vs/*
 backend/build
-.prettierrc.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

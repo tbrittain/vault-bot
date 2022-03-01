@@ -1,4 +1,4 @@
-FROM node:14-slim AS builder
+FROM node:17 AS builder
 WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm ci
@@ -6,10 +6,10 @@ COPY tsconfig.json ./
 COPY src src
 RUN npm run build
 
-FROM gcr.io/distroless/nodejs:14
+FROM node:17-alpine
 ENV NODE_ENV production
 WORKDIR /usr/src/app
 COPY package*.json ./
-RUN npm ci
+RUN npm ci --only=production
 COPY --from=builder /usr/src/app/build ./
 CMD ["node", "server.js"]

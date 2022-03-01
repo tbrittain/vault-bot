@@ -1,11 +1,11 @@
-FROM node:14-slim AS builder
+FROM node:17 AS builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . ./
 RUN npm run build
 
-FROM nginx:1.21.1-alpine
+FROM nginx:1.21.6-alpine
 ENV NODE_ENV production
 COPY --from=builder /app/build /usr/share/nginx/html
 RUN rm /etc/nginx/conf.d/default.conf
