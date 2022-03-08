@@ -34,8 +34,8 @@ const artistStyles = makeStyles((theme) => ({
     height: '12vw',
     margin: 'auto',
     boxShadow: '0px 0px 4px #adadad',
-    minHeight: 75,
-    minWidth: 75,
+    minHeight: 125,
+    minWidth: 125,
     [theme.breakpoints.down('sm')]: {
       minHeight: 175,
       minWidth: 175,
@@ -58,28 +58,28 @@ const artistStyles = makeStyles((theme) => ({
   albumDetails: {
     display: 'flex',
   },
-  albumName: {
+  albumArtContainer: {
     paddingLeft: '5vw',
     textAlign: 'center',
     display: 'flex',
     flexDirection: 'column',
-    width: 'min-content',
+    width: 300,
     [theme.breakpoints.down('sm')]: {
       paddingLeft: 0,
+      width: 'min-content',
     },
-  },
-  albumText: {
-    lineHeight: 'inherit',
-    color: theme.palette.secondary.main,
-    fontWeight: theme.typography.fontWeightLight,
-    padding: 3,
   },
   albumArt: {
     width: '12vw',
     height: '12vw',
     boxShadow: '0px 0px 4px #adadad',
-    minHeight: 75,
-    minWidth: 75,
+    minHeight: 125,
+    minWidth: 125,
+    margin: '0 auto',
+    [theme.breakpoints.down('sm')]: {
+      minHeight: 75,
+      minWidth: 75,
+    },
   },
   albumSongGrid: {
     display: 'flex',

@@ -24,16 +24,25 @@ const ArtistAlbum = (props) => {
           zIndex: 2,
         }}
       >
-        <div className={classes.albumName}>
-          <Avatar
-            src={art}
-            alt={`${art} album art`}
-            variant="square"
-            className={classes.albumArt}
-          />
-          <Typography variant="subtitle1" className={classes.albumText}>
-            {name}
-          </Typography>
+        <div className={classes.albumArtContainer}>
+          <div style={{ margin: 'auto' }}>
+            <Avatar
+              src={art}
+              alt={`${art} album art`}
+              variant="square"
+              className={classes.albumArt}
+            />
+            <Typography
+              sx={{
+                fontWeight: 'fontWeightLight',
+                color: 'secondary.main',
+                padding: 3,
+                lineHeight: ['1rem', 'inherit'],
+              }}
+            >
+              {name}
+            </Typography>
+          </div>
         </div>
         <ArtistAlbumSongs songs={songs} />
       </div>

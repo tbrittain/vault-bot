@@ -74,7 +74,7 @@ const SongDetails = (props) => {
     <Paper elevation={3} className={classes.outerContainer}>
       <AppBar position="static" className={classes.navBar}>
         {props.songPreview && (
-          <audio src={props.songPreview} id="songPreview" loop />
+          <audio src={props.songPreview} id="songPreview" loop preload="auto" />
         )}
         <Tabs
           value={value}

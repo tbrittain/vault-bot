@@ -10,7 +10,6 @@ const useDebounce = (data, delay) => {
     }
 
     timerID = setTimeout(() => {
-      console.log('debounce')
       setDebouncedData(data)
     }, delay)
 
