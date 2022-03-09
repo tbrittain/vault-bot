@@ -36,8 +36,9 @@ const ArtistAlbum = (props) => {
               sx={{
                 fontWeight: 'fontWeightLight',
                 color: 'secondary.main',
-                padding: 3,
+                padding: '0.5rem 0',
                 lineHeight: ['1rem', 'inherit'],
+                fontSize: ['0.8rem', 'inherit'],
               }}
             >
               {name}

@@ -66,7 +66,7 @@ const artistStyles = makeStyles((theme) => ({
     width: 300,
     [theme.breakpoints.down('sm')]: {
       paddingLeft: 0,
-      width: 'min-content',
+      width: 150,
     },
   },
   albumArt: {
