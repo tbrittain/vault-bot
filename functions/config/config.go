@@ -55,8 +55,7 @@ func LoadEnvVars() {
 		}
 	} else {
 		// If not production, use environment variables
-		// Working directory is not the functions directory
-		err := godotenv.Load("vault-bot/functions/.env")
+		err := godotenv.Load()
 		if err != nil {
 			log.Fatalf("failed to load environment variables from dotenv: %v", err)
 		}
