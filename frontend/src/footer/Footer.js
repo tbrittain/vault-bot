@@ -3,12 +3,16 @@ import Copyright from './Copyright'
 import { Link } from 'react-router-dom'
 import footerStyles from './FooterStyles'
 import { Breadcrumbs } from '@mui/material'
+import NavigateNextIcon from '@mui/icons-material/NavigateNext'
 
 const Footer = () => {
   const classes = footerStyles()
   return (
     <div className={classes.footer}>
-      <Breadcrumbs className={classes.footerActions}>
+      <Breadcrumbs
+        className={classes.footerActions}
+        separator={<NavigateNextIcon fontSize="small" />}
+      >
         <Link to="/about" className={classes.link}>
           About VaultBot
         </Link>
@@ -21,7 +25,7 @@ const Footer = () => {
           Report an issue
         </a>
         <Link to="/changelog" className={classes.link}>
-          Changelog (v0.3)
+          Changelog (v0.3.1)
         </Link>
       </Breadcrumbs>
       <Copyright />

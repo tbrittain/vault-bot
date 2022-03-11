@@ -24,6 +24,9 @@ const SongArtist = (props) => {
           className={classes.artistName}
           component={Link}
           to={`/artists/${props.id}`}
+          sx={{
+            fontWeight: 'fontWeightBold',
+          }}
         >
           <i>{props.name}</i>
         </Typography>

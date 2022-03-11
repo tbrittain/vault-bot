@@ -15,7 +15,7 @@ const QUERY = gql`
     }
   }
 `
-// FIXME - DataGrid API has changed
+// TODO - DataGrid API has changed
 const columns = [
   {
     field: 'artistArt',
@@ -37,7 +37,7 @@ const columns = [
   {
     field: 'artistName',
     headerName: 'Artist',
-    width: '75vmax',
+    width: 300,
     renderCell: (params) => (
       <Link
         to={`/artists/${params.id}`}

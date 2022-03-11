@@ -23,16 +23,18 @@ export const commonTheme = {
     fontWeightRegular: 400,
     fontWeightBold: 800,
   },
-  overrides: {
+  components: {
     MuiBreadcrumbs: {
-      ol: {
-        justifyContent: 'center',
+      styleOverrides: {
+        ol: {
+          justifyContent: 'center',
+        },
       },
     },
-  },
-  props: {
     MuiPaper: {
-      square: true,
+      defaultProps: {
+        square: true,
+      },
     },
   },
 }

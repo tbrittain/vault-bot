@@ -65,12 +65,15 @@ const songListStyles = makeStyles((theme) => ({
     height: 'calc(50vh + 100px)',
   },
   songListLink: {
-    color: 'black',
+    color:
+      theme.palette.mode === 'light'
+        ? theme.palette.secondary.dark
+        : theme.palette.primary.main,
     wordBreak: 'break-all',
     overflowWrap: 'break-word',
     transition: '0.3s',
     '&:hover': {
-      color: theme.palette.primary.main,
+      color: theme.palette.secondary.light,
     },
   },
   exportContainer: {

@@ -35,7 +35,7 @@ const GlobalCss = withStyles({
   },
 })(() => null)
 
-// FIXME - DataGrid API has changed
+// TODO - DataGrid API has changed
 const columns = [
   {
     field: 'albumArt',
