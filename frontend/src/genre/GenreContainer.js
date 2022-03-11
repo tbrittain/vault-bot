@@ -64,9 +64,10 @@ const GenreContainer = () => {
       >
         <Typography
           variant="h2"
-          className={classes.genreTitle}
-          style={{
+          sx={{
             color: theme.palette.getContrastText(genreToMuiColor(genreName)),
+            textTransform: 'capitalize',
+            fontWeight: 'fontWeightBold',
           }}
         >
           <i>{genreName}</i>
@@ -74,7 +75,7 @@ const GenreContainer = () => {
         <Typography
           variant="h6"
           style={{
-            fontWeight: theme.typography.fontWeightBold,
+            fontWeight: 'fontWeightLight',
             color: theme.palette.getContrastText(genreToMuiColor(genreName)),
           }}
         >
