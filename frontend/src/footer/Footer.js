@@ -25,7 +25,7 @@ const Footer = () => {
           Report an issue
         </a>
         <Link to="/changelog" className={classes.link}>
-          Changelog (v0.3)
+          Changelog (v0.3.1)
         </Link>
       </Breadcrumbs>
       <Copyright />
