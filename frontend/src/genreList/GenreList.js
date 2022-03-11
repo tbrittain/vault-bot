@@ -17,7 +17,7 @@ const QUERY = gql`
     }
   }
 `
-// FIXME - DataGrid API has changed
+// TODO - DataGrid API has changed
 const columns = [
   {
     field: 'genreName',
@@ -37,18 +37,18 @@ const columns = [
           background: genreToMuiColor(params.value),
         }}
       >
-        <Paper>
-          <Typography
-            variant="body1"
-            sx={{
-              textTransform: 'capitalize',
-              margin: 5,
-              fontWeight: 'fontWeightLight',
-            }}
-          >
-            {params.value}
-          </Typography>
-        </Paper>
+        <Typography
+          variant="body1"
+          sx={{
+            textTransform: 'capitalize',
+            margin: 5,
+            fontWeight: 'fontWeightLight',
+            color: (theme) =>
+              theme.palette.getContrastText(genreToMuiColor(params.value)),
+          }}
+        >
+          {params.value}
+        </Typography>
       </Paper>
     ),
   },

@@ -70,8 +70,6 @@ export default function SimilarSongs(props) {
     )
   }
 
-  console.log(isMobile)
-
   return (
     <div
       className={classes.innerContainer}

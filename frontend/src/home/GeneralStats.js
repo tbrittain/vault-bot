@@ -19,10 +19,7 @@ const QUERY = gql`
 
 const GeneralStats = () => {
   const classes = homeStyles()
-  const { loading, error, data } = useQuery(QUERY, {
-    // fetchPolicy: 'no-cache',
-    // pollInterval: 30000 // TODO: fix polling occurring even when component not mounted???
-  })
+  const { loading, error, data } = useQuery(QUERY)
 
   let formattedData
   let processing = true
