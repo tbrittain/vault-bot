@@ -36,7 +36,7 @@ rsa==4.8
 schedule==1.1.0
 six==1.16.0
 spotipy==2.19.0
-typing-extensions==4.0.1
+typing-extensions==4.1.1
 typing-inspect==0.7.1
 urllib3==1.26.7
 yarl==1.7.2
