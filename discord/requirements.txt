@@ -1,6 +1,6 @@
 aiohttp>=3.7.4
 alive-progress==2.1.0
-async-timeout==4.0.1
+async-timeout==4.0.2
 attrs==21.2.0
 cachetools==4.2.4
 certifi==2021.10.8
