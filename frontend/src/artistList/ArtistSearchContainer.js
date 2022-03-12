@@ -1,23 +1,14 @@
 import React from 'react'
 import artistListStyles from './ArtistListStyles'
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import ArtistSearchResult from './ArtistSearchResult'
 import { Alert, Grid, Paper, Typography } from '@mui/material'
-
-const QUERY = gql`
-  query ($searchQuery: String!) {
-    findArtistsLike(searchQuery: $searchQuery) {
-      name
-      id
-      art
-    }
-  }
-`
+import { ARTIST_SEARCH_QUERY } from '../queries/artistQueries'
 
 const ArtistSearchContainer = (props) => {
   const classes = artistListStyles()
   const { searchQuery } = props
-  const { error, data } = useQuery(QUERY, {
+  const { error, data } = useQuery(ARTIST_SEARCH_QUERY, {
     variables: {
       searchQuery,
     },

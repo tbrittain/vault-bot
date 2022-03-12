@@ -1,45 +1,15 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import SongDetails from './SongDetails'
 import SongArtist from './SongArtist'
 import LoadingScreen from '../loading/LoadingScreen'
 import { Alert, Grid, Typography } from '@mui/material'
-
-const QUERY = gql`
-  query ($songId: String!) {
-    getTrack(id: $songId) {
-      name
-      id
-      album
-      art
-      previewUrl
-      artist {
-        id
-        name
-        art
-        genres {
-          genre
-        }
-      }
-      details {
-        length
-        tempo
-        danceability
-        energy
-        loudness
-        acousticness
-        instrumentalness
-        liveness
-        valence
-      }
-    }
-  }
-`
+import { SONG_QUERY } from '../queries/songQueries'
 
 const SongContainer = () => {
   const { songId } = useParams()
-  const { loading, error, data } = useQuery(QUERY, {
+  const { loading, error, data } = useQuery(SONG_QUERY, {
     variables: {
       songId,
     },

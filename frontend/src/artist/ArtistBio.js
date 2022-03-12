@@ -1,26 +1,15 @@
 import React from 'react'
 import artistStyles from './ArtistStyles'
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import { Alert, CircularProgress, Paper, Typography } from '@mui/material'
 import { useTheme } from '@mui/styles'
-
-const QUERY = gql`
-  query ($artistId: String!) {
-    getArtist(id: $artistId) {
-      id
-      wikiBio {
-        bio
-        url
-      }
-    }
-  }
-`
+import { ARTIST_BIO_QUERY } from '../queries/artistQueries'
 
 const ArtistBio = (props) => {
   const classes = artistStyles()
   const { artistId } = props
   const theme = useTheme()
-  const { loading, error, data } = useQuery(QUERY, {
+  const { loading, error, data } = useQuery(ARTIST_BIO_QUERY, {
     variables: {
       artistId,
     },

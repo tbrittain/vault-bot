@@ -1,17 +1,9 @@
 import React from 'react'
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import LoadingScreen from '../loading/LoadingScreen'
 import Post from './Post'
 import { Alert } from '@mui/material'
-
-const QUERY = gql`
-  query {
-    getChangeLogPosts {
-      post
-      date
-    }
-  }
-`
+import { CHANGE_LOG_POSTS_QUERY } from '../queries/miscQueries'
 
 function dateSort(a, b) {
   const dateA = new Date(a.date).getTime()
@@ -20,7 +12,7 @@ function dateSort(a, b) {
 }
 
 const PostContainer = () => {
-  const { loading, error, data } = useQuery(QUERY)
+  const { loading, error, data } = useQuery(CHANGE_LOG_POSTS_QUERY)
 
   let processing = true
   let formattedData

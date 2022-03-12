@@ -1,25 +1,16 @@
 import React from 'react'
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import { Scatter } from 'react-chartjs-2'
 import genreToMuiColor from '../utils/genreToMuiColor'
 import 'chartjs-adapter-date-fns'
-
-const QUERY = gql`
-  query ($startDate: String!) {
-    getHistGenres(startDate: $startDate) {
-      updatedAt
-      genre
-      count
-    }
-  }
-`
+import { HISTORICAL_GENRES_QUERY } from '../queries/statsQueries'
 
 // declare date outside of component
 const oneWeekAgo = new Date()
 oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
 
 const TrendPreview = () => {
-  const { loading, error, data } = useQuery(QUERY, {
+  const { loading, error, data } = useQuery(HISTORICAL_GENRES_QUERY, {
     variables: {
       startDate: oneWeekAgo.toISOString(),
     },

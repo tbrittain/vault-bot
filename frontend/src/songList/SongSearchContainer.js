@@ -1,27 +1,14 @@
 import React from 'react'
 import songListStyles from './SongListStyles'
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import SongSearchResult from './SongSearchResult'
 import { Alert, Grid, Paper, Typography } from '@mui/material'
-
-const QUERY = gql`
-  query ($searchQuery: String!) {
-    findTracksLike(searchQuery: $searchQuery) {
-      name
-      id
-      art
-      album
-      artist {
-        name
-      }
-    }
-  }
-`
+import { SONG_SEARCH_QUERY } from '../queries/songQueries'
 
 const SongSearchContainer = (props) => {
   const classes = songListStyles()
   const { searchQuery } = props
-  const { error, data } = useQuery(QUERY, {
+  const { error, data } = useQuery(SONG_SEARCH_QUERY, {
     variables: {
       searchQuery,
     },

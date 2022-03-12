@@ -1,25 +1,16 @@
 import React from 'react'
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import { useParams } from 'react-router-dom'
 import AlbumSong from './AlbumSong'
 import songStyles from './SongStyles'
 import { Typography } from '@mui/material'
-
-const QUERY = gql`
-  query ($artistId: String!, $album: String!) {
-    getTracksFromAlbum(artistId: $artistId, album: $album) {
-      name
-      id
-      art
-    }
-  }
-`
+import { SONGS_FROM_ALBUM_QUERY } from '../queries/songQueries'
 
 const AlbumSongs = (props) => {
   const classes = songStyles()
   const { songId } = useParams()
   const { artistId, album } = props
-  const { data } = useQuery(QUERY, {
+  const { data } = useQuery(SONGS_FROM_ALBUM_QUERY, {
     variables: {
       artistId,
       album,

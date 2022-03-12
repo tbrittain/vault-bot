@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import { Link } from 'react-router-dom'
 import LoadingScreen from '../loading/LoadingScreen'
 import minTommss from '../utils/minTommss'
@@ -7,24 +7,7 @@ import songListStyles from './SongListStyles'
 import { Alert, Avatar } from '@mui/material'
 import { withStyles } from '@mui/styles'
 import { DataGrid, GridToolbar } from '@mui/x-data-grid'
-
-const QUERY = gql`
-  query {
-    getTracks {
-      name
-      id
-      art
-      album
-      details {
-        length
-        danceability
-        energy
-        valence
-        loudness
-      }
-    }
-  }
-`
+import { ALL_SONGS_QUERY } from '../queries/songQueries'
 
 // Wrap DataGrid toolbar
 const GlobalCss = withStyles({
@@ -98,7 +81,7 @@ const columns = [
 
 const SongList = (props) => {
   const classes = songListStyles()
-  const { loading, error, data } = useQuery(QUERY)
+  const { loading, error, data } = useQuery(ALL_SONGS_QUERY)
   const { trackSelection, setTrackSelection } = props
   let formattedData
   const rows = []

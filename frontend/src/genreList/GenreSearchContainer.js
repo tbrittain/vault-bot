@@ -1,21 +1,14 @@
 import React from 'react'
 import genreListStyles from './GenreListStyles'
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import GenreSearchResult from './GenreSearchResult'
 import { Alert, Grid, Paper, Typography } from '@mui/material'
-
-const QUERY = gql`
-  query ($searchQuery: String!) {
-    findGenresLike(searchQuery: $searchQuery) {
-      genre
-    }
-  }
-`
+import { GENRE_SEARCH_QUERY } from '../queries/genreQueries'
 
 const GenreSearchContainer = (props) => {
   const classes = genreListStyles()
   const { searchQuery } = props
-  const { error, data } = useQuery(QUERY, {
+  const { error, data } = useQuery(GENRE_SEARCH_QUERY, {
     variables: {
       searchQuery,
     },

@@ -1,5 +1,5 @@
 import React from 'react'
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import songStyles from './SongStyles'
 import { Link } from 'react-router-dom'
 import {
@@ -11,28 +11,11 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material'
-
-const QUERY = gql`
-  query getSimilarTracks($getSimilarTracksId: String!) {
-    getSimilarTracks(id: $getSimilarTracksId) {
-      song {
-        id
-        name
-        art
-        album
-        artistId
-        artist {
-          name
-        }
-      }
-      score
-    }
-  }
-`
+import { SIMILAR_SONGS_QUERY } from '../queries/songQueries'
 
 export default function SimilarSongs(props) {
   const { songId } = props
-  const { loading, error, data } = useQuery(QUERY, {
+  const { loading, error, data } = useQuery(SIMILAR_SONGS_QUERY, {
     variables: { getSimilarTracksId: songId },
   })
   const isMobile = useMediaQuery('(max-width:400px)')

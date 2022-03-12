@@ -1,30 +1,15 @@
 import React from 'react'
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import CharCompare from './CharCompare'
 import songStyles from './SongStyles'
 import { Alert, CircularProgress, Typography } from '@mui/material'
-
-const QUERY = gql`
-  query {
-    getAvgTrackDetails {
-      acousticness
-      danceability
-      energy
-      instrumentalness
-      length
-      liveness
-      loudness
-      tempo
-      valence
-    }
-  }
-`
+import { AVG_SONG_CHARS_QUERY } from '../queries/songQueries'
 
 // TODO: replace with radar chart
 // https://www.chartjs.org/docs/latest/charts/radar.html
 
 const SongChars = (props) => {
-  const { loading, error, data } = useQuery(QUERY)
+  const { loading, error, data } = useQuery(AVG_SONG_CHARS_QUERY)
   const classes = songStyles()
 
   let formattedData

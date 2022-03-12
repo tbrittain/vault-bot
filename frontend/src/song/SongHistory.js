@@ -1,5 +1,5 @@
 import React from 'react'
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import {
   Alert,
   Box,
@@ -9,15 +9,7 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material'
-
-const QUERY = gql`
-  query getWhenTrackAddedByUsers($getWhenTrackAddedByUsersId: String!) {
-    getWhenTrackAddedByUsers(id: $getWhenTrackAddedByUsersId) {
-      addedAt
-      addedBy
-    }
-  }
-`
+import { SONG_ADDED_HISTORY_QUERY } from '../queries/songQueries'
 
 const SongHistory = (props) => {
   const { songId } = props
@@ -25,7 +17,7 @@ const SongHistory = (props) => {
   let formattedData
   let processing = true
 
-  const { loading, error, data } = useQuery(QUERY, {
+  const { loading, error, data } = useQuery(SONG_ADDED_HISTORY_QUERY, {
     variables: { getWhenTrackAddedByUsersId: songId },
   })
 

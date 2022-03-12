@@ -1,5 +1,5 @@
 import React from 'react'
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import { Link } from 'react-router-dom'
 import LoadingScreen from '../loading/LoadingScreen'
 import genreListStyles from './GenreListStyles'
@@ -7,16 +7,8 @@ import genreToMuiColor from '../utils/genreToMuiColor'
 import { v4 as uuidv4 } from 'uuid'
 import { Alert, Paper, Typography } from '@mui/material'
 import { DataGrid } from '@mui/x-data-grid'
+import { ALL_GENRES_QUERY } from '../queries/genreQueries'
 
-const QUERY = gql`
-  query {
-    getGenres {
-      genre
-      numArtists
-      rank
-    }
-  }
-`
 // TODO - DataGrid API has changed
 const columns = [
   {
@@ -68,7 +60,7 @@ const columns = [
 
 const GenreList = () => {
   const classes = genreListStyles()
-  const { loading, error, data } = useQuery(QUERY)
+  const { loading, error, data } = useQuery(ALL_GENRES_QUERY)
   let formattedData
   const rows = []
   let processing = true

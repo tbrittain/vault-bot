@@ -1,6 +1,6 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import LoadingScreen from '../loading/LoadingScreen'
 import ArtistGrid from '../grids/ArtistGrid'
@@ -8,22 +8,13 @@ import CountUpAnimation from '../effects/CountUpAnimation'
 import genreStyles from './GenreStyles'
 import genreToMuiColor from '../utils/genreToMuiColor'
 import { Alert, Button, Paper, Typography, useTheme } from '@mui/material'
-
-const QUERY = gql`
-  query ($genreName: String!) {
-    getArtistsFromGenre(genreName: $genreName) {
-      name
-      id
-      art
-    }
-  }
-`
+import { ARTISTS_FROM_GENRE_QUERY } from '../queries/genreQueries'
 
 const GenreContainer = () => {
   const classes = genreStyles()
   const theme = useTheme()
   const { genreName } = useParams()
-  const { loading, error, data } = useQuery(QUERY, {
+  const { loading, error, data } = useQuery(ARTISTS_FROM_GENRE_QUERY, {
     variables: {
       genreName,
     },

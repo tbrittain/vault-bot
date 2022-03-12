@@ -1,34 +1,16 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import LoadingScreen from '../loading/LoadingScreen'
 import ArtistDetails from './ArtistDetails'
 import GenreGrid from '../grids/GenreGrid'
 import ArtistBio from './ArtistBio'
 import { Alert, Grid, Paper, Typography } from '@mui/material'
-
-const QUERY = gql`
-  query ($artistId: String!) {
-    getArtist(id: $artistId) {
-      name
-      id
-      art
-      genres {
-        genre
-      }
-      songs {
-        name
-        id
-        art
-        album
-      }
-    }
-  }
-`
+import { ARTIST_QUERY } from '../queries/artistQueries'
 
 const ArtistContainer = () => {
   const { artistId } = useParams()
-  const { loading, error, data } = useQuery(QUERY, {
+  const { loading, error, data } = useQuery(ARTIST_QUERY, {
     variables: {
       artistId,
     },

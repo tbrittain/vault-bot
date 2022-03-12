@@ -1,25 +1,14 @@
 import React from 'react'
 import homeStyles from './HomeStyles'
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import CountUpAnimation from '../effects/CountUpAnimation'
 import './textAnimate.css'
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
-
-const QUERY = gql`
-  query {
-    getCurrentOverallStats {
-      dynamicNumTracks
-      archiveNumTracks
-      totalNumTracks
-      totalNumArtists
-      totalNumGenres
-    }
-  }
-`
+import { GENERAL_STATS_QUERY } from '../queries/statsQueries'
 
 const GeneralStats = () => {
   const classes = homeStyles()
-  const { loading, error, data } = useQuery(QUERY)
+  const { loading, error, data } = useQuery(GENERAL_STATS_QUERY)
 
   let formattedData
   let processing = true

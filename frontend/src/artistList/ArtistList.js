@@ -1,20 +1,12 @@
 import React from 'react'
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import { Link } from 'react-router-dom'
 import LoadingScreen from '../loading/LoadingScreen'
 import artistListStyles from './ArtistListStyles'
 import { Alert, Avatar } from '@mui/material'
 import { DataGrid } from '@mui/x-data-grid'
+import { ALL_ARTISTS_QUERY } from '../queries/artistQueries'
 
-const QUERY = gql`
-  query {
-    getArtists {
-      name
-      id
-      art
-    }
-  }
-`
 // TODO - DataGrid API has changed
 const columns = [
   {
@@ -52,7 +44,7 @@ const columns = [
 const ArtistList = () => {
   const classes = artistListStyles()
 
-  const { loading, error, data } = useQuery(QUERY)
+  const { loading, error, data } = useQuery(ALL_ARTISTS_QUERY)
   let formattedData
   const rows = []
   let processing = true

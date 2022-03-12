@@ -1,6 +1,6 @@
 import React from 'react'
 import homeStyles from './HomeStyles'
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import { Link } from 'react-router-dom'
 import GenreGrid from '../grids/GenreGrid'
 import {
@@ -11,24 +11,11 @@ import {
   Typography,
   useTheme,
 } from '@mui/material'
-
-const QUERY = gql`
-  query {
-    getFeaturedArtist {
-      name
-      id
-      art
-      genres {
-        genre
-      }
-      featured
-    }
-  }
-`
+import { FEATURED_ARTIST_QUERY } from '../queries/artistQueries'
 
 const FeaturedArtist = () => {
   const classes = homeStyles()
-  const { loading, error, data } = useQuery(QUERY)
+  const { loading, error, data } = useQuery(FEATURED_ARTIST_QUERY)
   const theme = useTheme()
 
   let processing = true

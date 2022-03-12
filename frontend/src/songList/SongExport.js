@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import Spotify from '../utils/Spotify'
 import CancelIcon from '@mui/icons-material/Cancel'
 import RestoreIcon from '@mui/icons-material/Restore'
@@ -17,17 +17,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
-
-const QUERY = gql`
-  query {
-    getTracks {
-      name
-      id
-      art
-      album
-    }
-  }
-`
+import { ALL_SONGS_QUERY_SIMPLE } from '../queries/songQueries'
 
 // TODO: Will separate this from the song list component
 
@@ -51,7 +41,7 @@ const SongExport = (props) => {
   const invalidExport =
     invalidName || playlistName.length === 0 || invalidPlaylistLength
 
-  const { loading, error, data } = useQuery(QUERY)
+  const { loading, error, data } = useQuery(ALL_SONGS_QUERY_SIMPLE)
 
   const handlePlaylistNameChange = (event) => {
     setPlaylistName(event.target.value)
