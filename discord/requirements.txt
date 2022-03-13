@@ -1,6 +1,6 @@
 aiohttp>=3.7.4
 alive-progress==2.1.0
-async-timeout==4.0.1
+async-timeout==4.0.2
 attrs==21.2.0
 cachetools==4.2.4
 certifi==2021.10.8
@@ -22,7 +22,7 @@ numpy==1.21.4
 packaging==21.3
 pandas==1.3.5
 proto-plus==1.19.8
-protobuf==3.19.1
+protobuf==3.19.4
 psycopg2==2.9.2
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
@@ -31,12 +31,12 @@ python-dateutil==2.8.2
 python-dotenv==0.19.2
 pytz==2021.3
 PyYAML==6.0
-requests==2.26.0
+requests==2.27.1
 rsa==4.8
 schedule==1.1.0
 six==1.16.0
 spotipy==2.19.0
-typing-extensions==4.0.1
+typing-extensions==4.1.1
 typing-inspect==0.7.1
-urllib3==1.26.7
+urllib3==1.26.8
 yarl==1.7.2
