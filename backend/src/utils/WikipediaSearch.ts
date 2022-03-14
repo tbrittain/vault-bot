@@ -1,10 +1,23 @@
 import { default as axios } from 'axios'
 
+type WikipediaPageSearchResult = {
+  pageid: number
+  ns: number
+  title: string
+  index: number
+}
+
+type WikipediaArticleContent = {
+  pageid?: number
+  ns?: number
+  title?: string
+  extract?: string
+}
+
 export async function getArtistBio(artistName: String) {
   const FIND_WIKI_ARTICLE_URL =
     'https://en.wikipedia.org/w/api.php?action=query&origin=*&format=json&generator=search&gsrnamespace=0&gsrlimit=10&gsrsearch='
 
-  // for use with specific number of sentences
   const WIKI_ARTICLE_CONTENT_URL =
     'https://en.wikipedia.org/w/api.php?action=query&prop=extracts&format=json&explaintext&exsentences=10&exsectionformat=plain&pageids='
 
@@ -31,7 +44,7 @@ export async function getArtistBio(artistName: String) {
     artistName.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
   )
 
-  let articles = await axios // TODO: fix type
+  let articles: WikipediaPageSearchResult[] = await axios
     .get(`${FIND_WIKI_ARTICLE_URL}'${encodedArtistName}'`, {
       headers: {
         'User-Agent':
@@ -50,17 +63,18 @@ export async function getArtistBio(artistName: String) {
   }
 
   articles.sort(
-    (a: { index: string }, b: { index: string }) =>
-      parseFloat(a.index) - parseFloat(b.index)
-  ) // sort array of results by index property
+    (
+      a: Partial<WikipediaPageSearchResult>,
+      b: Partial<WikipediaPageSearchResult>
+    ) => a.index - b.index
+  )
 
-  console.log(articles)
-  /*
-      Iterate over article results to determine whether any of the artist qualifiers are present in the title
-      This is useful in distinguishing between pages that have identical names to the artist, or
-      if the artist is more obscure and requires the qualifier in the page title
-      */
-  let artistArticleId: String | null = null
+  /**
+   * Iterate over article results to determine whether any of the artist qualifiers are present in the title
+   * This is useful in distinguishing between pages that have identical names to the artist, or
+   * if the artist is more obscure and requires the qualifier in the page title
+   */
+  let artistArticleId: Number | null = null
   for (const result of articles) {
     // iterate through the list of artist keywords and determine if the title includes them
     let articleFound = false
@@ -83,7 +97,7 @@ export async function getArtistBio(artistName: String) {
 
   let artistPageName: string
   if (artistArticleId) {
-    const articleContent: any = await axios // TODO: fix type
+    const articleContent: WikipediaArticleContent = await axios
       .get(`${WIKI_ARTICLE_CONTENT_URL}${artistArticleId}`, {
         headers: {
           'User-Agent':
@@ -94,21 +108,21 @@ export async function getArtistBio(artistName: String) {
       .then((res) => Object.values(res)[0])
       .catch((err) => console.error(err))
 
-    artistPageName = articleContent.title.replace(' ', '_')
+    artistPageName = articleContent.title!.replace(/ /g, '_')
     const articleLink = `https://en.wikipedia.org/wiki/${artistPageName}`
     return {
-      bio: articleContent.extract,
+      bio: articleContent.extract!,
       url: articleLink
     }
   } else {
-    /*
-        Parse through the articles from existing results for keywords
-        Generally the top result (the lowest index article) is going
-        to be the artist if the artist is popular enough to not have
-        a keyword in the page title
-        */
+    /**
+     * Parse through the articles from existing results for keywords
+     * Generally the top result (the lowest index article) is going
+     * to be the artist if the artist is popular enough to not have
+     * a keyword in the page title
+     */
     for (const article of articles) {
-      const articleContent: any = await axios // TOFO: fix type
+      const articleContent: WikipediaArticleContent = await axios
         .get(`${WIKI_ARTICLE_CONTENT_URL}${article.pageid}`, {
           headers: {
             'User-Agent':
@@ -119,7 +133,7 @@ export async function getArtistBio(artistName: String) {
         .then((res) => Object.values(res)[0])
         .catch((err) => console.error(err))
 
-      const rawArticle = String(articleContent.extract)
+      const rawArticle = String(articleContent.extract!)
         .toLowerCase()
         .replace(/[^a-zA-Z0-9À-ÿ_ -]/g, '')
 
@@ -134,10 +148,10 @@ export async function getArtistBio(artistName: String) {
           // Known issue when artist name is their real name (but not full name)
           // https://github.com/tbrittain/vault-bot/issues/24
 
-          artistPageName = articleContent.title.replace(' ', '_')
+          artistPageName = articleContent.title!.replace(/ /g, '_')
           const articleLink = `https://en.wikipedia.org/wiki/${artistPageName}`
           return {
-            bio: articleContent.extract,
+            bio: articleContent.extract!,
             url: articleLink
           }
         }
