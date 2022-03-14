@@ -9,7 +9,7 @@ discord.py==1.7.3
 discord-webhook==0.14.0
 google-api-core==2.3.2
 google-auth==2.3.3
-google-cloud-secret-manager==2.8.0
+google-cloud-secret-manager==2.9.2
 google-cloud-logging==3.0.0
 googleapis-common-protos==1.54.0
 grpc-google-iam-v1==0.12.3
