@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "vaultbot-discord"
+version = "2.1.0"
+description = "Discord bot for VaultBot"
+authors = ["tbrittain <treybrittain@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+alive-progress = "^2.3.1"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
