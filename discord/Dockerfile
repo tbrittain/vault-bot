@@ -1,7 +1,9 @@
-FROM python:3.8
+FROM python:3.9
 WORKDIR /code
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+COPY pyproject.toml .
+RUN pip install poetry
+RUN poetry config virtualenvs.create false
+RUN poetry install --no-dev
 COPY ./src ./src
 COPY main.py .
 CMD ["python", "main.py"]
