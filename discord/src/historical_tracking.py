@@ -5,15 +5,16 @@ from random import choice
 
 from .db import DatabaseConnection
 from .spotify_commands import dyn_playlist_genres
-from .vb_utils import logger
+from .vb_utils import get_logger
 
 iso_format = "%Y-%m-%d %H:%M"
 
+logger = get_logger(__name__)
 environment = getenv("ENVIRONMENT")
 if environment == "dev":
-    commit_changes = False
+    COMMIT_CHANGES = False
 elif environment == "prod":
-    commit_changes = True
+    COMMIT_CHANGES = True
 
 
 def playlist_snapshot_coordinator():
@@ -76,7 +77,7 @@ def playlist_snapshot_coordinator():
                                    row=individual_genre_values)
     else:
         logger.info("Current playlist data matches last historical update, not logging")
-    if commit_changes:
+    if COMMIT_CHANGES:
         conn.commit()
     else:
         conn.rollback()
@@ -148,7 +149,7 @@ def featured_artist():
         update_selected_artist_sql = f"""UPDATE artists SET featured = NOW()::timestamp 
         WHERE id = '{selected_artist}';"""
         conn.update_query_raw(sql=update_selected_artist_sql)
-        if commit_changes:
+        if COMMIT_CHANGES:
             conn.commit()
         else:
             conn.rollback()

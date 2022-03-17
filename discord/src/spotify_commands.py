@@ -9,8 +9,9 @@ from spotipy.cache_handler import CacheHandler
 from spotipy.oauth2 import SpotifyOAuth
 
 from .db import DatabaseConnection, access_secret_version
-from .vb_utils import logger
+from .vb_utils import get_logger
 
+logger = get_logger(__name__)
 base_dir = path.dirname(path.dirname(path.abspath(__file__)))
 environment = getenv("ENVIRONMENT")
 if environment == "dev":
@@ -59,11 +60,11 @@ project_id = getenv("PROJECT_ID")
 json_token = loads(TOKEN)
 cache_handler = MemoryCacheHandler(token_info=json_token)
 
-scope = "playlist-modify-public user-library-read"
+SPOTIFY_SCOPE = "playlist-modify-public user-library-read"
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID,
                                                client_secret=CLIENT_SECRET,
                                                redirect_uri=REDIRECT_URI,
-                                               scope=scope,
+                                               scope=SPOTIFY_SCOPE,
                                                cache_handler=cache_handler))
 
 
@@ -351,7 +352,7 @@ def expired_track_removal():
                 # song removal from dynamic playlist
                 if time_difference > timedelta(days=14):  # set 2 weeks threshold for track removal
                     tracks_to_remove.append(key)
-                    conn.delete_query(table='dynamic', column_to_match='song_id', condition=key)
+                    conn.delete_query(table='dynamic', column_to_match='song_id', condition=key) # TODO: only remove from dynamic playlist when not in dev mode
                     logger.debug(f'Song {key} removed from database')
         if len(tracks_to_remove) > 0:
             logger.debug(f"Preparing to remove {len(tracks_to_remove)} from dynamic playlist")

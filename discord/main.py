@@ -16,9 +16,10 @@ from src.historical_tracking import playlist_snapshot_coordinator, featured_arti
 from src.spotify_commands import force_refresh_cache, expired_track_removal, playlist_description_update, \
     convert_to_track_id, validate_song, add_to_playlist, song_add_to_db, song_search
 from src.spotify_selects import selects_playlists_coordinator
-from src.vb_utils import logger, access_secret_version
+from src.vb_utils import access_secret_version, get_logger
 from src.webhook_updates import post_webhook
 
+logger = get_logger('main')
 base_dir = getcwd()
 environment = getenv("ENVIRONMENT")
 if environment == "dev":
@@ -59,6 +60,7 @@ async def on_ready():
     with alive_bar(total=len(bot.guilds), title='Retrieving servers...') as bar:
         for guild in bot.guilds:
             logger.debug(f"{guild.id} (name: {guild.name})")
+            print(f"{guild.id} (name: {guild.name})")
             guild_count = guild_count + 1
             bar()
     logger.info(f"VaultBot is in {guild_count} guilds.")

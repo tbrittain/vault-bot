@@ -8,8 +8,9 @@ import psycopg2
 import psycopg2.errors
 from dotenv import load_dotenv
 
-from .vb_utils import access_secret_version, logger
+from .vb_utils import access_secret_version, get_logger
 
+logger = get_logger(__name__)
 base_dir = path.dirname(path.dirname(path.abspath(__file__)))
 environment = getenv("ENVIRONMENT")
 if environment == "dev":

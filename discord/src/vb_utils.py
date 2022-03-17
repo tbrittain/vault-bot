@@ -6,24 +6,32 @@ from google.cloud import secretmanager
 from google.cloud.logging.handlers import CloudLoggingHandler
 
 environment = getenv("ENVIRONMENT")
-global logger
-if environment == "dev":
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG)
 
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
 
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-    ch.setFormatter(formatter)
+def get_logger(name) -> logging.Logger:
+    """
+    Get a logger for the bot
+    @param name: Name of the logger
+    @return: Logger object
+    """
+    logger = logging.getLogger(name)
 
-    logger.addHandler(ch)
-elif environment == "prod":
-    logging_client = google.cloud.logging.Client()
-    handler = CloudLoggingHandler(logging_client, name="VaultBot")
-    logger = logging.getLogger('cloudLogger')
-    logger.setLevel(logging.INFO)
-    logger.addHandler(handler)
+    if environment == "production":
+        # Log to Google Cloud Logging
+        client = google.cloud.logging.Client()
+        handler = CloudLoggingHandler(client, name=name)
+        logger.setLevel(logging.INFO)
+        logger.addHandler(handler)
+    else:
+        # Log to console
+        handler = logging.StreamHandler()
+        handler.setLevel(logging.DEBUG)
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        handler.setFormatter(formatter)
+
+        logger.setLevel(logging.DEBUG)
+        logger.addHandler(handler)
+    return logger
 
 
 def access_secret_version(secret_id, project_id, version_id="1") -> str:
