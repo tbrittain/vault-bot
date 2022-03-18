@@ -1,0 +1,13 @@
+steps:
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - "build"
+      - "-t"
+      - "us.gcr.io/$PROJECT_ID/vault-bot/vaultbot-discord:$SHORT_SHA"
+      - "."
+  - name: "gcr.io/cloud-builders/gke-deploy"
+    args:
+      - run
+      - --filename=vaultbot-kubernetes.yaml
+      - --location=us-central1-a
+      - --cluster=vaultbot-cluster

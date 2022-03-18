@@ -21,7 +21,7 @@ if environment == "dev":
     db_name = getenv("DB_NAME")
     db_host = getenv("DB_HOST")
 elif environment == "prod":
-    project_id = getenv("PROJECT_ID")
+    project_id = getenv("GOOGLE_CLOUD_PROJECT_ID")
     db_user = access_secret_version(secret_id="vb-postgres-user",
                                     project_id=project_id)
     db_pass = access_secret_version(secret_id="vb-postgres-pass",

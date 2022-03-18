@@ -22,7 +22,7 @@ if environment == "dev":
     TOKEN = getenv("SPOTIFY_CACHE")
     commit_changes = False
 elif environment == "prod":
-    project_id = getenv("PROJECT_ID")
+    project_id = getenv("GOOGLE_CLOUD_PROJECT_ID")
     CLIENT_ID = access_secret_version(secret_id="vb-spotify-client-id",
                                       project_id=project_id)
     CLIENT_SECRET = access_secret_version(secret_id="vb-spotify-client-secret",
@@ -56,7 +56,7 @@ class MemoryCacheHandler(CacheHandler):
         self.token_info = token_info
 
 
-project_id = getenv("PROJECT_ID")
+project_id = getenv("GOOGLE_CLOUD_PROJECT_ID")
 json_token = loads(TOKEN)
 cache_handler = MemoryCacheHandler(token_info=json_token)
 

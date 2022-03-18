@@ -32,7 +32,7 @@ if environment == "dev":
 
     logger.info("Running program in dev mode")
 elif environment == "prod":
-    project_id = getenv("PROJECT_ID")
+    project_id = getenv("GOOGLE_CLOUD_PROJECT_ID")
     DISCORD_TOKEN = access_secret_version(secret_id="vb-discord-token",
                                           project_id=project_id)
 

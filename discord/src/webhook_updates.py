@@ -13,7 +13,7 @@ if environment == "dev":
     load_dotenv(f'{base_dir}/dev.env')
     webhook_url = getenv('UPDATES_WEBHOOK')
 elif environment == "prod":
-    project_id = getenv("PROJECT_ID")
+    project_id = getenv("GOOGLE_CLOUD_PROJECT_ID")
     webhook_url = access_secret_version(secret_id='vb-updates-webhook',
                                         project_id=project_id)
 
