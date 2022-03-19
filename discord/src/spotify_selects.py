@@ -5,8 +5,9 @@ from dateutil import tz
 
 from .db import DatabaseConnection
 from .spotify_commands import sp, get_full_playlist
-from .vb_utils import logger
+from .vb_utils import get_logger
 
+logger = get_logger(__name__)
 party_playlist_id = "6ksVLVljYiEUpjSoDh8z0w"
 top_50_playlist_id = "1b04aMKreEwigG4ivcZNJm"
 chill_playlist_id = "65PiacgUM34qS9EtNgbr5r"

@@ -8,8 +8,9 @@ import psycopg2
 import psycopg2.errors
 from dotenv import load_dotenv
 
-from .vb_utils import access_secret_version, logger
+from .vb_utils import access_secret_version, get_logger
 
+logger = get_logger(__name__)
 base_dir = path.dirname(path.dirname(path.abspath(__file__)))
 environment = getenv("ENVIRONMENT")
 if environment == "dev":
@@ -20,7 +21,7 @@ if environment == "dev":
     db_name = getenv("DB_NAME")
     db_host = getenv("DB_HOST")
 elif environment == "prod":
-    project_id = getenv("PROJECT_ID")
+    project_id = getenv("GOOGLE_CLOUD_PROJECT_ID")
     db_user = access_secret_version(secret_id="vb-postgres-user",
                                     project_id=project_id)
     db_pass = access_secret_version(secret_id="vb-postgres-pass",

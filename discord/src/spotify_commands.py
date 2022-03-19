@@ -9,8 +9,9 @@ from spotipy.cache_handler import CacheHandler
 from spotipy.oauth2 import SpotifyOAuth
 
 from .db import DatabaseConnection, access_secret_version
-from .vb_utils import logger
+from .vb_utils import get_logger
 
+logger = get_logger(__name__)
 base_dir = path.dirname(path.dirname(path.abspath(__file__)))
 environment = getenv("ENVIRONMENT")
 if environment == "dev":
@@ -21,7 +22,7 @@ if environment == "dev":
     TOKEN = getenv("SPOTIFY_CACHE")
     commit_changes = False
 elif environment == "prod":
-    project_id = getenv("PROJECT_ID")
+    project_id = getenv("GOOGLE_CLOUD_PROJECT_ID")
     CLIENT_ID = access_secret_version(secret_id="vb-spotify-client-id",
                                       project_id=project_id)
     CLIENT_SECRET = access_secret_version(secret_id="vb-spotify-client-secret",
@@ -55,15 +56,15 @@ class MemoryCacheHandler(CacheHandler):
         self.token_info = token_info
 
 
-project_id = getenv("PROJECT_ID")
+project_id = getenv("GOOGLE_CLOUD_PROJECT_ID")
 json_token = loads(TOKEN)
 cache_handler = MemoryCacheHandler(token_info=json_token)
 
-scope = "playlist-modify-public user-library-read"
+SPOTIFY_SCOPE = "playlist-modify-public user-library-read"
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID,
                                                client_secret=CLIENT_SECRET,
                                                redirect_uri=REDIRECT_URI,
-                                               scope=scope,
+                                               scope=SPOTIFY_SCOPE,
                                                cache_handler=cache_handler))
 
 
@@ -332,6 +333,8 @@ def expired_track_removal():
         logger.warning('Preparing to update track popularities and check for expired songs. '
                        'Please do not exit the program during this time.')
         conn = DatabaseConnection()
+
+        # TODO: wrap this whole section in a transaction
         tracks_to_remove = []
         for track in track_list:
             # key is the track id
@@ -351,24 +354,35 @@ def expired_track_removal():
                 # song removal from dynamic playlist
                 if time_difference > timedelta(days=14):  # set 2 weeks threshold for track removal
                     tracks_to_remove.append(key)
-                    conn.delete_query(table='dynamic', column_to_match='song_id', condition=key)
-                    logger.debug(f'Song {key} removed from database')
+                    if commit_changes:
+                        conn.delete_query(table='dynamic', column_to_match='song_id', condition=key)
+                        logger.debug(f'Song {key} removed from database')
+                    else:
+                        logger.debug(f'Song {key} would have been removed from database')
         if len(tracks_to_remove) > 0:
             logger.debug(f"Preparing to remove {len(tracks_to_remove)} from dynamic playlist")
             if len(tracks_to_remove) > 100:
                 logger.debug(f"Splitting tracks into chunks of 100")
                 chunked_tracks_to_remove = list(array_chunks(tracks_to_remove, 100))
                 for chunked_list in chunked_tracks_to_remove:
-                    logger.debug(f"Removing {len(chunked_list)} tracks from dynamic")
-                    sp.playlist_remove_all_occurrences_of_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs',
-                                                                items=chunked_list)
+                    if commit_changes:
+                        logger.debug(f"Removing {len(chunked_list)} tracks from dynamic")
+                        sp.playlist_remove_all_occurrences_of_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs',
+                                                                    items=chunked_list)
+                    else:
+                        logger.debug(f"Would have removed {len(chunked_list)} tracks from dynamic")
             else:
-                logger.debug(f"Removing {len(tracks_to_remove)} tracks from dynamic")
-                sp.playlist_remove_all_occurrences_of_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs',
-                                                            items=tracks_to_remove)
+                if commit_changes:
+                    logger.debug(f"Removing {len(tracks_to_remove)} tracks from dynamic")
+                    sp.playlist_remove_all_occurrences_of_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs',
+                                                                items=tracks_to_remove)
+                else:
+                    logger.debug(f"Would have removed {len(tracks_to_remove)} tracks from dynamic")
         if commit_changes:
+            logger.debug(f"Committing changes to database")
             conn.commit()
         else:
+            logger.debug("Rolling back changes")
             conn.rollback()
         conn.terminate()
     logger.info('Track popularities updated and expired songs checked.')
