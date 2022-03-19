@@ -92,9 +92,6 @@ metadata:
   name: vaultbot-discord
   namespace: default
 spec:
-  serviceAccountName: vaultbot-sa
-  nodeSelector:
-    iam.gke.io/gke-metadata-server-enabled: "true"
   replicas: 1
   selector:
     matchLabels:
@@ -124,6 +121,9 @@ spec:
           image: gcr.io/vibrant-sound-292320/github.com/tbrittain/vault-bot
           imagePullPolicy: IfNotPresent
           name: vaultbot-discord-1
+      serviceAccountName: vaultbot-sa
+      nodeSelector:
+        iam.gke.io/gke-metadata-server-enabled: "true"
 ---
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
