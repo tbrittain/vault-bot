@@ -115,7 +115,7 @@ spec:
                   name: vaultbot-discord-config-ezo8
             - name: GOOGLE_CLOUD_PROJECT_ID
               valueFrom:
-                secretKeyRef:
+                configMapKeyRef:
                   key: GOOGLE_CLOUD_PROJECT_ID
                   name: vaultbot-discord-config-tbz2
           image: gcr.io/vibrant-sound-292320/github.com/tbrittain/vault-bot
