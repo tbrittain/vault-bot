@@ -92,6 +92,9 @@ metadata:
   name: vaultbot-discord
   namespace: default
 spec:
+  serviceAccountName: vaultbot-sa
+  nodeSelector:
+    iam.gke.io/gke-metadata-server-enabled: "true"
   replicas: 1
   selector:
     matchLabels:
@@ -106,9 +109,6 @@ spec:
       labels:
         app: vaultbot-discord
     spec:
-      serviceAccountName: vaultbot-sa
-      nodeSelector:
-        iam.gke.io/gke-metadata-server-enabled: "true"
       containers:
         - env:
             - name: ENVIRONMENT
