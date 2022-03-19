@@ -3,7 +3,6 @@ from datetime import datetime, time
 from os import getenv, getcwd
 from random import choice, randint
 from re import match
-from sys import exit
 
 import discord
 from alive_progress import alive_bar, config_handler
@@ -27,8 +26,7 @@ if environment == "dev":
     DISCORD_TOKEN = getenv("DISCORD_TOKEN")
 
     if DISCORD_TOKEN is None:
-        logger.fatal("Invalid environment variable, exiting")
-        exit(1)
+        raise ValueError("Invalid environment variable, exiting")
 
     logger.info("Running program in dev mode")
 elif environment == "prod":
@@ -36,14 +34,12 @@ elif environment == "prod":
     DISCORD_TOKEN = access_secret_version(secret_id="vb-discord-token",
                                           project_id=project_id)
 
-    if project_id or DISCORD_TOKEN is None:
-        logger.fatal("Invalid environment variable, exiting")
-        exit(1)
+    if project_id is None or DISCORD_TOKEN is None:
+        raise ValueError("Invalid environment variable, exiting")
 
     logger.info("Running program in production mode")
 else:
-    logger.error("Invalid environment setting, exiting")
-    exit(1)
+    raise ValueError("Invalid environment variable, exiting")
 
 bot = commands.Bot(command_prefix=commands.when_mentioned,
                    case_insensitive=True,

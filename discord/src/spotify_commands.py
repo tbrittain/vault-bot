@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 from json import loads
 from os import getenv, path
-from sys import exit
 
 import spotipy
 from dotenv import load_dotenv
@@ -32,11 +31,9 @@ elif environment == "prod":
     TOKEN = access_secret_version('vb-spotify-cache', project_id, '2')
     commit_changes = True
     if project_id is None:
-        print("Invalid environment setting, exiting")
-        exit(1)
+        raise ValueError("Invalid environment variable, exiting")
 else:
-    print("Invalid environment variable, exiting")
-    exit(1)
+    raise ValueError("Invalid environment variable, exiting")
 
 
 class MemoryCacheHandler(CacheHandler):

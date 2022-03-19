@@ -1,7 +1,6 @@
 from datetime import datetime
 from io import StringIO
 from os import getenv, path
-from sys import exit
 
 import pandas as pd
 import psycopg2
@@ -33,11 +32,9 @@ elif environment == "prod":
     db_name = access_secret_version(secret_id="vb-postgres-db-name",
                                     project_id=project_id)
     if project_id is None:
-        logger.fatal("Invalid environment variable, exiting")
-        exit(1)
+        raise ValueError("Invalid environment variable, exiting")
 else:
-    logger.fatal("Invalid environment setting, exiting")
-    exit(1)
+    raise ValueError("Invalid environment variable, exiting")
 
 
 class DatabaseConnection:
