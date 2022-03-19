@@ -90,7 +90,7 @@ metadata:
       operation: Update
       time: '2022-03-19T07:18:17Z'
   name: vaultbot-discord
-  namespace: vaultbot-namespace
+  namespace: default
 spec:
   replicas: 1
   selector:
@@ -164,7 +164,7 @@ metadata:
       operation: Update
       time: '2022-03-19T01:13:12Z'
   name: vaultbot-discord-hpa-q6tp
-  namespace: vaultbot-namespace
+  namespace: default
 spec:
   maxReplicas: 3
   metrics:
