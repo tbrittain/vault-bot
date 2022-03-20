@@ -124,15 +124,22 @@ spec:
         - image: gcr.io/cloudsql-docker/gce-proxy:1.29.0
           command:
             - /cloud_sql_proxy
-            - 'ip_address_types=PRIVATE'
-            - 'dir=/cloudsql'
-            - 'instances=vibrant-sound-292320:us-central1:vb-postgres'
+            - 'instances=vibrant-sound-292320:us-central1:vb-postgres=tcp:5432'
+            - 'credential_file=/secrets/cloudsql/credentials.json'
           name: cloud-sql-proxy
           securityContext:
             runAsNonRoot: true
+          volumeMounts:
+            - mountPath: /secrets/cloudsql
+              name: cloudsql-secrets
+              readOnly: true
       serviceAccountName: vaultbot-sa
       nodeSelector:
-        iam.gke.io/gke-metadata-server-enabled: "true"
+        iam.gke.io/gke-metadata-server-enabled: true
+      volumes:
+        - name: cloudsql-secrets
+          secret:
+            secretName: cloudsql-proxy-credentials
 ---
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
