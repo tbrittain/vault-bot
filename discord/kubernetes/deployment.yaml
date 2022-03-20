@@ -107,35 +107,35 @@ spec:
         app: vaultbot-discord
     spec:
       containers:
-        - env:
-            - name: ENVIRONMENT
-              valueFrom:
-                configMapKeyRef:
-                  key: ENVIRONMENT
-                  name: vaultbot-discord-config-ezo8
-            - name: GOOGLE_CLOUD_PROJECT_ID
-              valueFrom:
-                configMapKeyRef:
-                  key: GOOGLE_CLOUD_PROJECT_ID
-                  name: vaultbot-discord-config-tbz2
+        - name: vaultbot-discord-1
           image: gcr.io/vibrant-sound-292320/github.com/tbrittain/vault-bot
           imagePullPolicy: IfNotPresent
-          name: vaultbot-discord-1
-        - image: gcr.io/cloudsql-docker/gce-proxy:1.29.0
+          env:
+          - name: ENVIRONMENT
+            valueFrom:
+              configMapKeyRef:
+                key: ENVIRONMENT
+                name: vaultbot-discord-config-ezo8
+          - name: GOOGLE_CLOUD_PROJECT_ID
+            valueFrom:
+              configMapKeyRef:
+                key: GOOGLE_CLOUD_PROJECT_ID
+                name: vaultbot-discord-config-tbz2
+        - name: cloud-sql-proxy
+          image: gcr.io/cloudsql-docker/gce-proxy:1.29.0
           command:
             - '/cloud_sql_proxy'
             - '-instances=vibrant-sound-292320:us-central1:vb-postgres=tcp:5432'
-            - '-credential_file=/secrets/cloudsql/credentials.json'
-          name: cloud-sql-proxy
+            - '-credential_file=/secrets/credentials.json'
           securityContext:
             runAsNonRoot: true
           volumeMounts:
-          - mountPath: /secrets/cloudsql
-            name: cloudsql-secrets
+          - name: cloudsql-secrets
+            mountPath: /secrets/
             readOnly: true
       serviceAccountName: vaultbot-sa
       nodeSelector:
-        iam.gke.io/gke-metadata-server-enabled: true
+        iam.gke.io/gke-metadata-server-enabled: "true"
       volumes:
       - name: cloudsql-secrets
         secret:
