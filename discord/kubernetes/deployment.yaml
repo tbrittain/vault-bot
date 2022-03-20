@@ -130,16 +130,16 @@ spec:
           securityContext:
             runAsNonRoot: true
           volumeMounts:
-            - mountPath: /secrets/cloudsql
-              name: cloudsql-secrets
-              readOnly: true
+          - mountPath: /secrets/cloudsql
+            name: cloudsql-secrets
+            readOnly: true
       serviceAccountName: vaultbot-sa
       nodeSelector:
         iam.gke.io/gke-metadata-server-enabled: true
       volumes:
-        - name: cloudsql-secrets
-          secret:
-            secretName: cloudsql-proxy-credentials
+      - name: cloudsql-secrets
+        secret:
+          secretName: cloudsql-proxy-credentials
 ---
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
