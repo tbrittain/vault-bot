@@ -125,7 +125,8 @@ spec:
           command:
             - /cloud_sql_proxy
             - 'ip_address_types=PRIVATE'
-            - 'instances=vb-postgres=tcp:5432'
+            - 'dir=/cloudsql'
+            - 'instances=vibrant-sound-292320:us-central1:vb-postgres'
           name: cloud-sql-proxy
           securityContext:
             runAsNonRoot: true
