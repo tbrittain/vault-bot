@@ -27,7 +27,7 @@ elif environment == "prod":
                                     project_id=project_id)
     db_host = access_secret_version(secret_id="vb-postgres-db-host",
                                     project_id=project_id,
-                                    version_id="2")
+                                    version_id="3")
     db_port = access_secret_version(secret_id="vb-postgres-db-port",
                                     project_id=project_id)
     db_name = access_secret_version(secret_id="vb-postgres-db-name",

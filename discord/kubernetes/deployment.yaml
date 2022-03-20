@@ -123,9 +123,9 @@ spec:
           name: vaultbot-discord-1
         - image: gcr.io/cloudsql-docker/gce-proxy:1.29.0
           command:
-            - /cloud_sql_proxy
-            - 'instances=vibrant-sound-292320:us-central1:vb-postgres=tcp:5432'
-            - 'credential_file=/secrets/cloudsql/credentials.json'
+            - '/cloud_sql_proxy'
+            - '-instances=vibrant-sound-292320:us-central1:vb-postgres=tcp:5432'
+            - '-credential_file=/secrets/cloudsql/credentials.json'
           name: cloud-sql-proxy
           securityContext:
             runAsNonRoot: true
