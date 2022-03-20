@@ -121,6 +121,14 @@ spec:
           image: gcr.io/vibrant-sound-292320/github.com/tbrittain/vault-bot
           imagePullPolicy: IfNotPresent
           name: vaultbot-discord-1
+        - image: gcr.io/cloudsql-docker/gce-proxy:1.29.0
+          command:
+            - /cloud_sql_proxy
+            - 'ip_address_types=PRIVATE'
+            - 'instances=vb-postgres=tcp:5432'
+          name: cloud-sql-proxy
+          securityContext:
+            runAsNonRoot: true
       serviceAccountName: vaultbot-sa
       nodeSelector:
         iam.gke.io/gke-metadata-server-enabled: "true"
