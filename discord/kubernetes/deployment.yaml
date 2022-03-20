@@ -1,0 +1,195 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: vaultbot-discord
+  managedFields:
+    - apiVersion: apps/v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:labels':
+            .: {}
+            'f:app': {}
+        'f:spec':
+          'f:progressDeadlineSeconds': {}
+          'f:replicas': {}
+          'f:revisionHistoryLimit': {}
+          'f:selector': {}
+          'f:strategy':
+            'f:rollingUpdate':
+              .: {}
+              'f:maxSurge': {}
+              'f:maxUnavailable': {}
+            'f:type': {}
+          'f:template':
+            'f:metadata':
+              'f:labels':
+                .: {}
+                'f:app': {}
+            'f:spec':
+              'f:containers':
+                'k:{"name":"vaultbot-discord-1"}':
+                  .: {}
+                  'f:env':
+                    .: {}
+                    'k:{"name":"ENVIRONMENT"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef':
+                          .: {}
+                          'f:key': {}
+                          'f:name': {}
+                  'f:image': {}
+                  'f:imagePullPolicy': {}
+                  'f:name': {}
+                  'f:resources': {}
+                  'f:terminationMessagePath': {}
+                  'f:terminationMessagePolicy': {}
+              'f:dnsPolicy': {}
+              'f:restartPolicy': {}
+              'f:schedulerName': {}
+              'f:securityContext': {}
+              'f:terminationGracePeriodSeconds': {}
+      manager: GoogleCloudConsole
+      operation: Update
+      time: '2022-03-19T01:12:55Z'
+    - apiVersion: apps/v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:annotations':
+            .: {}
+            'f:deployment.kubernetes.io/revision': {}
+        'f:status':
+          'f:conditions':
+            .: {}
+            'k:{"type":"Available"}':
+              .: {}
+              'f:lastTransitionTime': {}
+              'f:lastUpdateTime': {}
+              'f:message': {}
+              'f:reason': {}
+              'f:status': {}
+              'f:type': {}
+            'k:{"type":"Progressing"}':
+              .: {}
+              'f:lastTransitionTime': {}
+              'f:lastUpdateTime': {}
+              'f:message': {}
+              'f:reason': {}
+              'f:status': {}
+              'f:type': {}
+          'f:observedGeneration': {}
+          'f:replicas': {}
+          'f:unavailableReplicas': {}
+          'f:updatedReplicas': {}
+      manager: kube-controller-manager
+      operation: Update
+      time: '2022-03-19T07:18:17Z'
+  name: vaultbot-discord
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vaultbot-discord
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: vaultbot-discord
+    spec:
+      containers:
+        - name: vaultbot-discord-1
+          image: gcr.io/vibrant-sound-292320/github.com/tbrittain/vault-bot
+          imagePullPolicy: IfNotPresent
+          env:
+          - name: ENVIRONMENT
+            valueFrom:
+              configMapKeyRef:
+                key: ENVIRONMENT
+                name: vaultbot-discord-config-ezo8
+          - name: GOOGLE_CLOUD_PROJECT_ID
+            valueFrom:
+              configMapKeyRef:
+                key: GOOGLE_CLOUD_PROJECT_ID
+                name: vaultbot-discord-config-tbz2
+        - name: cloud-sql-proxy
+          image: gcr.io/cloudsql-docker/gce-proxy:1.29.0
+          command:
+            - '/cloud_sql_proxy'
+            - '-instances=vibrant-sound-292320:us-central1:vb-postgres=tcp:5432'
+            - '-credential_file=/secrets/credentials.json'
+          securityContext:
+            runAsNonRoot: true
+          volumeMounts:
+          - name: cloudsql-secrets
+            mountPath: /secrets/
+            readOnly: true
+      serviceAccountName: vaultbot-sa
+      nodeSelector:
+        iam.gke.io/gke-metadata-server-enabled: "true"
+      volumes:
+      - name: cloudsql-secrets
+        secret:
+          secretName: cloudsql-proxy-credentials
+---
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  labels:
+    app: vaultbot-discord
+  managedFields:
+    - apiVersion: autoscaling/v2beta1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:labels':
+            .: {}
+            'f:app': {}
+        'f:spec':
+          'f:maxReplicas': {}
+          'f:metrics': {}
+          'f:minReplicas': {}
+          'f:scaleTargetRef':
+            'f:apiVersion': {}
+            'f:kind': {}
+            'f:name': {}
+      manager: GoogleCloudConsole
+      operation: Update
+      time: '2022-03-19T01:12:55Z'
+    - apiVersion: autoscaling/v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:annotations':
+            .: {}
+            'f:autoscaling.alpha.kubernetes.io/conditions': {}
+            'f:autoscaling.alpha.kubernetes.io/current-metrics': {}
+        'f:status':
+          'f:currentReplicas': {}
+          'f:desiredReplicas': {}
+      manager: vpa-recommender
+      operation: Update
+      time: '2022-03-19T01:13:12Z'
+  name: vaultbot-discord-hpa-q6tp
+  namespace: default
+spec:
+  maxReplicas: 3
+  metrics:
+    - resource:
+        name: cpu
+        targetAverageUtilization: 80
+      type: Resource
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: vaultbot-discord

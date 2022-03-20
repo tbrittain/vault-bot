@@ -1,15 +1,15 @@
 from datetime import datetime
 from io import StringIO
 from os import getenv, path
-from sys import exit
 
 import pandas as pd
 import psycopg2
 import psycopg2.errors
 from dotenv import load_dotenv
 
-from .vb_utils import access_secret_version, logger
+from .vb_utils import access_secret_version, get_logger
 
+logger = get_logger(__name__)
 base_dir = path.dirname(path.dirname(path.abspath(__file__)))
 environment = getenv("ENVIRONMENT")
 if environment == "dev":
@@ -20,23 +20,22 @@ if environment == "dev":
     db_name = getenv("DB_NAME")
     db_host = getenv("DB_HOST")
 elif environment == "prod":
-    project_id = getenv("PROJECT_ID")
+    project_id = getenv("GOOGLE_CLOUD_PROJECT_ID")
     db_user = access_secret_version(secret_id="vb-postgres-user",
                                     project_id=project_id)
     db_pass = access_secret_version(secret_id="vb-postgres-pass",
                                     project_id=project_id)
     db_host = access_secret_version(secret_id="vb-postgres-db-host",
-                                    project_id=project_id)
+                                    project_id=project_id,
+                                    version_id="3")
     db_port = access_secret_version(secret_id="vb-postgres-db-port",
                                     project_id=project_id)
     db_name = access_secret_version(secret_id="vb-postgres-db-name",
                                     project_id=project_id)
     if project_id is None:
-        logger.fatal("Invalid environment variable, exiting")
-        exit(1)
+        raise ValueError("Invalid environment variable, exiting")
 else:
-    logger.fatal("Invalid environment setting, exiting")
-    exit(1)
+    raise ValueError("Invalid environment variable, exiting")
 
 
 class DatabaseConnection:
