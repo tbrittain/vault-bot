@@ -10,10 +10,9 @@ import (
 
 func main() {
 	ctx := context.Background()
-	if err := funcframework.RegisterHTTPFunctionContext(ctx, "/", aggregate.HelloHTTP); err != nil {
+	if err := funcframework.RegisterHTTPFunctionContext(ctx, "/", aggregate.DynamicStats); err != nil {
 		log.Fatalf("funcframework.RegisterHTTPFunctionContext: %v\n", err)
 	}
-	// Use PORT environment variable, or default to 8080.
 	port := "8080"
 	if envPort := os.Getenv("PORT"); envPort != "" {
 		port = envPort

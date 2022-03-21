@@ -11,12 +11,9 @@ import (
 	"os"
 )
 
-// HelloHTTP TODO: the most productive first use of these functions would
-// be to aggregate the dynamic song info into the history tables
-func HelloHTTP(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(r.Header)
-	fmt.Println(r.UserAgent())
-
+// DynamicStats coordinates the aggregation of statistics from
+// the Dynamic playlist and stores them in the historical tracking tables.
+func DynamicStats(w http.ResponseWriter, r *http.Request) {
 	config.LoadEnvVars()
 
 	conn, err := dbConnect()
