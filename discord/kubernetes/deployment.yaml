@@ -182,7 +182,7 @@ metadata:
   name: vaultbot-discord-hpa-q6tp
   namespace: default
 spec:
-  maxReplicas: 3
+  maxReplicas: 2
   metrics:
     - resource:
         name: cpu
