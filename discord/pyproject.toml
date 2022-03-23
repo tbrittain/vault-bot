@@ -6,7 +6,7 @@ authors = ["tbrittain <treybrittain@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-alive-progress = "^2.3.1"
+alive-progress = "^2.4.0"
 discord = "^1.7.3"
 python-dotenv = "^0.19.2"
 spotipy = "^2.19.0"
