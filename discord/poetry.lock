@@ -27,7 +27,7 @@ speedups = ["aiodns", "brotlipy", "cchardet"]
 
 [[package]]
 name = "alive-progress"
-version = "2.3.1"
+version = "2.4.0"
 description = "A new kind of Progress Bar, with real-time throughput, ETA, and very cool animations!"
 category = "main"
 optional = false
@@ -266,7 +266,7 @@ libcst = ["libcst (>=0.2.5)"]
 
 [[package]]
 name = "googleapis-common-protos"
-version = "1.55.0"
+version = "1.56.0"
 description = "Common protobufs used in Google APIs"
 category = "main"
 optional = false
@@ -640,7 +640,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "be28a87b8d2d00d56f5e8e7ef12f5dcc61b1a371e62c0274b5494b7d60d55598"
+content-hash = "48095cae59509840375b1f5eaabf0200942c6b789d6593089d7e5e410465297d"
 
 [metadata.files]
 about-time = [
@@ -687,8 +687,8 @@ aiohttp = [
     {file = "aiohttp-3.7.4.post0.tar.gz", hash = "sha256:493d3299ebe5f5a7c66b9819eacdcfbbaaf1a8e84911ddffcdc48888497afecf"},
 ]
 alive-progress = [
-    {file = "alive-progress-2.3.1.tar.gz", hash = "sha256:21b2808a25120e8c795115ca3f103c28bde89c3e8edb225736786a14e1c19f6b"},
-    {file = "alive_progress-2.3.1-py3-none-any.whl", hash = "sha256:42c80dc3367c9e2b7332b2329b1b09f3b403894dc06fd08913d6c40f04637215"},
+    {file = "alive-progress-2.4.0.tar.gz", hash = "sha256:0f1191106a10ce91272b898638c6b272ef05234aac1a4cecaaa192e9ea38241d"},
+    {file = "alive_progress-2.4.0-py3-none-any.whl", hash = "sha256:eb1bed99d6946f1720a6c56c8f09910ddd42eaca48a1b4d6f6452ca633d2298c"},
 ]
 astroid = [
     {file = "astroid-2.9.3-py3-none-any.whl", hash = "sha256:506daabe5edffb7e696ad82483ad0228245a9742ed7d2d8c9cdb31537decf9f6"},
@@ -763,8 +763,8 @@ google-cloud-secret-manager = [
     {file = "google_cloud_secret_manager-2.9.2-py2.py3-none-any.whl", hash = "sha256:befa099b43f559c44f198fcb900ef1a9dde13bc802b58c451b0c64f6e3fa1366"},
 ]
 googleapis-common-protos = [
-    {file = "googleapis-common-protos-1.55.0.tar.gz", hash = "sha256:53eb313064738f45d5ac634155ae208e121c963659627b90dfcb61ef514c03e1"},
-    {file = "googleapis_common_protos-1.55.0-py2.py3-none-any.whl", hash = "sha256:183bb0356bd614c4330ad5158bc1c1bcf9bcf7f5e7f911317559fe209496eeee"},
+    {file = "googleapis-common-protos-1.56.0.tar.gz", hash = "sha256:4007500795bcfc269d279f0f7d253ae18d6dc1ff5d5a73613ffe452038b1ec5f"},
+    {file = "googleapis_common_protos-1.56.0-py2.py3-none-any.whl", hash = "sha256:60220c89b8bd5272159bed4929ecdc1243ae1f73437883a499a44a1cbc084086"},
 ]
 grapheme = [
     {file = "grapheme-0.6.0.tar.gz", hash = "sha256:44c2b9f21bbe77cfb05835fec230bd435954275267fea1858013b102f8603cca"},
