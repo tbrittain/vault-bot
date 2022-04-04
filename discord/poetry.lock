@@ -27,7 +27,7 @@ speedups = ["aiodns", "brotlipy", "cchardet"]
 
 [[package]]
 name = "alive-progress"
-version = "2.4.0"
+version = "2.4.1"
 description = "A new kind of Progress Bar, with real-time throughput, ETA, and very cool animations!"
 category = "main"
 optional = false
@@ -655,7 +655,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "f9e0665470647c3ddad87b789822a1200dd08f6a1f9cc634f576c047ce77f10d"
+content-hash = "470d4b6bbd51025fee15e86a4a1b4cd6fcd46a7c0844e32daeb5cfaeec5580f4"
 
 [metadata.files]
 about-time = [
@@ -702,8 +702,8 @@ aiohttp = [
     {file = "aiohttp-3.7.4.post0.tar.gz", hash = "sha256:493d3299ebe5f5a7c66b9819eacdcfbbaaf1a8e84911ddffcdc48888497afecf"},
 ]
 alive-progress = [
-    {file = "alive-progress-2.4.0.tar.gz", hash = "sha256:0f1191106a10ce91272b898638c6b272ef05234aac1a4cecaaa192e9ea38241d"},
-    {file = "alive_progress-2.4.0-py3-none-any.whl", hash = "sha256:eb1bed99d6946f1720a6c56c8f09910ddd42eaca48a1b4d6f6452ca633d2298c"},
+    {file = "alive-progress-2.4.1.tar.gz", hash = "sha256:089757c8197f27ad972ba27e1060f6db92368d83c736884e159034fd74865323"},
+    {file = "alive_progress-2.4.1-py3-none-any.whl", hash = "sha256:5503ffca0a0607d5f0d24d3b10a718fe50e375470fa07602b246333eb7ec88ee"},
 ]
 astroid = [
     {file = "astroid-2.11.2-py3-none-any.whl", hash = "sha256:cc8cc0d2d916c42d0a7c476c57550a4557a083081976bf42a73414322a6411d9"},
