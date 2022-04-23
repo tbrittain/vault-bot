@@ -1,0 +1,4 @@
+version: "3.9"
+services:
+  https://github:com/tbrittain/OWL-API
+  https://docs.docker.com/compose/gettingstarted/
