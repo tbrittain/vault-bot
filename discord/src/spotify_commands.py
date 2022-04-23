@@ -3,7 +3,6 @@ from json import loads
 from os import getenv, path
 
 import spotipy
-from dotenv import load_dotenv
 from spotipy.cache_handler import CacheHandler
 from spotipy.oauth2 import SpotifyOAuth
 
@@ -14,7 +13,6 @@ logger = get_logger(__name__)
 base_dir = path.dirname(path.dirname(path.abspath(__file__)))
 environment = getenv("ENVIRONMENT")
 if environment == "dev":
-    load_dotenv(f'{base_dir}/dev.env')
     CLIENT_ID = getenv("SPOTIPY_CLIENT_ID")
     CLIENT_SECRET = getenv("SPOTIPY_CLIENT_SECRET")
     REDIRECT_URI = getenv("SPOTIPY_REDIRECT_URI")

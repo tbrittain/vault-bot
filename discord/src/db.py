@@ -5,7 +5,6 @@ from os import getenv, path
 import pandas as pd
 import psycopg2
 import psycopg2.errors
-from dotenv import load_dotenv
 
 from .vb_utils import access_secret_version, get_logger
 
@@ -13,7 +12,6 @@ logger = get_logger(__name__)
 base_dir = path.dirname(path.dirname(path.abspath(__file__)))
 environment = getenv("ENVIRONMENT")
 if environment == "dev":
-    load_dotenv(f'{base_dir}/dev.env')
     db_user = getenv("DB_USER")
     db_pass = getenv("DB_PASS")
     db_port = getenv("DB_PORT")

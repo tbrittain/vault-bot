@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 from os import getenv, path
 
 from discord_webhook import DiscordWebhook, DiscordEmbed
-from dotenv import load_dotenv
 
 from .vb_utils import access_secret_version
 from .db import DatabaseConnection
@@ -10,7 +9,6 @@ from .db import DatabaseConnection
 base_dir = path.dirname(path.dirname(path.abspath(__file__)))
 environment = getenv("ENVIRONMENT")
 if environment == "dev":
-    load_dotenv(f'{base_dir}/dev.env')
     webhook_url = getenv('UPDATES_WEBHOOK')
 elif environment == "prod":
     project_id = getenv("GOOGLE_CLOUD_PROJECT_ID")

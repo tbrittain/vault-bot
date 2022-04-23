@@ -7,7 +7,6 @@ from re import match
 import discord
 from alive_progress import alive_bar, config_handler
 from discord.ext import tasks, commands
-from dotenv import load_dotenv
 from spotipy import SpotifyException
 
 import src.discord_responses as responses
@@ -22,7 +21,6 @@ logger = get_logger('main')
 base_dir = getcwd()
 environment = getenv("ENVIRONMENT")
 if environment == "dev":
-    load_dotenv(f"{base_dir}/dev.env")
     DISCORD_TOKEN = getenv("DISCORD_TOKEN")
 
     if DISCORD_TOKEN is None:
@@ -62,6 +60,8 @@ async def on_ready():
     logger.info(f"VaultBot is in {guild_count} guilds.")
     logger.info(f"VaultBot is fully loaded and online.")
     await bot.change_presence(activity=discord.Game(f'@me + help'))
+
+    # TODO: Here, run migrations
 
     if environment == "prod":
         hourly_cleanup.start()
