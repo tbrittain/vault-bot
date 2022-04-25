@@ -1,4 +1,29 @@
 version: "3.9"
 services:
-  https://github:com/tbrittain/OWL-API
-  https://docs.docker.com/compose/gettingstarted/
+  db:
+    container_name: postgres
+    image: postgres:13.6-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER="${DB_USER}"
+      - POSTGRES_PASSWORD="${DB_PASS}"
+      - POSTGRES_DB="${DB_NAME}"
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  discord:
+    container_name: discord
+    build:
+      context: discord/.
+    environment:
+      - DISCORD_TOKEN="${DISCORD_TOKEN}"
+      # TODO: add other env vars
+    depends_on:
+      - db
+    links:
+      - db
+volumes:
+  pgdata:
+#  https://github:com/tbrittain/OWL-API
+#  https://docs.docker.com/compose/gettingstarted/
