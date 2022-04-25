@@ -3,7 +3,7 @@ from math import log
 from os import getenv
 from random import choice
 
-from .db import DatabaseConnection
+from .database_connection import DatabaseConnection
 from .spotify_commands import dyn_playlist_genres
 from .vb_utils import get_logger
 

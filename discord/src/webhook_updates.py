@@ -4,7 +4,7 @@ from os import getenv, path
 from discord_webhook import DiscordWebhook, DiscordEmbed
 
 from .vb_utils import access_secret_version
-from .db import DatabaseConnection
+from .database_connection import DatabaseConnection
 
 base_dir = path.dirname(path.dirname(path.abspath(__file__)))
 environment = getenv("ENVIRONMENT")

@@ -3,7 +3,7 @@ from random import choice
 
 from dateutil import tz
 
-from .db import DatabaseConnection
+from .database_connection import DatabaseConnection
 from .spotify_commands import sp, get_full_playlist
 from .vb_utils import get_logger
 

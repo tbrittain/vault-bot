@@ -6,7 +6,7 @@ from spotipy.cache_handler import CacheHandler
 from spotipy.oauth2 import SpotifyOAuth
 import json
 
-from .db import DatabaseConnection, access_secret_version
+from .database_connection import DatabaseConnection, access_secret_version
 from .vb_utils import get_logger
 
 logger = get_logger(__name__)
