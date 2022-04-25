@@ -7,7 +7,6 @@ from .database_connection import DatabaseConnection
 from .spotify_commands import dyn_playlist_genres
 from .vb_utils import get_logger
 
-iso_format = "%Y-%m-%d %H:%M"
 
 logger = get_logger(__name__)
 environment = getenv("ENVIRONMENT")
