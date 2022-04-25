@@ -1,16 +1,17 @@
 from datetime import datetime, timedelta
-from json import loads
 from os import getenv, path
 
 import spotipy
 from spotipy.cache_handler import CacheHandler
 from spotipy.oauth2 import SpotifyOAuth
+import json
 
 from .db import DatabaseConnection, access_secret_version
 from .vb_utils import get_logger
 
 logger = get_logger(__name__)
 base_dir = path.dirname(path.dirname(path.abspath(__file__)))
+
 environment = getenv("ENVIRONMENT")
 if environment == "dev":
     CLIENT_ID = getenv("SPOTIPY_CLIENT_ID")
@@ -20,6 +21,10 @@ if environment == "dev":
     commit_changes = False
 elif environment == "prod":
     project_id = getenv("GOOGLE_CLOUD_PROJECT_ID")
+    if project_id is None:
+        raise ValueError("No Google Cloud project ID found. Please set the GOOGLE_CLOUD_PROJECT_ID environment "
+                         "variable.")
+
     CLIENT_ID = access_secret_version(secret_id="vb-spotify-client-id",
                                       project_id=project_id)
     CLIENT_SECRET = access_secret_version(secret_id="vb-spotify-client-secret",
@@ -28,10 +33,8 @@ elif environment == "prod":
                                          project_id=project_id)
     TOKEN = access_secret_version('vb-spotify-cache', project_id, '2')
     commit_changes = True
-    if project_id is None:
-        raise ValueError("Invalid environment variable, exiting")
 else:
-    raise ValueError("Invalid environment variable, exiting")
+    raise ValueError("No environment variable set. Please set the ENVIRONMENT environment variable.")
 
 
 class MemoryCacheHandler(CacheHandler):
@@ -43,7 +46,7 @@ class MemoryCacheHandler(CacheHandler):
         self.token_info = token_info
 
     def get_cached_token(self):
-        # logger.debug('Pulling Spotify cache information')
+        logger.debug('Pulling Spotify cache information')
         return self.token_info
 
     def save_token_to_cache(self, token_info):
@@ -52,8 +55,7 @@ class MemoryCacheHandler(CacheHandler):
 
 
 project_id = getenv("GOOGLE_CLOUD_PROJECT_ID")
-json_token = loads(TOKEN)
-cache_handler = MemoryCacheHandler(token_info=json_token)
+cache_handler = MemoryCacheHandler(token_info=json.loads(TOKEN))
 
 SPOTIFY_SCOPE = "playlist-modify-public user-library-read"
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID,

@@ -35,8 +35,7 @@ def playlist_snapshot_coordinator():
 
     playlist_len, song_len, tempo, pop, dance, energy, valence = historical_average_features()
 
-    now = datetime.utcnow()
-    timestamp_now = now.strftime(iso_format)
+    timestamp_now = datetime.utcnow().isoformat()
 
     novelty = dynamic_playlist_novelty()
     logger.debug(f"Current playlist novelty: {round(novelty, 3)}")
