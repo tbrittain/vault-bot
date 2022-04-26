@@ -17,13 +17,41 @@ services:
     build:
       context: discord/.
     environment:
+      - ENVIRONMENT=dev
       - DISCORD_TOKEN="${DISCORD_TOKEN}"
-      # TODO: add other env vars
+      - DB_USER="${DB_USER}"
+      - DB_PASS="${DB_PASS}"
+      - DB_NAME="${DB_NAME}"
+      - DB_HOST="${DB_HOST}"
+      - DB_PORT="${DB_PORT}"
+      - SPOTIFY_CLIENT_ID="${SPOTIFY_CLIENT_ID}"
+      - SPOTIFY_CLIENT_SECRET="${SPOTIFY_CLIENT_SECRET}"
+      - SPOTIFY_REDIRECT_URI="${SPOTIFY_REDIRECT_URI}"
+      - UPDATES_WEBHOOK="${UPDATES_WEBHOOK}"
+      - SPOTIFY_CACHE="${SPOTIFY_CACHE}"
+#    depends_on:
+#      - db
+#    links:
+#      - db
+  backend:
+    container_name: backend
+    build:
+      context: backend/.
+    environment:
+      - NODE_ENV=development
+      - DB_NAME="${DB_NAME}"
+      - DB_USER="${DB_USER}"
+      - DB_PASS="${DB_PASS}"
+      - DB_HOST="${DB_HOST}"
     depends_on:
       - db
     links:
       - db
+  frontend:
+    container_name: frontend
+    build:
+      context: frontend/.
+    depends_on:
+      - backend
 volumes:
   pgdata:
-#  https://github:com/tbrittain/OWL-API
-#  https://docs.docker.com/compose/gettingstarted/
