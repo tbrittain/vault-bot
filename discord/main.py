@@ -21,7 +21,7 @@ logger = get_logger('main')
 base_dir = getcwd()
 environment = getenv("ENVIRONMENT")
 if environment == "dev":
-    DISCORD_TOKEN = getenv("DISCORD_TOKEN")
+    DISCORD_TOKEN = getenv("DISCORD_TOKEN").replace('"', '')
 
     if DISCORD_TOKEN is None:
         raise ValueError("No Discord token found. Please set the DISCORD_TOKEN environment variable.")
