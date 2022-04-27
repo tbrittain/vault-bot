@@ -67,21 +67,24 @@ class DatabaseConnection:
         cur.execute("""SELECT updated_at FROM historical_tracking ORDER BY updated_at DESC LIMIT 1;""")
         rows = cur.fetchall()
         cur.close()
+
+        if len(rows) == 0:
+            return datetime(1970, 1, 1)
         return rows[0][0]
 
-    def get_most_recent_historical_data(self) -> tuple:
+    def get_most_recent_historical_data(self) -> list:
         most_recent_timestamp = self.get_most_recent_historical_update()
         cur = self.conn.cursor()
-
-        cur.execute(f"""SELECT * FROM historical_genres WHERE updated_at = '{most_recent_timestamp}'""")
-        genres = cur.fetchall()
 
         cur.execute(f"""SELECT * FROM historical_tracking WHERE updated_at = '{most_recent_timestamp}'""")
         tracking = cur.fetchall()
 
         cur.close()
 
-        return genres, tracking[0]
+        if len(tracking) == 0:
+            return []
+
+        return tracking[0]
 
     def select_query_raw(self, sql: str):
         cur = self.conn.cursor()

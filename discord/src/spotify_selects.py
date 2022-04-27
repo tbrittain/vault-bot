@@ -204,12 +204,12 @@ def songs_and_artists_exist(conn: DatabaseConnection) -> bool:
     """
     songs_sql = """SELECT COUNT(*) FROM songs;"""
     num_songs = conn.select_query_raw(sql=songs_sql)
-    if num_songs[0][0] > 0:
+    if num_songs[0][0] == 0:
         return False
 
     artists_sql = """SELECT COUNT(*) FROM artists;"""
     num_artists = conn.select_query_raw(sql=artists_sql)
-    if num_artists[0][0] > 0:
+    if num_artists[0][0] == 0:
         return False
 
     return True

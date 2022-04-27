@@ -20,7 +20,15 @@ def playlist_snapshot_coordinator():
         conn.terminate()
         return
 
-    last_update_genres, last_update_tracking = conn.get_most_recent_historical_data()
+    # only update if there are songs in the dynamic table
+    rows = conn.select_query_raw(sql="SELECT COUNT(*) FROM dynamic")
+    if rows[0][0] == 0:
+        conn.terminate()
+        logger.debug("No songs in dynamic table, not updating historical snapshot")
+        return
+
+    last_update_tracking = conn.get_most_recent_historical_data()
+
     logger.debug("Historical data preparing to be updated...")
 
     pdi = playlist_diversity_index()
@@ -45,10 +53,11 @@ def playlist_snapshot_coordinator():
     tracking_check_if_update_needed = []
 
     # compare existing aggregates and compare with last update
-    for i in range(1, len(last_update_tracking)):
-        tracking_check_if_update_needed.append(
-            float(last_update_tracking[i]) == float(historical_values[i])
-        )
+    if len(last_update_tracking) > 0:
+        for i in range(1, len(last_update_tracking)):
+            tracking_check_if_update_needed.append(
+                float(last_update_tracking[i]) == float(historical_values[i])
+            )
 
     if False in tracking_check_if_update_needed:
         logger.debug("Logging historical data now...")
@@ -125,7 +134,11 @@ def featured_artist():
     conn = DatabaseConnection()
     last_update_sql = """SELECT featured FROM artists WHERE featured IS NOT NULL ORDER BY featured DESC LIMIT 1;"""
     last_update = conn.select_query_raw(sql=last_update_sql)
-    last_update = last_update[0][0].date()
+
+    if len(last_update) == 0:
+        last_update = datetime(1970, 1, 1)
+    else:
+        last_update = last_update[0][0].date()
     date_today = datetime.utcnow().date()
 
     if date_today != last_update:
@@ -134,6 +147,12 @@ def featured_artist():
         ON artists.id = songs.artist_id GROUP BY artists.id, artists.name HAVING COUNT(songs.id) >= 3
         ORDER BY COUNT(songs.id) DESC;"""
         viable_artists = conn.select_query_raw(sql=viable_artists_sql)
+
+        if len(viable_artists) == 0:
+            logger.debug('No viable artists to set as featured')
+            conn.terminate()
+            return
+
         viable_artists = [x[0] for x in viable_artists]
         selected_artist = choice(viable_artists)
 

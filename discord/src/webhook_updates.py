@@ -24,9 +24,14 @@ def get_daily_stats() -> dict:
     playlist_data = {}
     conn = DatabaseConnection()
 
+    # short circuit if there is no data to process
+    num_tracks_total = conn.select_query(query_literal="COUNT(*)", table="songs")
+    if num_tracks_total[0][0] == 0:
+        return playlist_data
+
     # pull number of tracks in dynamic
-    num_tracks = conn.select_query(query_literal="COUNT(*)", table="dynamic")
-    playlist_data['num_tracks'] = num_tracks[0][0]
+    num_tracks_dynamic = conn.select_query(query_literal="COUNT(*)", table="dynamic")
+    playlist_data['num_tracks'] = num_tracks_dynamic[0][0]
 
     # pull number of tracks added in the last day
     current_date = datetime.utcnow()
@@ -99,6 +104,8 @@ def get_daily_stats() -> dict:
 
 def post_webhook():
     playlist_data = get_daily_stats()
+    if len(playlist_data.keys()) == 0:
+        return
 
     embed = DiscordEmbed(title='VaultBot Daily Stat Overview',
                          color='BCE7FD')
@@ -136,6 +143,3 @@ def post_webhook():
     webhook.add_embed(embed)
     webhook.execute()
 
-
-if __name__ == '__main__':
-    post_webhook()
