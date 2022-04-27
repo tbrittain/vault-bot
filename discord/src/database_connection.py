@@ -1,6 +1,6 @@
 from datetime import datetime
 from io import StringIO
-from os import getenv, path
+from os import getenv
 
 import pandas as pd
 import psycopg2
@@ -9,7 +9,7 @@ import psycopg2.errors
 from .vb_utils import access_secret_version, get_logger
 
 logger = get_logger(__name__)
-base_dir = path.dirname(path.dirname(path.abspath(__file__)))
+
 environment = getenv("ENVIRONMENT")
 if environment == "dev":
     db_user = getenv("DB_USER")

@@ -16,6 +16,7 @@ from src.spotify_commands import force_refresh_cache, expired_track_removal, pla
 from src.spotify_selects import selects_playlists_coordinator
 from src.vb_utils import access_secret_version, get_logger
 from src.webhook_updates import post_webhook
+from src.db.update_database import update_database
 
 logger = get_logger('main')
 base_dir = getcwd()
@@ -64,6 +65,7 @@ async def on_ready():
     await bot.change_presence(activity=discord.Game(f'@me + help'))
 
     # TODO: Here, run migrations
+    update_database()
 
     if environment == "prod":
         hourly_cleanup.start()
