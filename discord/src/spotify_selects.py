@@ -69,15 +69,42 @@ def selects_playlists_coordinator():
     AND songs.length < 4.5 GROUP BY songs.name, songs.id ORDER BY COUNT(archive.song_id) desc LIMIT 100;"""
 
     genres = get_viable_genres(conn=conn)
-    selected_genre = choice(genres)
+    if len(genres) == 0:
+        logger.info("No viable genres found, skipping generation of genre playlist")
+    else:
+        selected_genre = choice(genres)
 
-    genre_playlist_sql = f"""SELECT songs.id FROM songs JOIN artists ON songs.artist_id = artists.id
-    JOIN artists_genres ON artists_genres.artist_id = artists.id WHERE artists_genres.genre = '{selected_genre}';"""
+        genre_playlist_sql = f"""SELECT songs.id FROM songs JOIN artists ON songs.artist_id = artists.id
+        JOIN artists_genres ON artists_genres.artist_id = artists.id WHERE artists_genres.genre = '{selected_genre}';"""
+
+        # formatting time for display in genre playlist description
+        from_timezone = tz.gettz('UTC')
+        local_timezone = tz.gettz('America/Chicago')
+
+        utc = datetime.utcnow()
+        utc = utc.replace(tzinfo=from_timezone)
+        cst = utc.astimezone(tz=local_timezone)
+        cst = cst + timedelta(hours=12)
+
+        weekday = cst.strftime("%A")
+        day = cst.strftime("%B %d")
+        time = cst.strftime("%H:%M %Z")
+
+        time_formatted = f'{weekday}, {day} at {time}'
+
+        description = f"A randomly selected genre tracked by VaultBot. " \
+                      f"Currently: {str.title(selected_genre)}. Next update: {time_formatted}"
+
+        sp.playlist_change_details(playlist_id=GENRE_PLAYLIST_ID, description=description)
+        update_playlist(playlist_id=GENRE_PLAYLIST_ID, playlist_sql=genre_playlist_sql, conn=conn)
+
+        logger.info(f"Updating aggregate playlist Genre (id: {GENRE_PLAYLIST_ID})")
+        logger.info(f"New genre: {selected_genre}, selected out of {len(genres)} viable genres")
 
     logger.info(f"Updating aggregate playlist Party (id: {PARTY_PLAYLIST_ID})")
     update_playlist(playlist_id=PARTY_PLAYLIST_ID, playlist_sql=party_playlist_sql, conn=conn)
 
-    logger.info(f"Updating aggregate playlist Party Unfiltered (id: {party_unfiltered_playlist_sql})")
+    logger.info(f"Updating aggregate playlist Party Unfiltered (id: {PARTY_UNFILTERED_PLAYLIST_ID})")
     update_playlist(playlist_id=PARTY_UNFILTERED_PLAYLIST_ID, playlist_sql=party_unfiltered_playlist_sql, conn=conn)
 
     logger.info(f"Updating aggregate playlist Top 50 (id: {TOP_50_PLAYLIST_ID})")
@@ -91,30 +118,6 @@ def selects_playlists_coordinator():
 
     logger.info(f"Updating aggregate playlist Moody (id: {MOODY_PLAYLIST_ID})")
     update_playlist(playlist_id=MOODY_PLAYLIST_ID, playlist_sql=moody_playlist_sql, conn=conn)
-
-    logger.info(f"Updating aggregate playlist Genre (id: {GENRE_PLAYLIST_ID})")
-    logger.info(f"New genre: {selected_genre}, selected out of {len(genres)} viable genres")
-
-    # formatting time for display in genre playlist description
-    from_timezone = tz.gettz('UTC')
-    local_timezone = tz.gettz('America/Chicago')
-
-    utc = datetime.utcnow()
-    utc = utc.replace(tzinfo=from_timezone)
-    cst = utc.astimezone(tz=local_timezone)
-    cst = cst + timedelta(hours=12)
-
-    weekday = cst.strftime("%A")
-    day = cst.strftime("%B %d")
-    time = cst.strftime("%H:%M %Z")
-
-    time_formatted = f'{weekday}, {day} at {time}'
-
-    description = f"A randomly selected genre tracked by VaultBot. " \
-                  f"Currently: {str.title(selected_genre)}. Next update: {time_formatted}"
-
-    sp.playlist_change_details(playlist_id=GENRE_PLAYLIST_ID, description=description)
-    update_playlist(playlist_id=GENRE_PLAYLIST_ID, playlist_sql=genre_playlist_sql, conn=conn)
 
     conn.terminate()
     logger.info("Aggregate playlist generation complete!")

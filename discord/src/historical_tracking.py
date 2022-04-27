@@ -43,7 +43,10 @@ def playlist_snapshot_coordinator():
 
     pkey_sql = """SELECT id FROM historical_tracking ORDER BY updated_at DESC LIMIT 1;"""
     most_recent_h_track_pkey = conn.select_query_raw(pkey_sql)
-    most_recent_h_track_pkey = most_recent_h_track_pkey[0][0]
+    if len(most_recent_h_track_pkey) == 0:
+        most_recent_h_track_pkey = 0
+    else:
+        most_recent_h_track_pkey = most_recent_h_track_pkey[0][0]
 
     # add historical tracking data
     historical_columns = ('updated_at', 'pdi', 'song_length', 'tempo', 'popularity', 'danceability',

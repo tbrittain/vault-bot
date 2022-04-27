@@ -43,7 +43,7 @@ elif environment == "prod":
                                           project_id=project_id)
     REDIRECT_URI = access_secret_version(secret_id="db-spotify-redirect-uri",
                                          project_id=project_id)
-    TOKEN = access_secret_version('vb-spotify-cache', project_id, '2')
+    TOKEN = access_secret_version('vb-spotify-cache', project_id, '3')
 
     DYNAMIC_PLAYLIST_ID = '5YQHb5wt9d0hmShWNxjsTs'
     ARCHIVE_PLAYLIST_ID = '4C6pU7YmbBUG8sFFk4eSXj'
@@ -65,11 +65,14 @@ class MemoryCacheHandler(CacheHandler):
     def save_token_to_cache(self, token_info):
         logger.debug('Rewriting token info to memory')
         self.token_info = token_info
+        if environment == "dev":
+            with open('token.json', 'w') as f:
+                json.dump(token_info, f)
 
 
 cache_handler = MemoryCacheHandler(token_info=json.loads(TOKEN))
 
-SPOTIFY_SCOPE = "playlist-modify-public user-library-read"
+SPOTIFY_SCOPE = "playlist-modify-public user-library-read playlist-modify-private"
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID,
                                                client_secret=CLIENT_SECRET,
                                                redirect_uri=REDIRECT_URI,
@@ -252,10 +255,12 @@ def song_add_to_db(song_id, user):
     conn.insert_single_row(table='dynamic', columns=table_dynamic_columns, row=table_dynamic_row)
 
     last_id = conn.select_query(query_literal="MAX(id)", table='archive')
-    last_id = last_id[0][0] + 1
+    last_id = last_id[0][0]
+    if not last_id:
+        last_id = 0
 
     table_archive_columns = ('id', 'song_id', 'artist_id', 'added_by', 'added_at')
-    table_archive_row = (last_id, song_id, artist_id, added_by, added_at)
+    table_archive_row = (last_id + 1, song_id, artist_id, added_by, added_at)
     conn.insert_single_row(table='archive', columns=table_archive_columns, row=table_archive_row)
 
     conn.commit()
