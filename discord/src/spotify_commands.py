@@ -19,15 +19,15 @@ if environment == "dev":
     REDIRECT_URI = getenv("SPOTIFY_REDIRECT_URI")
     TOKEN = getenv("SPOTIFY_CACHE")
 
-    DYNAMIC_PLAYLIST_ID = getenv("DYNAMIC_PLAYLIST_URI")
-    ARCHIVE_PLAYLIST_ID = getenv("ARCHIVE_PLAYLIST_URI")
+    DYNAMIC_PLAYLIST_ID = getenv("DYNAMIC_PLAYLIST_ID")
+    ARCHIVE_PLAYLIST_ID = getenv("ARCHIVE_PLAYLIST_ID")
 
     if None in [CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, TOKEN]:
         logger.error("Missing Spotify credentials")
         exit(1)
 
     if None in [DYNAMIC_PLAYLIST_ID, ARCHIVE_PLAYLIST_ID]:
-        logger.error("Missing Spotify playlist URIs")
+        logger.error("Missing Spotify playlist IDs")
         exit(1)
 
     commit_changes = False
