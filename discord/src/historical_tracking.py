@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 from math import log
-from os import getenv
 from random import choice
 
 from .database_connection import DatabaseConnection
@@ -9,11 +8,6 @@ from .vb_utils import get_logger
 
 
 logger = get_logger(__name__)
-environment = getenv("ENVIRONMENT")
-if environment == "dev":
-    COMMIT_CHANGES = False
-elif environment == "prod":
-    COMMIT_CHANGES = True
 
 
 def playlist_snapshot_coordinator():
@@ -75,10 +69,8 @@ def playlist_snapshot_coordinator():
                                    row=individual_genre_values)
     else:
         logger.info("Current playlist data matches last historical update, not logging")
-    if COMMIT_CHANGES:
-        conn.commit()
-    else:
-        conn.rollback()
+
+    conn.commit()
     conn.terminate()
 
 
@@ -135,6 +127,7 @@ def featured_artist():
     last_update = conn.select_query_raw(sql=last_update_sql)
     last_update = last_update[0][0].date()
     date_today = datetime.utcnow().date()
+
     if date_today != last_update:
         logger.debug('Selecting a new featured artist')
         viable_artists_sql = """SELECT artists.id, artists.name, COUNT(songs.id) FROM artists JOIN songs
@@ -147,10 +140,8 @@ def featured_artist():
         update_selected_artist_sql = f"""UPDATE artists SET featured = NOW()::timestamp 
         WHERE id = '{selected_artist}';"""
         conn.update_query_raw(sql=update_selected_artist_sql)
-        if COMMIT_CHANGES:
-            conn.commit()
-        else:
-            conn.rollback()
+        conn.commit()
+
     conn.terminate()
 
 

@@ -30,7 +30,6 @@ if environment == "dev":
         logger.error("Missing Spotify playlist IDs")
         exit(1)
 
-    commit_changes = False
 elif environment == "prod":
     project_id = getenv("GOOGLE_CLOUD_PROJECT_ID")
     if project_id is None:
@@ -45,7 +44,6 @@ elif environment == "prod":
     REDIRECT_URI = access_secret_version(secret_id="db-spotify-redirect-uri",
                                          project_id=project_id)
     TOKEN = access_secret_version('vb-spotify-cache', project_id, '2')
-    commit_changes = True
 
     DYNAMIC_PLAYLIST_ID = '5YQHb5wt9d0hmShWNxjsTs'
     ARCHIVE_PLAYLIST_ID = '4C6pU7YmbBUG8sFFk4eSXj'
@@ -127,12 +125,9 @@ async def add_to_playlist(song_id):
         logger.debug(f"{song_id} already exists in dynamic playlist, not adding")
         raise FileExistsError('Song already present in Dyn playlist! Not adding duplicate ID.')
     else:
-        song_id = [song_id, ]  # input is a list
-        if commit_changes:
-            sp.playlist_add_items(DYNAMIC_PLAYLIST_ID, song_id)
-            sp.playlist_add_items(ARCHIVE_PLAYLIST_ID, song_id)
-        else:
-            logger.debug(f"Simulated adding song with ID {song_id} to playlists")
+        song_id = [song_id, ]
+        sp.playlist_add_items(DYNAMIC_PLAYLIST_ID, song_id)
+        sp.playlist_add_items(ARCHIVE_PLAYLIST_ID, song_id)
 
 
 def songs_in_dyn_playlist():
@@ -264,10 +259,7 @@ def song_add_to_db(song_id, user):
     table_archive_row = (last_id, song_id, artist_id, added_by, added_at)
     conn.insert_single_row(table='archive', columns=table_archive_columns, row=table_archive_row)
 
-    if commit_changes:
-        conn.commit()
-    else:
-        conn.rollback()
+    conn.commit()
     conn.terminate()
 
 
@@ -366,36 +358,26 @@ def expired_track_removal():
                 # song removal from dynamic playlist
                 if time_difference > timedelta(days=14):  # set 2 weeks threshold for track removal
                     tracks_to_remove.append(key)
-                    if commit_changes:
-                        conn.delete_query(table='dynamic', column_to_match='song_id', condition=key)
-                        logger.debug(f'Song {key} removed from database')
-                    else:
-                        logger.debug(f'Song {key} would have been removed from database')
+                    conn.delete_query(table='dynamic', column_to_match='song_id', condition=key)
+                    logger.debug(f'Song {key} removed from database')
+
         if len(tracks_to_remove) > 0:
             logger.debug(f"Preparing to remove {len(tracks_to_remove)} from dynamic playlist")
             if len(tracks_to_remove) > 100:
                 logger.debug(f"Splitting tracks into chunks of 100")
                 chunked_tracks_to_remove = list(array_chunks(tracks_to_remove, 100))
                 for chunked_list in chunked_tracks_to_remove:
-                    if commit_changes:
-                        logger.debug(f"Removing {len(chunked_list)} tracks from dynamic")
-                        sp.playlist_remove_all_occurrences_of_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs',
-                                                                    items=chunked_list)
-                    else:
-                        logger.debug(f"Would have removed {len(chunked_list)} tracks from dynamic")
-            else:
-                if commit_changes:
-                    logger.debug(f"Removing {len(tracks_to_remove)} tracks from dynamic")
+                    logger.debug(f"Removing {len(chunked_list)} tracks from dynamic")
                     sp.playlist_remove_all_occurrences_of_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs',
-                                                                items=tracks_to_remove)
-                else:
-                    logger.debug(f"Would have removed {len(tracks_to_remove)} tracks from dynamic")
-        if commit_changes:
-            logger.debug(f"Committing changes to database")
-            conn.commit()
-        else:
-            logger.debug("Rolling back changes")
-            conn.rollback()
+                                                                items=chunked_list)
+
+            else:
+                logger.debug(f"Removing {len(tracks_to_remove)} tracks from dynamic")
+                sp.playlist_remove_all_occurrences_of_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs',
+                                                            items=tracks_to_remove)
+
+        logger.debug(f"Committing changes to database")
+        conn.commit()
         conn.terminate()
     logger.info('Track popularities updated and expired songs checked.')
 
