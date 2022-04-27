@@ -9,10 +9,14 @@ from .database_connection import DatabaseConnection
 base_dir = path.dirname(path.dirname(path.abspath(__file__)))
 environment = getenv("ENVIRONMENT")
 if environment == "dev":
-    webhook_url = getenv('UPDATES_WEBHOOK')
+    WEBHOOK_URL = getenv('UPDATES_WEBHOOK')
+
+    if not WEBHOOK_URL:
+        print("No webhook URL found. Please set UPDATES_WEBHOOK environment variable.")
+        exit(1)
 elif environment == "prod":
     project_id = getenv("GOOGLE_CLOUD_PROJECT_ID")
-    webhook_url = access_secret_version(secret_id='vb-updates-webhook',
+    WEBHOOK_URL = access_secret_version(secret_id='vb-updates-webhook',
                                         project_id=project_id)
 
 
@@ -128,7 +132,7 @@ def post_webhook():
             inline=False
         )
 
-    webhook = DiscordWebhook(url=webhook_url)
+    webhook = DiscordWebhook(url=WEBHOOK_URL)
     webhook.add_embed(embed)
     webhook.execute()
 

@@ -24,19 +24,22 @@ if environment == "dev":
     DISCORD_TOKEN = getenv("DISCORD_TOKEN")
 
     if DISCORD_TOKEN is None:
-        raise ValueError("No Discord token found. Please set the DISCORD_TOKEN environment variable.")
+        logger.error("No Discord token found. Please set the DISCORD_TOKEN environment variable.")
+        exit(1)
 
     logger.info("Running program in dev mode")
 elif environment == "prod":
     project_id = getenv("GOOGLE_CLOUD_PROJECT_ID")
     if project_id is None:
-        raise ValueError("No Google Cloud project ID found. Please set the GOOGLE_CLOUD_PROJECT_ID environment "
-                         "variable.")
+        logger.error("No Google Cloud project ID found. Please set the GOOGLE_CLOUD_PROJECT_ID environment "
+                     "variable.")
+        exit(1)
     DISCORD_TOKEN = access_secret_version(secret_id="vb-discord-token",
                                           project_id=project_id)
     logger.info("Running program in production mode")
 else:
-    raise ValueError("No environment variable set. Please set the ENVIRONMENT environment variable.")
+    logger.error("No environment variable set. Please set the ENVIRONMENT environment variable.")
+    exit(1)
 
 bot = commands.Bot(command_prefix=commands.when_mentioned,
                    case_insensitive=True,

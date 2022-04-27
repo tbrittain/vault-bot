@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from os import getenv
 from random import choice
 
 from dateutil import tz
@@ -8,13 +9,25 @@ from .spotify_commands import sp, get_full_playlist
 from .vb_utils import get_logger
 
 logger = get_logger(__name__)
-party_playlist_id = "6ksVLVljYiEUpjSoDh8z0w"
-top_50_playlist_id = "1b04aMKreEwigG4ivcZNJm"
-chill_playlist_id = "65PiacgUM34qS9EtNgbr5r"
-cheerful_playlist_id = "5gsgXQu45m0W06WkmWXQBY"
-moody_playlist_id = "0jiEtmsU9wRGrAVf7O5YeT"
-genre_playlist_id = "5MDgnMXhfdmxpsCfHz1ioL"
-party_unfiltered_playlist_id = "6chmLTkj3RZVBPoen7mCs8"
+
+environment = getenv("ENVIRONMENT")
+
+if environment == "dev":
+    PARTY_PLAYLIST_ID = getenv("PARTY_PLAYLIST_ID")
+    TOP_50_PLAYLIST_ID = getenv("TOP_50_PLAYLIST_ID")
+    CHILL_PLAYLIST_ID = getenv("CHILL_PLAYLIST_ID")
+    LIGHT_PLAYLIST_ID = getenv("LIGHT_PLAYLIST_ID")
+    MOODY_PLAYLIST_ID = getenv("MOODY_PLAYLIST_ID")
+    GENRE_PLAYLIST_ID = getenv("GENRE_PLAYLIST_ID")
+    PARTY_UNFILTERED_PLAYLIST_ID = getenv("PARTY_UNFILTERED_PLAYLIST_ID")
+elif environment == "prod":
+    PARTY_PLAYLIST_ID = "6ksVLVljYiEUpjSoDh8z0w"
+    TOP_50_PLAYLIST_ID = "1b04aMKreEwigG4ivcZNJm"
+    CHILL_PLAYLIST_ID = "65PiacgUM34qS9EtNgbr5r"
+    LIGHT_PLAYLIST_ID = "5gsgXQu45m0W06WkmWXQBY"
+    MOODY_PLAYLIST_ID = "0jiEtmsU9wRGrAVf7O5YeT"
+    GENRE_PLAYLIST_ID = "5MDgnMXhfdmxpsCfHz1ioL"
+    PARTY_UNFILTERED_PLAYLIST_ID = "6chmLTkj3RZVBPoen7mCs8"
 
 
 def selects_playlists_coordinator():
@@ -53,25 +66,25 @@ def selects_playlists_coordinator():
     genre_playlist_sql = f"""SELECT songs.id FROM songs JOIN artists ON songs.artist_id = artists.id
     JOIN artists_genres ON artists_genres.artist_id = artists.id WHERE artists_genres.genre = '{selected_genre}';"""
 
-    logger.info(f"Updating aggregate playlist Party (id: {party_playlist_id})")
-    update_playlist(playlist_id=party_playlist_id, playlist_sql=party_playlist_sql)
+    logger.info(f"Updating aggregate playlist Party (id: {PARTY_PLAYLIST_ID})")
+    update_playlist(playlist_id=PARTY_PLAYLIST_ID, playlist_sql=party_playlist_sql)
 
     logger.info(f"Updating aggregate playlist Party Unfiltered (id: {party_unfiltered_playlist_sql})")
-    update_playlist(playlist_id=party_unfiltered_playlist_id, playlist_sql=party_unfiltered_playlist_sql)
+    update_playlist(playlist_id=PARTY_UNFILTERED_PLAYLIST_ID, playlist_sql=party_unfiltered_playlist_sql)
 
-    logger.info(f"Updating aggregate playlist Top 50 (id: {top_50_playlist_id})")
-    update_playlist(playlist_id=top_50_playlist_id, playlist_sql=top_50_playlist_sql)
+    logger.info(f"Updating aggregate playlist Top 50 (id: {TOP_50_PLAYLIST_ID})")
+    update_playlist(playlist_id=TOP_50_PLAYLIST_ID, playlist_sql=top_50_playlist_sql)
 
-    logger.info(f"Updating aggregate playlist Chill (id: {chill_playlist_id})")
-    update_playlist(playlist_id=chill_playlist_id, playlist_sql=chill_playlist_sql)
+    logger.info(f"Updating aggregate playlist Chill (id: {CHILL_PLAYLIST_ID})")
+    update_playlist(playlist_id=CHILL_PLAYLIST_ID, playlist_sql=chill_playlist_sql)
 
-    logger.info(f"Updating aggregate playlist Cheerful (id: {cheerful_playlist_id})")
-    update_playlist(playlist_id=cheerful_playlist_id, playlist_sql=cheerful_playlist_sql)
+    logger.info(f"Updating aggregate playlist Cheerful (id: {LIGHT_PLAYLIST_ID})")
+    update_playlist(playlist_id=LIGHT_PLAYLIST_ID, playlist_sql=cheerful_playlist_sql)
 
-    logger.info(f"Updating aggregate playlist Moody (id: {moody_playlist_id})")
-    update_playlist(playlist_id=moody_playlist_id, playlist_sql=moody_playlist_sql)
+    logger.info(f"Updating aggregate playlist Moody (id: {MOODY_PLAYLIST_ID})")
+    update_playlist(playlist_id=MOODY_PLAYLIST_ID, playlist_sql=moody_playlist_sql)
 
-    logger.info(f"Updating aggregate playlist Genre (id: {genre_playlist_id})")
+    logger.info(f"Updating aggregate playlist Genre (id: {GENRE_PLAYLIST_ID})")
     logger.info(f"New genre: {selected_genre}, selected out of {len(genres)} viable genres")
 
     # formatting time for display in genre playlist description
@@ -92,8 +105,8 @@ def selects_playlists_coordinator():
     description = f"A randomly selected genre tracked by VaultBot. " \
                   f"Currently: {str.title(selected_genre)}. Next update: {time_formatted}"
 
-    sp.playlist_change_details(playlist_id=genre_playlist_id, description=description)
-    update_playlist(playlist_id=genre_playlist_id, playlist_sql=genre_playlist_sql)
+    sp.playlist_change_details(playlist_id=GENRE_PLAYLIST_ID, description=description)
+    update_playlist(playlist_id=GENRE_PLAYLIST_ID, playlist_sql=genre_playlist_sql)
 
 
 def aggregate_tracks(sql: str) -> list:

@@ -18,12 +18,25 @@ if environment == "dev":
     CLIENT_SECRET = getenv("SPOTIFY_CLIENT_SECRET")
     REDIRECT_URI = getenv("SPOTIFY_REDIRECT_URI")
     TOKEN = getenv("SPOTIFY_CACHE")
+
+    DYNAMIC_PLAYLIST_ID = getenv("DYNAMIC_PLAYLIST_URI")
+    ARCHIVE_PLAYLIST_ID = getenv("ARCHIVE_PLAYLIST_URI")
+
+    if None in [CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, TOKEN]:
+        logger.error("Missing Spotify credentials")
+        exit(1)
+
+    if None in [DYNAMIC_PLAYLIST_ID, ARCHIVE_PLAYLIST_ID]:
+        logger.error("Missing Spotify playlist URIs")
+        exit(1)
+
     commit_changes = False
 elif environment == "prod":
     project_id = getenv("GOOGLE_CLOUD_PROJECT_ID")
     if project_id is None:
-        raise ValueError("No Google Cloud project ID found. Please set the GOOGLE_CLOUD_PROJECT_ID environment "
-                         "variable.")
+        logger.error("No Google Cloud project ID found. Please set the GOOGLE_CLOUD_PROJECT_ID environment "
+                     "variable.")
+        exit(1)
 
     CLIENT_ID = access_secret_version(secret_id="vb-spotify-client-id",
                                       project_id=project_id)
@@ -33,6 +46,9 @@ elif environment == "prod":
                                          project_id=project_id)
     TOKEN = access_secret_version('vb-spotify-cache', project_id, '2')
     commit_changes = True
+
+    DYNAMIC_PLAYLIST_ID = '5YQHb5wt9d0hmShWNxjsTs'
+    ARCHIVE_PLAYLIST_ID = '4C6pU7YmbBUG8sFFk4eSXj'
 else:
     raise ValueError("No environment variable set. Please set the ENVIRONMENT environment variable.")
 
@@ -113,8 +129,8 @@ async def add_to_playlist(song_id):
     else:
         song_id = [song_id, ]  # input is a list
         if commit_changes:
-            sp.playlist_add_items('5YQHb5wt9d0hmShWNxjsTs', song_id)  # dynamic
-            sp.playlist_add_items('4C6pU7YmbBUG8sFFk4eSXj', song_id)  # archive
+            sp.playlist_add_items(DYNAMIC_PLAYLIST_ID, song_id)
+            sp.playlist_add_items(ARCHIVE_PLAYLIST_ID, song_id)
         else:
             logger.debug(f"Simulated adding song with ID {song_id} to playlists")
 
