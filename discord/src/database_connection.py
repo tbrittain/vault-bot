@@ -7,6 +7,7 @@ import psycopg2
 import psycopg2.errors
 
 from .vb_utils import access_secret_version, get_logger
+from db.create_schema import create_schema, create_migration_table, get_existing_tables
 
 logger = get_logger(__name__)
 
@@ -217,5 +218,59 @@ class DatabaseConnection:
         return True
 
 
+def update_database():
+    """
+    Runs create scripts and migration scripts on the database.
+    """
+    logger.info("Checking if any database updates required...")
+
+    if environment == "prod":
+        conn = psycopg2.connect(
+            dbname=db_name,
+            user=db_user,
+            password=db_pass,
+            host=db_host
+        )
+    else:
+        conn = psycopg2.connect(
+            user=db_user,
+            password=db_pass,
+            host=db_host,
+            port=db_port,
+            database=db_name
+        )
+
+    INITIAL_TABLES = {
+        "songs",
+        "artists",
+        "historical_tracking",
+        "dynamic",
+        "archive",
+        "artists_genres",
+        "historical_genres"
+    }
+
+    cur = conn.cursor()
+    existing_tables = get_existing_tables(cur)
+    schema_exists = INITIAL_TABLES.issubset(existing_tables)
+    if not schema_exists:
+        logger.info("Schema does not exist, creating...")
+        create_schema(cur)
+        logger.info("Schema created successfully.")
+    else:
+        logger.debug("Schema exists, skipping...")
+
+    logger.debug("Ensuring migration table exists before additional checks...")
+    if "migration" not in existing_tables:
+        logger.info("Migration table does not exist, creating...")
+        create_migration_table(cur)
+        logger.info("Migration table created successfully.")
+    else:
+        logger.debug("Migration table exists, skipping...")
+
+    cur.close()
+    conn.commit()
+
+
 if __name__ == "__main__":
-    pass
+    update_database()
