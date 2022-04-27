@@ -14,11 +14,10 @@ base_dir = path.dirname(path.dirname(path.abspath(__file__)))
 
 environment = getenv("ENVIRONMENT")
 if environment == "dev":
-    # docker compose doesn't play well with environment variables and their quotes
-    CLIENT_ID = getenv("SPOTIFY_CLIENT_ID").replace('"', '')
-    CLIENT_SECRET = getenv("SPOTIFY_CLIENT_SECRET").replace('"', '')
-    REDIRECT_URI = getenv("SPOTIFY_REDIRECT_URI").replace('"', '')
-    TOKEN = getenv("SPOTIFY_CACHE")[1:-1]
+    CLIENT_ID = getenv("SPOTIFY_CLIENT_ID")
+    CLIENT_SECRET = getenv("SPOTIFY_CLIENT_SECRET")
+    REDIRECT_URI = getenv("SPOTIFY_REDIRECT_URI")
+    TOKEN = getenv("SPOTIFY_CACHE")
     commit_changes = False
 elif environment == "prod":
     project_id = getenv("GOOGLE_CLOUD_PROJECT_ID")
@@ -55,7 +54,6 @@ class MemoryCacheHandler(CacheHandler):
         self.token_info = token_info
 
 
-project_id = getenv("GOOGLE_CLOUD_PROJECT_ID")
 cache_handler = MemoryCacheHandler(token_info=json.loads(TOKEN))
 
 SPOTIFY_SCOPE = "playlist-modify-public user-library-read"

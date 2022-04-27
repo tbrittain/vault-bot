@@ -17,7 +17,6 @@ genre_playlist_id = "5MDgnMXhfdmxpsCfHz1ioL"
 party_unfiltered_playlist_id = "6chmLTkj3RZVBPoen7mCs8"
 
 
-# TODO: figure out how to manually order tracks in the playlist
 def selects_playlists_coordinator():
     party_playlist_sql = """SELECT songs.id, COUNT(archive.song_id) FROM songs JOIN archive ON songs.id = 
     archive.song_id JOIN artists ON songs.artist_id = artists.id JOIN artists_genres ON artists.id = 

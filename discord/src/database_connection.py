@@ -12,11 +12,11 @@ logger = get_logger(__name__)
 base_dir = path.dirname(path.dirname(path.abspath(__file__)))
 environment = getenv("ENVIRONMENT")
 if environment == "dev":
-    db_user = getenv("DB_USER").replace('"', "")
-    db_pass = getenv("DB_PASS").replace('"', "")
-    db_port = getenv("DB_PORT").replace('"', "")
-    db_name = getenv("DB_NAME").replace('"', "")
-    db_host = getenv("DB_HOST").replace('"', "")
+    db_user = getenv("DB_USER")
+    db_pass = getenv("DB_PASS")
+    db_port = getenv("DB_PORT")
+    db_name = getenv("DB_NAME")
+    db_host = getenv("DB_HOST")
 elif environment == "prod":
     project_id = getenv("GOOGLE_CLOUD_PROJECT_ID")
     db_user = access_secret_version(secret_id="vb-postgres-user",
