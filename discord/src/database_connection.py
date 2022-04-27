@@ -270,6 +270,7 @@ def update_database():
 
     cur.close()
     conn.commit()
+    conn.close()
 
 
 if __name__ == "__main__":
