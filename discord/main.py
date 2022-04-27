@@ -66,9 +66,8 @@ async def on_ready():
 
     update_database()
 
-    if environment == "prod":
-        hourly_cleanup.start()
-        generate_aggregate_playlists.start()
+    hourly_cleanup.start()
+    generate_aggregate_playlists.start()
 
 
 @tasks.loop(minutes=60)
