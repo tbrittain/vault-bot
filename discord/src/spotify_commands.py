@@ -60,7 +60,6 @@ class MemoryCacheHandler(CacheHandler):
         self.token_info = token_info
 
     def get_cached_token(self):
-        logger.debug('Pulling Spotify cache information')
         return self.token_info
 
     def save_token_to_cache(self, token_info):

@@ -104,9 +104,7 @@ async def hourly_cleanup():
 @tasks.loop(hours=12)
 async def generate_aggregate_playlists():
     await bot.wait_until_ready()
-    logger.info("Beginning generation of aggregate playlists")
     selects_playlists_coordinator()
-    logger.info("Aggregate playlist generation complete!")
 
 
 @bot.event

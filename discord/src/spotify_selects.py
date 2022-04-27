@@ -6,7 +6,7 @@ from dateutil import tz
 
 from .database_connection import DatabaseConnection
 from .spotify_commands import sp, get_full_playlist
-from .vb_utils import get_logger
+from .vb_utils import get_logger, array_chunks
 
 logger = get_logger(__name__)
 
@@ -31,6 +31,14 @@ elif environment == "prod":
 
 
 def selects_playlists_coordinator():
+    logger.info("Beginning generation of aggregate playlists")
+    conn = DatabaseConnection()
+
+    if not songs_and_artists_exist(conn=conn):
+        logger.info("No songs and artists exist in the database, skipping generation of aggregate playlists")
+        conn.terminate()
+        return
+
     party_playlist_sql = """SELECT songs.id, COUNT(archive.song_id) FROM songs JOIN archive ON songs.id = 
     archive.song_id JOIN artists ON songs.artist_id = artists.id JOIN artists_genres ON artists.id = 
     artists_genres.artist_id WHERE artists_genres.genre = ANY('{hip hop, pop rap, rap, edm, house, 
@@ -60,29 +68,29 @@ def selects_playlists_coordinator():
     = artists_genres.artist_id AND songs.danceability > 0.8 AND songs.energy > 0.5 
     AND songs.length < 4.5 GROUP BY songs.name, songs.id ORDER BY COUNT(archive.song_id) desc LIMIT 100;"""
 
-    genres = get_viable_genres()
+    genres = get_viable_genres(conn=conn)
     selected_genre = choice(genres)
 
     genre_playlist_sql = f"""SELECT songs.id FROM songs JOIN artists ON songs.artist_id = artists.id
     JOIN artists_genres ON artists_genres.artist_id = artists.id WHERE artists_genres.genre = '{selected_genre}';"""
 
     logger.info(f"Updating aggregate playlist Party (id: {PARTY_PLAYLIST_ID})")
-    update_playlist(playlist_id=PARTY_PLAYLIST_ID, playlist_sql=party_playlist_sql)
+    update_playlist(playlist_id=PARTY_PLAYLIST_ID, playlist_sql=party_playlist_sql, conn=conn)
 
     logger.info(f"Updating aggregate playlist Party Unfiltered (id: {party_unfiltered_playlist_sql})")
-    update_playlist(playlist_id=PARTY_UNFILTERED_PLAYLIST_ID, playlist_sql=party_unfiltered_playlist_sql)
+    update_playlist(playlist_id=PARTY_UNFILTERED_PLAYLIST_ID, playlist_sql=party_unfiltered_playlist_sql, conn=conn)
 
     logger.info(f"Updating aggregate playlist Top 50 (id: {TOP_50_PLAYLIST_ID})")
-    update_playlist(playlist_id=TOP_50_PLAYLIST_ID, playlist_sql=top_50_playlist_sql)
+    update_playlist(playlist_id=TOP_50_PLAYLIST_ID, playlist_sql=top_50_playlist_sql, conn=conn)
 
     logger.info(f"Updating aggregate playlist Chill (id: {CHILL_PLAYLIST_ID})")
-    update_playlist(playlist_id=CHILL_PLAYLIST_ID, playlist_sql=chill_playlist_sql)
+    update_playlist(playlist_id=CHILL_PLAYLIST_ID, playlist_sql=chill_playlist_sql, conn=conn)
 
     logger.info(f"Updating aggregate playlist Cheerful (id: {LIGHT_PLAYLIST_ID})")
-    update_playlist(playlist_id=LIGHT_PLAYLIST_ID, playlist_sql=cheerful_playlist_sql)
+    update_playlist(playlist_id=LIGHT_PLAYLIST_ID, playlist_sql=cheerful_playlist_sql, conn=conn)
 
     logger.info(f"Updating aggregate playlist Moody (id: {MOODY_PLAYLIST_ID})")
-    update_playlist(playlist_id=MOODY_PLAYLIST_ID, playlist_sql=moody_playlist_sql)
+    update_playlist(playlist_id=MOODY_PLAYLIST_ID, playlist_sql=moody_playlist_sql, conn=conn)
 
     logger.info(f"Updating aggregate playlist Genre (id: {GENRE_PLAYLIST_ID})")
     logger.info(f"New genre: {selected_genre}, selected out of {len(genres)} viable genres")
@@ -106,27 +114,23 @@ def selects_playlists_coordinator():
                   f"Currently: {str.title(selected_genre)}. Next update: {time_formatted}"
 
     sp.playlist_change_details(playlist_id=GENRE_PLAYLIST_ID, description=description)
-    update_playlist(playlist_id=GENRE_PLAYLIST_ID, playlist_sql=genre_playlist_sql)
+    update_playlist(playlist_id=GENRE_PLAYLIST_ID, playlist_sql=genre_playlist_sql, conn=conn)
+
+    conn.terminate()
+    logger.info("Aggregate playlist generation complete!")
 
 
-def aggregate_tracks(sql: str) -> list:
+def aggregate_tracks(conn: DatabaseConnection, sql: str) -> list:
     """
+    @param conn: DatabaseConnection object
     @param sql: Raw SQL to execute
     @return: List of track IDs
     """
-    conn = DatabaseConnection()
     tracks = conn.select_query_raw(sql=sql)
-    conn.terminate()
     return [x[0] for x in tracks]
 
 
-# TODO: move this to utils, along with some other helper functions
-def array_chunks(lst, n):
-    for i in range(0, len(lst), n):
-        yield lst[i:i + n]
-
-
-def update_playlist(playlist_id: str, playlist_sql: str):
+def update_playlist(conn: DatabaseConnection, playlist_id: str, playlist_sql: str):
     # pull existing tracks
     existing_tracks = get_full_playlist(playlist_id=playlist_id)
     if len(existing_tracks) > 0:
@@ -136,7 +140,7 @@ def update_playlist(playlist_id: str, playlist_sql: str):
 
     # compare existing tracks with aggregated tracks from playlist,
     # and remove existing track if not present in aggregate
-    aggregated_tracks = aggregate_tracks(sql=playlist_sql)
+    aggregated_tracks = aggregate_tracks(sql=playlist_sql, conn=conn)
     tracks_to_remove = []
     if existing_tracks is not None:
         for track_id in existing_tracks:
@@ -182,11 +186,10 @@ def update_playlist(playlist_id: str, playlist_sql: str):
         logger.debug("Skipping song addition since no songs require removal")
 
 
-def get_viable_genres() -> list:
+def get_viable_genres(conn: DatabaseConnection) -> list:
     """
     Retrieves genres containing a minimum of 20 songs from 4+ artists
     """
-    conn = DatabaseConnection()
     sql = """SELECT artists_genres.genre, COUNT(songs.id) FROM songs JOIN artists ON songs.artist_id = artists.id
     JOIN artists_genres ON artists_genres.artist_id = artists.id GROUP BY artists_genres.genre
     HAVING COUNT(songs.id) >= 20 AND COUNT(DISTINCT artists.id) >= 4 ORDER BY COUNT(songs.id) DESC;"""
@@ -195,5 +198,19 @@ def get_viable_genres() -> list:
     return [x[0] for x in genres]
 
 
-if __name__ == "__main__":
-    pass
+def songs_and_artists_exist(conn: DatabaseConnection) -> bool:
+    """
+    Checks that songs and artists tables exist in database
+    """
+    songs_sql = """SELECT COUNT(*) FROM songs;"""
+    num_songs = conn.select_query_raw(sql=songs_sql)
+    if num_songs[0][0] > 0:
+        return False
+
+    artists_sql = """SELECT COUNT(*) FROM artists;"""
+    num_artists = conn.select_query_raw(sql=artists_sql)
+    if num_artists[0][0] > 0:
+        return False
+
+    return True
+
