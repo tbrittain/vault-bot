@@ -7,7 +7,7 @@ import psycopg2
 import psycopg2.errors
 
 from .vb_utils import access_secret_version, get_logger
-from db.create_schema import create_schema, create_migration_table, get_existing_tables
+from .db.create_schema import create_schema, create_migration_table, get_existing_tables
 
 logger = get_logger(__name__)
 
