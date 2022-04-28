@@ -2,19 +2,22 @@ from datetime import datetime, timedelta
 from os import getenv, path
 
 from discord_webhook import DiscordWebhook, DiscordEmbed
-from dotenv import load_dotenv
 
-from .vb_utils import access_secret_version
-from .db import DatabaseConnection
+from .vb_utils import access_secret_version, get_logger
+from .database_connection import DatabaseConnection
 
 base_dir = path.dirname(path.dirname(path.abspath(__file__)))
+logger = get_logger(__name__)
 environment = getenv("ENVIRONMENT")
 if environment == "dev":
-    load_dotenv(f'{base_dir}/dev.env')
-    webhook_url = getenv('UPDATES_WEBHOOK')
+    WEBHOOK_URL = getenv('UPDATES_WEBHOOK')
+
+    if not WEBHOOK_URL:
+        logger.fatal("No webhook URL found. Please set UPDATES_WEBHOOK environment variable.", exc_info=True)
+        exit(1)
 elif environment == "prod":
     project_id = getenv("GOOGLE_CLOUD_PROJECT_ID")
-    webhook_url = access_secret_version(secret_id='vb-updates-webhook',
+    WEBHOOK_URL = access_secret_version(secret_id='vb-updates-webhook',
                                         project_id=project_id)
 
 
@@ -22,9 +25,14 @@ def get_daily_stats() -> dict:
     playlist_data = {}
     conn = DatabaseConnection()
 
+    # short circuit if there is no data to process
+    num_tracks_total = conn.select_query(query_literal="COUNT(*)", table="songs")
+    if num_tracks_total[0][0] == 0:
+        return playlist_data
+
     # pull number of tracks in dynamic
-    num_tracks = conn.select_query(query_literal="COUNT(*)", table="dynamic")
-    playlist_data['num_tracks'] = num_tracks[0][0]
+    num_tracks_dynamic = conn.select_query(query_literal="COUNT(*)", table="dynamic")
+    playlist_data['num_tracks'] = num_tracks_dynamic[0][0]
 
     # pull number of tracks added in the last day
     current_date = datetime.utcnow()
@@ -97,6 +105,8 @@ def get_daily_stats() -> dict:
 
 def post_webhook():
     playlist_data = get_daily_stats()
+    if len(playlist_data.keys()) == 0:
+        return
 
     embed = DiscordEmbed(title='VaultBot Daily Stat Overview',
                          color='BCE7FD')
@@ -130,10 +140,7 @@ def post_webhook():
             inline=False
         )
 
-    webhook = DiscordWebhook(url=webhook_url)
+    webhook = DiscordWebhook(url=WEBHOOK_URL)
     webhook.add_embed(embed)
     webhook.execute()
 
-
-if __name__ == '__main__':
-    post_webhook()

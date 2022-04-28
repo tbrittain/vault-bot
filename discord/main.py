@@ -7,7 +7,6 @@ from re import match
 import discord
 from alive_progress import alive_bar, config_handler
 from discord.ext import tasks, commands
-from dotenv import load_dotenv
 from spotipy import SpotifyException
 
 import src.discord_responses as responses
@@ -17,29 +16,31 @@ from src.spotify_commands import force_refresh_cache, expired_track_removal, pla
 from src.spotify_selects import selects_playlists_coordinator
 from src.vb_utils import access_secret_version, get_logger
 from src.webhook_updates import post_webhook
+from src.database_connection import update_database
 
 logger = get_logger('main')
 base_dir = getcwd()
 environment = getenv("ENVIRONMENT")
 if environment == "dev":
-    load_dotenv(f"{base_dir}/dev.env")
     DISCORD_TOKEN = getenv("DISCORD_TOKEN")
 
     if DISCORD_TOKEN is None:
-        raise ValueError("Invalid environment variable, exiting")
+        logger.fatal("No Discord token found. Please set the DISCORD_TOKEN environment variable.", exc_info=True)
+        exit(1)
 
     logger.info("Running program in dev mode")
 elif environment == "prod":
     project_id = getenv("GOOGLE_CLOUD_PROJECT_ID")
+    if project_id is None:
+        logger.fatal("No Google Cloud project ID found. Please set the GOOGLE_CLOUD_PROJECT_ID environment "
+                     "variable.", exc_info=True)
+        exit(1)
     DISCORD_TOKEN = access_secret_version(secret_id="vb-discord-token",
                                           project_id=project_id)
-
-    if project_id is None or DISCORD_TOKEN is None:
-        raise ValueError("Invalid environment variable, exiting")
-
     logger.info("Running program in production mode")
 else:
-    raise ValueError("Invalid environment variable, exiting")
+    logger.fatal("No environment variable set. Please set the ENVIRONMENT environment variable.", exc_info=True)
+    exit(1)
 
 bot = commands.Bot(command_prefix=commands.when_mentioned,
                    case_insensitive=True,
@@ -63,9 +64,10 @@ async def on_ready():
     logger.info(f"VaultBot is fully loaded and online.")
     await bot.change_presence(activity=discord.Game(f'@me + help'))
 
-    if environment == "prod":
-        hourly_cleanup.start()
-        generate_aggregate_playlists.start()
+    update_database()
+
+    hourly_cleanup.start()
+    generate_aggregate_playlists.start()
 
 
 @tasks.loop(minutes=60)
@@ -102,9 +104,7 @@ async def hourly_cleanup():
 @tasks.loop(hours=12)
 async def generate_aggregate_playlists():
     await bot.wait_until_ready()
-    logger.info("Beginning generation of aggregate playlists")
     selects_playlists_coordinator()
-    logger.info("Aggregate playlist generation complete!")
 
 
 @bot.event
