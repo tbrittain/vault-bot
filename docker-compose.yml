@@ -42,25 +42,5 @@ services:
       - db
     links:
       - db
-  backend:
-    container_name: backend
-    build:
-      context: backend/.
-    environment:
-      - NODE_ENV=development
-      - DB_NAME="${DB_NAME}"
-      - DB_USER="${DB_USER}"
-      - DB_PASS="${DB_PASS}"
-      - DB_HOST="${DB_HOST}"
-    depends_on:
-      - db
-    links:
-      - db
-  frontend:
-    container_name: frontend
-    build:
-      context: frontend/.
-    depends_on:
-      - backend
 volumes:
   pgdata:
