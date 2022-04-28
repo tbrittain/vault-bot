@@ -3,16 +3,17 @@ from os import getenv, path
 
 from discord_webhook import DiscordWebhook, DiscordEmbed
 
-from .vb_utils import access_secret_version
+from .vb_utils import access_secret_version, get_logger
 from .database_connection import DatabaseConnection
 
 base_dir = path.dirname(path.dirname(path.abspath(__file__)))
+logger = get_logger(__name__)
 environment = getenv("ENVIRONMENT")
 if environment == "dev":
     WEBHOOK_URL = getenv('UPDATES_WEBHOOK')
 
     if not WEBHOOK_URL:
-        print("No webhook URL found. Please set UPDATES_WEBHOOK environment variable.")
+        logger.fatal("No webhook URL found. Please set UPDATES_WEBHOOK environment variable.", exc_info=True)
         exit(1)
 elif environment == "prod":
     project_id = getenv("GOOGLE_CLOUD_PROJECT_ID")

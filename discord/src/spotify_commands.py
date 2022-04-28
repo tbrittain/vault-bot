@@ -23,18 +23,18 @@ if environment == "dev":
     ARCHIVE_PLAYLIST_ID = getenv("ARCHIVE_PLAYLIST_ID")
 
     if None in [CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, TOKEN]:
-        logger.error("Missing Spotify credentials")
+        logger.fatal("Missing Spotify credentials", exc_info=True)
         exit(1)
 
     if None in [DYNAMIC_PLAYLIST_ID, ARCHIVE_PLAYLIST_ID]:
-        logger.error("Missing Spotify playlist IDs")
+        logger.fatal("Missing Spotify playlist IDs", exc_info=True)
         exit(1)
 
 elif environment == "prod":
     project_id = getenv("GOOGLE_CLOUD_PROJECT_ID")
     if project_id is None:
-        logger.error("No Google Cloud project ID found. Please set the GOOGLE_CLOUD_PROJECT_ID environment "
-                     "variable.")
+        logger.fatal("No Google Cloud project ID found. Please set the GOOGLE_CLOUD_PROJECT_ID environment "
+                     "variable.", exc_info=True)
         exit(1)
 
     CLIENT_ID = access_secret_version(secret_id="vb-spotify-client-id",
@@ -48,7 +48,8 @@ elif environment == "prod":
     DYNAMIC_PLAYLIST_ID = '5YQHb5wt9d0hmShWNxjsTs'
     ARCHIVE_PLAYLIST_ID = '4C6pU7YmbBUG8sFFk4eSXj'
 else:
-    raise ValueError("No environment variable set. Please set the ENVIRONMENT environment variable.")
+    logger.fatal("No environment variable set. Please set the ENVIRONMENT environment variable.", exc_info=True)
+    exit(1)
 
 
 class MemoryCacheHandler(CacheHandler):

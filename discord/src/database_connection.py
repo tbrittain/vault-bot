@@ -20,7 +20,7 @@ if environment == "dev":
     db_host = getenv("DB_HOST")
 
     if None in [db_user, db_pass, db_port, db_name, db_host]:
-        logger.error("Missing database credentials")
+        logger.fatal("Missing database credentials", exc_info=True)
         exit(1)
 elif environment == "prod":
     project_id = getenv("GOOGLE_CLOUD_PROJECT_ID")
@@ -36,11 +36,11 @@ elif environment == "prod":
     db_name = access_secret_version(secret_id="vb-postgres-db-name",
                                     project_id=project_id)
     if project_id is None:
-        logger.error("No Google Cloud project ID found. Please set the GOOGLE_CLOUD_PROJECT_ID environment "
-                     "variable.")
+        logger.fatal("No Google Cloud project ID found. Please set the GOOGLE_CLOUD_PROJECT_ID environment "
+                     "variable.", exc_info=True)
         exit(1)
 else:
-    logger.error("No environment variable set. Please set the ENVIRONMENT environment variable.")
+    logger.fatal("No environment variable set. Please set the ENVIRONMENT environment variable.", exc_info=True)
     exit(1)
 
 
