@@ -1,0 +1,46 @@
+version: "3.9"
+services:
+  db:
+    container_name: postgres
+    image: postgres:13.6-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_DB=${DB_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  discord:
+    container_name: discord
+    build:
+      context: discord/.
+    environment:
+      - ENVIRONMENT=dev
+      - DISCORD_TOKEN=${DISCORD_TOKEN}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_NAME=${DB_NAME}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
+      - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET}
+      - SPOTIFY_REDIRECT_URI=${SPOTIFY_REDIRECT_URI}
+      - UPDATES_WEBHOOK=${UPDATES_WEBHOOK}
+      - SPOTIFY_CACHE=${SPOTIFY_CACHE}
+      - DYNAMIC_PLAYLIST_ID=${DYNAMIC_PLAYLIST_ID}
+      - ARCHIVE_PLAYLIST_ID=${ARCHIVE_PLAYLIST_ID}
+      - PARTY_PLAYLIST_ID=${PARTY_PLAYLIST_ID}
+      - TOP_50_PLAYLIST_ID=${TOP_50_PLAYLIST_ID}
+      - CHILL_PLAYLIST_ID=${CHILL_PLAYLIST_ID}
+      - LIGHT_PLAYLIST_ID=${LIGHT_PLAYLIST_ID}
+      - MOODY_PLAYLIST_ID=${MOODY_PLAYLIST_ID}
+      - GENRE_PLAYLIST_ID=${GENRE_PLAYLIST_ID}
+      - PARTY_UNFILTERED_PLAYLIST_ID=${PARTY_UNFILTERED_PLAYLIST_ID}
+    depends_on:
+      - db
+    links:
+      - db
+volumes:
+  pgdata:

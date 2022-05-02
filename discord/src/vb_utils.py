@@ -48,5 +48,7 @@ def access_secret_version(secret_id, project_id, version_id="1") -> str:
     return response.payload.data.decode('UTF-8')
 
 
-if __name__ == "__main__":
-    pass
+def array_chunks(lst, n):
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+

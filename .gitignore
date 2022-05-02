@@ -144,3 +144,4 @@ dmypy.json
 /discord/vibrant-sound-292320.json
 /discord/src/cache.json
 .DS_store
+/discord/token.json

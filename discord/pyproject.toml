@@ -6,18 +6,16 @@ authors = ["tbrittain <treybrittain@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-alive-progress = "^2.4.0"
+alive-progress = "^2.4.1"
 discord = "^1.7.3"
-python-dotenv = "^0.19.2"
 spotipy = "^2.19.0"
-pandas = "^1.4.1"
+pandas = "^1.4.2"
 psycopg2 = "^2.9.3"
 google-cloud-logging = "^3.0.0"
-google-cloud-secret-manager = "^2.9.2"
+google-cloud-secret-manager = "^2.10.0"
 discord-webhook = "^0.15.0"
 
 [tool.poetry.dev-dependencies]
-pylint = "^2.12.2"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
