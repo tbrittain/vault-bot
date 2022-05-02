@@ -1,39 +1,55 @@
 from datetime import datetime, timedelta
-from json import loads
 from os import getenv, path
 
 import spotipy
-from dotenv import load_dotenv
 from spotipy.cache_handler import CacheHandler
 from spotipy.oauth2 import SpotifyOAuth
+import json
 
-from .db import DatabaseConnection, access_secret_version
+from .database_connection import DatabaseConnection, access_secret_version
 from .vb_utils import get_logger
 
 logger = get_logger(__name__)
 base_dir = path.dirname(path.dirname(path.abspath(__file__)))
+
 environment = getenv("ENVIRONMENT")
 if environment == "dev":
-    load_dotenv(f'{base_dir}/dev.env')
-    CLIENT_ID = getenv("SPOTIPY_CLIENT_ID")
-    CLIENT_SECRET = getenv("SPOTIPY_CLIENT_SECRET")
-    REDIRECT_URI = getenv("SPOTIPY_REDIRECT_URI")
+    CLIENT_ID = getenv("SPOTIFY_CLIENT_ID")
+    CLIENT_SECRET = getenv("SPOTIFY_CLIENT_SECRET")
+    REDIRECT_URI = getenv("SPOTIFY_REDIRECT_URI")
     TOKEN = getenv("SPOTIFY_CACHE")
-    commit_changes = False
+
+    DYNAMIC_PLAYLIST_ID = getenv("DYNAMIC_PLAYLIST_ID")
+    ARCHIVE_PLAYLIST_ID = getenv("ARCHIVE_PLAYLIST_ID")
+
+    if None in [CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, TOKEN]:
+        logger.fatal("Missing Spotify credentials", exc_info=True)
+        exit(1)
+
+    if None in [DYNAMIC_PLAYLIST_ID, ARCHIVE_PLAYLIST_ID]:
+        logger.fatal("Missing Spotify playlist IDs", exc_info=True)
+        exit(1)
+
 elif environment == "prod":
     project_id = getenv("GOOGLE_CLOUD_PROJECT_ID")
+    if project_id is None:
+        logger.fatal("No Google Cloud project ID found. Please set the GOOGLE_CLOUD_PROJECT_ID environment "
+                     "variable.", exc_info=True)
+        exit(1)
+
     CLIENT_ID = access_secret_version(secret_id="vb-spotify-client-id",
                                       project_id=project_id)
     CLIENT_SECRET = access_secret_version(secret_id="vb-spotify-client-secret",
                                           project_id=project_id)
     REDIRECT_URI = access_secret_version(secret_id="db-spotify-redirect-uri",
                                          project_id=project_id)
-    TOKEN = access_secret_version('vb-spotify-cache', project_id, '2')
-    commit_changes = True
-    if project_id is None:
-        raise ValueError("Invalid environment variable, exiting")
+    TOKEN = access_secret_version('vb-spotify-cache', project_id, '3')
+
+    DYNAMIC_PLAYLIST_ID = '5YQHb5wt9d0hmShWNxjsTs'
+    ARCHIVE_PLAYLIST_ID = '4C6pU7YmbBUG8sFFk4eSXj'
 else:
-    raise ValueError("Invalid environment variable, exiting")
+    logger.fatal("No environment variable set. Please set the ENVIRONMENT environment variable.", exc_info=True)
+    exit(1)
 
 
 class MemoryCacheHandler(CacheHandler):
@@ -45,19 +61,19 @@ class MemoryCacheHandler(CacheHandler):
         self.token_info = token_info
 
     def get_cached_token(self):
-        # logger.debug('Pulling Spotify cache information')
         return self.token_info
 
     def save_token_to_cache(self, token_info):
         logger.debug('Rewriting token info to memory')
         self.token_info = token_info
+        if environment == "dev":
+            with open('token.json', 'w') as f:
+                json.dump(token_info, f)
 
 
-project_id = getenv("GOOGLE_CLOUD_PROJECT_ID")
-json_token = loads(TOKEN)
-cache_handler = MemoryCacheHandler(token_info=json_token)
+cache_handler = MemoryCacheHandler(token_info=json.loads(TOKEN))
 
-SPOTIFY_SCOPE = "playlist-modify-public user-library-read"
+SPOTIFY_SCOPE = "playlist-modify-public user-library-read playlist-modify-private"
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID,
                                                client_secret=CLIENT_SECRET,
                                                redirect_uri=REDIRECT_URI,
@@ -112,12 +128,9 @@ async def add_to_playlist(song_id):
         logger.debug(f"{song_id} already exists in dynamic playlist, not adding")
         raise FileExistsError('Song already present in Dyn playlist! Not adding duplicate ID.')
     else:
-        song_id = [song_id, ]  # input is a list
-        if commit_changes:
-            sp.playlist_add_items('5YQHb5wt9d0hmShWNxjsTs', song_id)  # dynamic
-            sp.playlist_add_items('4C6pU7YmbBUG8sFFk4eSXj', song_id)  # archive
-        else:
-            logger.debug(f"Simulated adding song with ID {song_id} to playlists")
+        song_id = [song_id, ]
+        sp.playlist_add_items(DYNAMIC_PLAYLIST_ID, song_id)
+        sp.playlist_add_items(ARCHIVE_PLAYLIST_ID, song_id)
 
 
 def songs_in_dyn_playlist():
@@ -243,16 +256,15 @@ def song_add_to_db(song_id, user):
     conn.insert_single_row(table='dynamic', columns=table_dynamic_columns, row=table_dynamic_row)
 
     last_id = conn.select_query(query_literal="MAX(id)", table='archive')
-    last_id = last_id[0][0] + 1
+    last_id = last_id[0][0]
+    if not last_id:
+        last_id = 0
 
     table_archive_columns = ('id', 'song_id', 'artist_id', 'added_by', 'added_at')
-    table_archive_row = (last_id, song_id, artist_id, added_by, added_at)
+    table_archive_row = (last_id + 1, song_id, artist_id, added_by, added_at)
     conn.insert_single_row(table='archive', columns=table_archive_columns, row=table_archive_row)
 
-    if commit_changes:
-        conn.commit()
-    else:
-        conn.rollback()
+    conn.commit()
     conn.terminate()
 
 
@@ -351,36 +363,26 @@ def expired_track_removal():
                 # song removal from dynamic playlist
                 if time_difference > timedelta(days=14):  # set 2 weeks threshold for track removal
                     tracks_to_remove.append(key)
-                    if commit_changes:
-                        conn.delete_query(table='dynamic', column_to_match='song_id', condition=key)
-                        logger.debug(f'Song {key} removed from database')
-                    else:
-                        logger.debug(f'Song {key} would have been removed from database')
+                    conn.delete_query(table='dynamic', column_to_match='song_id', condition=key)
+                    logger.debug(f'Song {key} removed from database')
+
         if len(tracks_to_remove) > 0:
             logger.debug(f"Preparing to remove {len(tracks_to_remove)} from dynamic playlist")
             if len(tracks_to_remove) > 100:
                 logger.debug(f"Splitting tracks into chunks of 100")
                 chunked_tracks_to_remove = list(array_chunks(tracks_to_remove, 100))
                 for chunked_list in chunked_tracks_to_remove:
-                    if commit_changes:
-                        logger.debug(f"Removing {len(chunked_list)} tracks from dynamic")
-                        sp.playlist_remove_all_occurrences_of_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs',
-                                                                    items=chunked_list)
-                    else:
-                        logger.debug(f"Would have removed {len(chunked_list)} tracks from dynamic")
-            else:
-                if commit_changes:
-                    logger.debug(f"Removing {len(tracks_to_remove)} tracks from dynamic")
+                    logger.debug(f"Removing {len(chunked_list)} tracks from dynamic")
                     sp.playlist_remove_all_occurrences_of_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs',
-                                                                items=tracks_to_remove)
-                else:
-                    logger.debug(f"Would have removed {len(tracks_to_remove)} tracks from dynamic")
-        if commit_changes:
-            logger.debug(f"Committing changes to database")
-            conn.commit()
-        else:
-            logger.debug("Rolling back changes")
-            conn.rollback()
+                                                                items=chunked_list)
+
+            else:
+                logger.debug(f"Removing {len(tracks_to_remove)} tracks from dynamic")
+                sp.playlist_remove_all_occurrences_of_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs',
+                                                            items=tracks_to_remove)
+
+        logger.debug(f"Committing changes to database")
+        conn.commit()
         conn.terminate()
     logger.info('Track popularities updated and expired songs checked.')
 

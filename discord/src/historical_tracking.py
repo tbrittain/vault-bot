@@ -1,20 +1,13 @@
 from datetime import datetime, timedelta
 from math import log
-from os import getenv
 from random import choice
 
-from .db import DatabaseConnection
+from .database_connection import DatabaseConnection
 from .spotify_commands import dyn_playlist_genres
 from .vb_utils import get_logger
 
-iso_format = "%Y-%m-%d %H:%M"
 
 logger = get_logger(__name__)
-environment = getenv("ENVIRONMENT")
-if environment == "dev":
-    COMMIT_CHANGES = False
-elif environment == "prod":
-    COMMIT_CHANGES = True
 
 
 def playlist_snapshot_coordinator():
@@ -27,7 +20,15 @@ def playlist_snapshot_coordinator():
         conn.terminate()
         return
 
-    last_update_genres, last_update_tracking = conn.get_most_recent_historical_data()
+    # only update if there are songs in the dynamic table
+    rows = conn.select_query_raw(sql="SELECT COUNT(*) FROM dynamic")
+    if rows[0][0] == 0:
+        conn.terminate()
+        logger.debug("No songs in dynamic table, not updating historical snapshot")
+        return
+
+    last_update_tracking = conn.get_most_recent_historical_data()
+
     logger.debug("Historical data preparing to be updated...")
 
     pdi = playlist_diversity_index()
@@ -35,15 +36,17 @@ def playlist_snapshot_coordinator():
 
     playlist_len, song_len, tempo, pop, dance, energy, valence = historical_average_features()
 
-    now = datetime.utcnow()
-    timestamp_now = now.strftime(iso_format)
+    timestamp_now = datetime.utcnow().isoformat()
 
     novelty = dynamic_playlist_novelty()
     logger.debug(f"Current playlist novelty: {round(novelty, 3)}")
 
     pkey_sql = """SELECT id FROM historical_tracking ORDER BY updated_at DESC LIMIT 1;"""
     most_recent_h_track_pkey = conn.select_query_raw(pkey_sql)
-    most_recent_h_track_pkey = most_recent_h_track_pkey[0][0]
+    if len(most_recent_h_track_pkey) == 0:
+        most_recent_h_track_pkey = 0
+    else:
+        most_recent_h_track_pkey = most_recent_h_track_pkey[0][0]
 
     # add historical tracking data
     historical_columns = ('updated_at', 'pdi', 'song_length', 'tempo', 'popularity', 'danceability',
@@ -53,10 +56,11 @@ def playlist_snapshot_coordinator():
     tracking_check_if_update_needed = []
 
     # compare existing aggregates and compare with last update
-    for i in range(1, len(last_update_tracking)):
-        tracking_check_if_update_needed.append(
-            float(last_update_tracking[i]) == float(historical_values[i])
-        )
+    if len(last_update_tracking) > 0:
+        for i in range(1, len(last_update_tracking)):
+            tracking_check_if_update_needed.append(
+                float(last_update_tracking[i]) == float(historical_values[i])
+            )
 
     if False in tracking_check_if_update_needed:
         logger.debug("Logging historical data now...")
@@ -77,10 +81,8 @@ def playlist_snapshot_coordinator():
                                    row=individual_genre_values)
     else:
         logger.info("Current playlist data matches last historical update, not logging")
-    if COMMIT_CHANGES:
-        conn.commit()
-    else:
-        conn.rollback()
+
+    conn.commit()
     conn.terminate()
 
 
@@ -135,24 +137,33 @@ def featured_artist():
     conn = DatabaseConnection()
     last_update_sql = """SELECT featured FROM artists WHERE featured IS NOT NULL ORDER BY featured DESC LIMIT 1;"""
     last_update = conn.select_query_raw(sql=last_update_sql)
-    last_update = last_update[0][0].date()
+
+    if len(last_update) == 0:
+        last_update = datetime(1970, 1, 1)
+    else:
+        last_update = last_update[0][0].date()
     date_today = datetime.utcnow().date()
+
     if date_today != last_update:
         logger.debug('Selecting a new featured artist')
         viable_artists_sql = """SELECT artists.id, artists.name, COUNT(songs.id) FROM artists JOIN songs
         ON artists.id = songs.artist_id GROUP BY artists.id, artists.name HAVING COUNT(songs.id) >= 3
         ORDER BY COUNT(songs.id) DESC;"""
         viable_artists = conn.select_query_raw(sql=viable_artists_sql)
+
+        if len(viable_artists) == 0:
+            logger.debug('No viable artists to set as featured')
+            conn.terminate()
+            return
+
         viable_artists = [x[0] for x in viable_artists]
         selected_artist = choice(viable_artists)
 
         update_selected_artist_sql = f"""UPDATE artists SET featured = NOW()::timestamp 
         WHERE id = '{selected_artist}';"""
         conn.update_query_raw(sql=update_selected_artist_sql)
-        if COMMIT_CHANGES:
-            conn.commit()
-        else:
-            conn.rollback()
+        conn.commit()
+
     conn.terminate()
 
 

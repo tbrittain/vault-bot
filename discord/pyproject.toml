@@ -8,7 +8,6 @@ authors = ["tbrittain <treybrittain@gmail.com>"]
 python = "^3.9"
 alive-progress = "^2.4.1"
 discord = "^1.7.3"
-python-dotenv = "^0.20.0"
 spotipy = "^2.19.0"
 pandas = "^1.4.2"
 psycopg2 = "^2.9.3"
@@ -17,7 +16,6 @@ google-cloud-secret-manager = "^2.10.0"
 discord-webhook = "^0.15.0"
 
 [tool.poetry.dev-dependencies]
-pylint = "^2.13.7"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

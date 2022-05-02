@@ -1,24 +1,27 @@
 from datetime import datetime
 from io import StringIO
-from os import getenv, path
+from os import getenv
 
 import pandas as pd
 import psycopg2
 import psycopg2.errors
-from dotenv import load_dotenv
 
 from .vb_utils import access_secret_version, get_logger
+from .db.create_schema import create_schema, create_migration_table, get_existing_tables
 
 logger = get_logger(__name__)
-base_dir = path.dirname(path.dirname(path.abspath(__file__)))
+
 environment = getenv("ENVIRONMENT")
 if environment == "dev":
-    load_dotenv(f'{base_dir}/dev.env')
     db_user = getenv("DB_USER")
     db_pass = getenv("DB_PASS")
     db_port = getenv("DB_PORT")
     db_name = getenv("DB_NAME")
     db_host = getenv("DB_HOST")
+
+    if None in [db_user, db_pass, db_port, db_name, db_host]:
+        logger.fatal("Missing database credentials", exc_info=True)
+        exit(1)
 elif environment == "prod":
     project_id = getenv("GOOGLE_CLOUD_PROJECT_ID")
     db_user = access_secret_version(secret_id="vb-postgres-user",
@@ -33,9 +36,12 @@ elif environment == "prod":
     db_name = access_secret_version(secret_id="vb-postgres-db-name",
                                     project_id=project_id)
     if project_id is None:
-        raise ValueError("Invalid environment variable, exiting")
+        logger.fatal("No Google Cloud project ID found. Please set the GOOGLE_CLOUD_PROJECT_ID environment "
+                     "variable.", exc_info=True)
+        exit(1)
 else:
-    raise ValueError("Invalid environment variable, exiting")
+    logger.fatal("No environment variable set. Please set the ENVIRONMENT environment variable.", exc_info=True)
+    exit(1)
 
 
 class DatabaseConnection:
@@ -61,21 +67,24 @@ class DatabaseConnection:
         cur.execute("""SELECT updated_at FROM historical_tracking ORDER BY updated_at DESC LIMIT 1;""")
         rows = cur.fetchall()
         cur.close()
+
+        if len(rows) == 0:
+            return datetime(1970, 1, 1)
         return rows[0][0]
 
-    def get_most_recent_historical_data(self) -> tuple:
+    def get_most_recent_historical_data(self) -> list:
         most_recent_timestamp = self.get_most_recent_historical_update()
         cur = self.conn.cursor()
-
-        cur.execute(f"""SELECT * FROM historical_genres WHERE updated_at = '{most_recent_timestamp}'""")
-        genres = cur.fetchall()
 
         cur.execute(f"""SELECT * FROM historical_tracking WHERE updated_at = '{most_recent_timestamp}'""")
         tracking = cur.fetchall()
 
         cur.close()
 
-        return genres, tracking[0]
+        if len(tracking) == 0:
+            return []
+
+        return tracking[0]
 
     def select_query_raw(self, sql: str):
         cur = self.conn.cursor()
@@ -212,5 +221,60 @@ class DatabaseConnection:
         return True
 
 
+def update_database():
+    """
+    Runs create scripts and migration scripts on the database.
+    """
+    logger.info("Checking if any database updates required...")
+
+    if environment == "prod":
+        conn = psycopg2.connect(
+            dbname=db_name,
+            user=db_user,
+            password=db_pass,
+            host=db_host
+        )
+    else:
+        conn = psycopg2.connect(
+            user=db_user,
+            password=db_pass,
+            host=db_host,
+            port=db_port,
+            database=db_name
+        )
+
+    INITIAL_TABLES = {
+        "songs",
+        "artists",
+        "historical_tracking",
+        "dynamic",
+        "archive",
+        "artists_genres",
+        "historical_genres"
+    }
+
+    cur = conn.cursor()
+    existing_tables = get_existing_tables(cur)
+    schema_exists = INITIAL_TABLES.issubset(existing_tables)
+    if not schema_exists:
+        logger.info("Schema does not exist, creating...")
+        create_schema(cur)
+        logger.info("Schema created successfully.")
+    else:
+        logger.debug("Schema exists, skipping...")
+
+    logger.debug("Ensuring migration table exists before additional checks...")
+    if "migration" not in existing_tables:
+        logger.info("Migration table does not exist, creating...")
+        create_migration_table(cur)
+        logger.info("Migration table created successfully.")
+    else:
+        logger.debug("Migration table exists, skipping...")
+
+    cur.close()
+    conn.commit()
+    conn.close()
+
+
 if __name__ == "__main__":
-    pass
+    update_database()
