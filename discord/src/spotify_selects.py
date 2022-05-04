@@ -39,34 +39,12 @@ def selects_playlists_coordinator():
         conn.terminate()
         return
 
-    party_playlist_sql = """SELECT songs.id, COUNT(archive.song_id) FROM songs JOIN archive ON songs.id = 
-    archive.song_id JOIN artists ON songs.artist_id = artists.id JOIN artists_genres ON artists.id = 
-    artists_genres.artist_id WHERE artists_genres.genre = ANY('{hip hop, pop rap, rap, edm, house, 
-    tropical house, uk dance, turntablism, pop, filter house, vapor twitch, dance-punk, bass house, 
-    electronic trap, electro house, bass music, australian electropop, la pop, metropopolis, pop edm}') AND 
-    songs.danceability > 0.4 AND songs.energy > 0.7 AND songs.length < 4.5 AND songs.tempo > 105 GROUP BY 
-    songs.name, songs.id ORDER BY COUNT(archive.song_id) DESC LIMIT 100;"""
-
-    top_50_playlist_sql = """SELECT songs.id, COUNT(archive.song_id) FROM songs JOIN archive 
-    ON songs.id = archive.song_id GROUP BY songs.name, songs.id ORDER BY COUNT(archive.song_id) DESC 
-    LIMIT 50;"""
-
-    chill_playlist_sql = """SELECT songs.id, COUNT(archive.song_id) FROM songs JOIN archive ON songs.id = 
-    archive.song_id WHERE songs.energy < 0.35 AND songs.acousticness > 0.1 GROUP BY songs.name, songs.id ORDER BY 
-    COUNT(archive.song_id) DESC LIMIT 100;"""
-
-    cheerful_playlist_sql = """SELECT songs.id, COUNT(archive.song_id) FROM songs JOIN archive ON songs.id 
-    = archive.song_id WHERE songs.valence > 0.9 GROUP BY songs.name, songs.id ORDER BY COUNT(archive.song_id) DESC 
-    LIMIT 100;"""
-
-    moody_playlist_sql = """SELECT songs.id, COUNT(archive.song_id) FROM songs JOIN archive ON songs.id 
-    = archive.song_id WHERE songs.valence < 0.1 GROUP BY songs.name, songs.id ORDER BY COUNT(archive.song_id) DESC 
-    LIMIT 100;"""
-
-    party_unfiltered_playlist_sql = """SELECT songs.id, COUNT(archive.song_id) FROM songs JOIN archive
-    ON songs.id = archive.song_id JOIN artists ON songs.artist_id = artists.id JOIN artists_genres ON artists.id
-    = artists_genres.artist_id AND songs.danceability > 0.8 AND songs.energy > 0.5 
-    AND songs.length < 4.5 GROUP BY songs.name, songs.id ORDER BY COUNT(archive.song_id) desc LIMIT 100;"""
+    party_playlist_sql = "SELECT * FROM v_party_playlist;"
+    top_50_playlist_sql = "SELECT * FROM v_top_50_playlist;"
+    chill_playlist_sql = "SELECT * FROM v_chill_playlist;"
+    light_playlist_sql = "SELECT * FROM v_light_playlist;"
+    moody_playlist_sql = "SELECT * FROM v_moody_playlist;"
+    party_unfiltered_playlist_sql = "SELECT * FROM v_party_unfiltered_playlist;"
 
     genres = get_viable_genres(conn=conn)
     if len(genres) == 0:
@@ -74,8 +52,13 @@ def selects_playlists_coordinator():
     else:
         selected_genre = choice(genres)
 
-        genre_playlist_sql = f"""SELECT songs.id FROM songs JOIN artists ON songs.artist_id = artists.id
-        JOIN artists_genres ON artists_genres.artist_id = artists.id WHERE artists_genres.genre = '{selected_genre}';"""
+        genre_playlist_sql = f"""
+        SELECT songs.id
+        FROM songs
+                 JOIN artists ON songs.artist_id = artists.id
+                 JOIN artists_genres ON artists_genres.artist_id = artists.id
+        WHERE artists_genres.genre = '{selected_genre}';
+        """
 
         # formatting time for display in genre playlist description
         from_timezone = tz.gettz('UTC')
@@ -114,7 +97,7 @@ def selects_playlists_coordinator():
     update_playlist(playlist_id=CHILL_PLAYLIST_ID, playlist_sql=chill_playlist_sql, conn=conn)
 
     logger.info(f"Updating aggregate playlist Cheerful (id: {LIGHT_PLAYLIST_ID})")
-    update_playlist(playlist_id=LIGHT_PLAYLIST_ID, playlist_sql=cheerful_playlist_sql, conn=conn)
+    update_playlist(playlist_id=LIGHT_PLAYLIST_ID, playlist_sql=light_playlist_sql, conn=conn)
 
     logger.info(f"Updating aggregate playlist Moody (id: {MOODY_PLAYLIST_ID})")
     update_playlist(playlist_id=MOODY_PLAYLIST_ID, playlist_sql=moody_playlist_sql, conn=conn)
@@ -216,4 +199,3 @@ def songs_and_artists_exist(conn: DatabaseConnection) -> bool:
         return False
 
     return True
-
