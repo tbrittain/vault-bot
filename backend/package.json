@@ -15,7 +15,7 @@
   "dependencies": {
     "@graphql-tools/load-files": "^6.3.2",
     "@graphql-tools/merge": "^8.2.10",
-    "apollo-server-core": "^3.6.7",
+    "apollo-server-core": "^3.7.0",
     "apollo-server-express": "^3.6.7",
     "axios": "^0.27.2",
     "cors": "^2.8.5",
