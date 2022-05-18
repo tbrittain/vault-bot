@@ -107,7 +107,7 @@ python-versions = "*"
 
 [[package]]
 name = "discord-webhook"
-version = "0.15.0"
+version = "0.16.3"
 description = "execute discord webhooks"
 category = "main"
 optional = false
@@ -115,6 +115,9 @@ python-versions = "*"
 
 [package.dependencies]
 requests = ">=2.19.1"
+
+[package.extras]
+async = ["httpx (>=0.20.0)"]
 
 [[package]]
 name = "discord.py"
@@ -533,7 +536,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "6ea1d6b1ed8093a21b7f6662f21a27589779334ac52d75aebc5ad4f549b03ab1"
+content-hash = "f16c4738ce50ee553037014b6d80c7fc0539acdd9a06f7977841482d6d897bea"
 
 [metadata.files]
 about-time = [
@@ -612,8 +615,8 @@ discord = [
     {file = "discord-1.7.3.tar.gz", hash = "sha256:846dd3d66888c2e0a8bd9120d8778a0fe088c003a7f6451668497f14e322a304"},
 ]
 discord-webhook = [
-    {file = "discord-webhook-0.15.0.tar.gz", hash = "sha256:1557a3a86ec556d5fceeff3d0c8601affd83770280b7358a3c7f4fb7c8ee32e5"},
-    {file = "discord_webhook-0.15.0-py3-none-any.whl", hash = "sha256:5c59e3c5b52be8d9273aebdc5647f564a3c24ce4f75635fd1d9e4d9d8dad30f4"},
+    {file = "discord-webhook-0.16.3.tar.gz", hash = "sha256:e9434e516a918e78915b5ce32b864d5b3f24556b92e1606bcad6a4f83f5615bd"},
+    {file = "discord_webhook-0.16.3-py3-none-any.whl", hash = "sha256:5a044a26ceea6e39651c2fa17194b463dc0b704b8b20991e8db3f3d86dd5e553"},
 ]
 "discord.py" = [
     {file = "discord.py-1.7.3-py3-none-any.whl", hash = "sha256:c6f64db136de0e18e090f6752ea68bdd4ab0a61b82dfe7acecefa22d6477bb0c"},
