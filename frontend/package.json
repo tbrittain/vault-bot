@@ -10,7 +10,7 @@
     "@mui/icons-material": "^5.8.0",
     "@mui/material": "^5.8.0",
     "@mui/styles": "^5.8.0",
-    "@mui/x-data-grid": "^5.11.0",
+    "@mui/x-data-grid": "^5.11.1",
     "axios": "^0.27.2",
     "chart.js": "^3.7.1",
     "chartjs-adapter-date-fns": "^2.0.0",
