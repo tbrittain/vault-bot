@@ -8,6 +8,7 @@ import psycopg2.errors
 
 from .vb_utils import access_secret_version, get_logger
 from .db.create_schema import create_schema, create_migration_table, get_existing_tables
+from .db.migrate_database import migrate_database
 
 logger = get_logger(__name__)
 
@@ -270,6 +271,10 @@ def update_database():
         logger.info("Migration table created successfully.")
     else:
         logger.debug("Migration table exists, skipping...")
+
+    logger.debug("Running migrations...")
+    migrate_database(cur, logger)
+    logger.debug("Migrations complete.")
 
     cur.close()
     conn.commit()
