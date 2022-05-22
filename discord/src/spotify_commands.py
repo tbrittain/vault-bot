@@ -249,17 +249,17 @@ def song_add_to_db(song_id, user):
             conn.update_query_raw(f"UPDATE songs SET preview_url = NULL WHERE id = {song_id}")
 
     # insert artist and genres into artists_genres
-    genres = sp.artist(artist_id=artist_id)["genres"]
-    if len(genres) > 0:
+    spotify_genres = sp.artist(artist_id=artist_id)["genres"]
+    if len(spotify_genres) > 0:
         existing_artist_genres = [x[0] for x in
                                   conn.select_query_with_condition(query_literal='genre', table='artists_genres',
                                                                    column_to_match='artist_id', condition=artist_id)]
-        for genre in genres:
+        for genre in spotify_genres:
             if genre not in existing_artist_genres:
                 conn.insert_single_row(table='artists_genres', columns=('artist_id', 'genre'), row=(artist_id, genre))
 
     # insert song info into dynamic and archive tables
-    # do not insert popularity, popularity refreshed in scheduled function
+    # do not insert popularity, as popularity is refreshed in scheduled function
     table_dynamic_columns = ('song_id', 'artist_id', 'added_by', 'added_at')
     table_dynamic_row = (song_id, artist_id, added_by, added_at)
     conn.insert_single_row(table='dynamic', columns=table_dynamic_columns, row=table_dynamic_row)
@@ -352,7 +352,6 @@ def expired_track_removal():
                        'Please do not exit the program during this time.')
         conn = DatabaseConnection()
 
-        # TODO: wrap this whole section in a transaction
         tracks_to_remove = []
         for track in track_list:
             # key is the track id
