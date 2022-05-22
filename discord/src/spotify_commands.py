@@ -231,13 +231,22 @@ def song_add_to_db(song_id, user):
 
     # insert song info into songs table
     song_present = conn.select_query_with_condition(query_literal='id', table='songs',
-                                                    column_to_match='id', condition=song_id)
+                                                    column_to_match='id', condition=song_id)[0] is not None
+
     if not song_present:
         table_songs_columns = ('id', 'artist_id', 'name', 'length', 'tempo', 'danceability', 'energy', 'loudness',
                                'acousticness', 'instrumentalness', 'liveness', 'valence', 'art', 'preview_url', 'album')
         table_songs_row = (song_id, artist_id, song, song_length, tempo, dance, energy, loudness, acoustic, instrument,
                            liveness, valence, album_art, preview_url, album)
         conn.insert_single_row(table='songs', columns=table_songs_columns, row=table_songs_row)
+    else:
+        conn.update_query(column_to_change="art", column_to_match="id",
+                          condition=song_id, value=album_art, table="songs")
+        if preview_url is not None:
+            conn.update_query(column_to_change="preview_url", column_to_match="id",
+                              condition=song_id, value=preview_url, table="songs")
+        else:
+            conn.update_query_raw(f"UPDATE songs SET preview_url = NULL WHERE id = {song_id}")
 
     # insert artist and genres into artists_genres
     artist_present_in_artists_genres = conn.select_query_with_condition(query_literal='artist_id',
