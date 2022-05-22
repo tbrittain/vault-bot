@@ -221,9 +221,13 @@ def song_add_to_db(song_id, user):
 
     # insert artist info into artists table
     artist_present = conn.select_query_with_condition(query_literal='id', table='artists',
-                                                      column_to_match='id', condition=artist_id)
+                                                      column_to_match='id', condition=artist_id)[0] is not None
+
     if not artist_present:
         conn.insert_single_row(table='artists', columns=('id', 'name', 'art'), row=(artist_id, artist, artist_art))
+    elif artist_art is not None:
+        conn.update_query(column_to_change="art", column_to_match="id", condition=artist_id,
+                          value=artist_art, table="artists")
 
     # insert song info into songs table
     song_present = conn.select_query_with_condition(query_literal='id', table='songs',
