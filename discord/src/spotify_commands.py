@@ -320,7 +320,7 @@ def array_chunks(lst, n):
 def expired_track_removal():
     logger.debug("Fetching dynamic playlist info...")
 
-    results = sp.playlist_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs')
+    results = sp.playlist_items(playlist_id=DYNAMIC_PLAYLIST_ID)
     tracks = results['items']
     while results['next']:
         results = sp.next(results)
@@ -373,12 +373,12 @@ def expired_track_removal():
                 chunked_tracks_to_remove = list(array_chunks(tracks_to_remove, 100))
                 for chunked_list in chunked_tracks_to_remove:
                     logger.debug(f"Removing {len(chunked_list)} tracks from dynamic")
-                    sp.playlist_remove_all_occurrences_of_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs',
+                    sp.playlist_remove_all_occurrences_of_items(playlist_id=DYNAMIC_PLAYLIST_ID,
                                                                 items=chunked_list)
 
             else:
                 logger.debug(f"Removing {len(tracks_to_remove)} tracks from dynamic")
-                sp.playlist_remove_all_occurrences_of_items(playlist_id='5YQHb5wt9d0hmShWNxjsTs',
+                sp.playlist_remove_all_occurrences_of_items(playlist_id=DYNAMIC_PLAYLIST_ID,
                                                             items=tracks_to_remove)
 
         logger.debug(f"Committing changes to database")
