@@ -249,18 +249,14 @@ def song_add_to_db(song_id, user):
             conn.update_query_raw(f"UPDATE songs SET preview_url = NULL WHERE id = {song_id}")
 
     # insert artist and genres into artists_genres
-    artist_present_in_artists_genres = conn.select_query_with_condition(query_literal='artist_id',
-                                                                        table='artists_genres',
-                                                                        column_to_match='artist_id',
-                                                                        condition=artist_id)
-    if not artist_present_in_artists_genres:
-        artist_info = sp.artist(artist_id=artist_id)
-        genres = artist_info['genres']
-        artist_genre_columns = ('artist_id', 'genre')
+    genres = sp.artist(artist_id=artist_id)["genres"]
+    if len(genres) > 0:
+        existing_artist_genres = [x[0] for x in
+                                  conn.select_query_with_condition(query_literal='genre', table='artists_genres',
+                                                                   column_to_match='artist_id', condition=artist_id)]
         for genre in genres:
-            artist_genre_values = (artist_id, genre)
-            conn.insert_single_row(table='artists_genres', columns=artist_genre_columns,
-                                   row=artist_genre_values)
+            if genre not in existing_artist_genres:
+                conn.insert_single_row(table='artists_genres', columns=('artist_id', 'genre'), row=(artist_id, genre))
 
     # insert song info into dynamic and archive tables
     # do not insert popularity, popularity refreshed in scheduled function
@@ -402,8 +398,3 @@ def expired_track_removal():
 
 def force_refresh_cache():
     cache_handler.get_cached_token()
-    # song = sp.track(track_id='6oy7lD7B9HScHz11HQ2P0F')
-
-
-if __name__ == "__main__":
-    pass
