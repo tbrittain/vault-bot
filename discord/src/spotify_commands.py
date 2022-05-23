@@ -151,6 +151,7 @@ async def convert_to_track_id(song_input):
 def get_track_info(track_id, user):
     song = sp.track(track_id=track_id)
 
+    # TODO: refactor the below to instead have an array of artist objects
     # get overall track info
     track_info = {'artist': (song['artists'][0]['name']),
                   'song': (song['name']),
@@ -234,11 +235,14 @@ def song_add_to_db(song_id, user):
                                                     column_to_match='id', condition=song_id)[0] is not None
 
     if not song_present:
-        table_songs_columns = ('id', 'artist_id', 'name', 'length', 'tempo', 'danceability', 'energy', 'loudness',
+        table_songs_columns = ('id', 'name', 'length', 'tempo', 'danceability', 'energy', 'loudness',
                                'acousticness', 'instrumentalness', 'liveness', 'valence', 'art', 'preview_url', 'album')
-        table_songs_row = (song_id, artist_id, song, song_length, tempo, dance, energy, loudness, acoustic, instrument,
+        table_songs_row = (song_id, song, song_length, tempo, dance, energy, loudness, acoustic, instrument,
                            liveness, valence, album_art, preview_url, album)
         conn.insert_single_row(table='songs', columns=table_songs_columns, row=table_songs_row)
+
+        # insert song_id and artist_id into artists_songs table
+        conn.insert_single_row(table='artists_songs', columns=('artist_id', 'song_id'), row=(artist_id, song_id))
     else:
         conn.update_query(column_to_change="art", column_to_match="id",
                           condition=song_id, value=album_art, table="songs")

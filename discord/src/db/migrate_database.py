@@ -1,7 +1,7 @@
 import logging
 
 from .migrations.selects_refactor import MIGRATION_ID as SELECTS_REFACTOR_MIGRATION_ID
-from migrations.artist_song_link_table import MIGRATION_ID as ARTIST_SONG_LINK_TABLE_MIGRATION_ID
+from .migrations.artist_song_link_table import MIGRATION_ID as ARTIST_SONG_LINK_TABLE_MIGRATION_ID
 
 
 def migrate_database(cur, logger: logging.Logger):
