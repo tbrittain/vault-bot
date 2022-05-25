@@ -221,9 +221,10 @@ def song_add_to_db(song_id, user):
         artist_art = song_dict['artist_art']
 
     # insert artist info into artists table
-    artist_present = conn.select_query_with_condition(query_literal='id', table='artists',
-                                                      column_to_match='id', condition=artist_id)[0] is not None
+    existing_artist = conn.select_query_with_condition(query_literal='id', table='artists',
+                                                       column_to_match='id', condition=artist_id)
 
+    artist_present = len(existing_artist) > 0
     if not artist_present:
         conn.insert_single_row(table='artists', columns=('id', 'name', 'art'), row=(artist_id, artist, artist_art))
     elif artist_art is not None:
@@ -231,9 +232,10 @@ def song_add_to_db(song_id, user):
                           value=artist_art, table="artists")
 
     # insert song info into songs table
-    song_present = conn.select_query_with_condition(query_literal='id', table='songs',
-                                                    column_to_match='id', condition=song_id)[0] is not None
+    existing_song = conn.select_query_with_condition(query_literal='id', table='songs',
+                                                     column_to_match='id', condition=song_id)
 
+    song_present = len(existing_song) > 0
     if not song_present:
         table_songs_columns = ('id', 'name', 'length', 'tempo', 'danceability', 'energy', 'loudness',
                                'acousticness', 'instrumentalness', 'liveness', 'valence', 'art', 'preview_url', 'album')
