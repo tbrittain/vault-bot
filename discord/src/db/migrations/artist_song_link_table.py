@@ -17,8 +17,46 @@ def migration_002(cur):
            artist_id
     FROM songs;
     
-    -- TODO: Alter views to utilize the new link table
+    DROP VIEW v_party_playlist;
+    CREATE VIEW v_party_playlist AS
+    SELECT songs.id, COUNT(archive.song_id)
+    FROM songs
+             JOIN archive ON songs.id =
+                             archive.song_id
+             JOIN artists_songs ON songs.id =
+                                   artists_songs.song_id
+             JOIN artists ON artists_songs.artist_id = artists.id
+             JOIN artists_genres ON artists.id =
+                                    artists_genres.artist_id
+    WHERE artists_genres.genre = ANY (
+        '{{pop rap, edm, house, tropical house, uk dance, deep groove house,
+        bass house, electronic trap, la pop, metropopolis, pop edm, big room,
+        vocal house, moombahton, pop dance, trap latino, grime,
+        disco house}}'
+        )
+      AND songs.danceability > 0.55
+      AND songs.energy > 0.76
+      AND songs.length < 4.25
+      AND songs.tempo > 115
+    GROUP BY songs.name, songs.id
+    ORDER BY COUNT(archive.song_id) DESC
+    LIMIT 100;
     
+    DROP VIEW v_party_unfiltered_playlist;
+    CREATE VIEW v_party_unfiltered_playlist AS
+    SELECT songs.id, COUNT(archive.song_id)
+    FROM songs
+             JOIN archive ON songs.id = archive.song_id
+             JOIN artists_songs ON songs.id = artists_songs.song_id
+             JOIN artists ON artists_songs.artist_id = artists.id
+             JOIN artists_genres ON artists.id
+    WHERE songs.danceability > 0.8
+      AND songs.energy > 0.5
+      AND songs.length < 4.5
+      AND songs.length < 4.5
+    GROUP BY songs.name, songs.id
+    ORDER BY COUNT(archive.song_id) DESC
+    LIMIT 100;
     
     ALTER TABLE songs
     DROP COLUMN artist_id;
