@@ -1,4 +1,4 @@
-const ArchiveSong = require('../models/ArchiveSong')
+const ArchiveSong = require('../models/ArchiveSong.model')
 const { Sequelize } = require('sequelize')
 
 const artistRank = async (artistId) => {
