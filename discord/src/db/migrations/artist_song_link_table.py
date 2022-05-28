@@ -49,7 +49,7 @@ def migration_002(cur):
              JOIN archive ON songs.id = archive.song_id
              JOIN artists_songs ON songs.id = artists_songs.song_id
              JOIN artists ON artists_songs.artist_id = artists.id
-             JOIN artists_genres ON artists.id
+             JOIN artists_genres ON artists.id = artists_genres.artist_id
     WHERE songs.danceability > 0.8
       AND songs.energy > 0.5
       AND songs.length < 4.5
@@ -62,5 +62,5 @@ def migration_002(cur):
     DROP COLUMN artist_id;
     
     INSERT INTO migration (id, description)
-    VALUES ('{MIGRATION_ID}', 'Added artist_songs link table');
+    VALUES ('{MIGRATION_ID}', 'Added artist_songs link table and refactored party playlist views');
 """)

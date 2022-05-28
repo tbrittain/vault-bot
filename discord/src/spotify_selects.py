@@ -9,7 +9,6 @@ from .spotify_commands import sp, get_full_playlist
 from .vb_utils import get_logger, array_chunks
 
 logger = get_logger(__name__)
-
 environment = getenv("ENVIRONMENT")
 
 if environment == "dev":
@@ -55,8 +54,9 @@ def selects_playlists_coordinator():
         genre_playlist_sql = f"""
         SELECT songs.id
         FROM songs
-                 JOIN artists ON songs.artist_id = artists.id
-                 JOIN artists_genres ON artists_genres.artist_id = artists.id
+        JOIN artists_songs ON artists_songs.song_id = songs.id
+        JOIN artists ON artists.id = artists_songs.artist_id
+        JOIN artists_genres ON artists_genres.artist_id = artists.id
         WHERE artists_genres.genre = '{selected_genre}';
         """
 
@@ -176,9 +176,17 @@ def get_viable_genres(conn: DatabaseConnection) -> list:
     """
     Retrieves genres containing a minimum of 20 songs from 4+ artists
     """
-    sql = """SELECT artists_genres.genre, COUNT(songs.id) FROM songs JOIN artists ON songs.artist_id = artists.id
-    JOIN artists_genres ON artists_genres.artist_id = artists.id GROUP BY artists_genres.genre
-    HAVING COUNT(songs.id) >= 20 AND COUNT(DISTINCT artists.id) >= 4 ORDER BY COUNT(songs.id) DESC;"""
+    sql = """
+    SELECT artists_genres.genre, COUNT(songs.id)
+    FROM songs
+    JOIN artists_songs ON artists_songs.song_id = songs.id
+    JOIN artists ON artists.id = artists_songs.artist_id
+    JOIN artists_genres ON artists_genres.artist_id = artists.id
+    GROUP BY artists_genres.genre
+    HAVING COUNT(songs.id) >= 20
+    AND COUNT(DISTINCT artists.id) >= 4
+    ORDER BY COUNT(songs.id) DESC;
+    """
 
     genres = conn.select_query_raw(sql=sql)
     return [x[0] for x in genres]
