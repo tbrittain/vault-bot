@@ -21,3 +21,8 @@ def migration_003(cur):
     ALTER SEQUENCE {archive_sequence_name} RESTART WITH {max_id + 1};
     """)
 
+    cur.execute(f"""
+    INSERT INTO migration (id, description)
+    VALUES ('{MIGRATION_ID}', 'Restarted archive sequence');
+    """)
+
