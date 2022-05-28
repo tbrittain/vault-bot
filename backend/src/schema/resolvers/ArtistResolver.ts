@@ -1,6 +1,6 @@
-import ArtistGenre from '../../db/models/ArtistGenre.model'
-import Song from '../../db/models/Song.model'
-import Artist from '../../db/models/Artist.model'
+import ArtistGenre from '../../database/models/ArtistGenre.model'
+import Song from '../../database/models/Song.model'
+import Artist from '../../database/models/Artist.model'
 import { Op } from 'sequelize'
 import {
   IArtistGenresParent,

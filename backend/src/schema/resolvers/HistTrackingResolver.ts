@@ -1,4 +1,4 @@
-import HistTrack from '../../db/models/HistTrack.model'
+import HistTrack from '../../database/models/HistTrack.model'
 import { Op } from 'sequelize'
 import { IGetHistTrackingArgs } from './interfaces/HistTracking'
 

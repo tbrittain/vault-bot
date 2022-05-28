@@ -1,5 +1,5 @@
-import Song from '../models/Song.model'
-import sequelize from '../index'
+import Song from "../models/Song.model";
+import sequelize from "../index";
 
 const SIMILARITY_SQL_QUERY = `
     WITH ss AS (
@@ -81,11 +81,11 @@ export async function getSimilarSongs(songId, limit) {
       })
     })
     .then((results) => {
-      const filteredResults = results
+      return results
         .filter((result) => {
           return (
             result.song.name !== sourceSong.name &&
-            result.song.artistId !== sourceSong.artistId
+            result.song.artists[0].id !== sourceSong.artists[0].id
           )
         })
         .filter((result, index, self) => {
@@ -93,13 +93,11 @@ export async function getSimilarSongs(songId, limit) {
             self.findIndex((t) => {
               return (
                 t.song.name === result.song.name &&
-                t.song.artistId === result.song.artistId
+                t.song.artists[0].id === result.song.artists[0].id
               )
             }) === index
           )
         })
-      console.log(filteredResults)
-      return filteredResults
     })
     .then((results) => {
       return results.slice(0, limit)

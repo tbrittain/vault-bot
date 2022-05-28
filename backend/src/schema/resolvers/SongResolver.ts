@@ -1,5 +1,5 @@
-import Song from '../../db/models/Song.model'
-import Artist from '../../db/models/Artist.model'
+import Song from '../../database/models/Song.model'
+import Artist from '../../database/models/Artist.model'
 import { Op, Sequelize } from 'sequelize'
 import {
   IFindTracksLikeArgs,
@@ -9,8 +9,8 @@ import {
   ISongArtist,
   ISongDetails
 } from './interfaces/Songs'
-import { getSimilarSongs } from '../../db/utils/SongSimilarity'
-import ArchiveSong from '../../db/models/ArchiveSong.model'
+import { getSimilarSongs } from '../../database/utils/SongSimilarity'
+import ArchiveSong from '../../database/models/ArchiveSong.model'
 
 export default {
   Query: {
