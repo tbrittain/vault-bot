@@ -61,6 +61,12 @@ def migration_002(cur):
     ALTER TABLE songs
     DROP COLUMN artist_id;
     
+    ALTER TABLE dynamic
+    DROP COLUMN artist_id;
+    
+    ALTER TABLE archive
+    DROP COLUMN artist_id;
+    
     INSERT INTO migration (id, description)
     VALUES ('{MIGRATION_ID}', 'Added artist_songs link table and refactored party playlist views');
 """)
