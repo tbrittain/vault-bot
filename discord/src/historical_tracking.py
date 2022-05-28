@@ -121,11 +121,13 @@ def dynamic_playlist_novelty():
 def playlist_diversity_index():
     conn = DatabaseConnection()
     sql = """
-    SELECT artists_genres.genre, COUNT(artists_genres.genre) 
-    FROM artists_genres
-    INNER JOIN dynamic ON artists_genres.artist_id = dynamic.artist_id
+    SELECT artists_genres.genre, COUNT(artists_genres.genre)
+    FROM dynamic
+        JOIN songs ON dynamic.song_id = songs.id
+        JOIN artists_songs ON songs.id = artists_songs.song_id
+        JOIN artists_genres ON artists_songs.artist_id = artists_genres.artist_id
     GROUP BY artists_genres.genre
-    ORDER BY COUNT(artists_genres.genre) DESC;
+    ORDER BY COUNT(artists_genres.genre) DESC
     """
     genre_counts = conn.select_query_raw(sql=sql)
     genre_counts = [x[1] for x in genre_counts]

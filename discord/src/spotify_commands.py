@@ -292,9 +292,15 @@ async def validate_song(track_id):
 def dyn_playlist_genres(limit: int = None):
     conn = DatabaseConnection()
 
-    sql = """SELECT artists_genres.genre, COUNT(artists_genres.genre) FROM dynamic JOIN artists_genres ON 
-    dynamic.artist_id = artists_genres.artist_id GROUP BY artists_genres.genre ORDER BY 
-    COUNT(artists_genres.genre) DESC"""
+    sql = """
+    SELECT artists_genres.genre, COUNT(artists_genres.genre)
+    FROM dynamic
+        JOIN songs ON dynamic.song_id = songs.id
+        JOIN artists_songs ON songs.id = artists_songs.song_id
+        JOIN artists_genres ON artists_songs.artist_id = artists_genres.artist_id
+    GROUP BY artists_genres.genre
+    ORDER BY COUNT(artists_genres.genre) DESC
+    """
     if limit is not None:
         sql += f" LIMIT {limit}"
     sql += ";"
