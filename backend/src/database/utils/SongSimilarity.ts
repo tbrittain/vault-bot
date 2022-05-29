@@ -84,16 +84,14 @@ export async function getSimilarSongs(songId, limit) {
       return results
         .filter((result) => {
           return (
-            result.song.name !== sourceSong.name &&
-            result.song.artists[0].id !== sourceSong.artists[0].id
+            result.song.name !== sourceSong.name
           )
         })
         .filter((result, index, self) => {
           return (
             self.findIndex((t) => {
               return (
-                t.song.name === result.song.name &&
-                t.song.artists[0].id === result.song.artists[0].id
+                t.song.name === result.song.name
               )
             }) === index
           )
