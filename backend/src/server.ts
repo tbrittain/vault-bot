@@ -6,6 +6,7 @@ import express from 'express'
 import sequelize from './database'
 import typeDefs from './schema/TypeDefs'
 import resolvers from './schema/Resolvers'
+
 ;(async () => {
   sequelize
     .authenticate()
