@@ -1,4 +1,4 @@
-const ArtistGenre = require('../models/ArtistGenre')
+const ArtistGenre = require('../models/ArtistGenre.model')
 const { Sequelize } = require('sequelize')
 
 const genreRank = async (genreName) => {

@@ -1,6 +1,6 @@
-import ArtistGenre from '../../db/models/ArtistGenre.model'
-import Song from '../../db/models/Song.model'
-import Artist from '../../db/models/Artist.model'
+import ArtistGenre from '../../database/models/ArtistGenre.model'
+import Song from '../../database/models/Song.model'
+import Artist from '../../database/models/Artist.model'
 import { Op } from 'sequelize'
 import {
   IArtistGenresParent,
@@ -84,12 +84,17 @@ export default {
       const artistId = parent.id
 
       let result = await Song.findAll({
-        where: {
-          artistId: artistId
-        },
-        attributes: ['id', 'artistId', 'name', 'album', 'art', 'previewUrl']
+        include: [
+          {
+            model: Artist,
+            where: {
+              id: artistId
+            },
+          }
+        ]
       })
         .then((data) => {
+          console.log(data)
           return data
         })
         .catch((err) => console.error(err))

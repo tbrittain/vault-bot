@@ -3,8 +3,7 @@ import { gql } from 'apollo-server-express'
 export default gql`
   type Song {
     id: String!
-    artistId: String!
-    artist: Artist!
+    artists: [Artist!]
     name: String!
     album: String!
     art: String

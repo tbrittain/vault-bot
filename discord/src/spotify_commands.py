@@ -149,98 +149,109 @@ async def convert_to_track_id(song_input):
 
 
 def get_track_info(track_id, user):
-    song = sp.track(track_id=track_id)
+    s = sp.track(track_id=track_id)
 
-    # get overall track info
-    track_info = {'artist': (song['artists'][0]['name']),
-                  'song': (song['name']),
-                  'album': (song['album']['name']),
-                  'added_by': user,
-                  'added_at': str(datetime.now()),
-                  'song_length': (float(song['duration_ms']) / 60000),
-                  'artist_id': song['artists'][0]['id'],
-                  'album_art': song['album']['images'][0]['url']
-                  }
+    artists_details = []
+    for artist in s['artists']:
+        artist_details = {
+            'name': artist['name'],
+            'id': artist['id'],
+        }
+
+        # get artist art, not always present
+        try:
+            artist_info = sp.artist(artist_id=artist['id'])
+            artist_art = artist_info['images'][0]['url']
+            artist_details['artist_art'] = artist_art
+        except IndexError:
+            pass
+
+        artists_details.append(artist_details)
+
+    details = {'name': (s['name']),
+               'album': (s['album']['name']),
+               'added_by': user,
+               'added_at': str(datetime.now()),
+               'song_length': (float(s['duration_ms']) / 60000),
+               'album_art': s['album']['images'][0]['url'],
+               'artists': artists_details,
+               }
 
     # add preview url if present
-    if song['preview_url']:
-        track_info['preview_url'] = song['preview_url']
-
-    # get artist art, not always present
-    try:
-        artist_info = sp.artist(track_info['artist_id'])
-        artist_art = artist_info['images'][0]['url']
-        track_info['artist_art'] = artist_art
-    except IndexError:
-        pass
+    if s['preview_url']:
+        details['preview_url'] = s['preview_url']
 
     # get audio features of song
-    audio_analysis = sp.audio_features(song['id'])[0]
+    audio_analysis = sp.audio_features(s['id'])[0]
 
-    track_info['tempo'] = (audio_analysis['tempo'])
-    track_info['danceability'] = (audio_analysis['danceability'])
-    track_info['energy'] = (audio_analysis['energy'])
-    track_info['loudness'] = (audio_analysis['loudness'])
-    track_info['acousticness'] = (audio_analysis['acousticness'])
-    track_info['instrumentalness'] = (audio_analysis['instrumentalness'])
-    track_info['liveness'] = (audio_analysis['liveness'])
-    track_info['valence'] = (audio_analysis['valence'])
+    details['tempo'] = (audio_analysis['tempo'])
+    details['danceability'] = (audio_analysis['danceability'])
+    details['energy'] = (audio_analysis['energy'])
+    details['loudness'] = (audio_analysis['loudness'])
+    details['acousticness'] = (audio_analysis['acousticness'])
+    details['instrumentalness'] = (audio_analysis['instrumentalness'])
+    details['liveness'] = (audio_analysis['liveness'])
+    details['valence'] = (audio_analysis['valence'])
 
-    return track_info
+    return details
 
 
 def song_add_to_db(song_id, user):
     conn = DatabaseConnection()
 
-    song_dict = get_track_info(track_id=song_id, user=user)
+    details = get_track_info(track_id=song_id, user=user)
 
-    artist = song_dict['artist']
-    song = song_dict['song']
-    album = song_dict['album']
-    added_by = song_dict['added_by']
-    added_at = song_dict['added_at']
-    song_length = song_dict['song_length']
-    tempo = song_dict['tempo']
-    dance = song_dict['danceability']
-    energy = song_dict['energy']
-    loudness = song_dict['loudness']
-    acoustic = song_dict['acousticness']
-    instrument = song_dict['instrumentalness']
-    liveness = song_dict['liveness']
-    valence = song_dict['valence']
-    artist_id = song_dict['artist_id']
-    album_art = song_dict['album_art']
+    song_name = details['name']
+    album = details['album']
+    added_by = details['added_by']
+    added_at = details['added_at']
+    song_length = details['song_length']
+    tempo = details['tempo']
+    dance = details['danceability']
+    energy = details['energy']
+    loudness = details['loudness']
+    acoustic = details['acousticness']
+    instrument = details['instrumentalness']
+    liveness = details['liveness']
+    valence = details['valence']
+    album_art = details['album_art']
     preview_url = None
-    artist_art = None
 
-    song_keys = list(song_dict.keys())
-    if 'preview_url' in song_keys:
-        preview_url = song_dict['preview_url']
-    if 'artist_art' in song_keys:
-        artist_art = song_dict['artist_art']
+    if 'preview_url' in list(details.keys()):
+        preview_url = details['preview_url']
 
-    # insert artist info into artists table
-    existing_artist = conn.select_query_with_condition(query_literal='id', table='artists',
-                                                       column_to_match='id', condition=artist_id)
+    # artists-related info
+    for artist in details['artists']:
+        artist_name = artist['name']
+        artist_id = artist['id']
+        artist_art = None
+        if 'artist_art' in list(artist.keys()):
+            artist_art = artist['artist_art']
 
-    artist_present = len(existing_artist) > 0
-    if not artist_present:
-        conn.insert_single_row(table='artists', columns=('id', 'name', 'art'), row=(artist_id, artist, artist_art))
-    elif artist_art is not None:
-        conn.update_query(column_to_change="art", column_to_match="id", condition=artist_id,
-                          value=artist_art, table="artists")
+        existing_artist = conn.select_query_with_condition(query_literal='id', table='artists',
+                                                           column_to_match='id', condition=artist_id)
 
-    # insert song info into songs table
+        artist_present = len(existing_artist) > 0
+        columns = ('id', 'name', 'art') if artist_art else ('id', 'name')
+        row = (artist_id, artist_name, artist_art) if artist_art else (artist_id, artist_name)
+        if not artist_present:
+            conn.insert_single_row(table='artists', columns=columns, row=row)
+        elif artist_art is not None:
+            conn.update_query(column_to_change="art", column_to_match="id", condition=artist_id,
+                              value=artist_art, table="artists")
+
+    # song-related info
     existing_song = conn.select_query_with_condition(query_literal='id', table='songs',
                                                      column_to_match='id', condition=song_id)
 
     song_present = len(existing_song) > 0
     if not song_present:
-        table_songs_columns = ('id', 'artist_id', 'name', 'length', 'tempo', 'danceability', 'energy', 'loudness',
+        table_songs_columns = ('id', 'name', 'length', 'tempo', 'danceability', 'energy', 'loudness',
                                'acousticness', 'instrumentalness', 'liveness', 'valence', 'art', 'preview_url', 'album')
-        table_songs_row = (song_id, artist_id, song, song_length, tempo, dance, energy, loudness, acoustic, instrument,
+        table_songs_row = (song_id, song_name, song_length, tempo, dance, energy, loudness, acoustic, instrument,
                            liveness, valence, album_art, preview_url, album)
         conn.insert_single_row(table='songs', columns=table_songs_columns, row=table_songs_row)
+
     else:
         conn.update_query(column_to_change="art", column_to_match="id",
                           condition=song_id, value=album_art, table="songs")
@@ -250,29 +261,36 @@ def song_add_to_db(song_id, user):
         else:
             conn.update_query_raw(f"UPDATE songs SET preview_url = NULL WHERE id = {song_id}")
 
-    # insert artist and genres into artists_genres
-    spotify_genres = sp.artist(artist_id=artist_id)["genres"]
-    if len(spotify_genres) > 0:
-        existing_artist_genres = [x[0] for x in
-                                  conn.select_query_with_condition(query_literal='genre', table='artists_genres',
-                                                                   column_to_match='artist_id', condition=artist_id)]
-        for genre in spotify_genres:
-            if genre not in existing_artist_genres:
-                conn.insert_single_row(table='artists_genres', columns=('artist_id', 'genre'), row=(artist_id, genre))
+    # artist_genres and artists_songs info
+    for artist in details['artists']:
+        artist_id = artist['id']
+
+        spotify_genres = sp.artist(artist_id=artist_id)["genres"]
+        if len(spotify_genres) > 0:
+            existing_artist_genres = [x[0] for x in
+                                      conn.select_query_with_condition(query_literal='genre', table='artists_genres',
+                                                                       column_to_match='artist_id',
+                                                                       condition=artist_id)]
+            for genre in spotify_genres:
+                if genre not in existing_artist_genres:
+                    conn.insert_single_row(table='artists_genres', columns=('artist_id', 'genre'),
+                                           row=(artist_id, genre))
+
+        existing_artist_songs = [x[0] for x in
+                                 conn.select_query_with_condition(query_literal='artist_id', table='artists_songs',
+                                                                  column_to_match='song_id', condition=song_id)]
+        if artist_id not in existing_artist_songs:
+            conn.insert_single_row(table='artists_songs', columns=('artist_id', 'song_id'),
+                                   row=(artist_id, song_id))
 
     # insert song info into dynamic and archive tables
     # do not insert popularity, as popularity is refreshed in scheduled function
-    table_dynamic_columns = ('song_id', 'artist_id', 'added_by', 'added_at')
-    table_dynamic_row = (song_id, artist_id, added_by, added_at)
+    table_dynamic_columns = ('song_id', 'added_by', 'added_at')
+    table_dynamic_row = (song_id, added_by, added_at)
     conn.insert_single_row(table='dynamic', columns=table_dynamic_columns, row=table_dynamic_row)
 
-    last_id = conn.select_query(query_literal="MAX(id)", table='archive')
-    last_id = last_id[0][0]
-    if not last_id:
-        last_id = 0
-
-    table_archive_columns = ('id', 'song_id', 'artist_id', 'added_by', 'added_at')
-    table_archive_row = (last_id + 1, song_id, artist_id, added_by, added_at)
+    table_archive_columns = ('song_id', 'added_by', 'added_at')
+    table_archive_row = (song_id, added_by, added_at)
     conn.insert_single_row(table='archive', columns=table_archive_columns, row=table_archive_row)
 
     conn.commit()
@@ -288,9 +306,15 @@ async def validate_song(track_id):
 def dyn_playlist_genres(limit: int = None):
     conn = DatabaseConnection()
 
-    sql = """SELECT artists_genres.genre, COUNT(artists_genres.genre) FROM dynamic JOIN artists_genres ON 
-    dynamic.artist_id = artists_genres.artist_id GROUP BY artists_genres.genre ORDER BY 
-    COUNT(artists_genres.genre) DESC"""
+    sql = """
+    SELECT artists_genres.genre, COUNT(artists_genres.genre)
+    FROM dynamic
+        JOIN songs ON dynamic.song_id = songs.id
+        JOIN artists_songs ON songs.id = artists_songs.song_id
+        JOIN artists_genres ON artists_songs.artist_id = artists_genres.artist_id
+    GROUP BY artists_genres.genre
+    ORDER BY COUNT(artists_genres.genre) DESC
+    """
     if limit is not None:
         sql += f" LIMIT {limit}"
     sql += ";"
