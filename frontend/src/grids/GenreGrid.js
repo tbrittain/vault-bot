@@ -61,7 +61,7 @@ const GenreGrid = (props) => {
           ))}
         </ImageList>
       )}
-      {typeof props.genres === 'undefined' && (
+      {(typeof props.genres === 'undefined' || props.genres.length === 0) && (
         <Typography variant="subtitle1">
           No genres present for this artist :(
         </Typography>
