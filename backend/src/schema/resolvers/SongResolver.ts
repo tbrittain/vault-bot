@@ -36,9 +36,16 @@ export default {
       const { album, artistId } = args
       let result = await Song.findAll({
         where: {
-          album: album,
-          artistId: artistId
-        }
+          album: album
+        },
+        include: [
+          {
+            model: Artist,
+            where: {
+              id: artistId
+            }
+          }
+        ]
       }).catch((err) => console.error(err))
       result = JSON.parse(JSON.stringify(result))
       return result
