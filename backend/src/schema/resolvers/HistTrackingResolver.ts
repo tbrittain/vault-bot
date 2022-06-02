@@ -1,46 +1,12 @@
 import HistTrack from '../../database/models/HistTrack.model'
 import { Op } from 'sequelize'
 import { IGetHistTrackingArgs } from './interfaces/HistTracking'
+import { validateDateStrings } from "../../utils/DateValidator";
 
 export default {
   Query: {
     async getHistTracking(_parent, args: IGetHistTrackingArgs) {
-      let endDate: Date
-      if (args.endDate) {
-        endDate = new Date(args.endDate)
-      } else {
-        endDate = new Date()
-      }
-
-      // Input validation
-      const startDate = new Date(args.startDate)
-      if (!(startDate instanceof Date && !isNaN(startDate.getTime()))) {
-        throw new SyntaxError('Invalid startDate')
-      }
-
-      if (!(endDate instanceof Date && !isNaN(endDate.getTime()))) {
-        throw new SyntaxError('Invalid endDate')
-      }
-
-      if (startDate > endDate) {
-        throw new SyntaxError('endDate must be greater than startDate')
-      }
-
-      const dateToday = new Date()
-      if (endDate > dateToday) {
-        throw new SyntaxError(
-          `endDate cannot be greater than the current date (${dateToday.toISOString()})`
-        )
-      }
-
-      const diffTime = Math.abs(endDate.getTime() - startDate.getTime())
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-      if (diffDays > 8) {
-        // 8 instead of 7 due to the remainder of hours default endDate may have above 7 days
-        throw new SyntaxError(
-          'Difference between dates must not be greater than one week'
-        )
-      }
+      const { startDate, endDate } = validateDateStrings(args.startDate, args.endDate)
 
       let result = await HistTrack.findAll({
         where: {
