@@ -2,7 +2,7 @@ import React from 'react'
 import { useParams } from 'react-router-dom'
 import { useQuery } from '@apollo/client'
 import SongDetails from './SongDetails'
-import SongArtist from './SongArtist'
+import SongArtists from './SongArtist'
 import LoadingScreen from '../loading/LoadingScreen'
 import { Alert, Grid, Typography } from '@mui/material'
 import { SONG_QUERY } from '../queries/songQueries'
@@ -16,15 +16,10 @@ const SongContainer = () => {
   })
 
   let formattedData
-  let artistGenres
   let processing = true
   if (data) {
     formattedData = data
     formattedData = data.getTrack
-    if (formattedData.artist.genres.length > 0) {
-      artistGenres = formattedData.artist.genres
-      artistGenres = artistGenres.map((genreObject) => genreObject.genre)
-    }
     processing = false
   }
 
@@ -45,19 +40,18 @@ const SongContainer = () => {
         <SongDetails
           album={formattedData.album}
           name={formattedData.name}
-          artistName={formattedData.artist.name}
-          artistId={formattedData.artist.id}
+          artistName={formattedData.artists[0].name}
+          artistId={formattedData.artists[0].id}
           art={formattedData.art}
           songPreview={formattedData.previewUrl}
           details={formattedData.details}
           id={songId}
         />
-        <Typography variant="h2">Artist Preview</Typography>
-        <SongArtist
-          id={formattedData.artist.id}
-          name={formattedData.artist.name}
-          art={formattedData.artist.art}
-          genres={artistGenres}
+        <Typography variant="h2">
+          {formattedData.artists.length > 1 ? 'Artists' : 'Artist'}
+        </Typography>
+        <SongArtists
+          artists={formattedData.artists}
         />
       </Grid>
     </>

@@ -1,4 +1,4 @@
-import HistGenre from '../../db/models/HistGenre.model'
+import HistGenre from '../../database/models/HistGenre.model'
 import { Op } from 'sequelize'
 import { IGetHistGenresArgs } from './interfaces/HistGenres'
 

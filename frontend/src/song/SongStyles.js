@@ -43,6 +43,7 @@ const songStyles = makeStyles((theme) => ({
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
+    flexWrap: 'wrap',
     [theme.breakpoints.down('sm')]: {
       flexDirection: 'column',
     },

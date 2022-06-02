@@ -24,7 +24,7 @@ export const SONG_QUERY = gql`
       album
       art
       previewUrl
-      artist {
+      artists {
         id
         name
         art
@@ -64,7 +64,7 @@ export const SONG_SEARCH_QUERY = gql`
       id
       art
       album
-      artist {
+      artists {
         name
       }
     }
@@ -108,8 +108,7 @@ export const SIMILAR_SONGS_QUERY = gql`
         name
         art
         album
-        artistId
-        artist {
+        artists {
           name
         }
       }

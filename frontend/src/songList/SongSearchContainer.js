@@ -33,7 +33,7 @@ const SongSearchContainer = (props) => {
             name={song.name}
             id={song.id}
             art={song.art}
-            artist={song.artist.name}
+            artist={song.artists[0].name}
             album={song.album}
             searchQuery={searchQuery}
           />

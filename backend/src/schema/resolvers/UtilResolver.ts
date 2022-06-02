@@ -1,11 +1,11 @@
 import path from "path";
 import fs from "fs";
 import { Sequelize } from "sequelize";
-import DynamicSong from "../../db/models/DynamicSong.model";
-import ArchiveSong from "../../db/models/ArchiveSong.model";
-import Song from "../../db/models/Song.model";
-import Artist from "../../db/models/Artist.model";
-import ArtistGenre from "../../db/models/ArtistGenre.model";
+import DynamicSong from "../../database/models/DynamicSong.model";
+import ArchiveSong from "../../database/models/ArchiveSong.model";
+import Song from "../../database/models/Song.model";
+import Artist from "../../database/models/Artist.model";
+import ArtistGenre from "../../database/models/ArtistGenre.model";
 
 export default {
   Query: {
