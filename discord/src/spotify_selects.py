@@ -19,6 +19,8 @@ if environment == "dev":
     MOODY_PLAYLIST_ID = getenv("MOODY_PLAYLIST_ID")
     GENRE_PLAYLIST_ID = getenv("GENRE_PLAYLIST_ID")
     PARTY_UNFILTERED_PLAYLIST_ID = getenv("PARTY_UNFILTERED_PLAYLIST_ID")
+    ENERGY_PLAYLIST_ID = getenv("ENERGY_PLAYLIST_ID")
+    SHIFT_PLAYLIST_ID = getenv("SHIFT_PLAYLIST_ID")
 elif environment == "prod":
     PARTY_PLAYLIST_ID = "6ksVLVljYiEUpjSoDh8z0w"
     TOP_50_PLAYLIST_ID = "1b04aMKreEwigG4ivcZNJm"
@@ -27,6 +29,8 @@ elif environment == "prod":
     MOODY_PLAYLIST_ID = "0jiEtmsU9wRGrAVf7O5YeT"
     GENRE_PLAYLIST_ID = "5MDgnMXhfdmxpsCfHz1ioL"
     PARTY_UNFILTERED_PLAYLIST_ID = "6chmLTkj3RZVBPoen7mCs8"
+    ENERGY_PLAYLIST_ID = "6tvj9N8XItXNAw5t9D2e86"
+    SHIFT_PLAYLIST_ID = "4Se66d3h8equYrj7W6msdT"
 
 
 def selects_playlists_coordinator():
@@ -44,7 +48,9 @@ def selects_playlists_coordinator():
     light_playlist_sql = "SELECT * FROM v_light_playlist;"
     moody_playlist_sql = "SELECT * FROM v_moody_playlist;"
     party_unfiltered_playlist_sql = "SELECT * FROM v_party_unfiltered_playlist;"
+    energy_playlist_sql = "SELECT * FROM v_energy_playlist;"
 
+    # region Genre playlist
     genres = get_viable_genres(conn=conn)
     if len(genres) == 0:
         logger.info("No viable genres found, skipping generation of genre playlist")
@@ -83,6 +89,11 @@ def selects_playlists_coordinator():
 
         logger.info(f"Updating aggregate playlist Genre (id: {GENRE_PLAYLIST_ID})")
         logger.info(f"New genre: {selected_genre}, selected out of {len(genres)} viable genres")
+    # endregion
+
+    # region Shift playlist
+    # TODO: Add shift playlist
+    # endregion
 
     logger.info(f"Updating aggregate playlist Party (id: {PARTY_PLAYLIST_ID})")
     update_playlist(playlist_id=PARTY_PLAYLIST_ID, playlist_sql=party_playlist_sql, conn=conn)
@@ -101,6 +112,9 @@ def selects_playlists_coordinator():
 
     logger.info(f"Updating aggregate playlist Moody (id: {MOODY_PLAYLIST_ID})")
     update_playlist(playlist_id=MOODY_PLAYLIST_ID, playlist_sql=moody_playlist_sql, conn=conn)
+
+    logger.info(f"Updating aggregate playlist Energy (id: {ENERGY_PLAYLIST_ID})")
+    update_playlist(playlist_id=ENERGY_PLAYLIST_ID, playlist_sql=energy_playlist_sql, conn=conn)
 
     conn.terminate()
     logger.info("Aggregate playlist generation complete!")
