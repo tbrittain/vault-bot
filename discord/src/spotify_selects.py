@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 from os import getenv
 from random import choice
-
 from dateutil import tz
+from numpy import polynomial
 
 from .database_connection import DatabaseConnection
 from .spotify_commands import sp, get_full_playlist
@@ -92,7 +92,41 @@ def selects_playlists_coordinator():
     # endregion
 
     # region Shift playlist
-    # TODO: Add shift playlist
+    viable_characteristics = get_viable_characteristics(conn=conn)
+
+    first_characteristic = choice(viable_characteristics)
+    viable_characteristics.remove(first_characteristic)
+    second_characteristic = choice(viable_characteristics)
+
+    ranges = []
+    for characteristic in [first_characteristic, second_characteristic]:
+        summary_statistics = get_summary_statistics(conn=conn, characteristic=characteristic)
+
+        quartile = choice(["Q1", "Q2", "Q3", "Q4"])
+        if quartile == "Q1":
+            ranges.append([summary_statistics["minimum"], summary_statistics["Q1"]])
+        elif quartile == "Q2":
+            ranges.append([summary_statistics["Q1"], summary_statistics["mean"]])
+        elif quartile == "Q3":
+            ranges.append([summary_statistics["mean"], summary_statistics["Q3"]])
+        elif quartile == "Q4":
+            ranges.append([summary_statistics["Q3"], summary_statistics["maximum"]])
+
+    shift_playlist_sql = f"""
+    SELECT MIN(songs.id)
+    FROM songs
+    WHERE songs.{first_characteristic} BETWEEN {ranges[0][0]} AND {ranges[0][1]}
+    AND songs.{second_characteristic} BETWEEN {ranges[1][0]} AND {ranges[1][1]}
+    GROUP BY songs.name
+    ORDER BY RANDOM()
+    LIMIT 100;
+    """
+    description = f"100 randomly selected songs tracked by VaultBot that have a {first_characteristic} " \
+                  f"between {ranges[0][0] * 100:.1f}% and {ranges[0][1] * 100:.1f}% and a " \
+                  f"{second_characteristic} between {ranges[1][0] * 100:.1f}% and {ranges[1][1] * 100:.1f}%."
+
+    sp.playlist_change_details(playlist_id=SHIFT_PLAYLIST_ID, description=description)
+    update_playlist(playlist_id=SHIFT_PLAYLIST_ID, playlist_sql=shift_playlist_sql, conn=conn)
     # endregion
 
     logger.info(f"Updating aggregate playlist Party (id: {PARTY_PLAYLIST_ID})")
@@ -206,6 +240,120 @@ def get_viable_genres(conn: DatabaseConnection) -> list:
     return [x[0] for x in genres]
 
 
+def get_viable_characteristics(conn: DatabaseConnection) -> list:
+    """
+    Gets a list of song characteristics that are tracked in the songs table
+    """
+    sql = """
+    SELECT
+    column_name
+    FROM
+        information_schema.columns
+    WHERE
+        table_name = 'songs'
+        AND data_type = 'numeric'
+        AND column_name NOT IN ('length', 'loudness')
+    """
+
+    characteristics = conn.select_query_raw(sql=sql)
+    return [x[0] for x in characteristics]
+
+
+def get_summary_statistics(conn: DatabaseConnection, characteristic: str) -> dict:
+    """
+    Gets a summary of statistics a song characteristic
+    """
+    sql = f"""
+    WITH RECURSIVE
+    summary_stats AS
+    (
+     SELECT 
+      ROUND(AVG({characteristic}), 2) AS mean,
+      PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY {characteristic}) AS median,
+      MIN({characteristic}) AS min,
+      MAX({characteristic}) AS max,
+      MAX({characteristic}) - MIN({characteristic}) AS range,
+      ROUND(STDDEV({characteristic}), 2) AS standard_deviation,
+      ROUND(VARIANCE({characteristic}), 2) AS variance,
+      PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY {characteristic}) AS q1,
+      PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY {characteristic}) AS q3
+       FROM songs
+    ),row_summary_stats AS
+    (
+    SELECT 
+     1 AS sno, 
+     'mean' AS statistic, 
+     mean AS value 
+      FROM summary_stats
+    UNION
+    SELECT 
+     2, 
+     'median', 
+     median 
+      FROM summary_stats
+    UNION
+    SELECT 
+     3, 
+     'minimum', 
+     min 
+      FROM summary_stats
+    UNION
+    SELECT 
+     4, 
+     'maximum', 
+     max 
+      FROM summary_stats
+    UNION
+    SELECT 
+     5, 
+     'range', 
+     range 
+      FROM summary_stats
+    UNION
+    SELECT 
+     6, 
+     'standard deviation', 
+     standard_deviation 
+      FROM summary_stats
+    UNION
+    SELECT 
+     7, 
+     'variance', 
+     variance 
+      FROM summary_stats
+    UNION
+    SELECT 
+     9, 
+     'Q1', 
+     q1 
+      FROM summary_stats
+    UNION
+    SELECT 
+     10, 
+     'Q3', 
+     q3 
+      FROM summary_stats
+    UNION
+    SELECT 
+     11, 
+     'IQR', 
+     (q3 - q1) 
+      FROM summary_stats
+    UNION
+    SELECT 
+     12, 
+     'skewness', 
+     ROUND(3 * (mean - median)::NUMERIC / standard_deviation, 2) AS skewness 
+      FROM summary_stats
+    )SELECT * 
+     FROM row_summary_stats
+      ORDER BY sno;
+    """
+
+    summary_stats = conn.select_query_raw(sql=sql)
+    return {x[1]: x[2] for x in summary_stats}
+
+
 def songs_and_artists_exist(conn: DatabaseConnection) -> bool:
     """
     Checks that songs and artists tables exist in database
@@ -221,3 +369,14 @@ def songs_and_artists_exist(conn: DatabaseConnection) -> bool:
         return False
 
     return True
+
+
+def get_song_characteristic_counts(conn: DatabaseConnection,
+                                   first_characteristic: str,
+                                   second_characteristic: str) -> list:
+    sql = f"""
+    SELECT id, {first_characteristic}, {second_characteristic}
+    FROM songs
+    """
+    song_characteristics = conn.select_query_raw(sql=sql)
+    return song_characteristics
