@@ -352,13 +352,3 @@ def songs_and_artists_exist(conn: DatabaseConnection) -> bool:
 
     return True
 
-
-def get_song_characteristic_counts(conn: DatabaseConnection,
-                                   first_characteristic: str,
-                                   second_characteristic: str) -> list:
-    sql = f"""
-    SELECT id, {first_characteristic}, {second_characteristic}
-    FROM songs
-    """
-    song_characteristics = conn.select_query_raw(sql=sql)
-    return song_characteristics
