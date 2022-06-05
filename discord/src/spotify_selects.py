@@ -1,8 +1,5 @@
-from datetime import datetime, timedelta
 from os import getenv
 from random import choice
-from dateutil import tz
-from numpy import polynomial
 
 from .database_connection import DatabaseConnection
 from .spotify_commands import sp, get_full_playlist
@@ -66,23 +63,8 @@ def selects_playlists_coordinator():
         WHERE artists_genres.genre = '{selected_genre}';
         """
 
-        # formatting time for display in genre playlist description
-        from_timezone = tz.gettz('UTC')
-        local_timezone = tz.gettz('America/Chicago')
-
-        utc = datetime.utcnow()
-        utc = utc.replace(tzinfo=from_timezone)
-        cst = utc.astimezone(tz=local_timezone)
-        cst = cst + timedelta(hours=12)
-
-        weekday = cst.strftime("%A")
-        day = cst.strftime("%B %d")
-        time = cst.strftime("%H:%M %Z")
-
-        time_formatted = f'{weekday}, {day} at {time}'
-
         description = f"A randomly selected genre tracked by VaultBot. " \
-                      f"Currently: {str.title(selected_genre)}. Next update: {time_formatted}"
+                      f"Currently: {str.title(selected_genre)}."
 
         sp.playlist_change_details(playlist_id=GENRE_PLAYLIST_ID, description=description)
         update_playlist(playlist_id=GENRE_PLAYLIST_ID, playlist_sql=genre_playlist_sql, conn=conn)
