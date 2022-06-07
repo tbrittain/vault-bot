@@ -232,7 +232,7 @@ proto-plus = ">=1.15.0"
 
 [[package]]
 name = "google-cloud-secret-manager"
-version = "2.11.0"
+version = "2.11.1"
 description = "Secret Manager API API client library"
 category = "main"
 optional = false
@@ -241,7 +241,8 @@ python-versions = ">=3.6"
 [package.dependencies]
 google-api-core = {version = ">=1.31.5,<2.0.0 || >2.3.0,<3.0.0dev", extras = ["grpc"]}
 grpc-google-iam-v1 = ">=0.12.4,<1.0.0dev"
-proto-plus = ">=1.15.0"
+proto-plus = ">=1.15.0,<2.0.0dev"
+protobuf = ">=3.19.0,<4.0.0dev"
 
 [package.extras]
 libcst = ["libcst (>=0.2.5)"]
@@ -536,7 +537,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "b20eff824faec9838534eb32f536cfbeabf696d136b48216bdc3de4504fa0491"
+content-hash = "10f2b965ee5759356cf222d5f04f013b5994a19c7fac36d642147af5e953ef9f"
 
 [metadata.files]
 about-time = [
@@ -647,8 +648,8 @@ google-cloud-logging = [
     {file = "google_cloud_logging-3.1.1-py2.py3-none-any.whl", hash = "sha256:7054d5668076ac6d0b3025e1ab09cb829622be925ad664b4e9e0f0f6f8ad7fe9"},
 ]
 google-cloud-secret-manager = [
-    {file = "google-cloud-secret-manager-2.11.0.tar.gz", hash = "sha256:9da1357bb4f51343f7331242318737619efdbffdd54d6d7d0ff2e1cd189eee39"},
-    {file = "google_cloud_secret_manager-2.11.0-py2.py3-none-any.whl", hash = "sha256:c6f7c86d149907bcec0bc5b8d0867a65ca9f1aaee5ae0f82079749ea3039e828"},
+    {file = "google-cloud-secret-manager-2.11.1.tar.gz", hash = "sha256:b52cb477c91dc83484fbf81c83807e7e99672c9e22a686be4d9bd4a04c5a6155"},
+    {file = "google_cloud_secret_manager-2.11.1-py2.py3-none-any.whl", hash = "sha256:41c837a583b904a134e65c2347b60009a10ead00dc040db8570b73bc78a6777f"},
 ]
 googleapis-common-protos = [
     {file = "googleapis-common-protos-1.56.0.tar.gz", hash = "sha256:4007500795bcfc269d279f0f7d253ae18d6dc1ff5d5a73613ffe452038b1ec5f"},
