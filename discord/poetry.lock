@@ -216,7 +216,7 @@ grpc = ["grpcio (>=1.8.2,<2.0dev)"]
 
 [[package]]
 name = "google-cloud-logging"
-version = "3.1.1"
+version = "3.1.2"
 description = "Stackdriver Logging API client library"
 category = "main"
 optional = false
@@ -227,8 +227,9 @@ google-api-core = {version = ">=1.31.5,<2.0.0 || >2.3.0,<3.0.0dev", extras = ["g
 google-cloud-appengine-logging = ">=0.1.0,<2.0.0dev"
 google-cloud-audit-log = ">=0.1.0,<1.0.0dev"
 google-cloud-core = ">=1.4.1,<3.0.0dev"
-grpc-google-iam-v1 = ">=0.12.3,<0.13dev"
-proto-plus = ">=1.15.0"
+grpc-google-iam-v1 = ">=0.12.4,<1.0.0dev"
+proto-plus = ">=1.15.0,<2.0.0dev"
+protobuf = ">=3.19.0,<4.0.0dev"
 
 [[package]]
 name = "google-cloud-secret-manager"
@@ -537,7 +538,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "10f2b965ee5759356cf222d5f04f013b5994a19c7fac36d642147af5e953ef9f"
+content-hash = "602803fffe0b04e0fa46b93cf6ee7276f096c93801dc95f65185e0f76c30aba3"
 
 [metadata.files]
 about-time = [
@@ -644,8 +645,8 @@ google-cloud-core = [
     {file = "google_cloud_core-2.2.3-py2.py3-none-any.whl", hash = "sha256:a423852f4c36622376c8f0be509b67533690e061062368b763b92694c4ee06a7"},
 ]
 google-cloud-logging = [
-    {file = "google-cloud-logging-3.1.1.tar.gz", hash = "sha256:623476a5d11611687ce278b137f9433b81ecb0394d37c09f857d533a6067b10b"},
-    {file = "google_cloud_logging-3.1.1-py2.py3-none-any.whl", hash = "sha256:7054d5668076ac6d0b3025e1ab09cb829622be925ad664b4e9e0f0f6f8ad7fe9"},
+    {file = "google-cloud-logging-3.1.2.tar.gz", hash = "sha256:3ed00a8bd2076fee7a1dc053880fcb3c973184807e240f8c3c0929dd748eaf7f"},
+    {file = "google_cloud_logging-3.1.2-py2.py3-none-any.whl", hash = "sha256:702b69b01c4b98c50a4e4e7cbe12309de8c6685e99ec100c0c902e1765a45e92"},
 ]
 google-cloud-secret-manager = [
     {file = "google-cloud-secret-manager-2.11.1.tar.gz", hash = "sha256:b52cb477c91dc83484fbf81c83807e7e99672c9e22a686be4d9bd4a04c5a6155"},
