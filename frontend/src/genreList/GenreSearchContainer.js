@@ -8,15 +8,15 @@ import { GENRE_SEARCH_QUERY } from '../queries/genreQueries'
 const GenreSearchContainer = (props) => {
   const classes = genreListStyles()
   const { searchQuery } = props
-  const { error, data } = useQuery(GENRE_SEARCH_QUERY, {
+  const [results, setResults] = React.useState([])
+  const { error } = useQuery(GENRE_SEARCH_QUERY, {
     variables: {
       searchQuery,
     },
+    onCompleted: (data) => {
+      setResults(data?.findGenresLike)
+    }
   })
-  let formattedData
-  if (data) {
-    formattedData = data.findGenresLike
-  }
 
   if (error) {
     return (
@@ -26,15 +26,15 @@ const GenreSearchContainer = (props) => {
 
   return (
     <Grid container spacing={1} className={classes.queryResultContainer}>
-      {formattedData &&
-        formattedData.map((genre) => (
+      {results.length > 0 &&
+        results.map((genre) => (
           <GenreSearchResult
             key={genre.genre}
             name={genre.genre}
             searchQuery={searchQuery}
           />
         ))}
-      {formattedData && formattedData.length === 0 && (
+      {results.length === 0 && (
         <Grid item className={classes.songResultNoneFound}>
           <Paper
             style={{
