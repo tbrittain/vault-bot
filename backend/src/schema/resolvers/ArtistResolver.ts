@@ -15,7 +15,7 @@ export default {
   Query: {
     async getArtist(_parent, args: IArtistInfo) {
       if (!args.id && !args.name) {
-        throw new SyntaxError(
+        throw new Error(
           'Either an artist ID or artist name must be provided'
         )
       }
@@ -42,7 +42,7 @@ export default {
         result = JSON.parse(JSON.stringify(result))
         return result
       } else {
-        throw new SyntaxError('No results found for artist provided')
+        throw new Error('No results found for artist provided')
       }
     },
     async getFeaturedArtist() {

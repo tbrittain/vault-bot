@@ -15,6 +15,7 @@ export default {
           [Sequelize.fn('count', Sequelize.col('song_id')), 'dynamicNumTracks']
         ]
       }).catch((err) => console.error(err))
+      console.log(result)
       result = JSON.parse(JSON.stringify(result))
       result = result[0]
       return result
