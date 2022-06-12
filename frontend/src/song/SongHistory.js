@@ -14,19 +14,15 @@ import { SONG_ADDED_HISTORY_QUERY } from '../queries/songQueries'
 const SongHistory = (props) => {
   const { songId } = props
 
-  let formattedData
-  let processing = true
-
-  const { loading, error, data } = useQuery(SONG_ADDED_HISTORY_QUERY, {
+  const [history, setHistory] = React.useState([])
+  const { loading, error } = useQuery(SONG_ADDED_HISTORY_QUERY, {
     variables: { getWhenTrackAddedByUsersId: songId },
+    onCompleted: (data) => {
+      setHistory(data?.getWhenTrackAddedByUsers)
+    }
   })
 
-  if (data) {
-    formattedData = data.getWhenTrackAddedByUsers
-    processing = false
-  }
-
-  if (loading || processing) {
+  if (loading) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         <CircularProgress />
@@ -43,7 +39,7 @@ const SongHistory = (props) => {
   return (
     <div>
       <List>
-        {formattedData.map((historyEntry, index, array) => {
+        {history.map((historyEntry, index, array) => {
           const dateTime = new Date(historyEntry.addedAt)
           const finalItem = index === array.length - 1
           return (
