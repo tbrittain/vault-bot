@@ -90,14 +90,13 @@ const About = () => {
                 color: 'grey',
               }}
             >
-              If you want to see a snapshot of the legacy website, you can do so
+              If you want to see a snapshot of the legacy website, you can do so{' '}
               <a
                 href="https://web.archive.org/web/20210618053632/http://vaultbot.tbrittain.com/"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
                   color: 'grey',
-                  paddingLeft: '0.5ch',
                 }}
               >
                 here.
