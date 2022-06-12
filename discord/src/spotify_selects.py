@@ -103,9 +103,21 @@ def selects_playlists_coordinator():
     ORDER BY RANDOM()
     LIMIT 100;
     """
+
+    first_characteristic_lower = f"{ranges[0][0] * 100:.1f}%"
+    first_characteristic_upper = f"{ranges[0][1] * 100:.1f}%"
+    second_characteristic_lower = f"{ranges[1][0] * 100:.1f}%"
+    second_characteristic_upper = f"{ranges[1][1] * 100:.1f}%"
+    if first_characteristic == "tempo":
+        first_characteristic_lower = f"{ranges[0][0]:.0f} BPM"
+        first_characteristic_upper = f"{ranges[0][1]:.0f} BPM"
+    elif second_characteristic == "tempo":
+        second_characteristic_lower = f"{ranges[1][0]:.0f} BPM"
+        second_characteristic_upper = f"{ranges[1][1]:.0f} BPM"
+
     description = f"100 randomly selected songs tracked by VaultBot that have a {first_characteristic} " \
-                  f"between {ranges[0][0] * 100:.1f}% and {ranges[0][1] * 100:.1f}% and a " \
-                  f"{second_characteristic} between {ranges[1][0] * 100:.1f}% and {ranges[1][1] * 100:.1f}%."
+                  f"between {first_characteristic_lower} and {first_characteristic_upper} and a " \
+                  f"{second_characteristic} between {second_characteristic_lower} and {second_characteristic_upper}."
 
     sp.playlist_change_details(playlist_id=SHIFT_PLAYLIST_ID, description=description)
     update_playlist(playlist_id=SHIFT_PLAYLIST_ID, playlist_sql=shift_playlist_sql, conn=conn)
