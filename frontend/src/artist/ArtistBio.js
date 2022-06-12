@@ -9,24 +9,21 @@ const ArtistBio = (props) => {
   const classes = artistStyles()
   const { artistId } = props
   const theme = useTheme()
-  const { loading, error, data } = useQuery(ARTIST_BIO_QUERY, {
+
+  const [bio, setBio] = React.useState()
+  const [url, setUrl] = React.useState()
+
+  const { loading, error } = useQuery(ARTIST_BIO_QUERY, {
     variables: {
       artistId,
     },
+    onCompleted: (data) => {
+      setBio(data?.getArtist?.wikiBio.bio)
+      setUrl(data?.getArtist?.wikiBio.url)
+    }
   })
 
-  let bio
-  let url
-  let processing = true
-  if (data) {
-    if (data.getArtist.wikiBio) {
-      bio = data.getArtist.wikiBio.bio
-      url = data.getArtist.wikiBio.url
-    }
-    processing = false
-  }
-
-  if (loading || processing) {
+  if (loading) {
     return (
       <div
         style={{
