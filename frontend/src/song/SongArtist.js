@@ -1,14 +1,14 @@
-import React from 'react'
-import songStyles from './SongStyles'
-import { Link } from 'react-router-dom'
-import { Avatar, Paper, Typography } from '@mui/material'
+import React from "react";
+import songStyles from "./SongStyles";
+import { Link } from "react-router-dom";
+import { Avatar, Paper, Typography } from "@mui/material";
 
 const SongArtist = (props) => {
-  const classes = songStyles()
+  const classes = songStyles();
   return (
     <Paper elevation={3} className={classes.artistContainer}>
       {props.artists.map((artist) => (
-        <div className={classes.containerItem}>
+        <div className={classes.containerItem} key={`artist-container-${artist.id}`}>
           <Avatar
             alt={artist.name}
             src={artist.art}
@@ -16,7 +16,7 @@ const SongArtist = (props) => {
             component={Link}
             to={`/artists/${artist.id}`}
             sx={{
-              marginBottom: '0.5rem',
+              marginBottom: "0.5rem"
             }}
           />
           <Typography
@@ -25,7 +25,7 @@ const SongArtist = (props) => {
             component={Link}
             to={`/artists/${artist.id}`}
             sx={{
-              fontWeight: 'fontWeightBold',
+              fontWeight: "fontWeightBold"
             }}
           >
             <i>{artist.name}</i>
@@ -33,7 +33,7 @@ const SongArtist = (props) => {
         </div>
       ))}
     </Paper>
-  )
-}
+  );
+};
 
-export default SongArtist
+export default SongArtist;
