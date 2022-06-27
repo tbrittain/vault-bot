@@ -1,7 +1,7 @@
-import React from 'react'
-import { useQuery } from '@apollo/client'
-import songStyles from './SongStyles'
-import { Link } from 'react-router-dom'
+import React, { useState } from "react";
+import { useQuery } from "@apollo/client";
+import songStyles from "./SongStyles";
+import { Link } from "react-router-dom";
 import {
   Alert,
   Avatar,
@@ -9,56 +9,52 @@ import {
   CircularProgress,
   Typography,
   useMediaQuery,
-  useTheme,
-} from '@mui/material'
-import { SIMILAR_SONGS_QUERY } from '../queries/songQueries'
+  useTheme
+} from "@mui/material";
+import { SIMILAR_SONGS_QUERY } from "../queries/songQueries";
 
-export default function SimilarSongs(props) {
-  const { songId } = props
-  const { loading, error, data } = useQuery(SIMILAR_SONGS_QUERY, {
+export default function SimilarSongs (props) {
+  const { songId } = props;
+  const [similarSongs, setSimilarSongs] = useState([]);
+  const { loading, error } = useQuery(SIMILAR_SONGS_QUERY, {
     variables: { getSimilarTracksId: songId },
-  })
-  const isMobile = useMediaQuery('(max-width:400px)')
+    onCompleted: (data) => {
+      setSimilarSongs(data?.getSimilarTracks);
+    }
+  });
+  const isMobile = useMediaQuery("(max-width:400px)");
 
-  const classes = songStyles()
-  const theme = useTheme()
+  const classes = songStyles();
+  const theme = useTheme();
 
-  let formattedData
-  let processing = true
-
-  if (data) {
-    formattedData = data.getSimilarTracks
-    processing = false
-  }
-
-  if (loading || processing) {
+  if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
+      <div style={{ display: "flex", justifyContent: "center" }}>
         <CircularProgress />
       </div>
-    )
+    );
   }
 
   if (error) {
     return (
       <Alert severity="error">An error occurred during data retrieval :(</Alert>
-    )
+    );
   }
 
-  if (formattedData.length === 0) {
+  if (similarSongs.length === 0) {
     return (
       <Box>
         <Typography variant="h6">No similar songs found :(</Typography>
       </Box>
-    )
+    );
   }
 
   return (
     <div
       className={classes.innerContainer}
-      style={{ flexDirection: 'column', width: '100%' }}
+      style={{ flexDirection: "column", width: "100%" }}
     >
-      {formattedData.map((song) =>
+      {similarSongs.map((song) =>
         (
           <div key={song.song.id} className={classes.similarSong}>
             <div
@@ -172,5 +168,5 @@ export default function SimilarSongs(props) {
           </div>
         ))}
     </div>
-  )
+  );
 }
