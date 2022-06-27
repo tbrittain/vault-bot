@@ -15,34 +15,20 @@ import { FEATURED_ARTIST_QUERY } from '../queries/artistQueries'
 
 const FeaturedArtist = () => {
   const classes = homeStyles()
-  const { loading, error, data } = useQuery(FEATURED_ARTIST_QUERY)
+
+  const [artist, setArtist] = React.useState()
+  const [artistGenres, setArtistGenres] = React.useState([])
+  const { loading, error } = useQuery(FEATURED_ARTIST_QUERY, {
+    onCompleted: (data) => {
+      setArtist(data?.getFeaturedArtist)
+      setArtistGenres(data?.getFeaturedArtist?.genres
+        .map((genre) => genre.genre))
+    }
+  })
+
   const theme = useTheme()
 
-  let processing = true
-  let formattedData
-  let dateToday
-  let backgroundStyling
-  if (data) {
-    formattedData = { ...data.getFeaturedArtist }
-    formattedData.genres = formattedData.genres.map((genre) => genre.genre)
-    dateToday = new Date(formattedData.featured)
-    processing = false
-    backgroundStyling = {
-      backgroundImage: `url(${formattedData.art})`,
-      backgroundPosition: 'center center',
-      backgroundSize: '100vw 100vw',
-      filter: 'blur(20px)',
-      WebkitFilter: 'blur(20px)',
-      overflow: 'hidden',
-      zIndex: 1,
-      gridColumn: '1 / 1',
-      gridRow: '1 / 1',
-      height: '100%',
-      width: '100%',
-    }
-  }
-
-  if (loading || processing) {
+  if (loading || !artist || !artistGenres) {
     return (
       <div
         style={{
@@ -70,9 +56,26 @@ const FeaturedArtist = () => {
 
   if (error) {
     return (
-      <Alert severity="error">An error occurred during data retrieval :(</Alert>
+      <Alert severity="error">
+        An error occurred during data retrieval :(
+      </Alert>
     )
   }
+
+  const dateToday = new Date(artist.featured)
+  const backgroundStyling = {
+      backgroundImage: `url(${artist.art})`,
+      backgroundPosition: 'center center',
+      backgroundSize: '100vw 100vw',
+      filter: 'blur(20px)',
+      WebkitFilter: 'blur(20px)',
+      overflow: 'hidden',
+      zIndex: 1,
+      gridColumn: '1 / 1',
+      gridRow: '1 / 1',
+      height: '100%',
+      width: '100%',
+    }
 
   return (
     <div
@@ -116,10 +119,10 @@ const FeaturedArtist = () => {
             }}
           >
             <Avatar
-              src={formattedData.art}
-              alt={formattedData.name}
+              src={artist.art}
+              alt={artist.name}
               component={Link}
-              to={`/artists/${formattedData.id}`}
+              to={`/artists/${artist.id}`}
               className={classes.artistArt}
             />
             <Paper
@@ -130,21 +133,21 @@ const FeaturedArtist = () => {
             >
               <Typography
                 component={Link}
-                to={`/artists/${formattedData.id}`}
+                to={`/artists/${artist.id}`}
                 variant="h2"
                 className={classes.featuredArtistName}
                 sx={{
                   fontWeight: 'bold',
                 }}
               >
-                <i>{formattedData.name}</i>
+                <i>{artist.name}</i>
               </Typography>
             </Paper>
           </div>
           <div style={backgroundStyling} />
         </div>
         <div className={classes.genreContainer}>
-          <GenreGrid genres={formattedData.genres} />
+          <GenreGrid genres={artistGenres} />
         </div>
       </div>
     </div>
