@@ -18,8 +18,8 @@ const ArtistBio = (props) => {
       artistId,
     },
     onCompleted: (data) => {
-      setBio(data?.getArtist?.wikiBio.bio)
-      setUrl(data?.getArtist?.wikiBio.url)
+      setBio(data?.getArtist?.wikiBio?.bio)
+      setUrl(data?.getArtist?.wikiBio?.url)
     }
   })
 
