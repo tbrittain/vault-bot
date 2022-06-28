@@ -14,31 +14,31 @@ import Changelog from '../changelog/Changelog'
 import './transitions.css'
 
 function RouteHandler() {
-  const location = useLocation()
-  return (
-    <TransitionGroup>
-      <CSSTransition
-        timeout={300}
-        classNames="fade"
-        key={location.key}
-        // unmountOnExit
-      >
-        <Routes>
-          <Route exact path="/" element={<Home />} />
-          <Route exact path="/about" element={<About />} />
-          <Route exact path="/changelog" element={<Changelog />} />
-          <Route exact path="/songs" element={<SongListContainer />} />
-          <Route exact path="/songs/callback" element={<SongListContainer />} />
-          <Route path="/songs/:songId" element={<SongContainer />} />
-          <Route exact path="/artists" element={<ArtistListContainer />} />
-          <Route path="/artists/:artistId" element={<ArtistContainer />} />
-          <Route exact path="/genres" element={<GenreListContainer />} />
-          <Route path="/genres/:genreName" element={<GenreContainer />} />
-          <Route path="*" element={<PageNotFound />} />
-        </Routes>
-      </CSSTransition>
-    </TransitionGroup>
-  )
+	const location = useLocation()
+	return (
+		<TransitionGroup>
+			<CSSTransition
+				timeout={300}
+				classNames="fade"
+				key={location.key}
+				// unmountOnExit
+			>
+				<Routes>
+					<Route exact path="/" element={<Home />} />
+					<Route exact path="/about" element={<About />} />
+					<Route exact path="/changelog" element={<Changelog />} />
+					<Route exact path="/songs" element={<SongListContainer />} />
+					<Route exact path="/songs/callback" element={<SongListContainer />} />
+					<Route path="/songs/:songId" element={<SongContainer />} />
+					<Route exact path="/artists" element={<ArtistListContainer />} />
+					<Route path="/artists/:artistId" element={<ArtistContainer />} />
+					<Route exact path="/genres" element={<GenreListContainer />} />
+					<Route path="/genres/:genreName" element={<GenreContainer />} />
+					<Route path="*" element={<PageNotFound />} />
+				</Routes>
+			</CSSTransition>
+		</TransitionGroup>
+	)
 }
 
 export default RouteHandler
