@@ -11,7 +11,7 @@ const AlbumSongs = (props) => {
   const { songId } = useParams();
   const { artistId, album } = props;
   const [songs, setSongs] = useState([]);
-  
+
   useQuery(SONGS_FROM_ALBUM_QUERY, {
     variables: {
       artistId,
