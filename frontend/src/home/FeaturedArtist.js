@@ -1,8 +1,8 @@
-import React from 'react'
-import homeStyles from './HomeStyles'
-import { useQuery } from '@apollo/client'
-import { Link } from 'react-router-dom'
-import GenreGrid from '../grids/GenreGrid'
+import React from "react"
+import homeStyles from "./HomeStyles"
+import { useQuery } from "@apollo/client"
+import { Link } from "react-router-dom"
+import GenreGrid from "../grids/GenreGrid"
 import {
 	Alert,
 	Avatar,
@@ -10,8 +10,8 @@ import {
 	Paper,
 	Typography,
 	useTheme,
-} from '@mui/material'
-import { FEATURED_ARTIST_QUERY } from '../queries/artistQueries'
+} from "@mui/material"
+import { FEATURED_ARTIST_QUERY } from "../queries/artistQueries"
 
 const FeaturedArtist = () => {
 	const classes = homeStyles()
@@ -33,12 +33,12 @@ const FeaturedArtist = () => {
 		return (
 			<div
 				style={{
-					display: 'flex',
-					flexDirection: 'column',
-					alignItems: 'center',
-					userSelect: 'none',
-					'& > * + *': {
-						margin: 'auto auto',
+					display: "flex",
+					flexDirection: "column",
+					alignItems: "center",
+					userSelect: "none",
+					"& > * + *": {
+						margin: "auto auto",
 					},
 				}}
 			>
@@ -64,57 +64,57 @@ const FeaturedArtist = () => {
 	const dateToday = new Date(artist.featured)
 	const backgroundStyling = {
 		backgroundImage: `url(${artist.art})`,
-		backgroundPosition: 'center center',
-		backgroundSize: '100vw 100vw',
-		filter: 'blur(20px)',
-		WebkitFilter: 'blur(20px)',
-		overflow: 'hidden',
+		backgroundPosition: "center center",
+		backgroundSize: "100vw 100vw",
+		filter: "blur(20px)",
+		WebkitFilter: "blur(20px)",
+		overflow: "hidden",
 		zIndex: 1,
-		gridColumn: '1 / 1',
-		gridRow: '1 / 1',
-		height: '100%',
-		width: '100%',
+		gridColumn: "1 / 1",
+		gridRow: "1 / 1",
+		height: "100%",
+		width: "100%",
 	}
 
 	return (
 		<div
 			style={{
-				height: '100%',
-				display: 'flex',
-				flexDirection: 'column',
+				height: "100%",
+				display: "flex",
+				flexDirection: "column",
 			}}
 		>
 			<div className={classes.title}>
 				<Typography
 					variant="h5"
 					style={{
-						lineHeight: 'inherit',
+						lineHeight: "inherit",
 					}}
 				>
-					Featured artist for{' '}
+					Featured artist for{" "}
 					{dateToday.toLocaleDateString(undefined, {
-						weekday: 'long',
-						month: 'long',
-						day: 'numeric',
+						weekday: "long",
+						month: "long",
+						day: "numeric",
 					})}
 				</Typography>
 			</div>
 			<div>
 				<div
 					style={{
-						display: 'grid',
-						gridTemplate: '1fr / 1fr',
-						placeItems: 'center',
-						background: 'none',
+						display: "grid",
+						gridTemplate: "1fr / 1fr",
+						placeItems: "center",
+						background: "none",
 					}}
 				>
 					<div
 						className={classes.featuredArtistInfo}
 						style={{
-							gridColumn: '1 / 1',
-							gridRow: '1 / 1',
-							height: '100%',
-							width: '100%',
+							gridColumn: "1 / 1",
+							gridRow: "1 / 1",
+							height: "100%",
+							width: "100%",
 						}}
 					>
 						<Avatar
@@ -136,7 +136,7 @@ const FeaturedArtist = () => {
 								variant="h2"
 								className={classes.featuredArtistName}
 								sx={{
-									fontWeight: 'bold',
+									fontWeight: "bold",
 								}}
 							>
 								<i>{artist.name}</i>

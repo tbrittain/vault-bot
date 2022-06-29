@@ -1,9 +1,9 @@
-import React from 'react'
-import artistStyles from './ArtistStyles'
-import { useQuery } from '@apollo/client'
-import { Alert, CircularProgress, Paper, Typography } from '@mui/material'
-import { useTheme } from '@mui/styles'
-import { ARTIST_BIO_QUERY } from '../queries/artistQueries'
+import React from "react"
+import artistStyles from "./ArtistStyles"
+import { useQuery } from "@apollo/client"
+import { Alert, CircularProgress, Paper, Typography } from "@mui/material"
+import { useTheme } from "@mui/styles"
+import { ARTIST_BIO_QUERY } from "../queries/artistQueries"
 
 const ArtistBio = (props) => {
 	const classes = artistStyles()
@@ -27,11 +27,11 @@ const ArtistBio = (props) => {
 		return (
 			<div
 				style={{
-					margin: 'auto',
-					display: 'flex',
-					flexDirection: 'column',
-					alignItems: 'center',
-					padding: '3%',
+					margin: "auto",
+					display: "flex",
+					flexDirection: "column",
+					alignItems: "center",
+					padding: "3%",
 				}}
 			>
 				<CircularProgress />
@@ -54,7 +54,7 @@ const ArtistBio = (props) => {
 			<Typography
 				variant="subtitle2"
 				sx={{
-					color: 'secondary.main',
+					color: "secondary.main",
 				}}
 			>
 				<i>Experimental</i>
@@ -69,15 +69,15 @@ const ArtistBio = (props) => {
 					elevation={3}
 					className={classes.artistBio}
 					sx={{
-						backgroundColor: 'primary.main',
+						backgroundColor: "primary.main",
 					}}
 				>
 					<Typography
 						variant="body1"
 						sx={{
-							fontWeight: 'fontWeightLight',
+							fontWeight: "fontWeightLight",
 							color:
-								theme.palette.mode === 'light'
+								theme.palette.mode === "light"
 									? theme.palette.secondary.main
 									: theme.palette.primary.contrastText,
 						}}
@@ -92,11 +92,11 @@ const ArtistBio = (props) => {
 					<Typography
 						variant="body1"
 						sx={{
-							fontWeight: 'fontWeightLight',
-							textAlign: 'center',
+							fontWeight: "fontWeightLight",
+							textAlign: "center",
 						}}
 					>
-						See more on{' '}
+						See more on{" "}
 						<a
 							href={url}
 							className={classes.link}

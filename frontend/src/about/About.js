@@ -1,7 +1,7 @@
-import React from 'react'
-import VaultBotLogo from '../assets/VaultBotLogo.svg'
-import aboutStyles from './AboutStyles'
-import { Box, Paper, Typography } from '@mui/material'
+import React from "react"
+import VaultBotLogo from "../assets/VaultBotLogo.svg"
+import aboutStyles from "./AboutStyles"
+import { Box, Paper, Typography } from "@mui/material"
 
 const BEGIN_DATE_MS = 1601938620
 
@@ -55,10 +55,10 @@ const About = () => {
 							analyses.
 							<Box
 								style={{
-									display: 'inline',
-									color: 'grey',
-									marginLeft: '1ch',
-									marginRight: '1ch',
+									display: "inline",
+									color: "grey",
+									marginLeft: "1ch",
+									marginRight: "1ch",
 								}}
 							>
 								Note: song/artist/genre rankings are currently in the works and
@@ -78,25 +78,25 @@ const About = () => {
 						<Typography
 							variant="body2"
 							style={{
-								color: 'grey',
+								color: "grey",
 							}}
 						>
-							Days since the first song was added to VaultBot:{' '}
+							Days since the first song was added to VaultBot:{" "}
 							{Math.floor(difference / (1000 * 60 * 60 * 24)).toLocaleString()}
 						</Typography>
 						<Typography
 							variant="body2"
 							style={{
-								color: 'grey',
+								color: "grey",
 							}}
 						>
-							If you want to see a snapshot of the legacy website, you can do so{' '}
+							If you want to see a snapshot of the legacy website, you can do so{" "}
 							<a
 								href="https://web.archive.org/web/20210618053632/http://vaultbot.tbrittain.com/"
 								target="_blank"
 								rel="noopener noreferrer"
 								style={{
-									color: 'grey',
+									color: "grey",
 								}}
 							>
 								here.

@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react'
-import { useQuery } from '@apollo/client'
-import Spotify from '../utils/Spotify'
-import CancelIcon from '@mui/icons-material/Cancel'
-import RestoreIcon from '@mui/icons-material/Restore'
-import songListStyles from './SongListStyles'
+import React, { useCallback, useEffect, useState } from "react"
+import { useQuery } from "@apollo/client"
+import Spotify from "../utils/Spotify"
+import CancelIcon from "@mui/icons-material/Cancel"
+import RestoreIcon from "@mui/icons-material/Restore"
+import songListStyles from "./SongListStyles"
 import {
 	Alert,
 	AlertTitle,
@@ -16,8 +16,8 @@ import {
 	Paper,
 	TextField,
 	Typography,
-} from '@mui/material'
-import { ALL_SONGS_QUERY_SIMPLE } from '../queries/songQueries'
+} from "@mui/material"
+import { ALL_SONGS_QUERY_SIMPLE } from "../queries/songQueries"
 
 // TODO: Will separate this from the song list component
 
@@ -27,7 +27,7 @@ const SongExport = (props) => {
 
 	// state
 	const [playlistName, setPlaylistName] = useState(
-		localStorage.getItem('playlistName') || '' // eslint-disable-line
+		localStorage.getItem("playlistName") || "" // eslint-disable-line
 	)
 	const [trackUris, setTrackUris] = useState([])
 	const [spotifyResponseStatus, setSpotifyResponseStatus] = useState(0)
@@ -58,9 +58,9 @@ const SongExport = (props) => {
 	}
 
 	const cleanUpBeforeDismount = useCallback(() => {
-		localStorage.removeItem('playlistName') // eslint-disable-line
-		localStorage.removeItem('trackSelection') // eslint-disable-line
-		localStorage.removeItem('exportStep') // eslint-disable-line
+		localStorage.removeItem("playlistName") // eslint-disable-line
+		localStorage.removeItem("trackSelection") // eslint-disable-line
+		localStorage.removeItem("exportStep") // eslint-disable-line
 		setTrackUris([])
 		setSelectionModel([])
 	}, [setSelectionModel])
@@ -69,19 +69,19 @@ const SongExport = (props) => {
 	if (invalidNameLength) {
 		textFieldErrorMessage = `Playlist name must be 100 characters or fewer (currently ${playlistName.length})`
 	} else if (invalidNameChars) {
-		textFieldErrorMessage = 'Please use alphanumerics/spaces only'
+		textFieldErrorMessage = "Please use alphanumerics/spaces only"
 	}
 
 	useEffect(() => {
-		localStorage.setItem('exportStep', 1) // eslint-disable-line
+		localStorage.setItem("exportStep", 1) // eslint-disable-line
 		const cachedTrackSelection = localStorage
-			.getItem('trackSelection')
-			.split(',') // eslint-disable-line
+			.getItem("trackSelection")
+			.split(",") // eslint-disable-line
 		setTrackUris(cachedTrackSelection)
 	}, [])
 
 	useEffect(() => {
-		localStorage.setItem('playlistName', playlistName) // eslint-disable-line
+		localStorage.setItem("playlistName", playlistName) // eslint-disable-line
 	}, [playlistName])
 
 	useEffect(() => {
@@ -115,12 +115,12 @@ const SongExport = (props) => {
 		return (
 			<div
 				style={{
-					display: 'flex',
-					flexDirection: 'column',
-					alignItems: 'center',
-					userSelect: 'none',
-					'& > * + *': {
-						margin: 'auto auto',
+					display: "flex",
+					flexDirection: "column",
+					alignItems: "center",
+					userSelect: "none",
+					"& > * + *": {
+						margin: "auto auto",
 					},
 				}}
 			>
@@ -187,20 +187,20 @@ const SongExport = (props) => {
 			)}
 			<div
 				style={{
-					width: '100%',
-					textAlign: 'center',
+					width: "100%",
+					textAlign: "center",
 				}}
 			>
 				<div
 					style={{
-						display: 'flex',
-						justifyContent: 'center',
+						display: "flex",
+						justifyContent: "center",
 					}}
 				>
 					<Typography
 						variant="h6"
 						sx={{
-							fontWeight: 'fontWeightLight',
+							fontWeight: "fontWeightLight",
 						}}
 					>
 						Songs to export

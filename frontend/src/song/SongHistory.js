@@ -1,5 +1,5 @@
-import React from 'react'
-import { useQuery } from '@apollo/client'
+import React from "react"
+import { useQuery } from "@apollo/client"
 import {
 	Alert,
 	Box,
@@ -8,8 +8,8 @@ import {
 	ListItem,
 	ListItemText,
 	Typography,
-} from '@mui/material'
-import { SONG_ADDED_HISTORY_QUERY } from '../queries/songQueries'
+} from "@mui/material"
+import { SONG_ADDED_HISTORY_QUERY } from "../queries/songQueries"
 
 const SongHistory = (props) => {
 	const { songId } = props
@@ -24,7 +24,7 @@ const SongHistory = (props) => {
 
 	if (loading) {
 		return (
-			<div style={{ display: 'flex', justifyContent: 'center' }}>
+			<div style={{ display: "flex", justifyContent: "center" }}>
 				<CircularProgress />
 			</div>
 		)
@@ -47,26 +47,26 @@ const SongHistory = (props) => {
 							<ListItemText>
 								<Typography
 									variant="subtitle1"
-									sx={{ fontSize: '1.3rem', fontWeight: 'fontWeightLight' }}
+									sx={{ fontSize: "1.3rem", fontWeight: "fontWeightLight" }}
 								>
-									{index + 1}.{' '}
+									{index + 1}.{" "}
 									<Box
 										display="inline"
-										sx={{ fontWeight: 'fontWeightRegular' }}
+										sx={{ fontWeight: "fontWeightRegular" }}
 									>
 										{historyEntry.addedBy}
-									</Box>{' '}
-									added this song on{' '}
+									</Box>{" "}
+									added this song on{" "}
 									<Box
 										display="inline"
-										sx={{ fontWeight: 'fontWeightRegular' }}
+										sx={{ fontWeight: "fontWeightRegular" }}
 									>
 										{dateTime.toLocaleDateString()}
-									</Box>{' '}
-									at{' '}
+									</Box>{" "}
+									at{" "}
 									<Box
 										display="inline"
-										sx={{ fontWeight: 'fontWeightRegular' }}
+										sx={{ fontWeight: "fontWeightRegular" }}
 									>
 										{dateTime.toLocaleTimeString()}
 									</Box>

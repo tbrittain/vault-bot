@@ -1,7 +1,7 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import artistStyles from './ArtistStyles'
-import { Button, Typography } from '@mui/material'
+import React from "react"
+import { Link } from "react-router-dom"
+import artistStyles from "./ArtistStyles"
+import { Button, Typography } from "@mui/material"
 
 const ArtistAlbumSong = (props) => {
 	const classes = artistStyles()
@@ -14,7 +14,7 @@ const ArtistAlbumSong = (props) => {
 			variant="contained"
 			lang="en"
 			sx={{
-				margin: '0.5rem',
+				margin: "0.5rem",
 			}}
 		>
 			<Typography variant="body1" className={classes.artistSongName}>

@@ -1,9 +1,9 @@
-import React from 'react'
-import genreListStyles from './GenreListStyles'
-import { useQuery } from '@apollo/client'
-import GenreSearchResult from './GenreSearchResult'
-import { Alert, Grid, Paper, Typography } from '@mui/material'
-import { GENRE_SEARCH_QUERY } from '../queries/genreQueries'
+import React from "react"
+import genreListStyles from "./GenreListStyles"
+import { useQuery } from "@apollo/client"
+import GenreSearchResult from "./GenreSearchResult"
+import { Alert, Grid, Paper, Typography } from "@mui/material"
+import { GENRE_SEARCH_QUERY } from "../queries/genreQueries"
 
 const GenreSearchContainer = (props) => {
 	const classes = genreListStyles()

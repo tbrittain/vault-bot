@@ -1,7 +1,7 @@
-import React from 'react'
-import PostContainer from './PostContainer'
-import changeLogStyles from './ChangelogStyles'
-import { Paper, Typography } from '@mui/material'
+import React from "react"
+import PostContainer from "./PostContainer"
+import changeLogStyles from "./ChangelogStyles"
+import { Paper, Typography } from "@mui/material"
 
 const Changelog = () => {
 	const classes = changeLogStyles()

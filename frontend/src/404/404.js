@@ -1,6 +1,6 @@
-import React from 'react'
-import pageNotFoundStyles from './404Styles'
-import { Typography } from '@mui/material'
+import React from "react"
+import pageNotFoundStyles from "./404Styles"
+import { Typography } from "@mui/material"
 
 const PageNotFound = () => {
 	const classes = pageNotFoundStyles()

@@ -1,7 +1,7 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import songStyles from './SongStyles'
-import { Card, Typography } from '@mui/material'
+import React from "react"
+import { Link } from "react-router-dom"
+import songStyles from "./SongStyles"
+import { Card, Typography } from "@mui/material"
 
 const AlbumSong = (props) => {
 	const classes = songStyles()
@@ -9,11 +9,11 @@ const AlbumSong = (props) => {
 
 	const backgroundStyling = {
 		backgroundImage: `url(${art})`,
-		backgroundPosition: 'center center',
-		backgroundSize: '10vw 10vw',
-		filter: 'blur(20px)',
-		WebkitFilter: 'blur(20px)',
-		overflow: 'hidden',
+		backgroundPosition: "center center",
+		backgroundSize: "10vw 10vw",
+		filter: "blur(20px)",
+		WebkitFilter: "blur(20px)",
+		overflow: "hidden",
 		zIndex: -1,
 		opacity: 0.5,
 	}
@@ -22,8 +22,8 @@ const AlbumSong = (props) => {
 		<Card
 			className={classes.albumSongCard}
 			style={{
-				background: 'none',
-				textDecoration: 'none',
+				background: "none",
+				textDecoration: "none",
 			}}
 			component={Link}
 			to={`/songs/${songId}`}

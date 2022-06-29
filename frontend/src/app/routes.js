@@ -1,17 +1,17 @@
-import React from 'react'
-import { Route, Routes, useLocation } from 'react-router-dom'
-import { CSSTransition, TransitionGroup } from 'react-transition-group'
-import SongContainer from '../song/SongContainer'
-import SongListContainer from '../songList/SongListContainer'
-import About from '../about/About'
-import ArtistContainer from '../artist/ArtistContainer'
-import Home from '../home/Home'
-import GenreContainer from '../genre/GenreContainer'
-import PageNotFound from '../404/404'
-import ArtistListContainer from '../artistList/ArtistListContainer'
-import GenreListContainer from '../genreList/GenreListContainer'
-import Changelog from '../changelog/Changelog'
-import './transitions.css'
+import React from "react"
+import { Route, Routes, useLocation } from "react-router-dom"
+import { CSSTransition, TransitionGroup } from "react-transition-group"
+import SongContainer from "../song/SongContainer"
+import SongListContainer from "../songList/SongListContainer"
+import About from "../about/About"
+import ArtistContainer from "../artist/ArtistContainer"
+import Home from "../home/Home"
+import GenreContainer from "../genre/GenreContainer"
+import PageNotFound from "../404/404"
+import ArtistListContainer from "../artistList/ArtistListContainer"
+import GenreListContainer from "../genreList/GenreListContainer"
+import Changelog from "../changelog/Changelog"
+import "./transitions.css"
 
 function RouteHandler() {
 	const location = useLocation()

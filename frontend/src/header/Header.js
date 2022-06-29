@@ -1,10 +1,10 @@
-import React, { useContext } from 'react'
-import { Link } from 'react-router-dom'
-import headerStyles from './HeaderStyles'
-import VaultBotLogo from '../assets/VaultBotLogo.svg'
-import { ColorModeContext } from '../themes/ThemeToggler'
-import Brightness4Icon from '@mui/icons-material/Brightness4'
-import Brightness7Icon from '@mui/icons-material/Brightness7'
+import React, { useContext } from "react"
+import { Link } from "react-router-dom"
+import headerStyles from "./HeaderStyles"
+import VaultBotLogo from "../assets/VaultBotLogo.svg"
+import { ColorModeContext } from "../themes/ThemeToggler"
+import Brightness4Icon from "@mui/icons-material/Brightness4"
+import Brightness7Icon from "@mui/icons-material/Brightness7"
 import {
 	AppBar,
 	Box,
@@ -14,7 +14,7 @@ import {
 	Toolbar,
 	Typography,
 	useTheme,
-} from '@mui/material'
+} from "@mui/material"
 
 function Header() {
 	const classes = headerStyles()
@@ -30,14 +30,14 @@ function Header() {
 							src={VaultBotLogo}
 							alt="VaultBot logo"
 							style={{
-								height: '3.25rem',
+								height: "3.25rem",
 							}}
 						/>
 						<Typography
 							variant="h6"
 							className={classes.title}
 							sx={{
-								fontWeight: 'fontWeightBold',
+								fontWeight: "fontWeightBold",
 							}}
 						>
 							<i
@@ -62,7 +62,7 @@ function Header() {
 							component={Link}
 							to="/songs"
 							sx={{
-								fontWeight: 'fontWeightLight',
+								fontWeight: "fontWeightLight",
 							}}
 						>
 							Songs
@@ -73,7 +73,7 @@ function Header() {
 							component={Link}
 							to="/artists"
 							sx={{
-								fontWeight: 'fontWeightLight',
+								fontWeight: "fontWeightLight",
 							}}
 						>
 							Artists
@@ -84,7 +84,7 @@ function Header() {
 							component={Link}
 							to="/genres"
 							sx={{
-								fontWeight: 'fontWeightLight',
+								fontWeight: "fontWeightLight",
 							}}
 						>
 							Genres
@@ -94,7 +94,7 @@ function Header() {
 							onClick={colorMode.toggleColorMode}
 							color="inherit"
 						>
-							{theme.palette.mode === 'dark' ? (
+							{theme.palette.mode === "dark" ? (
 								<Brightness7Icon />
 							) : (
 								<Brightness4Icon />

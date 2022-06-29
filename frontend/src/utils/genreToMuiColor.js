@@ -17,7 +17,7 @@ import {
 	red,
 	teal,
 	yellow,
-} from '@mui/material/colors'
+} from "@mui/material/colors"
 
 const hues = [
 	red,

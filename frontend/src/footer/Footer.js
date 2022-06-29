@@ -1,9 +1,9 @@
-import React from 'react'
-import Copyright from './Copyright'
-import { Link } from 'react-router-dom'
-import footerStyles from './FooterStyles'
-import { Breadcrumbs } from '@mui/material'
-import NavigateNextIcon from '@mui/icons-material/NavigateNext'
+import React from "react"
+import Copyright from "./Copyright"
+import { Link } from "react-router-dom"
+import footerStyles from "./FooterStyles"
+import { Breadcrumbs } from "@mui/material"
+import NavigateNextIcon from "@mui/icons-material/NavigateNext"
 
 const Footer = () => {
 	const classes = footerStyles()

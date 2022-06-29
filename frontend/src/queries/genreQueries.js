@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client'
+import { gql } from "@apollo/client"
 
 export const ARTISTS_FROM_GENRE_QUERY = gql`
 	query artistsFromGenreQuery($genreName: String!) {

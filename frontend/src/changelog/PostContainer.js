@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
-import { useQuery } from '@apollo/client'
-import LoadingScreen from '../loading/LoadingScreen'
-import Post from './Post'
-import { Alert } from '@mui/material'
-import { CHANGE_LOG_POSTS_QUERY } from '../queries/miscQueries'
+import React, { useState } from "react"
+import { useQuery } from "@apollo/client"
+import LoadingScreen from "../loading/LoadingScreen"
+import Post from "./Post"
+import { Alert } from "@mui/material"
+import { CHANGE_LOG_POSTS_QUERY } from "../queries/miscQueries"
 
 const PostContainer = () => {
 	const [posts, setPosts] = useState([])

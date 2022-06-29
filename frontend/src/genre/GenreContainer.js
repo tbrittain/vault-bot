@@ -1,14 +1,14 @@
-import React, { useState } from 'react'
-import { useParams } from 'react-router-dom'
-import { useQuery } from '@apollo/client'
-import OpenInNewIcon from '@mui/icons-material/OpenInNew'
-import LoadingScreen from '../loading/LoadingScreen'
-import ArtistGrid from '../grids/ArtistGrid'
-import CountUpAnimation from '../effects/CountUpAnimation'
-import genreStyles from './GenreStyles'
-import genreToMuiColor from '../utils/genreToMuiColor'
-import { Alert, Button, Paper, Typography, useTheme } from '@mui/material'
-import { ARTISTS_FROM_GENRE_QUERY } from '../queries/genreQueries'
+import React, { useState } from "react"
+import { useParams } from "react-router-dom"
+import { useQuery } from "@apollo/client"
+import OpenInNewIcon from "@mui/icons-material/OpenInNew"
+import LoadingScreen from "../loading/LoadingScreen"
+import ArtistGrid from "../grids/ArtistGrid"
+import CountUpAnimation from "../effects/CountUpAnimation"
+import genreStyles from "./GenreStyles"
+import genreToMuiColor from "../utils/genreToMuiColor"
+import { Alert, Button, Paper, Typography, useTheme } from "@mui/material"
+import { ARTISTS_FROM_GENRE_QUERY } from "../queries/genreQueries"
 
 const GenreContainer = () => {
 	const classes = genreStyles()
@@ -26,9 +26,9 @@ const GenreContainer = () => {
 	})
 
 	const everyNoiseGenre = genreName
-		.replaceAll(' ', '')
-		.replaceAll('&', '')
-		.replaceAll('-', '')
+		.replaceAll(" ", "")
+		.replaceAll("&", "")
+		.replaceAll("-", "")
 
 	const everyNoiseLink = `https://everynoise.com/engenremap-${everyNoiseGenre}.html`
 
@@ -56,8 +56,8 @@ const GenreContainer = () => {
 					variant="h2"
 					sx={{
 						color: theme.palette.getContrastText(genreToMuiColor(genreName)),
-						textTransform: 'capitalize',
-						fontWeight: 'fontWeightBold',
+						textTransform: "capitalize",
+						fontWeight: "fontWeightBold",
 					}}
 				>
 					<i>{genreName}</i>
@@ -65,7 +65,7 @@ const GenreContainer = () => {
 				<Typography
 					variant="h6"
 					style={{
-						fontWeight: 'fontWeightLight',
+						fontWeight: "fontWeightLight",
 						color: theme.palette.getContrastText(genreToMuiColor(genreName)),
 					}}
 				>

@@ -1,23 +1,23 @@
 export const commonTheme = {
 	typography: {
-		fontFamily: 'Rubik, sans-serif',
+		fontFamily: "Rubik, sans-serif",
 		h1: {
-			fontSize: '3.2rem',
+			fontSize: "3.2rem",
 		},
 		h2: {
-			fontSize: '2.8rem',
+			fontSize: "2.8rem",
 		},
 		h3: {
-			fontSize: '2.6rem',
+			fontSize: "2.6rem",
 		},
 		h4: {
-			fontSize: '2.4rem',
+			fontSize: "2.4rem",
 		},
 		h5: {
-			fontSize: '2.2rem',
+			fontSize: "2.2rem",
 		},
 		h6: {
-			fontSize: '2rem',
+			fontSize: "2rem",
 		},
 		fontWeightLight: 300,
 		fontWeightRegular: 400,
@@ -27,7 +27,7 @@ export const commonTheme = {
 		MuiBreadcrumbs: {
 			styleOverrides: {
 				ol: {
-					justifyContent: 'center',
+					justifyContent: "center",
 				},
 			},
 		},

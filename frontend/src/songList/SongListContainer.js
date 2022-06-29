@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
-import SwipeableViews from 'react-swipeable-views'
-import TabPanel from '../tabpanel/TabPanel'
-import SongViewer from './SongViewer'
-import SongExport from './SongExport'
-import SongExportSuccess from './SongExportSuccess'
+import React, { useState } from "react"
+import SwipeableViews from "react-swipeable-views"
+import TabPanel from "../tabpanel/TabPanel"
+import SongViewer from "./SongViewer"
+import SongExport from "./SongExport"
+import SongExportSuccess from "./SongExportSuccess"
 import {
 	Alert,
 	Button,
@@ -13,29 +13,29 @@ import {
 	Stepper,
 	Typography,
 	useTheme,
-} from '@mui/material'
+} from "@mui/material"
 
 const getSteps = () => {
-	return ['Select songs', 'Export', 'Done!']
+	return ["Select songs", "Export", "Done!"]
 }
 
 const getStepContent = (step) => {
 	switch (step) {
 		case 0:
-			return 'Select songs to export to Spotify'
+			return "Select songs to export to Spotify"
 		case 1:
-			return 'Export songs to Spotify playlist'
+			return "Export songs to Spotify playlist"
 		case 2:
-			return 'Export complete'
+			return "Export complete"
 		default:
-			return 'Unknown step'
+			return "Unknown step"
 	}
 }
 
 const SongListContainer = () => {
 	const [selectionModel, setSelectionModel] = useState([])
 	const [activeStep, setActiveStep] = useState(
-		Number(localStorage.getItem('exportStep')) || 0 // eslint-disable-line
+		Number(localStorage.getItem("exportStep")) || 0 // eslint-disable-line
 	)
 	const steps = getSteps()
 	const openWarning = selectionModel.length > 100
@@ -56,7 +56,7 @@ const SongListContainer = () => {
 				Total list of all the songs tracked by VaultBot
 			</Typography>
 			<SwipeableViews
-				axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
+				axis={theme.direction === "rtl" ? "x-reverse" : "x"}
 				index={activeStep}
 			>
 				<TabPanel value={activeStep} index={0}>

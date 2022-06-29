@@ -1,10 +1,10 @@
-import React, { useState } from 'react'
-import { useQuery } from '@apollo/client'
-import { useParams } from 'react-router-dom'
-import AlbumSong from './AlbumSong'
-import songStyles from './SongStyles'
-import { Typography } from '@mui/material'
-import { SONGS_FROM_ALBUM_QUERY } from '../queries/songQueries'
+import React, { useState } from "react"
+import { useQuery } from "@apollo/client"
+import { useParams } from "react-router-dom"
+import AlbumSong from "./AlbumSong"
+import songStyles from "./SongStyles"
+import { Typography } from "@mui/material"
+import { SONGS_FROM_ALBUM_QUERY } from "../queries/songQueries"
 
 const AlbumSongs = (props) => {
 	const classes = songStyles()
@@ -29,7 +29,7 @@ const AlbumSongs = (props) => {
 			<Typography
 				variant="subtitle1"
 				style={{
-					textAlign: 'center',
+					textAlign: "center",
 				}}
 			>
 				Other songs from this album tracked by VaultBot:

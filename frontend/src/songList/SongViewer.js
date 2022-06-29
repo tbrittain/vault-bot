@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react'
-import SearchIcon from '@mui/icons-material/Search'
-import songListStyles from './SongListStyles'
-import SongSearchContainer from './SongSearchContainer'
-import SongList from './SongList'
-import useDebounce from '../hooks/useDebounce'
+import React, { useEffect, useState } from "react"
+import SearchIcon from "@mui/icons-material/Search"
+import songListStyles from "./SongListStyles"
+import SongSearchContainer from "./SongSearchContainer"
+import SongList from "./SongList"
+import useDebounce from "../hooks/useDebounce"
 import {
 	AppBar,
 	ClickAwayListener,
@@ -12,12 +12,12 @@ import {
 	Paper,
 	Popper,
 	Toolbar,
-} from '@mui/material'
+} from "@mui/material"
 
 const SongViewer = (props) => {
 	const classes = songListStyles()
 	const { trackSelection, setTrackSelection } = props
-	const [search, setSearch] = useState('')
+	const [search, setSearch] = useState("")
 	const debouncedSearch = useDebounce(search, 250)
 
 	const [anchorEl, setAnchorEl] = useState(null)
@@ -29,14 +29,14 @@ const SongViewer = (props) => {
 
 	const handleClickAway = () => {
 		setAnchorEl(null)
-		setSearch('')
+		setSearch("")
 	}
 
 	const minSearchLength = 3
 	const open = Boolean(anchorEl && search.length >= minSearchLength)
 
 	useEffect(() => {
-		localStorage.setItem('exportStep', 0)
+		localStorage.setItem("exportStep", 0)
 	}, [])
 
 	return (
@@ -67,7 +67,7 @@ const SongViewer = (props) => {
 									},
 									preventOverflow: {
 										enabled: true,
-										boundariesElement: 'scrollParent',
+										boundariesElement: "scrollParent",
 									},
 								}}
 								open={open}

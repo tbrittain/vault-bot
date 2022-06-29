@@ -1,17 +1,17 @@
-import React from 'react'
-import { useQuery } from '@apollo/client'
-import { Link } from 'react-router-dom'
-import LoadingScreen from '../loading/LoadingScreen'
-import artistListStyles from './ArtistListStyles'
-import { Alert, Avatar } from '@mui/material'
-import { DataGrid } from '@mui/x-data-grid'
-import { ALL_ARTISTS_QUERY } from '../queries/artistQueries'
+import React from "react"
+import { useQuery } from "@apollo/client"
+import { Link } from "react-router-dom"
+import LoadingScreen from "../loading/LoadingScreen"
+import artistListStyles from "./ArtistListStyles"
+import { Alert, Avatar } from "@mui/material"
+import { DataGrid } from "@mui/x-data-grid"
+import { ALL_ARTISTS_QUERY } from "../queries/artistQueries"
 
 // TODO - DataGrid API has changed
 const columns = [
 	{
-		field: 'artistArt',
-		headerName: 'Artist Art',
+		field: "artistArt",
+		headerName: "Artist Art",
 		width: 175,
 		sortable: false,
 		filterable: false,
@@ -20,15 +20,15 @@ const columns = [
 				src={params.row.art}
 				variant="square"
 				style={{
-					width: '100%',
-					height: '100%',
+					width: "100%",
+					height: "100%",
 				}}
 			/>
 		),
 	},
 	{
-		field: 'artistName',
-		headerName: 'Artist',
+		field: "artistName",
+		headerName: "Artist",
 		width: 300,
 		renderCell: (params) => (
 			<Link

@@ -1,5 +1,5 @@
-import React from 'react'
-import ArtistAlbum from './ArtistAlbum'
+import React from "react"
+import ArtistAlbum from "./ArtistAlbum"
 
 const ArtistAlbums = (props) => {
 	const { albumSongs } = props

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from "react"
 
 const easeOutQuad = (t) => t * (2 - t)
 const frameDuration = 1000 / 60

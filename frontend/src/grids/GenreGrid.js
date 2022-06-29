@@ -1,7 +1,7 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import gridStyles from './GridStyles'
-import genreToMuiColor from '../utils/genreToMuiColor'
+import React from "react"
+import { Link } from "react-router-dom"
+import gridStyles from "./GridStyles"
+import genreToMuiColor from "../utils/genreToMuiColor"
 import {
 	Button,
 	ImageList,
@@ -10,12 +10,12 @@ import {
 	Typography,
 	useMediaQuery,
 	useTheme,
-} from '@mui/material'
+} from "@mui/material"
 
 const GenreGrid = (props) => {
 	const classes = gridStyles()
 	const theme = useTheme()
-	const isSmallScreen = useMediaQuery('(max-width:800px)')
+	const isSmallScreen = useMediaQuery("(max-width:800px)")
 
 	return (
 		<div className={classes.gridContainer}>
@@ -41,7 +41,7 @@ const GenreGrid = (props) => {
 								lang="en"
 								sx={{
 									backgroundColor: genreToMuiColor(genre),
-									'&:hover': {
+									"&:hover": {
 										backgroundColor: lighten(genreToMuiColor(genre), 0.25),
 									},
 								}}
@@ -61,7 +61,7 @@ const GenreGrid = (props) => {
 					))}
 				</ImageList>
 			)}
-			{(typeof props.genres === 'undefined' || props.genres.length === 0) && (
+			{(typeof props.genres === "undefined" || props.genres.length === 0) && (
 				<Typography variant="subtitle1">
 					No genres present for this artist :(
 				</Typography>

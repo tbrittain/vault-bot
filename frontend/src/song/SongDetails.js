@@ -1,14 +1,14 @@
-import React, { useState } from 'react'
-import SwipeableViews from 'react-swipeable-views'
-import PlayArrowIcon from '@mui/icons-material/PlayArrow'
-import PauseIcon from '@mui/icons-material/Pause'
-import OpenInNewIcon from '@mui/icons-material/OpenInNew'
-import AlbumSongs from './AlbumSongs'
-import SongChars from './SongCharacteristics'
-import songStyles from './SongStyles'
-import TabPanel from '../tabpanel/TabPanel'
-import SimilarSongs from './SimilarSongs'
-import SongHistory from './SongHistory'
+import React, { useState } from "react"
+import SwipeableViews from "react-swipeable-views"
+import PlayArrowIcon from "@mui/icons-material/PlayArrow"
+import PauseIcon from "@mui/icons-material/Pause"
+import OpenInNewIcon from "@mui/icons-material/OpenInNew"
+import AlbumSongs from "./AlbumSongs"
+import SongChars from "./SongCharacteristics"
+import songStyles from "./SongStyles"
+import TabPanel from "../tabpanel/TabPanel"
+import SimilarSongs from "./SimilarSongs"
+import SongHistory from "./SongHistory"
 import {
 	AppBar,
 	Avatar,
@@ -21,7 +21,7 @@ import {
 	Typography,
 	useMediaQuery,
 	useTheme,
-} from '@mui/material'
+} from "@mui/material"
 
 const SongDetails = (props) => {
 	const classes = songStyles()
@@ -30,7 +30,7 @@ const SongDetails = (props) => {
 
 	const [value, setValue] = useState(0)
 	const [playing, setPlaying] = useState(false)
-	const isMobile = useMediaQuery('(max-width:525px)')
+	const isMobile = useMediaQuery("(max-width:525px)")
 
 	const handleChange = (event, newValue) => {
 		setValue(newValue)
@@ -41,7 +41,7 @@ const SongDetails = (props) => {
 
 	const playSound = () => {
 		try {
-			const soundFile = document.getElementById('songPreview')
+			const soundFile = document.getElementById("songPreview")
 			soundFile.play()
 			setPlaying(true)
 		} catch (err) {
@@ -51,7 +51,7 @@ const SongDetails = (props) => {
 
 	const stopSound = () => {
 		try {
-			const soundFile = document.getElementById('songPreview')
+			const soundFile = document.getElementById("songPreview")
 			soundFile.pause()
 			soundFile.currentTime = 0
 			setPlaying(false)
@@ -61,11 +61,11 @@ const SongDetails = (props) => {
 	}
 
 	const tabStyle = {
-		fontWeight: 'fontWeightLight',
+		fontWeight: "fontWeightLight",
 	}
 
 	const mobileTabProps = {
-		variant: 'scrollable',
+		variant: "scrollable",
 		scrollButtons: true,
 		allowScrollButtonsMobile: true,
 	}
@@ -91,7 +91,7 @@ const SongDetails = (props) => {
 				</Tabs>
 			</AppBar>
 			<SwipeableViews
-				axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
+				axis={theme.direction === "rtl" ? "x-reverse" : "x"}
 				index={value}
 				onChangeIndex={handleChangeIndex}
 			>
@@ -102,16 +102,16 @@ const SongDetails = (props) => {
 							{props.songPreview && (
 								<div
 									style={{
-										display: 'grid',
-										gridTemplate: '1fr / 1fr',
+										display: "grid",
+										gridTemplate: "1fr / 1fr",
 									}}
 								>
 									<div
 										style={{
-											gridColumn: '1 / 1',
-											gridRow: '1 / 1',
-											display: 'flex',
-											margin: 'auto',
+											gridColumn: "1 / 1",
+											gridRow: "1 / 1",
+											display: "flex",
+											margin: "auto",
 											zIndex: 51,
 										}}
 									>
@@ -120,7 +120,7 @@ const SongDetails = (props) => {
 												size="medium"
 												color="primary"
 												style={{
-													backgroundColor: 'rgba(0, 0, 0, 0.4)',
+													backgroundColor: "rgba(0, 0, 0, 0.4)",
 												}}
 												onClick={playSound}
 											>
@@ -132,7 +132,7 @@ const SongDetails = (props) => {
 												size="medium"
 												color="primary"
 												sx={{
-													backgroundColor: 'rgba(0, 0, 0, 0.4)',
+													backgroundColor: "rgba(0, 0, 0, 0.4)",
 												}}
 												onClick={stopSound}
 											>
@@ -142,8 +142,8 @@ const SongDetails = (props) => {
 									</div>
 									<div
 										style={{
-											gridColumn: '1 / 1',
-											gridRow: '1 / 1',
+											gridColumn: "1 / 1",
+											gridRow: "1 / 1",
 											zIndex: 50,
 										}}
 									>
@@ -154,7 +154,7 @@ const SongDetails = (props) => {
 													? `${classes.albumArt} ${classes.albumArtRotate}`
 													: classes.albumArt
 											}
-											alt={props.album + ' album art'}
+											alt={props.album + " album art"}
 											src={props.art}
 											variant="circular"
 										/>
@@ -165,7 +165,7 @@ const SongDetails = (props) => {
 								<Avatar
 									id="albumArt"
 									className={classes.albumArt}
-									alt={props.album + ' album art'}
+									alt={props.album + " album art"}
 									src={props.art}
 									variant="circular"
 								/>
@@ -177,27 +177,27 @@ const SongDetails = (props) => {
 							<Typography
 								variant="h4"
 								sx={{
-									lineHeight: 'inherit',
+									lineHeight: "inherit",
 								}}
 							>
-								{props.name}{' '}
-								<Box component="span" sx={{ fontWeight: 'fontWeightLight' }}>
+								{props.name}{" "}
+								<Box component="span" sx={{ fontWeight: "fontWeightLight" }}>
 									by
-								</Box>{' '}
+								</Box>{" "}
 								{props.artistName}
 							</Typography>
 							<Typography
 								variant="h6"
 								sx={{
-									lineHeight: 'inherit',
-									[theme.breakpoints.up('sm')]: {
+									lineHeight: "inherit",
+									[theme.breakpoints.up("sm")]: {
 										paddingTop: 3,
 									},
 								}}
 							>
-								<Box component="span" sx={{ fontWeight: 'fontWeightLight' }}>
+								<Box component="span" sx={{ fontWeight: "fontWeightLight" }}>
 									from the album
-								</Box>{' '}
+								</Box>{" "}
 								{props.album}
 							</Typography>
 							<Button
@@ -206,9 +206,9 @@ const SongDetails = (props) => {
 								href={songLink}
 								sx={{
 									marginTop: 10,
-									backgroundColor: 'rgb(35, 207, 95)',
-									color: 'white',
-									fontWeight: 'fontWeightLight',
+									backgroundColor: "rgb(35, 207, 95)",
+									color: "white",
+									fontWeight: "fontWeightLight",
 								}}
 							>
 								Open on Spotify

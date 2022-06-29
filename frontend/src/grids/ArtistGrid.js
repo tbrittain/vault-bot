@@ -1,7 +1,7 @@
-import React from 'react'
-import ArtistPreview from './ArtistPreview'
-import gridStyles from './GridStyles'
-import { Paper } from '@mui/material'
+import React from "react"
+import ArtistPreview from "./ArtistPreview"
+import gridStyles from "./GridStyles"
+import { Paper } from "@mui/material"
 
 const ArtistGrid = (props) => {
 	const classes = gridStyles()

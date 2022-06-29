@@ -1,5 +1,5 @@
-import React from 'react'
-import { Backdrop, CircularProgress, Typography } from '@mui/material'
+import React from "react"
+import { Backdrop, CircularProgress, Typography } from "@mui/material"
 
 const LoadingScreen = (props) => {
 	const { text } = props
@@ -12,13 +12,13 @@ const LoadingScreen = (props) => {
 		>
 			<div
 				style={{
-					display: 'flex',
-					flexDirection: 'column',
-					alignItems: 'center',
-					userSelect: 'none',
+					display: "flex",
+					flexDirection: "column",
+					alignItems: "center",
+					userSelect: "none",
 					zIndex: 1500,
-					'& > * + *': {
-						margin: 'auto auto',
+					"& > * + *": {
+						margin: "auto auto",
 					},
 				}}
 			>

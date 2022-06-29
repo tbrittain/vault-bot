@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client'
+import { gql } from "@apollo/client"
 
 export const AVG_SONG_CHARS_QUERY = gql`
 	query averageSongCharsQuery {

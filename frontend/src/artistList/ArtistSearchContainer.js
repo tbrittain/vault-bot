@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
-import artistListStyles from './ArtistListStyles'
-import { useQuery } from '@apollo/client'
-import ArtistSearchResult from './ArtistSearchResult'
-import { Alert, Grid, Paper, Typography } from '@mui/material'
-import { ARTIST_SEARCH_QUERY } from '../queries/artistQueries'
+import React, { useState } from "react"
+import artistListStyles from "./ArtistListStyles"
+import { useQuery } from "@apollo/client"
+import ArtistSearchResult from "./ArtistSearchResult"
+import { Alert, Grid, Paper, Typography } from "@mui/material"
+import { ARTIST_SEARCH_QUERY } from "../queries/artistQueries"
 
 const ArtistSearchContainer = (props) => {
 	const classes = artistListStyles()

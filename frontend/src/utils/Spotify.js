@@ -1,4 +1,4 @@
-const axios = require('axios')
+const axios = require("axios")
 
 let accessToken = null
 const { SPOTIFY_CLIENT_ID, SPOTIFY_REDIRECT_URI } = process.env
@@ -18,8 +18,8 @@ const Spotify = {
 			const expiresIn = Number(expiresInMatch[1])
 
 			// clear parameters to grab new access token when it expired
-			window.setTimeout(() => (accessToken = ''), expiresIn * 1000) // eslint-disable-line
-			window.history.pushState('Access Token', null, '/')
+			window.setTimeout(() => (accessToken = ""), expiresIn * 1000) // eslint-disable-line
+			window.history.pushState("Access Token", null, "/")
 			return accessToken
 		} else {
 			window.location = `https://accounts.spotify.com/authorize?client_id=${SPOTIFY_CLIENT_ID}&response_type=token&scope=playlist-modify-private&redirect_uri=${SPOTIFY_REDIRECT_URI}`
@@ -37,7 +37,7 @@ const Spotify = {
 		const accessToken = Spotify.getAccessToken()
 		const headers = { Authorization: `Bearer ${accessToken}` }
 		const userId = await axios
-			.get('https://api.spotify.com/v1/me', {
+			.get("https://api.spotify.com/v1/me", {
 				headers: headers,
 			})
 			.then((res) => res.data.id)

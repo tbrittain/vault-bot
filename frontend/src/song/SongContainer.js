@@ -1,11 +1,11 @@
-import React, { useState } from 'react'
-import { useParams } from 'react-router-dom'
-import { useQuery } from '@apollo/client'
-import SongDetails from './SongDetails'
-import SongArtists from './SongArtist'
-import LoadingScreen from '../loading/LoadingScreen'
-import { Alert, Grid, Typography } from '@mui/material'
-import { SONG_QUERY } from '../queries/songQueries'
+import React, { useState } from "react"
+import { useParams } from "react-router-dom"
+import { useQuery } from "@apollo/client"
+import SongDetails from "./SongDetails"
+import SongArtists from "./SongArtist"
+import LoadingScreen from "../loading/LoadingScreen"
+import { Alert, Grid, Typography } from "@mui/material"
+import { SONG_QUERY } from "../queries/songQueries"
 
 const SongContainer = () => {
 	const { songId } = useParams()
@@ -17,7 +17,7 @@ const SongContainer = () => {
 		},
 		onCompleted: (data) => {
 			setSong(data?.getTrack)
-		}
+		},
 	})
 
 	if (loading) {
@@ -45,7 +45,7 @@ const SongContainer = () => {
 					id={songId}
 				/>
 				<Typography variant="h2">
-					{song.artists.length > 1 ? 'Artists' : 'Artist'}
+					{song.artists.length > 1 ? "Artists" : "Artist"}
 				</Typography>
 				<SongArtists artists={song.artists} />
 			</Grid>

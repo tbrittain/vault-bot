@@ -1,18 +1,18 @@
-import React from 'react'
-import ArtistAlbumSongs from './ArtistAlbumSongs'
-import artistStyles from './ArtistStyles'
-import { Avatar, Typography } from '@mui/material'
+import React from "react"
+import ArtistAlbumSongs from "./ArtistAlbumSongs"
+import artistStyles from "./ArtistStyles"
+import { Avatar, Typography } from "@mui/material"
 
 const ArtistAlbum = (props) => {
 	const classes = artistStyles()
 	const { name, art, songs } = props
 	const backgroundStyling = {
 		backgroundImage: `url(${art})`,
-		backgroundPosition: 'center center',
-		backgroundSize: '100vw 100vw',
-		filter: 'blur(20px)',
-		WebkitFilter: 'blur(20px)',
-		overflow: 'hidden',
+		backgroundPosition: "center center",
+		backgroundSize: "100vw 100vw",
+		filter: "blur(20px)",
+		WebkitFilter: "blur(20px)",
+		overflow: "hidden",
 		zIndex: 1,
 		opacity: 0.5,
 	}
@@ -25,7 +25,7 @@ const ArtistAlbum = (props) => {
 				}}
 			>
 				<div className={classes.albumArtContainer}>
-					<div style={{ margin: 'auto' }}>
+					<div style={{ margin: "auto" }}>
 						<Avatar
 							src={art}
 							alt={`${art} album art`}
@@ -34,11 +34,11 @@ const ArtistAlbum = (props) => {
 						/>
 						<Typography
 							sx={{
-								fontWeight: 'fontWeightLight',
-								color: 'secondary.main',
-								padding: '0.5rem 0',
-								lineHeight: ['1rem', 'inherit'],
-								fontSize: ['0.8rem', 'inherit'],
+								fontWeight: "fontWeightLight",
+								color: "secondary.main",
+								padding: "0.5rem 0",
+								lineHeight: ["1rem", "inherit"],
+								fontSize: ["0.8rem", "inherit"],
 							}}
 						>
 							{name}

@@ -1,9 +1,9 @@
-import React from 'react'
-import CountUpAnimation from '../effects/CountUpAnimation'
-import ArtistAlbums from './ArtistAlbums'
-import artistStyles from './ArtistStyles'
-import { Avatar, Button, Paper, Typography } from '@mui/material'
-import OpenInNewIcon from '@mui/icons-material/OpenInNew'
+import React from "react"
+import CountUpAnimation from "../effects/CountUpAnimation"
+import ArtistAlbums from "./ArtistAlbums"
+import artistStyles from "./ArtistStyles"
+import { Avatar, Button, Paper, Typography } from "@mui/material"
+import OpenInNewIcon from "@mui/icons-material/OpenInNew"
 
 const ArtistDetails = (props) => {
 	const artistLink = `spotify:artist:${props.id}`
@@ -18,17 +18,17 @@ const ArtistDetails = (props) => {
 				/>
 				<div
 					style={{
-						width: '75%',
+						width: "75%",
 					}}
 				>
 					<Typography
 						variant="h2"
 						className={classes.artistName}
-						sx={{ fontWeight: 'bold' }}
+						sx={{ fontWeight: "bold" }}
 					>
 						<i
 							style={{
-								textAlign: 'center',
+								textAlign: "center",
 							}}
 						>
 							{props.name}
@@ -40,8 +40,8 @@ const ArtistDetails = (props) => {
 						<CountUpAnimation>{Number(props.numSongs)}</CountUpAnimation>
 					)}
 					{Number(props.numSongs) < 20 && Number(props.numSongs)}
-					{Number(props.numSongs) > 1 && ' unique songs'}
-					{Number(props.numSongs) === 1 && ' unique song'}
+					{Number(props.numSongs) > 1 && " unique songs"}
+					{Number(props.numSongs) === 1 && " unique song"}
 				</Typography>
 				<Button
 					variant="contained"
@@ -49,8 +49,8 @@ const ArtistDetails = (props) => {
 					href={artistLink}
 					style={{
 						marginTop: 10,
-						backgroundColor: 'rgb(35, 207, 95)',
-						color: 'white',
+						backgroundColor: "rgb(35, 207, 95)",
+						color: "white",
 					}}
 				>
 					Open on Spotify

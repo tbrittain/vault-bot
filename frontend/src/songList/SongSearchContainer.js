@@ -1,9 +1,9 @@
-import React from 'react'
-import songListStyles from './SongListStyles'
-import { useQuery } from '@apollo/client'
-import SongSearchResult from './SongSearchResult'
-import { Alert, Grid, Paper, Typography } from '@mui/material'
-import { SONG_SEARCH_QUERY } from '../queries/songQueries'
+import React from "react"
+import songListStyles from "./SongListStyles"
+import { useQuery } from "@apollo/client"
+import SongSearchResult from "./SongSearchResult"
+import { Alert, Grid, Paper, Typography } from "@mui/material"
+import { SONG_SEARCH_QUERY } from "../queries/songQueries"
 
 const SongSearchContainer = (props) => {
 	const classes = songListStyles()

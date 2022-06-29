@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
-import { useQuery } from '@apollo/client'
-import songStyles from './SongStyles'
-import { Link } from 'react-router-dom'
+import React, { useState } from "react"
+import { useQuery } from "@apollo/client"
+import songStyles from "./SongStyles"
+import { Link } from "react-router-dom"
 import {
 	Alert,
 	Avatar,
@@ -10,8 +10,8 @@ import {
 	Typography,
 	useMediaQuery,
 	useTheme,
-} from '@mui/material'
-import { SIMILAR_SONGS_QUERY } from '../queries/songQueries'
+} from "@mui/material"
+import { SIMILAR_SONGS_QUERY } from "../queries/songQueries"
 
 export default function SimilarSongs(props) {
 	const { songId } = props
@@ -22,14 +22,14 @@ export default function SimilarSongs(props) {
 			setSimilarSongs(data?.getSimilarTracks)
 		},
 	})
-	const isMobile = useMediaQuery('(max-width:400px)')
+	const isMobile = useMediaQuery("(max-width:400px)")
 
 	const classes = songStyles()
 	const theme = useTheme()
 
 	if (loading) {
 		return (
-			<div style={{ display: 'flex', justifyContent: 'center' }}>
+			<div style={{ display: "flex", justifyContent: "center" }}>
 				<CircularProgress />
 			</div>
 		)
@@ -52,7 +52,7 @@ export default function SimilarSongs(props) {
 	return (
 		<div
 			className={classes.innerContainer}
-			style={{ flexDirection: 'column', width: '100%' }}
+			style={{ flexDirection: "column", width: "100%" }}
 		>
 			{similarSongs.map((song) => (
 				<div key={song.song.id} className={classes.similarSong}>
@@ -60,15 +60,15 @@ export default function SimilarSongs(props) {
 						className={classes.similarSongInner}
 						style={{
 							zIndex: 2,
-							display: 'flex',
-							justifyContent: 'space-between',
+							display: "flex",
+							justifyContent: "space-between",
 						}}
 					>
 						<Link
 							to={`/songs/${song.song.id}`}
 							style={{
-								textDecoration: 'none',
-								width: '100%',
+								textDecoration: "none",
+								width: "100%",
 							}}
 						>
 							<div className={classes.similarSongDetails}>
@@ -79,16 +79,16 @@ export default function SimilarSongs(props) {
 										className={classes.similarSongArt}
 									/>
 								)}
-								<div style={{ width: '80%' }}>
+								<div style={{ width: "80%" }}>
 									<Typography
 										variant="h6"
 										className={classes.albumText}
 										sx={{
-											textDecoration: 'none',
-											lineHeight: '1.15',
-											fontWeight: 'fontWeightRegular',
-											[theme.breakpoints.down('sm')]: {
-												fontSize: '1.5rem',
+											textDecoration: "none",
+											lineHeight: "1.15",
+											fontWeight: "fontWeightRegular",
+											[theme.breakpoints.down("sm")]: {
+												fontSize: "1.5rem",
 											},
 										}}
 									>
@@ -98,19 +98,19 @@ export default function SimilarSongs(props) {
 										variant="h6"
 										className={classes.albumText}
 										sx={{
-											fontWeight: 'fontWeightLight',
-											[theme.breakpoints.down('sm')]: {
-												fontSize: '1.5rem',
+											fontWeight: "fontWeightLight",
+											[theme.breakpoints.down("sm")]: {
+												fontSize: "1.5rem",
 											},
 										}}
 									>
-										by{' '}
+										by{" "}
 										<Box
 											display="inline"
 											sx={{
-												fontWeight: 'fontWeightRegular',
-												[theme.breakpoints.down('sm')]: {
-													fontSize: '1.5rem',
+												fontWeight: "fontWeightRegular",
+												[theme.breakpoints.down("sm")]: {
+													fontSize: "1.5rem",
 												},
 											}}
 										>
@@ -122,9 +122,9 @@ export default function SimilarSongs(props) {
 						</Link>
 						<div
 							style={{
-								display: 'flex',
-								alignItems: 'center',
-								marginRight: '1rem',
+								display: "flex",
+								alignItems: "center",
+								marginRight: "1rem",
 							}}
 						>
 							<Avatar
@@ -135,11 +135,11 @@ export default function SimilarSongs(props) {
 											? theme.palette.getContrastText(
 													`hsl(${song.score * 5.4}, 100%, 50%)`
 											  )
-											: theme.palette.getContrastText('hsl(351, 100%, 50%)'),
+											: theme.palette.getContrastText("hsl(351, 100%, 50%)"),
 									backgroundColor:
 										song.score > 65
 											? `hsl(${song.score * 5.4}, 100%, 50%)`
-											: 'hsl(351, 100%, 50%)',
+											: "hsl(351, 100%, 50%)",
 								}}
 							>
 								<Typography
@@ -155,11 +155,11 @@ export default function SimilarSongs(props) {
 						className={classes.similarSongInner}
 						style={{
 							backgroundImage: `url(${song.song.art})`,
-							backgroundPosition: 'center center',
-							backgroundSize: '100vw 100vw',
-							filter: 'blur(20px)',
-							WebkitFilter: 'blur(20px)',
-							overflow: 'hidden',
+							backgroundPosition: "center center",
+							backgroundSize: "100vw 100vw",
+							filter: "blur(20px)",
+							WebkitFilter: "blur(20px)",
+							overflow: "hidden",
 							zIndex: 1,
 							opacity: 0.5,
 						}}

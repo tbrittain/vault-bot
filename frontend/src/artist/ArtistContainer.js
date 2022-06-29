@@ -1,12 +1,12 @@
-import React from 'react'
-import { useParams } from 'react-router-dom'
-import { useQuery } from '@apollo/client'
-import LoadingScreen from '../loading/LoadingScreen'
-import ArtistDetails from './ArtistDetails'
-import GenreGrid from '../grids/GenreGrid'
-import ArtistBio from './ArtistBio'
-import { Alert, Grid, Paper, Typography } from '@mui/material'
-import { ARTIST_QUERY } from '../queries/artistQueries'
+import React from "react"
+import { useParams } from "react-router-dom"
+import { useQuery } from "@apollo/client"
+import LoadingScreen from "../loading/LoadingScreen"
+import ArtistDetails from "./ArtistDetails"
+import GenreGrid from "../grids/GenreGrid"
+import ArtistBio from "./ArtistBio"
+import { Alert, Grid, Paper, Typography } from "@mui/material"
+import { ARTIST_QUERY } from "../queries/artistQueries"
 
 const ArtistContainer = () => {
 	const { artistId } = useParams()

@@ -1,8 +1,8 @@
-import React from 'react'
-import songListStyles from './SongListStyles'
-import { Link } from 'react-router-dom'
-import extractUnderline from '../utils/underline'
-import { Avatar, Box, Grid, Paper, Typography } from '@mui/material'
+import React from "react"
+import songListStyles from "./SongListStyles"
+import { Link } from "react-router-dom"
+import extractUnderline from "../utils/underline"
+import { Avatar, Box, Grid, Paper, Typography } from "@mui/material"
 
 const SongSearchResult = (props) => {
 	const classes = songListStyles()
@@ -18,14 +18,14 @@ const SongSearchResult = (props) => {
 			component={Link}
 			to={`/songs/${props.id}`}
 			style={{
-				textDecoration: 'none',
-				width: '100%',
+				textDecoration: "none",
+				width: "100%",
 			}}
 		>
 			<Paper className={classes.songResultItem}>
 				<div
 					style={{
-						padding: '0.5rem',
+						padding: "0.5rem",
 					}}
 				>
 					<Avatar
@@ -36,38 +36,38 @@ const SongSearchResult = (props) => {
 				</div>
 				<div
 					style={{
-						margin: 'auto auto',
-						textAlign: 'center',
-						padding: '0.5rem',
+						margin: "auto auto",
+						textAlign: "center",
+						padding: "0.5rem",
 					}}
 				>
 					<Typography
 						variant="subtitle1"
 						sx={{
-							textDecoration: 'none',
-							lineHeight: 'inherit',
-							fontWeight: 'fontWeightLight',
+							textDecoration: "none",
+							lineHeight: "inherit",
+							fontWeight: "fontWeightLight",
 						}}
 					>
 						{beginText}
 						<u>{underline}</u>
 						{endText}
-						<Box component="span" sx={{ fontWeight: 'fontWeightLight' }}>
-							{' '}
+						<Box component="span" sx={{ fontWeight: "fontWeightLight" }}>
+							{" "}
 							by
-						</Box>{' '}
+						</Box>{" "}
 						{props.artist}
 					</Typography>
 					<Typography
 						variant="body2"
 						sx={{
-							textDecoration: 'none',
-							fontWeight: 'fontWeightLight',
+							textDecoration: "none",
+							fontWeight: "fontWeightLight",
 						}}
 					>
-						<Box component="span" sx={{ fontWeight: 'fontWeightLight' }}>
+						<Box component="span" sx={{ fontWeight: "fontWeightLight" }}>
 							from the album
-						</Box>{' '}
+						</Box>{" "}
 						{props.album}
 					</Typography>
 				</div>

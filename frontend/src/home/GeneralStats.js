@@ -1,10 +1,10 @@
-import React, { useState } from 'react'
-import homeStyles from './HomeStyles'
-import { useQuery } from '@apollo/client'
-import CountUpAnimation from '../effects/CountUpAnimation'
-import './textAnimate.css'
-import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
-import { GENERAL_STATS_QUERY } from '../queries/statsQueries'
+import React, { useState } from "react"
+import homeStyles from "./HomeStyles"
+import { useQuery } from "@apollo/client"
+import CountUpAnimation from "../effects/CountUpAnimation"
+import "./textAnimate.css"
+import { Alert, CircularProgress, Grid, Typography } from "@mui/material"
+import { GENERAL_STATS_QUERY } from "../queries/statsQueries"
 
 const GeneralStats = () => {
 	const classes = homeStyles()
@@ -20,12 +20,12 @@ const GeneralStats = () => {
 		return (
 			<div
 				style={{
-					display: 'flex',
-					flexDirection: 'column',
-					alignItems: 'center',
-					userSelect: 'none',
-					'& > * + *': {
-						margin: 'auto auto',
+					display: "flex",
+					flexDirection: "column",
+					alignItems: "center",
+					userSelect: "none",
+					"& > * + *": {
+						margin: "auto auto",
 					},
 				}}
 			>
@@ -54,7 +54,7 @@ const GeneralStats = () => {
 		<div className={classes.generalStats}>
 			<div
 				style={{
-					width: '100%',
+					width: "100%",
 				}}
 			>
 				<svg className={classes.animateText}>
@@ -95,7 +95,7 @@ const GeneralStats = () => {
 					item
 					className={classes.animateContainer}
 					style={{
-						animationDelay: '0.25s',
+						animationDelay: "0.25s",
 					}}
 				>
 					<Typography variant="h6" className={classes.statDescription}>
@@ -113,7 +113,7 @@ const GeneralStats = () => {
 					item
 					className={classes.animateContainer}
 					style={{
-						animationDelay: '0.5s',
+						animationDelay: "0.5s",
 					}}
 				>
 					<Typography variant="h6" className={classes.statDescription}>
@@ -131,7 +131,7 @@ const GeneralStats = () => {
 					item
 					className={classes.animateContainer}
 					style={{
-						animationDelay: '0.75s',
+						animationDelay: "0.75s",
 					}}
 				>
 					<Typography variant="h6" className={classes.statDescription}>
@@ -149,16 +149,16 @@ const GeneralStats = () => {
 					item
 					className={classes.animateContainer}
 					style={{
-						animationDelay: '1s',
-						display: 'flex',
-						flexDirection: 'column',
-						alignItems: 'center',
-						textAlign: 'center',
+						animationDelay: "1s",
+						display: "flex",
+						flexDirection: "column",
+						alignItems: "center",
+						textAlign: "center",
 					}}
 				>
 					<div
 						style={{
-							display: 'inline-flex',
+							display: "inline-flex",
 						}}
 					>
 						<Typography variant="h6" className={classes.statDescription}>
@@ -176,7 +176,7 @@ const GeneralStats = () => {
 						<Typography
 							variant="subtitle1"
 							style={{
-								color: 'grey',
+								color: "grey",
 							}}
 						>
 							<i>

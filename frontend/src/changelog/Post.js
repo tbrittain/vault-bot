@@ -1,7 +1,7 @@
-import React from 'react'
-import ReactMarkdown from 'react-markdown'
-import changeLogStyles from './ChangelogStyles'
-import { Typography } from '@mui/material'
+import React from "react"
+import ReactMarkdown from "react-markdown"
+import changeLogStyles from "./ChangelogStyles"
+import { Typography } from "@mui/material"
 
 const Post = (props) => {
 	const classes = changeLogStyles()

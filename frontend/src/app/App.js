@@ -1,9 +1,9 @@
-import React from 'react'
-import Header from '../header/Header'
-import Footer from '../footer/Footer'
-import RouteHandler from './routes'
-import appStyles from './AppStyles'
-import { Container } from '@mui/material'
+import React from "react"
+import Header from "../header/Header"
+import Footer from "../footer/Footer"
+import RouteHandler from "./routes"
+import appStyles from "./AppStyles"
+import { Container } from "@mui/material"
 
 function App() {
 	const classes = appStyles()

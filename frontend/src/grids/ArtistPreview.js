@@ -1,14 +1,14 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import { LazyLoadImage } from 'react-lazy-load-image-component'
-import gridStyles from './GridStyles'
-import { Avatar, Fade, Paper, Tooltip } from '@mui/material'
-import { makeStyles } from '@mui/styles'
-import 'react-lazy-load-image-component/src/effects/opacity.css'
+import React from "react"
+import { Link } from "react-router-dom"
+import { LazyLoadImage } from "react-lazy-load-image-component"
+import gridStyles from "./GridStyles"
+import { Avatar, Fade, Paper, Tooltip } from "@mui/material"
+import { makeStyles } from "@mui/styles"
+import "react-lazy-load-image-component/src/effects/opacity.css"
 
 const darkTooltipTheme = makeStyles((theme) => ({
 	tooltip: {
-		backgroundColor: 'rgba(0, 0, 0, 0.78)',
+		backgroundColor: "rgba(0, 0, 0, 0.78)",
 		fontSize: theme.typography.pxToRem(16),
 		fontWeight: theme.typography.fontWeightBold,
 	},
@@ -48,9 +48,9 @@ const ArtistPreview = (props) => {
 							className={classes.artistArt}
 							variant="square"
 							style={{
-								display: 'flex',
-								justifyContent: 'center',
-								alignItems: 'center',
+								display: "flex",
+								justifyContent: "center",
+								alignItems: "center",
 							}}
 						/>
 					)}
@@ -61,9 +61,9 @@ const ArtistPreview = (props) => {
 							className={classes.artistArt}
 							effect="opacity"
 							style={{
-								display: 'flex',
-								justifyContent: 'center',
-								alignItems: 'center',
+								display: "flex",
+								justifyContent: "center",
+								alignItems: "center",
 							}}
 						/>
 					)}

@@ -1,7 +1,7 @@
-import React from 'react'
-import songStyles from './SongStyles'
-import { Link } from 'react-router-dom'
-import { Avatar, Paper, Typography } from '@mui/material'
+import React from "react"
+import songStyles from "./SongStyles"
+import { Link } from "react-router-dom"
+import { Avatar, Paper, Typography } from "@mui/material"
 
 const SongArtist = (props) => {
 	const classes = songStyles()
@@ -19,7 +19,7 @@ const SongArtist = (props) => {
 						component={Link}
 						to={`/artists/${artist.id}`}
 						sx={{
-							marginBottom: '0.5rem',
+							marginBottom: "0.5rem",
 						}}
 					/>
 					<Typography
@@ -28,7 +28,7 @@ const SongArtist = (props) => {
 						component={Link}
 						to={`/artists/${artist.id}`}
 						sx={{
-							fontWeight: 'fontWeightBold',
+							fontWeight: "fontWeightBold",
 						}}
 					>
 						<i>{artist.name}</i>

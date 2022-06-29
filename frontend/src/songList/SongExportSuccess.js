@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react'
-import { LinearProgress, Paper, Typography } from '@mui/material'
+import React, { useEffect } from "react"
+import { LinearProgress, Paper, Typography } from "@mui/material"
 
 // TODO: Should use some sort of redirect instead of having this component
 
@@ -14,14 +14,14 @@ const SongExportSuccess = (props) => {
 		<Paper
 			elevation={3}
 			style={{
-				textAlign: 'center',
+				textAlign: "center",
 			}}
 		>
 			<Typography
 				variant="h2"
 				sx={{
 					margin: 15,
-					fontWeight: 'fontWeightBold',
+					fontWeight: "fontWeightBold",
 				}}
 			>
 				<i>Success!</i>
