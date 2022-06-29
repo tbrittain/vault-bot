@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useQuery } from '@apollo/client'
 import { Link } from 'react-router-dom'
 import LoadingScreen from '../loading/LoadingScreen'
@@ -30,7 +30,7 @@ const columns = [
 				}}
 			>
 				<Typography
-					variant="body1"
+					variant='body1'
 					sx={{
 						textTransform: 'capitalize',
 						margin: 5,
@@ -60,31 +60,31 @@ const columns = [
 
 const GenreList = () => {
 	const classes = genreListStyles()
-	const { loading, error, data } = useQuery(ALL_GENRES_QUERY)
-	let formattedData
-	const rows = []
-	let processing = true
+	const [rows, setRows] = useState([])
 
-	if (data) {
-		formattedData = data.getGenres
-		for (const genre of formattedData) {
-			rows.push({
-				id: uuidv4(),
-				genreName: genre.genre,
-				numArtists: genre.numArtists,
-				rank: genre.rank,
-			})
-		}
-		processing = false
-	}
+	const { loading, error } = useQuery(ALL_GENRES_QUERY, {
+		onCompleted: (data) => {
+			for (const genre of data.getGenres) {
+				setRows((prevState) => {
+					const newRow = {
+						id: uuidv4(),
+						genreName: genre.genre,
+						numArtists: genre.numArtists,
+						rank: genre.rank,
+					}
+					return [...prevState, newRow]
+				})
+			}
+		},
+	})
 
-	if (loading || processing) {
-		return <LoadingScreen text="Loading genres tracked by VaultBot..." />
+	if (loading) {
+		return <LoadingScreen text='Loading genres tracked by VaultBot...' />
 	}
 
 	if (error) {
 		return (
-			<Alert severity="error">An error occurred during data retrieval :(</Alert>
+			<Alert severity='error'>An error occurred during data retrieval :(</Alert>
 		)
 	}
 
