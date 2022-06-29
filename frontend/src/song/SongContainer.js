@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useQuery } from '@apollo/client'
 import SongDetails from './SongDetails'
@@ -9,21 +9,18 @@ import { SONG_QUERY } from '../queries/songQueries'
 
 const SongContainer = () => {
 	const { songId } = useParams()
-	const { loading, error, data } = useQuery(SONG_QUERY, {
+	const [song, setSong] = useState()
+
+	const { loading, error } = useQuery(SONG_QUERY, {
 		variables: {
 			songId,
 		},
+		onCompleted: (data) => {
+			setSong(data?.getTrack)
+		}
 	})
 
-	let formattedData
-	let processing = true
-	if (data) {
-		formattedData = data
-		formattedData = data.getTrack
-		processing = false
-	}
-
-	if (loading || processing) {
+	if (loading) {
 		return <LoadingScreen text="Loading song..." />
 	}
 
@@ -38,19 +35,19 @@ const SongContainer = () => {
 			<Grid container direction="column" justify="space-evenly">
 				<Typography variant="h1">Song Details</Typography>
 				<SongDetails
-					album={formattedData.album}
-					name={formattedData.name}
-					artistName={formattedData.artists[0].name}
-					artistId={formattedData.artists[0].id}
-					art={formattedData.art}
-					songPreview={formattedData.previewUrl}
-					details={formattedData.details}
+					album={song.album}
+					name={song.name}
+					artistName={song.artists[0].name}
+					artistId={song.artists[0].id}
+					art={song.art}
+					songPreview={song.previewUrl}
+					details={song.details}
 					id={songId}
 				/>
 				<Typography variant="h2">
-					{formattedData.artists.length > 1 ? 'Artists' : 'Artist'}
+					{song.artists.length > 1 ? 'Artists' : 'Artist'}
 				</Typography>
-				<SongArtists artists={formattedData.artists} />
+				<SongArtists artists={song.artists} />
 			</Grid>
 		</>
 	)
