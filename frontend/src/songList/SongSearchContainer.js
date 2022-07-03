@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
-import songListStyles from './SongListStyles'
-import { useQuery } from '@apollo/client'
-import SongSearchResult from './SongSearchResult'
-import { Alert, Grid, Paper, Typography } from '@mui/material'
-import { SONG_SEARCH_QUERY } from '../queries/songQueries'
+import React, { useState } from "react"
+import songListStyles from "./SongListStyles"
+import { useQuery } from "@apollo/client"
+import SongSearchResult from "./SongSearchResult"
+import { Alert, Grid, Paper, Typography } from "@mui/material"
+import { SONG_SEARCH_QUERY } from "../queries/songQueries"
 
 const SongSearchContainer = (props) => {
 	const classes = songListStyles()
@@ -21,7 +21,7 @@ const SongSearchContainer = (props) => {
 
 	if (error) {
 		return (
-			<Alert severity='error'>An error occurred during data retrieval :(</Alert>
+			<Alert severity="error">An error occurred during data retrieval :(</Alert>
 		)
 	}
 
@@ -39,14 +39,14 @@ const SongSearchContainer = (props) => {
 						searchQuery={searchQuery}
 					/>
 				))}
-			{(results && results.length === 0) && (
+			{results && results.length === 0 && (
 				<Grid item className={classes.songResultNoneFound}>
 					<Paper
 						style={{
 							padding: 10,
 						}}
 					>
-						<Typography variant='subtitle1'>No results found :(</Typography>
+						<Typography variant="subtitle1">No results found :(</Typography>
 					</Paper>
 				</Grid>
 			)}

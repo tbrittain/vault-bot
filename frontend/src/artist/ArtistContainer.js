@@ -1,17 +1,17 @@
-import React, { useState } from 'react'
-import { useParams } from 'react-router-dom'
-import { useQuery } from '@apollo/client'
-import LoadingScreen from '../loading/LoadingScreen'
-import ArtistDetails from './ArtistDetails'
-import GenreGrid from '../grids/GenreGrid'
-import ArtistBio from './ArtistBio'
-import { Alert, Grid, Paper, Typography } from '@mui/material'
-import { ARTIST_QUERY } from '../queries/artistQueries'
+import React, { useState } from "react"
+import { useParams } from "react-router-dom"
+import { useQuery } from "@apollo/client"
+import LoadingScreen from "../loading/LoadingScreen"
+import ArtistDetails from "./ArtistDetails"
+import GenreGrid from "../grids/GenreGrid"
+import ArtistBio from "./ArtistBio"
+import { Alert, Grid, Paper, Typography } from "@mui/material"
+import { ARTIST_QUERY } from "../queries/artistQueries"
 
 const ArtistContainer = () => {
 	const { artistId } = useParams()
-	const [artistName, setArtistName] = useState('')
-	const [artistArt, setArtistArt] = useState('')
+	const [artistName, setArtistName] = useState("")
+	const [artistArt, setArtistArt] = useState("")
 	const [genres, setGenres] = useState([])
 	const [albumSongs, setAlbumSongs] = useState({})
 	const [numSongs, setNumSongs] = useState(0)
@@ -51,19 +51,19 @@ const ArtistContainer = () => {
 	})
 
 	if (loading) {
-		return <LoadingScreen text='Loading artist...' />
+		return <LoadingScreen text="Loading artist..." />
 	}
 
 	if (error) {
 		return (
-			<Alert severity='error'>An error occurred during data retrieval :(</Alert>
+			<Alert severity="error">An error occurred during data retrieval :(</Alert>
 		)
 	}
 
 	return (
 		<>
-			<Grid container direction='column' justify='space-evenly'>
-				<Typography variant='h1'>Artist Details</Typography>
+			<Grid container direction="column" justify="space-evenly">
+				<Typography variant="h1">Artist Details</Typography>
 				<ArtistDetails
 					name={artistName}
 					albumSongs={albumSongs}
@@ -71,7 +71,7 @@ const ArtistContainer = () => {
 					numSongs={numSongs}
 					id={artistId}
 				/>
-				<Typography variant='h1'>Artist Genres</Typography>
+				<Typography variant="h1">Artist Genres</Typography>
 				<Paper elevation={3}>
 					<GenreGrid genres={genres} />
 				</Paper>
