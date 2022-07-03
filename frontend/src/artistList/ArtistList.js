@@ -1,34 +1,34 @@
-import React, { useState } from "react"
-import { useQuery } from "@apollo/client"
-import { Link } from "react-router-dom"
-import LoadingScreen from "../loading/LoadingScreen"
-import artistListStyles from "./ArtistListStyles"
-import { Alert, Avatar } from "@mui/material"
-import { DataGrid } from "@mui/x-data-grid"
-import { ALL_ARTISTS_QUERY } from "../queries/artistQueries"
+import React, { useState } from 'react'
+import { useQuery } from '@apollo/client'
+import { Link } from 'react-router-dom'
+import LoadingScreen from '../loading/LoadingScreen'
+import artistListStyles from './ArtistListStyles'
+import { Alert, Avatar } from '@mui/material'
+import { DataGrid } from '@mui/x-data-grid'
+import { ALL_ARTISTS_QUERY } from '../queries/artistQueries'
 
 // TODO - DataGrid API has changed
 const columns = [
 	{
-		field: "artistArt",
-		headerName: "Artist Art",
+		field: 'artistArt',
+		headerName: 'Artist Art',
 		width: 175,
 		sortable: false,
 		filterable: false,
 		renderCell: (params) => (
 			<Avatar
 				src={params.row.art}
-				variant="square"
+				variant='square'
 				style={{
-					width: "100%",
-					height: "100%",
+					width: '100%',
+					height: '100%',
 				}}
 			/>
 		),
 	},
 	{
-		field: "artistName",
-		headerName: "Artist",
+		field: 'artistName',
+		headerName: 'Artist',
 		width: 300,
 		renderCell: (params) => (
 			<Link
@@ -47,26 +47,26 @@ const ArtistList = () => {
 
 	const { loading, error } = useQuery(ALL_ARTISTS_QUERY, {
 		onCompleted: (data) => {
+			const temp = []
 			for (const artist of data.getArtists) {
-				setRows((prevState) => {
-					const newRow = {
-						id: artist.id,
-						art: artist.art,
-						artistName: artist.name,
-					}
-					return [...prevState, newRow]
-				})
+				const newRow = {
+					id: artist.id,
+					art: artist.art,
+					artistName: artist.name,
+				}
+				temp.push(newRow)
 			}
+			setRows(temp)
 		},
 	})
 
 	if (loading) {
-		return <LoadingScreen text="Loading artists tracked by VaultBot..." />
+		return <LoadingScreen text='Loading artists tracked by VaultBot...' />
 	}
 
 	if (error) {
 		return (
-			<Alert severity="error">An error occurred during data retrieval :(</Alert>
+			<Alert severity='error'>An error occurred during data retrieval :(</Alert>
 		)
 	}
 
