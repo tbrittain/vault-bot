@@ -33,9 +33,6 @@ const genreToHsl = (genreName) => {
 	saturation = 100 - (saturation % 100)
 	lightness = 100 - (lightness % 100)
 
-	// console.log('hue', hue)
-	// console.log('saturation', saturation)
-	// console.log('lightness', lightness)
 	return `hsl(${hue}, ${saturation}%, ${lightness}%)`
 }
 
