@@ -90,7 +90,7 @@ export default {
       }
 
       if (limit < 1 || limit > 100) {
-        throw new SyntaxError('limit must be between 1 and 100')
+        throw new Error('limit must be between 1 and 100')
       }
 
       return await getSimilarSongs(id, limit)
