@@ -1,14 +1,22 @@
-import React, { useState } from 'react'
-import SearchIcon from '@mui/icons-material/Search'
-import songListStyles from './SongListStyles'
-import SongSearchContainer from './SongSearchContainer'
-import SongList from './SongList'
-import useDebounce from '../hooks/useDebounce'
-import { AppBar, ClickAwayListener, Fade, InputBase, Paper, Popper, Toolbar } from '@mui/material'
+import React, { useState } from "react"
+import SearchIcon from "@mui/icons-material/Search"
+import songListStyles from "./SongListStyles"
+import SongSearchContainer from "./SongSearchContainer"
+import SongList from "./SongList"
+import useDebounce from "../hooks/useDebounce"
+import {
+	AppBar,
+	ClickAwayListener,
+	Fade,
+	InputBase,
+	Paper,
+	Popper,
+	Toolbar,
+} from "@mui/material"
 
 const SongViewer = () => {
 	const classes = songListStyles()
-	const [search, setSearch] = useState('')
+	const [search, setSearch] = useState("")
 	const debouncedSearch = useDebounce(search, 250)
 
 	const [anchorEl, setAnchorEl] = useState(null)
@@ -20,7 +28,7 @@ const SongViewer = () => {
 
 	const handleClickAway = () => {
 		setAnchorEl(null)
-		setSearch('')
+		setSearch("")
 	}
 
 	const minSearchLength = 3
@@ -28,7 +36,7 @@ const SongViewer = () => {
 
 	return (
 		<Paper elevation={3}>
-			<AppBar position='static'>
+			<AppBar position="static">
 				<Toolbar>
 					<div className={classes.search}>
 						<div className={classes.searchIcon}>
@@ -36,7 +44,7 @@ const SongViewer = () => {
 						</div>
 						<InputBase
 							InputLabelProps={{ shrink: true }}
-							placeholder='Search for a song...'
+							placeholder="Search for a song..."
 							classes={{
 								root: classes.inputRoot,
 								input: classes.inputInput,
@@ -46,7 +54,7 @@ const SongViewer = () => {
 						/>
 						<ClickAwayListener onClickAway={handleClickAway}>
 							<Popper
-								placement='bottom-start'
+								placement="bottom-start"
 								disablePortal={false}
 								modifiers={{
 									flip: {
@@ -54,7 +62,7 @@ const SongViewer = () => {
 									},
 									preventOverflow: {
 										enabled: true,
-										boundariesElement: 'scrollParent',
+										boundariesElement: "scrollParent",
 									},
 								}}
 								open={open}

@@ -1,40 +1,40 @@
-import React, { useState } from 'react'
-import { useQuery } from '@apollo/client'
-import { Link } from 'react-router-dom'
-import LoadingScreen from '../loading/LoadingScreen'
-import genreListStyles from './GenreListStyles'
-import genreToMuiColor from '../utils/genreToMuiColor'
-import { v4 as uuidv4 } from 'uuid'
-import { Alert, Paper, Typography } from '@mui/material'
-import { DataGrid } from '@mui/x-data-grid'
-import { ALL_GENRES_QUERY } from '../queries/genreQueries'
+import React, { useState } from "react"
+import { useQuery } from "@apollo/client"
+import { Link } from "react-router-dom"
+import LoadingScreen from "../loading/LoadingScreen"
+import genreListStyles from "./GenreListStyles"
+import genreToMuiColor from "../utils/genreToMuiColor"
+import { v4 as uuidv4 } from "uuid"
+import { Alert, Paper, Typography } from "@mui/material"
+import { DataGrid } from "@mui/x-data-grid"
+import { ALL_GENRES_QUERY } from "../queries/genreQueries"
 
 // TODO - DataGrid API has changed
 const columns = [
 	{
-		field: 'genreName',
-		headerName: 'Genre',
+		field: "genreName",
+		headerName: "Genre",
 		width: 300,
 		renderCell: (params) => (
 			<Paper
 				component={Link}
 				to={`/genres/${params.value}`}
 				style={{
-					width: '97%',
-					height: '97%',
-					display: 'flex',
-					justifyContent: 'center',
-					alignItems: 'center',
-					textDecoration: 'none',
+					width: "97%",
+					height: "97%",
+					display: "flex",
+					justifyContent: "center",
+					alignItems: "center",
+					textDecoration: "none",
 					background: genreToMuiColor(params.value),
 				}}
 			>
 				<Typography
-					variant='body1'
+					variant="body1"
 					sx={{
-						textTransform: 'capitalize',
+						textTransform: "capitalize",
 						margin: 5,
-						fontWeight: 'fontWeightLight',
+						fontWeight: "fontWeightLight",
 						color: (theme) =>
 							theme.palette.getContrastText(genreToMuiColor(params.value)),
 					}}
@@ -45,16 +45,16 @@ const columns = [
 		),
 	},
 	{
-		field: 'numArtists',
-		headerName: 'Artists',
+		field: "numArtists",
+		headerName: "Artists",
 		width: 150,
-		type: 'number',
+		type: "number",
 	},
 	{
-		field: 'rank',
-		headerName: 'Rank',
+		field: "rank",
+		headerName: "Rank",
 		width: 150,
-		type: 'number',
+		type: "number",
 	},
 ]
 
@@ -79,12 +79,12 @@ const GenreList = () => {
 	})
 
 	if (loading) {
-		return <LoadingScreen text='Loading genres tracked by VaultBot...' />
+		return <LoadingScreen text="Loading genres tracked by VaultBot..." />
 	}
 
 	if (error) {
 		return (
-			<Alert severity='error'>An error occurred during data retrieval :(</Alert>
+			<Alert severity="error">An error occurred during data retrieval :(</Alert>
 		)
 	}
 
