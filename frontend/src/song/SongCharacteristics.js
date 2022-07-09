@@ -18,7 +18,7 @@ const SongChars = (props) => {
 		},
 	})
 
-	if (loading) {
+	if (loading || !characteristics) {
 		return (
 			<div style={{ display: "flex", justifyContent: "center" }}>
 				<CircularProgress />

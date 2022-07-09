@@ -20,7 +20,7 @@ const SongContainer = () => {
 		},
 	})
 
-	if (loading) {
+	if (loading || !song) {
 		return <LoadingScreen text="Loading song..." />
 	}
 
