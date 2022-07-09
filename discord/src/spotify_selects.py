@@ -60,7 +60,9 @@ def selects_playlists_coordinator():
         JOIN artists_songs ON artists_songs.song_id = songs.id
         JOIN artists ON artists.id = artists_songs.artist_id
         JOIN artists_genres ON artists_genres.artist_id = artists.id
-        WHERE artists_genres.genre = '{selected_genre}';
+        WHERE artists_genres.genre = '{selected_genre}'
+        ORDER BY RANDOM()
+        LIMIT 100;
         """
 
         description = f"A randomly selected genre tracked by VaultBot. " \
@@ -363,4 +365,3 @@ def songs_and_artists_exist(conn: DatabaseConnection) -> bool:
         return False
 
     return True
-
