@@ -150,7 +150,7 @@ voice = ["PyNaCl (>=1.3.0,<1.5)"]
 
 [[package]]
 name = "google-api-core"
-version = "2.7.1"
+version = "2.8.0"
 description = "Google API client core library"
 category = "main"
 optional = false
@@ -230,17 +230,17 @@ grpc = ["grpcio (>=1.8.2,<2.0dev)"]
 
 [[package]]
 name = "google-cloud-logging"
-version = "3.1.2"
+version = "3.2.0"
 description = "Stackdriver Logging API client library"
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 
 [package.dependencies]
-google-api-core = {version = ">=1.31.5,<2.0.0 || >2.3.0,<3.0.0dev", extras = ["grpc"]}
+google-api-core = {version = ">=2.8.0,<3.0.0dev", extras = ["grpc"]}
 google-cloud-appengine-logging = ">=0.1.0,<2.0.0dev"
 google-cloud-audit-log = ">=0.1.0,<1.0.0dev"
-google-cloud-core = ">=1.4.1,<3.0.0dev"
+google-cloud-core = ">=2.0.0,<3.0.0dev"
 grpc-google-iam-v1 = ">=0.12.4,<1.0.0dev"
 proto-plus = ">=1.15.0,<2.0.0dev"
 protobuf = ">=3.19.0,<4.0.0dev"
@@ -577,7 +577,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "a663e5cc6401365b5a1a8db61aa0ef847fabf6255aba70ba81cdd6e53540c81d"
+content-hash = "e2bc38637a9513c7270c0973445eedab6684c0f2ac59ccce93ca352a325c9d3d"
 
 [metadata.files]
 about-time = [
@@ -668,8 +668,8 @@ discord-webhook = [
     {file = "discord.py-1.7.3.tar.gz", hash = "sha256:462cd0fe307aef8b29cbfa8dd613e548ae4b2cb581d46da9ac0d46fb6ea19408"},
 ]
 google-api-core = [
-    {file = "google-api-core-2.7.1.tar.gz", hash = "sha256:b0fa577e512f0c8e063386b974718b8614586a798c5894ed34bedf256d9dae24"},
-    {file = "google_api_core-2.7.1-py3-none-any.whl", hash = "sha256:6be1fc59e2a7ba9f66808bbc22f976f81e4c3e7ab20fa0620ce42686288787d0"},
+    {file = "google-api-core-2.8.0.tar.gz", hash = "sha256:065bb8e11c605fd232707ae50963dc1c8af5b3c95b4568887515985e6c1156b3"},
+    {file = "google_api_core-2.8.0-py3-none-any.whl", hash = "sha256:1b9f59236ce1bae9a687c1d4f22957e79a2669e53d032893f6bf0fca54f6931d"},
 ]
 google-auth = [
     {file = "google-auth-2.6.2.tar.gz", hash = "sha256:60d449f8142c742db760f4c0be39121bc8d9be855555d784c252deaca1ced3f5"},
@@ -688,8 +688,8 @@ google-cloud-core = [
     {file = "google_cloud_core-2.2.3-py2.py3-none-any.whl", hash = "sha256:a423852f4c36622376c8f0be509b67533690e061062368b763b92694c4ee06a7"},
 ]
 google-cloud-logging = [
-    {file = "google-cloud-logging-3.1.2.tar.gz", hash = "sha256:3ed00a8bd2076fee7a1dc053880fcb3c973184807e240f8c3c0929dd748eaf7f"},
-    {file = "google_cloud_logging-3.1.2-py2.py3-none-any.whl", hash = "sha256:702b69b01c4b98c50a4e4e7cbe12309de8c6685e99ec100c0c902e1765a45e92"},
+    {file = "google-cloud-logging-3.2.0.tar.gz", hash = "sha256:0c7160e2cd6c6845614e4f880eaae62da20ce27c239818fbda8b29d7a627aee6"},
+    {file = "google_cloud_logging-3.2.0-py2.py3-none-any.whl", hash = "sha256:12a094c2ee48ad02f2c7a0029405cc9ae3dc1d9d4579859518fb3b36ce1c7405"},
 ]
 google-cloud-secret-manager = [
     {file = "google-cloud-secret-manager-2.11.1.tar.gz", hash = "sha256:b52cb477c91dc83484fbf81c83807e7e99672c9e22a686be4d9bd4a04c5a6155"},
