@@ -22,6 +22,7 @@ base_dir = getcwd()
 environment = getenv("ENVIRONMENT")
 if environment == "dev":
     DISCORD_TOKEN = getenv("DISCORD_TOKEN")
+    SKIP_AGGREGATE_PLAYLIST_GENERATION = getenv("SKIP_AGGREGATE_PLAYLIST_GENERATION")
 
     if DISCORD_TOKEN is None:
         logger.fatal("No Discord token found. Please set the DISCORD_TOKEN environment variable.", exc_info=True)
@@ -36,6 +37,7 @@ elif environment == "prod":
         exit(1)
     DISCORD_TOKEN = access_secret_version(secret_id="vb-discord-token",
                                           project_id=project_id)
+    SKIP_AGGREGATE_PLAYLIST_GENERATION = False
     logger.info("Running program in production mode")
 else:
     logger.fatal("No environment variable set. Please set the ENVIRONMENT environment variable.", exc_info=True)
@@ -66,7 +68,10 @@ async def on_ready():
     update_database()
 
     hourly_cleanup.start()
-    generate_aggregate_playlists.start()
+    if not SKIP_AGGREGATE_PLAYLIST_GENERATION:
+        generate_aggregate_playlists.start()
+    else:
+        logger.info("Skipping aggregate playlist generation")
 
 
 @tasks.loop(minutes=60)
