@@ -25,14 +25,13 @@ if environment == "dev":
     TOKEN = getenv("SPOTIFY_CACHE")
 
     DYNAMIC_PLAYLIST_ID = getenv("DYNAMIC_PLAYLIST_ID")
-    ARCHIVE_PLAYLIST_ID = getenv("ARCHIVE_PLAYLIST_ID")
 
     if None in [CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, TOKEN]:
         logger.fatal("Missing Spotify credentials", exc_info=True)
         exit(1)
 
-    if None in [DYNAMIC_PLAYLIST_ID, ARCHIVE_PLAYLIST_ID]:
-        logger.fatal("Missing Spotify playlist IDs", exc_info=True)
+    if None in [DYNAMIC_PLAYLIST_ID]:
+        logger.fatal("Missing Dynamic playlist ID", exc_info=True)
         exit(1)
 
 elif environment == "prod":
@@ -51,7 +50,6 @@ elif environment == "prod":
     TOKEN = access_secret_version('vb-spotify-cache', project_id, '3')
 
     DYNAMIC_PLAYLIST_ID = '5YQHb5wt9d0hmShWNxjsTs'
-    ARCHIVE_PLAYLIST_ID = '4C6pU7YmbBUG8sFFk4eSXj'
 else:
     logger.fatal("No environment variable set. Please set the ENVIRONMENT environment variable.", exc_info=True)
     exit(1)
@@ -128,17 +126,7 @@ async def song_search(user_message):
         raise SyntaxError('No tracks found')
 
 
-async def add_to_playlist(song_id) -> dict[str, str]:
-    dynamic_song_id = sp.playlist_add_items(DYNAMIC_PLAYLIST_ID, [song_id, ])
-    archive_song_id = sp.playlist_add_items(ARCHIVE_PLAYLIST_ID, [song_id, ])
-
-    return {
-        "dynamic": dynamic_song_id,
-        "archive": archive_song_id
-    }
-
-
-def songs_in_dyn_playlist():
+def get_songs_in_playlist():
     conn = DatabaseConnection()
     song_ids = conn.select_query(query_literal="song_id", table="dynamic")
     song_ids = [x[0] for x in song_ids]
@@ -311,11 +299,6 @@ def remove_song_from_db(song_id, archive_id="", include_archive=False):
 
     conn.delete_query(table='dynamic', column_to_match='song_id', condition=song_id)
     logger.debug(f'Song {song_id} removed from dynamic table')
-
-    if include_archive:
-        # FIXME
-        conn.delete_query(table='archive', column_to_match='song_id', condition=song_id)
-        logger.debug(f'Song {song_id} removed from dynamic table')
 
     conn.commit()
     conn.terminate()
