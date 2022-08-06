@@ -9,7 +9,7 @@ from alive_progress import alive_bar, config_handler
 from discord.ext import tasks, commands
 
 import src.discord_responses as discord_responses
-from src.database_connection import update_database
+from src.database_connection import migrate_database
 from src.historical_tracking import playlist_snapshot_coordinator, featured_artist
 from src.spotify_commands import force_refresh_cache, expired_track_removal, playlist_description_update, \
     song_search, validate_song_and_add
@@ -65,7 +65,7 @@ async def on_ready():
     logger.info(f"VaultBot is fully loaded and online.")
     await bot.change_presence(activity=discord.Game(f'@me + help'))
 
-    update_database()
+    migrate_database()
 
     hourly_cleanup.start()
     if not SKIP_AGGREGATE_PLAYLIST_GENERATION:
@@ -126,7 +126,12 @@ async def on_message(ctx):
         spotify_url_regex = r"(https?:\/\/(.+?\.)?spotify\.com(\/[A-Za-z0-9\-\._~:\/\?#\[\]@!$&'\(\)\*\+,;\=]*)?)"
         raw_input = ctx.content
         if match(pattern=spotify_url_regex, string=raw_input):
-            validate_song_and_add(ctx, raw_input)
+            # Remove query string
+            cleaned_input = raw_input
+            if "?si" in raw_input:
+                cleaned_input = raw_input[:raw_input.index("?si")]
+
+            await validate_song_and_add(ctx, cleaned_input)
     await bot.process_commands(ctx)
 
 
@@ -170,7 +175,7 @@ async def search(ctx, *, song_query):
 
                 if track_selection is not None:
                     selected_track_id = track_ids[track_selection][track_selection + 1]
-                    validate_song_and_add(ctx, selected_track_id)
+                    await validate_song_and_add(ctx, selected_track_id)
                 else:
                     await ctx.channel.send(f'OK, {ctx.author.mention}. I cancelled the track search.')
             except FileExistsError:
@@ -192,7 +197,7 @@ async def search_error(ctx, error):
 @commands.guild_only()
 async def add(ctx, song_url_or_id: str):
     logger.debug(f'User {ctx.author} invoked $add with input {song_url_or_id}')
-    validate_song_and_add(ctx, song_url_or_id)
+    await validate_song_and_add(ctx, song_url_or_id)
 
 
 @add.error

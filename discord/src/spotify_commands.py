@@ -85,7 +85,7 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID,
 emoji_responses = AFFIRMATIVES
 
 
-def get_full_playlist(playlist_id: str) -> list:
+def get_spotify_playlist_songs(playlist_id: str) -> list:
     """
     Retrieves all results from playlist by parsing through paginated results
     @param playlist_id: Spotify ID of the playlist
@@ -141,8 +141,8 @@ async def get_song_id_from_user_input(song_input) -> str:
     return song['id']
 
 
-def get_track_info(track_id, user):
-    s = sp.track(track_id=track_id)
+def get_song_details(song_id, user):
+    s = sp.track(track_id=song_id)
 
     artists_details = []
     for artist in s['artists']:
@@ -189,10 +189,10 @@ def get_track_info(track_id, user):
     return details
 
 
-def song_add_to_db(song_id, user):
+def add_song_to_db(song_id, user):
     conn = DatabaseConnection()
 
-    details = get_track_info(track_id=song_id, user=user)
+    details = get_song_details(song_id=song_id, user=user)
 
     song_name = details['name']
     album = details['album']
@@ -294,7 +294,7 @@ def song_add_to_db(song_id, user):
     conn.terminate()
 
 
-def remove_song_from_db(song_id, archive_id="", include_archive=False):
+def remove_song_from_db(song_id):
     conn = DatabaseConnection()
 
     conn.delete_query(table='dynamic', column_to_match='song_id', condition=song_id)
@@ -304,7 +304,20 @@ def remove_song_from_db(song_id, archive_id="", include_archive=False):
     conn.terminate()
 
 
-def validate_song_and_add(ctx: discord.ext.commands.Context, song_url_or_id):
+async def add_song_to_playlist(song_id):
+    sp.playlist_add_items(DYNAMIC_PLAYLIST_ID, [song_id, ])
+
+
+def remove_song_from_playlist(song_id: str):
+    sp.playlist_remove_all_occurrences_of_items(DYNAMIC_PLAYLIST_ID, [song_id, ])
+
+
+def remove_songs_from_playlist(song_ids: list[str]):
+    sp.playlist_remove_all_occurrences_of_items(playlist_id=DYNAMIC_PLAYLIST_ID,
+                                                items=song_ids)
+
+
+async def validate_song_and_add(ctx: discord.ext.commands.Context, song_url_or_id):
     try:
         converted_song_id = await get_song_id_from_user_input(song_url_or_id)
     except SpotifyException:
@@ -323,20 +336,21 @@ def validate_song_and_add(ctx: discord.ext.commands.Context, song_url_or_id):
                                f"{ctx.author.mention}! I'm not gonna re-add it!")
         return
 
-    unexpected_error_response = "An unexpected error occurred and the song was not" \
+    unexpected_error_response = "An unexpected error occurred and the song was not " \
                                 "added to the playlists. Please try again."
 
     try:
-        playlist_added_song_ids = await add_to_playlist(converted_song_id)
+        await add_song_to_playlist(converted_song_id)
     except SpotifyException:
         await ctx.channel.send(unexpected_error_response)
         return
 
     try:
-        song_add_to_db(converted_song_id, ctx.author)
+        add_song_to_db(converted_song_id, ctx.author)
     except psycopg2.Error:
-        # TODO: Remove the tracks from the playlists here
+        remove_song_from_playlist(converted_song_id)
         await ctx.channel.send(unexpected_error_response)
+        return
 
     logger.debug(f'Song of ID {converted_song_id} added to playlists '
                  f'by {ctx.author} via private message')
@@ -349,7 +363,7 @@ async def validate_song(song_id):
     if int(song['duration_ms']) > 600000:  # catch if song greater than 600k ms (10 min)
         raise OverflowError('Track too long!')
 
-    existing_songs = songs_in_dyn_playlist()
+    existing_songs = get_songs_in_playlist()
     if song_id in existing_songs:
         logger.debug(f"{song_id} already exists in dynamic playlist, not adding")
         raise FileExistsError('Song already present in Dyn playlist! Not adding duplicate ID.')
@@ -459,14 +473,14 @@ def expired_track_removal():
                 chunked_tracks_to_remove = list(array_chunks(tracks_to_remove, 100))
                 for chunked_list in chunked_tracks_to_remove:
                     logger.debug(f"Removing {len(chunked_list)} tracks from dynamic")
-                    sp.playlist_remove_all_occurrences_of_items(playlist_id=DYNAMIC_PLAYLIST_ID,
-                                                                items=chunked_list)
+                    remove_songs_from_playlist(chunked_list)
 
             else:
                 logger.debug(f"Removing {len(tracks_to_remove)} tracks from dynamic")
-                sp.playlist_remove_all_occurrences_of_items(playlist_id=DYNAMIC_PLAYLIST_ID,
-                                                            items=tracks_to_remove)
+                remove_songs_from_playlist(tracks_to_remove)
 
+        # TODO: this should be combined with the playlist snapshot functionality from
+        # Spotify to restore to the savepoint if there is some issue removing from the database
         logger.debug(f"Committing changes to database")
         conn.commit()
         conn.terminate()
