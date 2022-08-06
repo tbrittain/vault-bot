@@ -264,7 +264,9 @@ def song_add_to_db(song_id, user):
             conn.update_query(column_to_change="preview_url", column_to_match="id",
                               condition=song_id, value=preview_url, table="songs")
         else:
-            conn.update_query_raw(f"UPDATE songs SET preview_url = NULL WHERE id = {song_id}")
+            conn.update_query_raw(f"""
+            UPDATE songs SET preview_url = NULL WHERE id = '{song_id}'
+            """)
 
     # artist_genres and artists_songs info
     for artist in details['artists']:
