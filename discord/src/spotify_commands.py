@@ -1,12 +1,17 @@
+import json
 from datetime import datetime, timedelta
 from os import getenv, path
+from random import choice
 
+import discord.ext.commands
+import psycopg2
 import spotipy
+from spotipy import SpotifyException
 from spotipy.cache_handler import CacheHandler
 from spotipy.oauth2 import SpotifyOAuth
-import json
 
 from .database_connection import DatabaseConnection, access_secret_version
+from .discord_responses import AFFIRMATIVES
 from .vb_utils import get_logger
 
 logger = get_logger(__name__)
@@ -79,6 +84,7 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID,
                                                redirect_uri=REDIRECT_URI,
                                                scope=SPOTIFY_SCOPE,
                                                cache_handler=cache_handler))
+emoji_responses = AFFIRMATIVES
 
 
 def get_full_playlist(playlist_id: str) -> list:
@@ -122,15 +128,14 @@ async def song_search(user_message):
         raise SyntaxError('No tracks found')
 
 
-async def add_to_playlist(song_id):
-    existing_songs = songs_in_dyn_playlist()
-    if song_id in existing_songs:
-        logger.debug(f"{song_id} already exists in dynamic playlist, not adding")
-        raise FileExistsError('Song already present in Dyn playlist! Not adding duplicate ID.')
-    else:
-        song_id = [song_id, ]
-        sp.playlist_add_items(DYNAMIC_PLAYLIST_ID, song_id)
-        sp.playlist_add_items(ARCHIVE_PLAYLIST_ID, song_id)
+async def add_to_playlist(song_id) -> dict[str, str]:
+    dynamic_song_id = sp.playlist_add_items(DYNAMIC_PLAYLIST_ID, [song_id, ])
+    archive_song_id = sp.playlist_add_items(ARCHIVE_PLAYLIST_ID, [song_id, ])
+
+    return {
+        "dynamic": dynamic_song_id,
+        "archive": archive_song_id
+    }
 
 
 def songs_in_dyn_playlist():
@@ -141,7 +146,7 @@ def songs_in_dyn_playlist():
     return song_ids
 
 
-async def convert_to_track_id(song_input):
+async def get_song_id_from_user_input(song_input) -> str:
     song = sp.track(track_id=song_input)
     logger.debug(f'Converted input {song_input} to {song["id"]}')
 
@@ -297,10 +302,70 @@ def song_add_to_db(song_id, user):
     conn.terminate()
 
 
-async def validate_song(track_id):
-    song = sp.track(track_id=track_id)
+def remove_song_from_db(song_id, archive_id="", include_archive=False):
+    conn = DatabaseConnection()
+
+    conn.delete_query(table='dynamic', column_to_match='song_id', condition=song_id)
+    logger.debug(f'Song {song_id} removed from dynamic table')
+
+    if include_archive:
+        # FIXME
+        conn.delete_query(table='archive', column_to_match='song_id', condition=song_id)
+        logger.debug(f'Song {song_id} removed from dynamic table')
+
+    conn.commit()
+    conn.terminate()
+
+
+def validate_song_and_add(ctx: discord.ext.commands.Context, song_url_or_id):
+    try:
+        converted_song_id = await get_song_id_from_user_input(song_url_or_id)
+    except SpotifyException:
+        await ctx.channel.send(f"Please send me a valid Spotify link and I will try"
+                               f"to add it to the playlists, {ctx.author.mention}!")
+        return
+
+    try:
+        await validate_song(converted_song_id)
+    except OverflowError:
+        await ctx.channel.send(f"Cannot add songs longer than 10 minutes "
+                               f"to playlist, {ctx.author.mention}!")
+        return
+    except FileExistsError:
+        await ctx.channel.send(f"Track already exists in dynamic playlist, "
+                               f"{ctx.author.mention}! I'm not gonna re-add it!")
+        return
+
+    unexpected_error_response = "An unexpected error occurred and the song was not" \
+                                "added to the playlists. Please try again."
+
+    try:
+        playlist_added_song_ids = await add_to_playlist(converted_song_id)
+    except SpotifyException:
+        await ctx.channel.send(unexpected_error_response)
+        return
+
+    try:
+        song_add_to_db(converted_song_id, ctx.author)
+    except psycopg2.Error:
+        # TODO: Remove the tracks from the playlists here
+        await ctx.channel.send(unexpected_error_response)
+
+    logger.debug(f'Song of ID {converted_song_id} added to playlists '
+                 f'by {ctx.author} via private message')
+    await ctx.channel.send(
+        f'Track has been added to the community playlists! {choice(emoji_responses)}')
+
+
+async def validate_song(song_id):
+    song = sp.track(track_id=song_id)
     if int(song['duration_ms']) > 600000:  # catch if song greater than 600k ms (10 min)
         raise OverflowError('Track too long!')
+
+    existing_songs = songs_in_dyn_playlist()
+    if song_id in existing_songs:
+        logger.debug(f"{song_id} already exists in dynamic playlist, not adding")
+        raise FileExistsError('Song already present in Dyn playlist! Not adding duplicate ID.')
 
 
 def dyn_playlist_genres(limit: int = None):
