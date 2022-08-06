@@ -292,12 +292,14 @@ def song_add_to_db(song_id, user):
 
     # insert song info into dynamic and archive tables
     # do not insert popularity, as popularity is refreshed in scheduled function
+    user_handle = f"{added_by.display_name}#{added_by.discriminator}"
+
     table_dynamic_columns = ('song_id', 'added_by', 'added_at')
-    table_dynamic_row = (song_id, added_by, added_at)
+    table_dynamic_row = (song_id, user_handle, added_at)
     conn.insert_single_row(table='dynamic', columns=table_dynamic_columns, row=table_dynamic_row)
 
     table_archive_columns = ('song_id', 'added_by', 'added_at')
-    table_archive_row = (song_id, added_by, added_at)
+    table_archive_row = (song_id, user_handle, added_at)
     conn.insert_single_row(table='archive', columns=table_archive_columns, row=table_archive_row)
 
     conn.commit()
