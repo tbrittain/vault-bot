@@ -6,9 +6,9 @@ import pandas as pd
 import psycopg2
 import psycopg2.errors
 
-from .vb_utils import access_secret_version, get_logger
 from .db.create_schema import create_schema, create_migration_table, get_existing_tables
-from .db.migrate_database import migrate_database
+from .db.migrate_database import run_migration
+from .vb_utils import access_secret_version, get_logger
 
 logger = get_logger(__name__)
 
@@ -222,7 +222,7 @@ class DatabaseConnection:
         return True
 
 
-def update_database():
+def migrate_database():
     """
     Runs create scripts and migration scripts on the database.
     """
@@ -273,7 +273,7 @@ def update_database():
         logger.debug("Migration table exists, skipping...")
 
     logger.debug("Running migrations...")
-    migrate_database(cur, logger)
+    run_migration(cur, logger)
     logger.debug("Migrations complete.")
 
     cur.close()
@@ -282,4 +282,4 @@ def update_database():
 
 
 if __name__ == "__main__":
-    update_database()
+    migrate_database()

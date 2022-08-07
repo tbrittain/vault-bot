@@ -1,12 +1,12 @@
 import logging
 
-from .migrations.selects_refactor import MIGRATION_ID as SELECTS_REFACTOR_MIGRATION_ID
-from .migrations.artist_song_link_table import MIGRATION_ID as ARTIST_SONG_LINK_TABLE_MIGRATION_ID
 from .migrations.archive_serial_pkey_fix import MIGRATION_ID as ARCHIVE_SERIAL_PKEY_FIX_MIGRATION_ID
+from .migrations.artist_song_link_table import MIGRATION_ID as ARTIST_SONG_LINK_TABLE_MIGRATION_ID
 from .migrations.energy_aggregate_playlist import MIGRATION_ID as ENERGY_AGGREGATE_PLAYLIST_MIGRATION_ID
+from .migrations.selects_refactor import MIGRATION_ID as SELECTS_REFACTOR_MIGRATION_ID
 
 
-def migrate_database(cur, logger: logging.Logger):
+def run_migration(cur, logger: logging.Logger):
     cur.execute("SELECT id FROM migration")
     migration_ids = [row[0] for row in cur.fetchall()]
 

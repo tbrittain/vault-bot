@@ -6,7 +6,6 @@ from .database_connection import DatabaseConnection
 from .spotify_commands import dyn_playlist_genres
 from .vb_utils import get_logger
 
-
 logger = get_logger(__name__)
 
 
@@ -110,7 +109,8 @@ def dynamic_playlist_novelty():
     FROM dynamic
     INNER JOIN archive ON dynamic.song_id = archive.song_id
     GROUP BY dynamic.song_id
-    HAVING COUNT(archive.song_id) = 1; """
+    HAVING COUNT(archive.song_id) = 1;
+    """
     unique_songs = conn.select_query_raw(sql=sql)
     existing_songs = conn.select_query(query_literal="song_id", table="dynamic")
 

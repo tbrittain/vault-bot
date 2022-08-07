@@ -1,12 +1,17 @@
+import json
 from datetime import datetime, timedelta
 from os import getenv, path
+from random import choice
 
+import discord.ext.commands
+import psycopg2
 import spotipy
+from spotipy import SpotifyException
 from spotipy.cache_handler import CacheHandler
 from spotipy.oauth2 import SpotifyOAuth
-import json
 
 from .database_connection import DatabaseConnection, access_secret_version
+from .discord_responses import AFFIRMATIVES
 from .vb_utils import get_logger
 
 logger = get_logger(__name__)
@@ -20,14 +25,13 @@ if environment == "dev":
     TOKEN = getenv("SPOTIFY_CACHE")
 
     DYNAMIC_PLAYLIST_ID = getenv("DYNAMIC_PLAYLIST_ID")
-    ARCHIVE_PLAYLIST_ID = getenv("ARCHIVE_PLAYLIST_ID")
 
     if None in [CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, TOKEN]:
         logger.fatal("Missing Spotify credentials", exc_info=True)
         exit(1)
 
-    if None in [DYNAMIC_PLAYLIST_ID, ARCHIVE_PLAYLIST_ID]:
-        logger.fatal("Missing Spotify playlist IDs", exc_info=True)
+    if None in [DYNAMIC_PLAYLIST_ID]:
+        logger.fatal("Missing Dynamic playlist ID", exc_info=True)
         exit(1)
 
 elif environment == "prod":
@@ -46,7 +50,6 @@ elif environment == "prod":
     TOKEN = access_secret_version('vb-spotify-cache', project_id, '3')
 
     DYNAMIC_PLAYLIST_ID = '5YQHb5wt9d0hmShWNxjsTs'
-    ARCHIVE_PLAYLIST_ID = '4C6pU7YmbBUG8sFFk4eSXj'
 else:
     logger.fatal("No environment variable set. Please set the ENVIRONMENT environment variable.", exc_info=True)
     exit(1)
@@ -79,9 +82,10 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID,
                                                redirect_uri=REDIRECT_URI,
                                                scope=SPOTIFY_SCOPE,
                                                cache_handler=cache_handler))
+emoji_responses = AFFIRMATIVES
 
 
-def get_full_playlist(playlist_id: str) -> list:
+def get_spotify_playlist_songs(playlist_id: str) -> list:
     """
     Retrieves all results from playlist by parsing through paginated results
     @param playlist_id: Spotify ID of the playlist
@@ -122,18 +126,7 @@ async def song_search(user_message):
         raise SyntaxError('No tracks found')
 
 
-async def add_to_playlist(song_id):
-    existing_songs = songs_in_dyn_playlist()
-    if song_id in existing_songs:
-        logger.debug(f"{song_id} already exists in dynamic playlist, not adding")
-        raise FileExistsError('Song already present in Dyn playlist! Not adding duplicate ID.')
-    else:
-        song_id = [song_id, ]
-        sp.playlist_add_items(DYNAMIC_PLAYLIST_ID, song_id)
-        sp.playlist_add_items(ARCHIVE_PLAYLIST_ID, song_id)
-
-
-def songs_in_dyn_playlist():
+def get_songs_in_playlist():
     conn = DatabaseConnection()
     song_ids = conn.select_query(query_literal="song_id", table="dynamic")
     song_ids = [x[0] for x in song_ids]
@@ -141,15 +134,15 @@ def songs_in_dyn_playlist():
     return song_ids
 
 
-async def convert_to_track_id(song_input):
+async def get_song_id_from_user_input(song_input) -> str:
     song = sp.track(track_id=song_input)
     logger.debug(f'Converted input {song_input} to {song["id"]}')
 
     return song['id']
 
 
-def get_track_info(track_id, user):
-    s = sp.track(track_id=track_id)
+def get_song_details(song_id, user):
+    s = sp.track(track_id=song_id)
 
     artists_details = []
     for artist in s['artists']:
@@ -196,10 +189,10 @@ def get_track_info(track_id, user):
     return details
 
 
-def song_add_to_db(song_id, user):
+def add_song_to_db(song_id, user):
     conn = DatabaseConnection()
 
-    details = get_track_info(track_id=song_id, user=user)
+    details = get_song_details(song_id=song_id, user=user)
 
     song_name = details['name']
     album = details['album']
@@ -259,7 +252,9 @@ def song_add_to_db(song_id, user):
             conn.update_query(column_to_change="preview_url", column_to_match="id",
                               condition=song_id, value=preview_url, table="songs")
         else:
-            conn.update_query_raw(f"UPDATE songs SET preview_url = NULL WHERE id = {song_id}")
+            conn.update_query_raw(f"""
+            UPDATE songs SET preview_url = NULL WHERE id = '{song_id}'
+            """)
 
     # artist_genres and artists_songs info
     for artist in details['artists']:
@@ -285,22 +280,93 @@ def song_add_to_db(song_id, user):
 
     # insert song info into dynamic and archive tables
     # do not insert popularity, as popularity is refreshed in scheduled function
+    user_handle = f"{added_by.display_name}#{added_by.discriminator}"
+
     table_dynamic_columns = ('song_id', 'added_by', 'added_at')
-    table_dynamic_row = (song_id, added_by, added_at)
+    table_dynamic_row = (song_id, user_handle, added_at)
     conn.insert_single_row(table='dynamic', columns=table_dynamic_columns, row=table_dynamic_row)
 
     table_archive_columns = ('song_id', 'added_by', 'added_at')
-    table_archive_row = (song_id, added_by, added_at)
+    table_archive_row = (song_id, user_handle, added_at)
     conn.insert_single_row(table='archive', columns=table_archive_columns, row=table_archive_row)
 
     conn.commit()
     conn.terminate()
 
 
-async def validate_song(track_id):
-    song = sp.track(track_id=track_id)
+def remove_song_from_db(song_id):
+    conn = DatabaseConnection()
+
+    conn.delete_query(table='dynamic', column_to_match='song_id', condition=song_id)
+    logger.debug(f'Song {song_id} removed from dynamic table')
+
+    conn.commit()
+    conn.terminate()
+
+
+async def add_song_to_playlist(song_id):
+    sp.playlist_add_items(DYNAMIC_PLAYLIST_ID, [song_id, ])
+
+
+def remove_song_from_playlist(song_id: str):
+    sp.playlist_remove_all_occurrences_of_items(DYNAMIC_PLAYLIST_ID, [song_id, ])
+
+
+def remove_songs_from_playlist(song_ids: list[str]):
+    sp.playlist_remove_all_occurrences_of_items(playlist_id=DYNAMIC_PLAYLIST_ID,
+                                                items=song_ids)
+
+
+async def validate_song_and_add(ctx: discord.ext.commands.Context, song_url_or_id):
+    try:
+        converted_song_id = await get_song_id_from_user_input(song_url_or_id)
+    except SpotifyException:
+        await ctx.channel.send(f"Please send me a valid Spotify link and I will try"
+                               f"to add it to the playlists, {ctx.author.mention}!")
+        return
+
+    try:
+        await validate_song(converted_song_id)
+    except OverflowError:
+        await ctx.channel.send(f"Cannot add songs longer than 10 minutes "
+                               f"to playlist, {ctx.author.mention}!")
+        return
+    except FileExistsError:
+        await ctx.channel.send(f"Track already exists in dynamic playlist, "
+                               f"{ctx.author.mention}! I'm not gonna re-add it!")
+        return
+
+    unexpected_error_response = "An unexpected error occurred and the song was not " \
+                                "added to the playlists. Please try again."
+
+    try:
+        await add_song_to_playlist(converted_song_id)
+    except SpotifyException:
+        await ctx.channel.send(unexpected_error_response)
+        return
+
+    try:
+        add_song_to_db(converted_song_id, ctx.author)
+    except psycopg2.Error:
+        remove_song_from_playlist(converted_song_id)
+        await ctx.channel.send(unexpected_error_response)
+        return
+
+    logger.debug(f'Song of ID {converted_song_id} added to playlists '
+                 f'by {ctx.author} via private message')
+    await ctx.channel.send(
+        f'Track has been added to the community playlists! {choice(emoji_responses)}')
+
+
+async def validate_song(song_id):
+    song = sp.track(track_id=song_id)
     if int(song['duration_ms']) > 600000:  # catch if song greater than 600k ms (10 min)
         raise OverflowError('Track too long!')
+
+    existing_songs = get_songs_in_playlist()
+    if song_id in existing_songs:
+        logger.debug(f"{song_id} already exists in dynamic playlist, not adding")
+        raise FileExistsError('Song already present in Dyn playlist! Not adding duplicate ID.')
 
 
 def dyn_playlist_genres(limit: int = None):
@@ -407,14 +473,14 @@ def expired_track_removal():
                 chunked_tracks_to_remove = list(array_chunks(tracks_to_remove, 100))
                 for chunked_list in chunked_tracks_to_remove:
                     logger.debug(f"Removing {len(chunked_list)} tracks from dynamic")
-                    sp.playlist_remove_all_occurrences_of_items(playlist_id=DYNAMIC_PLAYLIST_ID,
-                                                                items=chunked_list)
+                    remove_songs_from_playlist(chunked_list)
 
             else:
                 logger.debug(f"Removing {len(tracks_to_remove)} tracks from dynamic")
-                sp.playlist_remove_all_occurrences_of_items(playlist_id=DYNAMIC_PLAYLIST_ID,
-                                                            items=tracks_to_remove)
+                remove_songs_from_playlist(tracks_to_remove)
 
+        # TODO: this should be combined with the playlist snapshot functionality from
+        # Spotify to restore to the savepoint if there is some issue removing from the database
         logger.debug(f"Committing changes to database")
         conn.commit()
         conn.terminate()

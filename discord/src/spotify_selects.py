@@ -2,7 +2,7 @@ from os import getenv
 from random import choice
 
 from .database_connection import DatabaseConnection
-from .spotify_commands import sp, get_full_playlist
+from .spotify_commands import sp, get_spotify_playlist_songs
 from .vb_utils import get_logger, array_chunks
 
 logger = get_logger(__name__)
@@ -162,7 +162,7 @@ def aggregate_tracks(conn: DatabaseConnection, sql: str) -> list:
 
 def update_playlist(conn: DatabaseConnection, playlist_id: str, playlist_sql: str):
     # pull existing tracks
-    existing_tracks = get_full_playlist(playlist_id=playlist_id)
+    existing_tracks = get_spotify_playlist_songs(playlist_id=playlist_id)
     if len(existing_tracks) > 0:
         existing_tracks = [track['track']['id'] for track in existing_tracks]
     else:
