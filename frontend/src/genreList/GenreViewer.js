@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import SearchIcon from "@mui/icons-material/Search"
 import genreListStyles from "./GenreListStyles"
 import GenreSearchContainer from "./GenreSearchContainer"
-import GenreList from "./GenreList"
+import GenreGrid from "./GenreGrid"
 import useDebounce from "../hooks/useDebounce"
 import {
 	AppBar,
@@ -88,7 +88,7 @@ const GenreViewer = () => {
 					</div>
 				</Toolbar>
 			</AppBar>
-			<GenreList />
+			<GenreGrid />
 		</Paper>
 	)
 }
