@@ -58,7 +58,7 @@ const columns = [
 	},
 ]
 
-const GenreList = () => {
+const GenreGrid = () => {
 	const classes = genreListStyles()
 	const [rows, setRows] = useState([])
 
@@ -101,4 +101,4 @@ const GenreList = () => {
 	)
 }
 
-export default GenreList
+export default GenreGrid
