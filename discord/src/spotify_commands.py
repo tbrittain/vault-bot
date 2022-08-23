@@ -391,7 +391,7 @@ def dyn_playlist_genres(limit: int = None):
     return formatted_result
 
 
-def playlist_description_update(playlist_id: str, initial_desc: str):
+def update_playlist_description(playlist_id: str, initial_desc: str):
     top_genres = dyn_playlist_genres(limit=10)
     desc = ''
     desc += initial_desc
