@@ -22,7 +22,7 @@ base_dir = getcwd()
 environment = getenv("ENVIRONMENT")
 if environment == "dev":
     DISCORD_TOKEN = getenv("DISCORD_TOKEN")
-    SKIP_AGGREGATE_PLAYLIST_GENERATION = getenv("SKIP_AGGREGATE_PLAYLIST_GENERATION")
+    SKIP_AGGREGATE_PLAYLIST_GENERATION = bool(getenv("SKIP_AGGREGATE_PLAYLIST_GENERATION"))
 
     if DISCORD_TOKEN is None:
         logger.fatal("No Discord token found. Please set the DISCORD_TOKEN environment variable.", exc_info=True)
