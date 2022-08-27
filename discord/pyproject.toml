@@ -7,13 +7,13 @@ authors = ["tbrittain <treybrittain@gmail.com>"]
 [tool.poetry.dependencies]
 python = "^3.9"
 alive-progress = "^2.4.1"
-discord = "^1.7.3"
-spotipy = "^2.19.0"
-pandas = "^1.4.2"
+discord = "^2.0.0"
+spotipy = "^2.20.0"
+pandas = "^1.4.3"
 psycopg2 = "^2.9.3"
-google-cloud-logging = "^3.0.0"
-google-cloud-secret-manager = "^2.11.0"
-discord-webhook = "^0.16.3"
+google-cloud-logging = "^3.2.2"
+google-cloud-secret-manager = "^2.12.4"
+discord-webhook = "^0.17.0"
 
 [tool.poetry.dev-dependencies]
 

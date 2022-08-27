@@ -1,5 +1,4 @@
 import {
-  BelongsTo,
   Column,
   ForeignKey,
   Model,
@@ -8,30 +7,23 @@ import {
 } from 'sequelize-typescript'
 import Artist from './Artist.model'
 import { ITableOptions } from './interfaces/ITableOptions'
-import Song from './Song.model'
+import Song from "./Song.model";
 
-const ArchiveSongOptions: ITableOptions = {
-  tableName: 'archive',
+const ArtistSongOptions: ITableOptions = {
+  tableName: 'artists_songs',
   timestamps: false,
   underscored: true
 }
 
-@Table(ArchiveSongOptions)
-export default class ArchiveSong extends Model {
+@Table(ArtistSongOptions)
+export default class ArtistSong extends Model {
   @PrimaryKey
-  @Column
-  id!: number
-
-  @BelongsTo(() => Song, 'songId')
-  song!: Song
-
   @Column
   @ForeignKey(() => Artist)
   artistId!: string
 
+  @PrimaryKey
   @Column
-  addedBy!: string
-
-  @Column
-  addedAt!: Date
+  @ForeignKey(() => Song)
+  songId!: string
 }

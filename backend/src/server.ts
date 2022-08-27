@@ -3,9 +3,10 @@ import { createServer } from 'http'
 import { ApolloServer } from 'apollo-server-express'
 import { ApolloServerPluginDrainHttpServer } from 'apollo-server-core'
 import express from 'express'
-import sequelize from './db'
+import sequelize from './database'
 import typeDefs from './schema/TypeDefs'
 import resolvers from './schema/Resolvers'
+
 ;(async () => {
   sequelize
     .authenticate()

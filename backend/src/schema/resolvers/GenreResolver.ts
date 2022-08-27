@@ -1,6 +1,6 @@
 import { Op, Sequelize } from 'sequelize'
-import ArtistGenre from '../../db/models/ArtistGenre.model'
-import Artist from '../../db/models/Artist.model'
+import ArtistGenre from '../../database/models/ArtistGenre.model'
+import Artist from '../../database/models/Artist.model'
 import {
   IFindGenresLikeArgs,
   IGetArtistsFromGenreArgs
@@ -39,7 +39,7 @@ export default {
       if (artists.length > 0) {
         return artists
       } else {
-        throw new SyntaxError('No artists found matching provided genre')
+        throw new Error('No artists found matching provided genre')
       }
     },
     async findGenresLike(_parent, args: IFindGenresLikeArgs) {

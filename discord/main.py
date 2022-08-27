@@ -1,30 +1,31 @@
 from asyncio import TimeoutError
 from datetime import datetime, time
 from os import getenv, getcwd
-from random import choice, randint
+from random import randint
 from re import match
 
 import discord
 from alive_progress import alive_bar, config_handler
 from discord.ext import tasks, commands
-from spotipy import SpotifyException
 
-import src.discord_responses as responses
+import src.discord_responses as discord_responses
+from src.database_connection import migrate_database
 from src.historical_tracking import playlist_snapshot_coordinator, featured_artist
-from src.spotify_commands import force_refresh_cache, expired_track_removal, playlist_description_update, \
-    convert_to_track_id, validate_song, add_to_playlist, song_add_to_db, song_search
+from src.spotify_commands import force_refresh_cache, expired_track_removal, update_playlist_description, \
+    song_search, validate_song_and_add
 from src.spotify_selects import selects_playlists_coordinator
 from src.vb_utils import access_secret_version, get_logger
 from src.webhook_updates import post_webhook
-from src.database_connection import update_database
 
 logger = get_logger('main')
 base_dir = getcwd()
 environment = getenv("ENVIRONMENT")
 if environment == "dev":
     DISCORD_TOKEN = getenv("DISCORD_TOKEN")
+    SKIP_AGGREGATE_PLAYLIST_GENERATION = bool(getenv("SKIP_AGGREGATE_PLAYLIST_GENERATION"))
+    DYNAMIC_PLAYLIST_ID = getenv("DYNAMIC_PLAYLIST_ID")
 
-    if DISCORD_TOKEN is None:
+    if None in [DISCORD_TOKEN, DYNAMIC_PLAYLIST_ID]:
         logger.fatal("No Discord token found. Please set the DISCORD_TOKEN environment variable.", exc_info=True)
         exit(1)
 
@@ -37,6 +38,9 @@ elif environment == "prod":
         exit(1)
     DISCORD_TOKEN = access_secret_version(secret_id="vb-discord-token",
                                           project_id=project_id)
+    SKIP_AGGREGATE_PLAYLIST_GENERATION = False
+    DYNAMIC_PLAYLIST_ID = '5YQHb5wt9d0hmShWNxjsTs'
+
     logger.info("Running program in production mode")
 else:
     logger.fatal("No environment variable set. Please set the ENVIRONMENT environment variable.", exc_info=True)
@@ -47,7 +51,7 @@ bot = commands.Bot(command_prefix=commands.when_mentioned,
                    help_command=None,
                    intents=discord.Intents.all())
 bot.remove_command('help')
-emoji_responses = responses.AFFIRMATIVES
+emoji_responses = discord_responses.AFFIRMATIVES
 
 
 @bot.event
@@ -64,10 +68,13 @@ async def on_ready():
     logger.info(f"VaultBot is fully loaded and online.")
     await bot.change_presence(activity=discord.Game(f'@me + help'))
 
-    update_database()
+    migrate_database()
 
     hourly_cleanup.start()
-    generate_aggregate_playlists.start()
+    if not SKIP_AGGREGATE_PLAYLIST_GENERATION:
+        generate_aggregate_playlists.start()
+    else:
+        logger.info("Skipping aggregate playlist generation")
 
 
 @tasks.loop(minutes=60)
@@ -79,9 +86,9 @@ async def hourly_cleanup():
         force_refresh_cache()
         expired_track_removal()
         bar()
-        playlist_description_update(playlist_id="5YQHb5wt9d0hmShWNxjsTs",
+        update_playlist_description(playlist_id=DYNAMIC_PLAYLIST_ID,
                                     initial_desc='The playlist with guaranteed freshness. '
-                                                 'See more at vaultbot.tbrittain.com! ')
+                                                 'See more at vaultbot.tbrittain.com!')
         bar()
         logger.debug('Checking whether to log current playlist data...')
         playlist_snapshot_coordinator()
@@ -120,28 +127,14 @@ async def on_message(ctx):
         return  # ignore messages from self and other bots
     if isinstance(ctx.channel, discord.channel.DMChannel):
         spotify_url_regex = r"(https?:\/\/(.+?\.)?spotify\.com(\/[A-Za-z0-9\-\._~:\/\?#\[\]@!$&'\(\)\*\+,;\=]*)?)"
-        if match(pattern=spotify_url_regex, string=ctx.content):
-            converted_song_id = None
-            try:
-                converted_song_id = await convert_to_track_id(ctx.content)
-            except SpotifyException:
-                await ctx.channel.send(f"Please send me a valid Spotify link and I "
-                                       f"will try to add it to the playlists, {ctx.author.mention}!")
-            if converted_song_id is not None:
-                try:
-                    await validate_song(track_id=converted_song_id)
-                    await add_to_playlist(song_id=converted_song_id)
-                    song_add_to_db(song_id=converted_song_id, user=str(ctx.author))
-                    logger.debug(f'Song of ID {converted_song_id} added to playlists '
-                                 f'by {ctx.author} via private message')
-                    await ctx.channel.send(
-                        f'Track has been added to the community playlists! {choice(emoji_responses)}')
-                except OverflowError:
-                    await ctx.channel.send(f"Cannot add songs longer than 10 minutes "
-                                           f"to playlist, {ctx.author.mention}!")
-                except FileExistsError:
-                    await ctx.channel.send(f"Track already exists in dynamic playlist, "
-                                           f"{ctx.author.mention}! I'm not gonna re-add it!")
+        raw_input = ctx.content
+        if match(pattern=spotify_url_regex, string=raw_input):
+            # Remove query string
+            cleaned_input = raw_input
+            if "?si" in raw_input:
+                cleaned_input = raw_input[:raw_input.index("?si")]
+
+            await validate_song_and_add(ctx, cleaned_input)
     await bot.process_commands(ctx)
 
 
@@ -159,19 +152,19 @@ async def search(ctx, *, song_query):
     else:
         msg = await ctx.channel.send(track_results)
 
-        for index, emoji in enumerate(responses.NUMBERS):
+        for index, emoji in enumerate(discord_responses.NUMBERS):
             if index == len(track_ids):
                 break
             else:
                 await msg.add_reaction(emoji=emoji)
-        await msg.add_reaction(emoji=responses.CANCEL)
+        await msg.add_reaction(emoji=discord_responses.CANCEL)
         await ctx.channel.send(
             f'Select the emoji of the track you want to add, {ctx.author.mention}')
 
         def check(check_reaction, user_reaction):
             return True if user_reaction == ctx.author and (
-                    any(str(check_reaction.emoji) in s for s in responses.NUMBERS)
-                    or str(check_reaction.emoji == responses.CANCEL)) else False
+                    any(str(check_reaction.emoji) in s for s in discord_responses.NUMBERS)
+                    or str(check_reaction.emoji == discord_responses.CANCEL)) else False
 
         try:
             reaction, user = await bot.wait_for('reaction_add', timeout=30.0, check=check)
@@ -181,18 +174,11 @@ async def search(ctx, *, song_query):
             return
         if reaction and msg.id == reaction.message.id:
             try:
-                track_selection = responses.NUMBERS_TO_INDEX_MAP[reaction.emoji]
+                track_selection = discord_responses.NUMBERS_TO_INDEX_MAP[reaction.emoji]
 
                 if track_selection is not None:
                     selected_track_id = track_ids[track_selection][track_selection + 1]
-
-                    await validate_song(track_id=selected_track_id)
-                    await add_to_playlist(song_id=selected_track_id)
-
-                    song_add_to_db(song_id=selected_track_id, user=str(ctx.author))
-                    await ctx.channel.send(f'Track has been added to the community playlists!'
-                                           f'{choice(emoji_responses)}')
-                    logger.debug(f'Song of ID {selected_track_id} added to playlists by {ctx.author}')
+                    await validate_song_and_add(ctx, selected_track_id)
                 else:
                     await ctx.channel.send(f'OK, {ctx.author.mention}. I cancelled the track search.')
             except FileExistsError:
@@ -214,29 +200,7 @@ async def search_error(ctx, error):
 @commands.guild_only()
 async def add(ctx, song_url_or_id: str):
     logger.debug(f'User {ctx.author} invoked $add with input {song_url_or_id}')
-    try:
-        converted_song_id = await convert_to_track_id(song_url_or_id)
-        await validate_song(track_id=converted_song_id)
-        await add_to_playlist(song_id=converted_song_id)
-        song_add_to_db(song_id=converted_song_id, user=str(ctx.author))
-        await ctx.channel.send(f'Track has been added to the community playlists! {choice(emoji_responses)}')
-        logger.debug(f'Song of ID {converted_song_id} added to playlists by {ctx.author}')
-
-    except IndexError:
-        await ctx.send(f'Please enter a Spotify track ID, {ctx.author.mention}')
-    except SpotifyException:
-        await ctx.send(f'Please enter a valid argument, {ctx.author.mention}')
-        await ctx.send(f'Valid arguments for $add are the raw Spotify song link, song URI, '
-                       f'or song ID')
-    except FileExistsError:
-        await ctx.send(f"Track already exists in dynamic playlist, "
-                       f"{ctx.author.mention}! I'm not gonna re-add it!")
-    except ValueError:
-        await ctx.send(f"Cannot add podcast episode to playlist, "
-                       f"{ctx.author.mention}!")
-    except OverflowError:
-        await ctx.send(f"Cannot add songs longer than 10 minutes "
-                       f"to playlist, {ctx.author.mention}!")
+    await validate_song_and_add(ctx, song_url_or_id)
 
 
 @add.error

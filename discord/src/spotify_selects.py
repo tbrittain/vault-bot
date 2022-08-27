@@ -1,15 +1,11 @@
-from datetime import datetime, timedelta
 from os import getenv
 from random import choice
 
-from dateutil import tz
-
 from .database_connection import DatabaseConnection
-from .spotify_commands import sp, get_full_playlist
+from .spotify_commands import sp, get_spotify_playlist_songs
 from .vb_utils import get_logger, array_chunks
 
 logger = get_logger(__name__)
-
 environment = getenv("ENVIRONMENT")
 
 if environment == "dev":
@@ -20,6 +16,8 @@ if environment == "dev":
     MOODY_PLAYLIST_ID = getenv("MOODY_PLAYLIST_ID")
     GENRE_PLAYLIST_ID = getenv("GENRE_PLAYLIST_ID")
     PARTY_UNFILTERED_PLAYLIST_ID = getenv("PARTY_UNFILTERED_PLAYLIST_ID")
+    ENERGY_PLAYLIST_ID = getenv("ENERGY_PLAYLIST_ID")
+    SHIFT_PLAYLIST_ID = getenv("SHIFT_PLAYLIST_ID")
 elif environment == "prod":
     PARTY_PLAYLIST_ID = "6ksVLVljYiEUpjSoDh8z0w"
     TOP_50_PLAYLIST_ID = "1b04aMKreEwigG4ivcZNJm"
@@ -28,6 +26,8 @@ elif environment == "prod":
     MOODY_PLAYLIST_ID = "0jiEtmsU9wRGrAVf7O5YeT"
     GENRE_PLAYLIST_ID = "5MDgnMXhfdmxpsCfHz1ioL"
     PARTY_UNFILTERED_PLAYLIST_ID = "6chmLTkj3RZVBPoen7mCs8"
+    ENERGY_PLAYLIST_ID = "6tvj9N8XItXNAw5t9D2e86"
+    SHIFT_PLAYLIST_ID = "4Se66d3h8equYrj7W6msdT"
 
 
 def selects_playlists_coordinator():
@@ -45,7 +45,9 @@ def selects_playlists_coordinator():
     light_playlist_sql = "SELECT * FROM v_light_playlist;"
     moody_playlist_sql = "SELECT * FROM v_moody_playlist;"
     party_unfiltered_playlist_sql = "SELECT * FROM v_party_unfiltered_playlist;"
+    energy_playlist_sql = "SELECT * FROM v_energy_playlist;"
 
+    # region Genre playlist
     genres = get_viable_genres(conn=conn)
     if len(genres) == 0:
         logger.info("No viable genres found, skipping generation of genre playlist")
@@ -55,34 +57,73 @@ def selects_playlists_coordinator():
         genre_playlist_sql = f"""
         SELECT songs.id
         FROM songs
-                 JOIN artists ON songs.artist_id = artists.id
-                 JOIN artists_genres ON artists_genres.artist_id = artists.id
-        WHERE artists_genres.genre = '{selected_genre}';
+        JOIN artists_songs ON artists_songs.song_id = songs.id
+        JOIN artists ON artists.id = artists_songs.artist_id
+        JOIN artists_genres ON artists_genres.artist_id = artists.id
+        WHERE artists_genres.genre = '{selected_genre}'
+        ORDER BY RANDOM()
+        LIMIT 100;
         """
 
-        # formatting time for display in genre playlist description
-        from_timezone = tz.gettz('UTC')
-        local_timezone = tz.gettz('America/Chicago')
-
-        utc = datetime.utcnow()
-        utc = utc.replace(tzinfo=from_timezone)
-        cst = utc.astimezone(tz=local_timezone)
-        cst = cst + timedelta(hours=12)
-
-        weekday = cst.strftime("%A")
-        day = cst.strftime("%B %d")
-        time = cst.strftime("%H:%M %Z")
-
-        time_formatted = f'{weekday}, {day} at {time}'
-
         description = f"A randomly selected genre tracked by VaultBot. " \
-                      f"Currently: {str.title(selected_genre)}. Next update: {time_formatted}"
+                      f"Currently: {str.title(selected_genre)}."
 
         sp.playlist_change_details(playlist_id=GENRE_PLAYLIST_ID, description=description)
         update_playlist(playlist_id=GENRE_PLAYLIST_ID, playlist_sql=genre_playlist_sql, conn=conn)
 
         logger.info(f"Updating aggregate playlist Genre (id: {GENRE_PLAYLIST_ID})")
         logger.info(f"New genre: {selected_genre}, selected out of {len(genres)} viable genres")
+    # endregion
+
+    # region Shift playlist
+    viable_characteristics = get_viable_characteristics(conn=conn)
+
+    first_characteristic = choice(viable_characteristics)
+    viable_characteristics.remove(first_characteristic)
+    second_characteristic = choice(viable_characteristics)
+
+    ranges = []
+    for characteristic in [first_characteristic, second_characteristic]:
+        summary_statistics = get_summary_statistics(conn=conn, characteristic=characteristic)
+
+        quartile = choice(["Q1", "Q2", "Q3", "Q4"])
+        if quartile == "Q1":
+            ranges.append([summary_statistics["minimum"], summary_statistics["Q1"]])
+        elif quartile == "Q2":
+            ranges.append([summary_statistics["Q1"], summary_statistics["mean"]])
+        elif quartile == "Q3":
+            ranges.append([summary_statistics["mean"], summary_statistics["Q3"]])
+        elif quartile == "Q4":
+            ranges.append([summary_statistics["Q3"], summary_statistics["maximum"]])
+
+    shift_playlist_sql = f"""
+    SELECT MIN(songs.id)
+    FROM songs
+    WHERE songs.{first_characteristic} BETWEEN {ranges[0][0]} AND {ranges[0][1]}
+    AND songs.{second_characteristic} BETWEEN {ranges[1][0]} AND {ranges[1][1]}
+    GROUP BY songs.name
+    ORDER BY RANDOM()
+    LIMIT 100;
+    """
+
+    first_characteristic_lower = f"{ranges[0][0] * 100:.1f}%"
+    first_characteristic_upper = f"{ranges[0][1] * 100:.1f}%"
+    second_characteristic_lower = f"{ranges[1][0] * 100:.1f}%"
+    second_characteristic_upper = f"{ranges[1][1] * 100:.1f}%"
+    if first_characteristic == "tempo":
+        first_characteristic_lower = f"{ranges[0][0]:.0f} BPM"
+        first_characteristic_upper = f"{ranges[0][1]:.0f} BPM"
+    elif second_characteristic == "tempo":
+        second_characteristic_lower = f"{ranges[1][0]:.0f} BPM"
+        second_characteristic_upper = f"{ranges[1][1]:.0f} BPM"
+
+    description = f"100 randomly selected songs tracked by VaultBot that have a {first_characteristic} " \
+                  f"between {first_characteristic_lower} and {first_characteristic_upper} and a " \
+                  f"{second_characteristic} between {second_characteristic_lower} and {second_characteristic_upper}."
+
+    sp.playlist_change_details(playlist_id=SHIFT_PLAYLIST_ID, description=description)
+    update_playlist(playlist_id=SHIFT_PLAYLIST_ID, playlist_sql=shift_playlist_sql, conn=conn)
+    # endregion
 
     logger.info(f"Updating aggregate playlist Party (id: {PARTY_PLAYLIST_ID})")
     update_playlist(playlist_id=PARTY_PLAYLIST_ID, playlist_sql=party_playlist_sql, conn=conn)
@@ -102,6 +143,9 @@ def selects_playlists_coordinator():
     logger.info(f"Updating aggregate playlist Moody (id: {MOODY_PLAYLIST_ID})")
     update_playlist(playlist_id=MOODY_PLAYLIST_ID, playlist_sql=moody_playlist_sql, conn=conn)
 
+    logger.info(f"Updating aggregate playlist Energy (id: {ENERGY_PLAYLIST_ID})")
+    update_playlist(playlist_id=ENERGY_PLAYLIST_ID, playlist_sql=energy_playlist_sql, conn=conn)
+
     conn.terminate()
     logger.info("Aggregate playlist generation complete!")
 
@@ -118,7 +162,7 @@ def aggregate_tracks(conn: DatabaseConnection, sql: str) -> list:
 
 def update_playlist(conn: DatabaseConnection, playlist_id: str, playlist_sql: str):
     # pull existing tracks
-    existing_tracks = get_full_playlist(playlist_id=playlist_id)
+    existing_tracks = get_spotify_playlist_songs(playlist_id=playlist_id)
     if len(existing_tracks) > 0:
         existing_tracks = [track['track']['id'] for track in existing_tracks]
     else:
@@ -176,12 +220,134 @@ def get_viable_genres(conn: DatabaseConnection) -> list:
     """
     Retrieves genres containing a minimum of 20 songs from 4+ artists
     """
-    sql = """SELECT artists_genres.genre, COUNT(songs.id) FROM songs JOIN artists ON songs.artist_id = artists.id
-    JOIN artists_genres ON artists_genres.artist_id = artists.id GROUP BY artists_genres.genre
-    HAVING COUNT(songs.id) >= 20 AND COUNT(DISTINCT artists.id) >= 4 ORDER BY COUNT(songs.id) DESC;"""
+    sql = """
+    SELECT artists_genres.genre, COUNT(songs.id)
+    FROM songs
+    JOIN artists_songs ON artists_songs.song_id = songs.id
+    JOIN artists ON artists.id = artists_songs.artist_id
+    JOIN artists_genres ON artists_genres.artist_id = artists.id
+    GROUP BY artists_genres.genre
+    HAVING COUNT(songs.id) >= 20
+    AND COUNT(DISTINCT artists.id) >= 4
+    ORDER BY COUNT(songs.id) DESC;
+    """
 
     genres = conn.select_query_raw(sql=sql)
     return [x[0] for x in genres]
+
+
+def get_viable_characteristics(conn: DatabaseConnection) -> list:
+    """
+    Gets a list of song characteristics that are tracked in the songs table
+    """
+    sql = """
+    SELECT
+    column_name
+    FROM
+        information_schema.columns
+    WHERE
+        table_name = 'songs'
+        AND data_type = 'numeric'
+        AND column_name NOT IN ('length', 'loudness')
+    """
+
+    characteristics = conn.select_query_raw(sql=sql)
+    return [x[0] for x in characteristics]
+
+
+def get_summary_statistics(conn: DatabaseConnection, characteristic: str) -> dict:
+    """
+    Gets a summary of statistics a song characteristic
+    """
+    sql = f"""
+    WITH RECURSIVE
+    summary_stats AS
+    (
+     SELECT 
+      ROUND(AVG({characteristic}), 2) AS mean,
+      PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY {characteristic}) AS median,
+      MIN({characteristic}) AS min,
+      MAX({characteristic}) AS max,
+      MAX({characteristic}) - MIN({characteristic}) AS range,
+      ROUND(STDDEV({characteristic}), 2) AS standard_deviation,
+      ROUND(VARIANCE({characteristic}), 2) AS variance,
+      PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY {characteristic}) AS q1,
+      PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY {characteristic}) AS q3
+       FROM songs
+    ),row_summary_stats AS
+    (
+    SELECT 
+     1 AS sno, 
+     'mean' AS statistic, 
+     mean AS value 
+      FROM summary_stats
+    UNION
+    SELECT 
+     2, 
+     'median', 
+     median 
+      FROM summary_stats
+    UNION
+    SELECT 
+     3, 
+     'minimum', 
+     min 
+      FROM summary_stats
+    UNION
+    SELECT 
+     4, 
+     'maximum', 
+     max 
+      FROM summary_stats
+    UNION
+    SELECT 
+     5, 
+     'range', 
+     range 
+      FROM summary_stats
+    UNION
+    SELECT 
+     6, 
+     'standard deviation', 
+     standard_deviation 
+      FROM summary_stats
+    UNION
+    SELECT 
+     7, 
+     'variance', 
+     variance 
+      FROM summary_stats
+    UNION
+    SELECT 
+     9, 
+     'Q1', 
+     q1 
+      FROM summary_stats
+    UNION
+    SELECT 
+     10, 
+     'Q3', 
+     q3 
+      FROM summary_stats
+    UNION
+    SELECT 
+     11, 
+     'IQR', 
+     (q3 - q1) 
+      FROM summary_stats
+    UNION
+    SELECT 
+     12, 
+     'skewness', 
+     ROUND(3 * (mean - median)::NUMERIC / standard_deviation, 2) AS skewness 
+      FROM summary_stats
+    )SELECT * 
+     FROM row_summary_stats
+      ORDER BY sno;
+    """
+
+    summary_stats = conn.select_query_raw(sql=sql)
+    return {x[1]: x[2] for x in summary_stats}
 
 
 def songs_and_artists_exist(conn: DatabaseConnection) -> bool:

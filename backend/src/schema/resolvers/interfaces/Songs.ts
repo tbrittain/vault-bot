@@ -24,7 +24,7 @@ export interface ISongDetails {
 }
 
 export interface ISongArtist {
-  artistId: string
+  id: string
 }
 
 export interface IGetSimilarTracksArgs {

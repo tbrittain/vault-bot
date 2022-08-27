@@ -1,12 +1,13 @@
 import {
+  BelongsToMany,
   Column,
-  ForeignKey,
   Model,
   PrimaryKey,
   Table
-} from 'sequelize-typescript'
-import Artist from './Artist.model'
+} from "sequelize-typescript";
 import { ITableOptions } from './interfaces/ITableOptions'
+import ArtistSong from "./ArtistSong.model";
+import Artist from "./Artist.model";
 
 const SongOptions: ITableOptions = {
   tableName: 'songs',
@@ -19,10 +20,6 @@ export default class Song extends Model {
   @PrimaryKey
   @Column
   id!: string
-
-  @Column
-  @ForeignKey(() => Artist)
-  artistId!: string
 
   @Column
   name!: string
@@ -62,4 +59,7 @@ export default class Song extends Model {
 
   @Column
   album!: string
+
+  @BelongsToMany(() => Artist, () => ArtistSong)
+  artists!: Artist[]
 }

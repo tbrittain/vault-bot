@@ -1,6 +1,5 @@
-import Song from '../../db/models/Song.model'
-import Artist from '../../db/models/Artist.model'
-import { Op, Sequelize } from 'sequelize'
+import Song from "../../database/models/Song.model";
+import { Op, Sequelize } from "sequelize";
 import {
   IFindTracksLikeArgs,
   IGetSimilarTracksArgs,
@@ -8,9 +7,10 @@ import {
   IGetTracksFromAlbumArgs,
   ISongArtist,
   ISongDetails
-} from './interfaces/Songs'
-import { getSimilarSongs } from '../../db/utils/SongSimilarity'
-import ArchiveSong from '../../db/models/ArchiveSong.model'
+} from "./interfaces/Songs";
+import { getSimilarSongs } from "../../database/utils/SongSimilarity";
+import ArchiveSong from "../../database/models/ArchiveSong.model";
+import Artist from "../../database/models/Artist.model";
 
 export default {
   Query: {
@@ -36,9 +36,16 @@ export default {
       const { album, artistId } = args
       let result = await Song.findAll({
         where: {
-          album: album,
-          artistId: artistId
-        }
+          album: album
+        },
+        include: [
+          {
+            model: Artist,
+            where: {
+              id: artistId
+            }
+          }
+        ]
       }).catch((err) => console.error(err))
       result = JSON.parse(JSON.stringify(result))
       return result
@@ -83,7 +90,7 @@ export default {
       }
 
       if (limit < 1 || limit > 100) {
-        throw new SyntaxError('limit must be between 1 and 100')
+        throw new Error('limit must be between 1 and 100')
       }
 
       return await getSimilarSongs(id, limit)
@@ -113,16 +120,20 @@ export default {
         valence: parent.valence
       }
     },
-    async artist(parent: ISongArtist) {
-      const { artistId } = parent
-      let result = await Artist.findOne({
-        where: {
-          id: artistId
-        }
-      }).catch((err) => console.error(err))
-
-      result = JSON.parse(JSON.stringify(result))
-      return result
+    async artists(parent: ISongArtist) {
+      const { id: songId } = parent
+      return await Artist.findAll({
+        include: [
+          {
+            model: Song,
+            where: {
+              id: songId
+            }
+          }
+        ]
+      })
+        .then((res) => JSON.parse(JSON.stringify(res)))
+        .catch((err) => console.error(err))
     },
     async history(parent: IGetTrackArgs) {
       const { id } = parent
