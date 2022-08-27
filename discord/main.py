@@ -88,7 +88,7 @@ async def hourly_cleanup():
         bar()
         update_playlist_description(playlist_id=DYNAMIC_PLAYLIST_ID,
                                     initial_desc='The playlist with guaranteed freshness. '
-                                                 'See more at vaultbot.tbrittain.com! ')
+                                                 'See more at vaultbot.tbrittain.com!')
         bar()
         logger.debug('Checking whether to log current playlist data...')
         playlist_snapshot_coordinator()
