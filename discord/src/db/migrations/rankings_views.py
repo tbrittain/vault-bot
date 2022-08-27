@@ -1,7 +1,7 @@
 MIGRATION_ID = "5683f219-58df-4755-8a3e-ac84516a741a"
 
 
-def migration_002(cur):
+def migration_005(cur):
     cur.execute(f"""
         CREATE VIEW v_rankings_songs AS
         SELECT ar.song_id,
