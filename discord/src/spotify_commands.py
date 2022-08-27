@@ -391,26 +391,24 @@ def dyn_playlist_genres(limit: int = None):
     return formatted_result
 
 
-def playlist_description_update(playlist_id: str, initial_desc: str):
+def update_playlist_description(playlist_id: str, initial_desc: str):
     top_genres = dyn_playlist_genres(limit=10)
-    desc = ''
-    desc += initial_desc
+    desc = initial_desc
+
+    end_desc = 'and more!'
 
     if len(top_genres) > 0:
-        desc += 'Prominent genres include: '
+        desc += ' Prominent genres include: '
         for genre, count in top_genres.items():
-            desc += f'{genre}, '
-        desc += 'and more'
+            formatted_genre = f'{genre}, '
+            if len(desc) + len(formatted_genre) > 300 - len(end_desc):
+                break
+            desc += formatted_genre
+        desc += end_desc
 
     description_length = len(desc)
     logger.debug(f'Updated length of playlist {playlist_id} description: {description_length}')
-
-    if len(desc) < 300:  # need to ensure playlist description is 300 characters or fewer
-        logger.debug(
-            f'Playlist description length within valid range. Updating description of {playlist_id} playlist.')
-        sp.playlist_change_details(playlist_id=playlist_id, description=desc)
-    else:
-        logger.warning(f'Description too long. Not updating {playlist_id} playlist description.')
+    sp.playlist_change_details(playlist_id=playlist_id, description=desc)
 
 
 def array_chunks(lst, n):
