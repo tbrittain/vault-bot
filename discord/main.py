@@ -11,7 +11,7 @@ from discord.ext import tasks, commands
 import src.discord_responses as discord_responses
 from src.database_connection import migrate_database
 from src.historical_tracking import playlist_snapshot_coordinator, featured_artist
-from src.spotify_commands import force_refresh_cache, expired_track_removal, playlist_description_update, \
+from src.spotify_commands import force_refresh_cache, expired_track_removal, update_playlist_description, \
     song_search, validate_song_and_add
 from src.spotify_selects import selects_playlists_coordinator
 from src.vb_utils import access_secret_version, get_logger
@@ -22,9 +22,10 @@ base_dir = getcwd()
 environment = getenv("ENVIRONMENT")
 if environment == "dev":
     DISCORD_TOKEN = getenv("DISCORD_TOKEN")
-    SKIP_AGGREGATE_PLAYLIST_GENERATION = getenv("SKIP_AGGREGATE_PLAYLIST_GENERATION")
+    SKIP_AGGREGATE_PLAYLIST_GENERATION = bool(getenv("SKIP_AGGREGATE_PLAYLIST_GENERATION"))
+    DYNAMIC_PLAYLIST_ID = getenv("DYNAMIC_PLAYLIST_ID")
 
-    if DISCORD_TOKEN is None:
+    if None in [DISCORD_TOKEN, DYNAMIC_PLAYLIST_ID]:
         logger.fatal("No Discord token found. Please set the DISCORD_TOKEN environment variable.", exc_info=True)
         exit(1)
 
@@ -38,6 +39,8 @@ elif environment == "prod":
     DISCORD_TOKEN = access_secret_version(secret_id="vb-discord-token",
                                           project_id=project_id)
     SKIP_AGGREGATE_PLAYLIST_GENERATION = False
+    DYNAMIC_PLAYLIST_ID = '5YQHb5wt9d0hmShWNxjsTs'
+
     logger.info("Running program in production mode")
 else:
     logger.fatal("No environment variable set. Please set the ENVIRONMENT environment variable.", exc_info=True)
@@ -83,9 +86,9 @@ async def hourly_cleanup():
         force_refresh_cache()
         expired_track_removal()
         bar()
-        playlist_description_update(playlist_id="5YQHb5wt9d0hmShWNxjsTs",
+        update_playlist_description(playlist_id=DYNAMIC_PLAYLIST_ID,
                                     initial_desc='The playlist with guaranteed freshness. '
-                                                 'See more at vaultbot.tbrittain.com! ')
+                                                 'See more at vaultbot.tbrittain.com!')
         bar()
         logger.debug('Checking whether to log current playlist data...')
         playlist_snapshot_coordinator()
