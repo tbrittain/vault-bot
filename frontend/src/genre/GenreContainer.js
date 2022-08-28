@@ -69,7 +69,7 @@ const GenreContainer = () => {
 						color: theme.palette.getContrastText(genreToMuiColor(genreName)),
 					}}
 				>
-					"Total artists:
+					Total artists:{" "}
 					{artists.length >= 20 && (
 						<CountUpAnimation>{Number(artists.length)}</CountUpAnimation>
 					)}
