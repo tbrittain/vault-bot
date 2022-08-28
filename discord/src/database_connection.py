@@ -1,6 +1,7 @@
 from datetime import datetime
 from io import StringIO
 from os import getenv
+from typing import Union
 
 import pandas as pd
 import psycopg2
@@ -198,7 +199,8 @@ class DatabaseConnection:
             cur.close()
         return df.count()[0]
 
-    def insert_single_row(self, table: str, columns: tuple, row: tuple) -> bool:
+    def insert_single_row(self, table: str, columns: tuple, row: tuple,
+                          return_column_name: str = None) -> Union[int, bool]:
         cur = self.conn.cursor()
 
         num_params = len(row)
@@ -212,14 +214,20 @@ class DatabaseConnection:
 
         formatted_columns = str(columns).replace("'", "").replace('"', '')
 
+        inserted_id = None
         try:
-            cur.execute(f"""INSERT INTO {table} {formatted_columns} VALUES {params}""", row)
+            sql = f"""INSERT INTO {table} {formatted_columns} VALUES {params}"""
+            if return_column_name:
+                sql += f" RETURNING {return_column_name}"
+            cur.execute(sql, row)
+            if return_column_name:
+                inserted_id = cur.fetchone()[0]
         except Exception as e:
             error_code = psycopg2.errors.lookup(e.pgcode)
             raise error_code
         finally:
             cur.close()
-        return True
+        return inserted_id if return_column_name else True
 
 
 def migrate_database():
