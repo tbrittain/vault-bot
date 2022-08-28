@@ -373,13 +373,14 @@ def dyn_playlist_genres(limit: int = None):
     conn = DatabaseConnection()
 
     sql = """
-    SELECT artists_genres.genre, COUNT(artists_genres.genre)
-    FROM dynamic
-        JOIN songs ON dynamic.song_id = songs.id
-        JOIN artists_songs ON songs.id = artists_songs.song_id
+    SELECT g.name, COUNT(g.name)
+    FROM dynamic d
+        JOIN songs s ON d.song_id = s.id
+        JOIN artists_songs ON s.id = artists_songs.song_id
         JOIN artists_genres ON artists_songs.artist_id = artists_genres.artist_id
-    GROUP BY artists_genres.genre
-    ORDER BY COUNT(artists_genres.genre) DESC
+        JOIN genres g on artists_genres.genre_id = g.id
+    GROUP BY g.name
+    ORDER BY COUNT(g.name) DESC
     """
     if limit is not None:
         sql += f" LIMIT {limit}"
