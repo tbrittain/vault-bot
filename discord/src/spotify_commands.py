@@ -2,6 +2,7 @@ import json
 from datetime import datetime, timedelta
 from os import getenv, path
 from random import choice
+from uuid import uuid4
 
 import discord.ext.commands
 import psycopg2
@@ -256,20 +257,33 @@ def add_song_to_db(song_id, user):
             UPDATE songs SET preview_url = NULL WHERE id = '{song_id}'
             """)
 
-    # artist_genres and artists_songs info
     for artist in details['artists']:
         artist_id = artist['id']
 
         spotify_genres = sp.artist(artist_id=artist_id)["genres"]
         if len(spotify_genres) > 0:
+            existing_artist_genres_sql = f"""
+            SELECT g.name
+            FROM genres g
+                     JOIN artists_genres ag on g.id = ag.genre_id
+            WHERE ag.artist_id = '{artist_id}'
+            """
             existing_artist_genres = [x[0] for x in
-                                      conn.select_query_with_condition(query_literal='genre', table='artists_genres',
-                                                                       column_to_match='artist_id',
-                                                                       condition=artist_id)]
+                                      conn.select_query_raw(sql=existing_artist_genres_sql)]
+
             for genre in spotify_genres:
+                existing_genre = conn.select_query_with_condition(query_literal='id', table='genres',
+                                                                  column_to_match='name', condition=genre)
+
+                if not existing_genre:
+                    genre_id = conn.insert_single_row(table='genres', columns=('id', 'name'),
+                                                      row=(str(uuid4()), genre), return_column_name="id")
+                else:
+                    genre_id = existing_genre[0]
+
                 if genre not in existing_artist_genres:
-                    conn.insert_single_row(table='artists_genres', columns=('artist_id', 'genre'),
-                                           row=(artist_id, genre))
+                    conn.insert_single_row(table='artists_genres', columns=('artist_id', 'genre_id'),
+                                           row=(artist_id, genre_id))
 
         existing_artist_songs = [x[0] for x in
                                  conn.select_query_with_condition(query_literal='artist_id', table='artists_songs',
