@@ -2,7 +2,7 @@ import { gql } from 'apollo-server-express'
 
 export default gql`
   type Genre {
-    genre: String!
+    name: String!
     numArtists: Int
     rank: Int
   }

@@ -26,8 +26,8 @@ export default class Genre extends Model {
   })
   id!: string
 
-  @Column
   @Unique
+  @Column
   name: string
 
   @HasMany(() => ArtistGenre)

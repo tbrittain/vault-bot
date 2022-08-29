@@ -5,17 +5,30 @@ import {
   IFindGenresLikeArgs,
   IGetArtistsFromGenreArgs
 } from './interfaces/Genres'
+import Genre from '../../database/models/Genre.model'
 
 export default {
   Query: {
     async getGenres() {
-      const results = await ArtistGenre.findAll({
+      const results = await Genre.findAll({
         attributes: [
-          'genre',
-          [Sequelize.fn('COUNT', Sequelize.col('genre')), 'numArtists']
+          'name',
+          [
+            Sequelize.fn('COUNT', Sequelize.col('artistGenres.artist_id')),
+            'numArtists'
+          ]
         ],
-        group: 'genre',
-        order: [[Sequelize.fn('COUNT', Sequelize.col('genre')), 'DESC']]
+        group: ['name', 'id'],
+        order: [
+          [
+            Sequelize.fn('COUNT', Sequelize.col('artistGenres.artist_id')),
+            'DESC'
+          ]
+        ],
+        include: {
+          model: ArtistGenre,
+          attributes: []
+        }
       }).catch((err) => console.error(err))
 
       const genres = JSON.parse(JSON.stringify(results))
