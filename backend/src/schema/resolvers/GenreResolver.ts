@@ -3,12 +3,21 @@ import ArtistGenre from '../../database/models/ArtistGenre.model'
 import Artist from '../../database/models/Artist.model'
 import {
   IFindGenresLikeArgs,
-  IGetArtistsFromGenreArgs
+  IGetArtistsFromGenreArgs,
+  IGetGenreArgs
 } from './interfaces/Genres'
 import Genre from '../../database/models/Genre.model'
 
 export default {
   Query: {
+    async getGenre(_parent, args: IGetGenreArgs) {
+      const { id } = args
+      return await Genre.findOne({
+        where: {
+          id
+        }
+      })
+    },
     async getGenres() {
       const results = await Genre.findAll({
         attributes: [

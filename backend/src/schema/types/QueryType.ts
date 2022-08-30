@@ -14,6 +14,7 @@ export default gql`
     findArtistsLike(searchQuery: String!): [Artist!]!
 
     # Genres
+    getGenre(id: UUID): Genre!
     getGenres(limit: NonNegativeInt): [Genre!]!
     findGenresLike(searchQuery: String!): [Genre!]!
 

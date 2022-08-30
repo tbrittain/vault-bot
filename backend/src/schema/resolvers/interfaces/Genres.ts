@@ -5,3 +5,7 @@ export interface IGetArtistsFromGenreArgs {
 export interface IFindGenresLikeArgs {
   searchQuery: string
 }
+
+export interface IGetGenreArgs {
+  id: string
+}
