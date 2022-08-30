@@ -29,7 +29,8 @@ export const FEATURED_ARTIST_QUERY = gql`
 			id
 			art
 			genres {
-				genre
+				id
+				name
 			}
 			featured
 		}
@@ -53,7 +54,8 @@ export const ARTIST_QUERY = gql`
 			id
 			art
 			genres {
-				genre
+				name
+				id
 			}
 			songs {
 				name
