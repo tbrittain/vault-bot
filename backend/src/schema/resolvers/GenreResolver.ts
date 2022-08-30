@@ -12,6 +12,7 @@ export default {
     async getGenres() {
       const results = await Genre.findAll({
         attributes: [
+          'id',
           'name',
           [
             Sequelize.fn('COUNT', Sequelize.col('artistGenres.artist_id')),
