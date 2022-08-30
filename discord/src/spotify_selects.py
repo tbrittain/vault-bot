@@ -62,6 +62,8 @@ def selects_playlists_coordinator():
                  JOIN artists_genres ag ON ag.artist_id = a.id
                  JOIN genres g on g.id = ag.genre_id
         WHERE g.id = '{selected_genre[0]}'
+          AND s.is_blacklisted = FALSE
+          AND a.is_blacklisted = FALSE
         ORDER BY RANDOM()
         LIMIT 100;
         """
@@ -98,11 +100,17 @@ def selects_playlists_coordinator():
             ranges.append([summary_statistics["Q3"], summary_statistics["maximum"]])
 
     shift_playlist_sql = f"""
-    SELECT MIN(songs.id)
-    FROM songs
-    WHERE songs.{first_characteristic} BETWEEN {ranges[0][0]} AND {ranges[0][1]}
-    AND songs.{second_characteristic} BETWEEN {ranges[1][0]} AND {ranges[1][1]}
-    GROUP BY songs.name
+    SELECT MIN(s.id)
+    FROM songs s
+             JOIN artists_songs "as" ON "as".song_id = s.id
+             JOIN artists a ON a.id = "as".artist_id
+             JOIN artists_genres ag ON ag.artist_id = a.id
+             JOIN genres g on g.id = ag.genre_id
+    WHERE s.{first_characteristic} BETWEEN {ranges[0][0]} AND {ranges[0][1]}
+        AND s.{second_characteristic} BETWEEN {ranges[1][0]} AND {ranges[1][1]}
+        AND s.is_blacklisted = FALSE
+        AND a.is_blacklisted = FALSE
+    GROUP BY s.name
     ORDER BY RANDOM()
     LIMIT 100;
     """
