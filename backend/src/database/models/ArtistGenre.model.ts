@@ -1,4 +1,5 @@
 import {
+  BelongsTo,
   Column,
   ForeignKey,
   Model,
@@ -22,8 +23,14 @@ export default class ArtistGenre extends Model {
   @ForeignKey(() => Artist)
   artistId!: string
 
+  @BelongsTo(() => Artist)
+  artist!: Artist
+
   @PrimaryKey
   @Column
   @ForeignKey(() => Genre)
-  genre_id!: string
+  genreId!: string
+
+  @BelongsTo(() => Genre)
+  genre!: Genre
 }

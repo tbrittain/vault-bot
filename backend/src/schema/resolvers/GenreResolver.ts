@@ -39,16 +39,26 @@ export default {
       return genres
     },
     async getArtistsFromGenre(_parent, args: IGetArtistsFromGenreArgs) {
-      const { genreName } = args
+      const { genreId } = args
       const results = await Artist.findAll({
-        include: {
-          model: ArtistGenre,
-          where: {
-            genre: genreName
+        include: [
+          {
+            model: ArtistGenre,
+            include: [
+              {
+                model: Genre,
+                where: {
+                  id: genreId
+                },
+                required: true
+              }
+            ],
+            required: true
           }
-        }
+        ]
       }).catch((err) => console.error(err))
       const artists = JSON.parse(JSON.stringify(results))
+
       if (artists.length > 0) {
         return artists
       } else {

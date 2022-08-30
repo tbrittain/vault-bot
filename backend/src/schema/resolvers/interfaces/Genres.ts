@@ -1,5 +1,5 @@
 export interface IGetArtistsFromGenreArgs {
-  genreName: string
+  genreId: string
 }
 
 export interface IFindGenresLikeArgs {
