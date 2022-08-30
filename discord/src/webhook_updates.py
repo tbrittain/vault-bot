@@ -3,8 +3,8 @@ from os import getenv, path
 
 from discord_webhook import DiscordWebhook, DiscordEmbed
 
-from .vb_utils import access_secret_version, get_logger
 from .database_connection import DatabaseConnection
+from .vb_utils import access_secret_version, get_logger
 
 base_dir = path.dirname(path.dirname(path.abspath(__file__)))
 logger = get_logger(__name__)
@@ -80,22 +80,24 @@ def get_daily_stats() -> dict:
 
     # pull genres and isolate novel ones
     genres_added_today_sql = f"""
-    SELECT DISTINCT artists_genres.genre
-    FROM artists_genres
-        JOIN artists_songs ON artists_songs.artist_id = artists_genres.artist_id
-        JOIN archive ON archive.song_id = artists_songs.song_id
-    WHERE archive.added_at BETWEEN now() - INTERVAL '1 day' AND now();
+    SELECT DISTINCT g.name
+    FROM genres g
+        JOIN artists_genres ag on g.id = ag.genre_id
+        JOIN artists_songs "as" ON "as".artist_id = ag.artist_id
+        JOIN archive a ON a.song_id = "as".song_id
+    WHERE a.added_at BETWEEN now() - INTERVAL '1 day' AND now();
     """
 
     genres_added_today = conn.select_query_raw(sql=genres_added_today_sql)
     genres_added_today = [x[0] for x in genres_added_today]
 
     genres_before_today_sql = f"""
-    SELECT DISTINCT artists_genres.genre
-    FROM artists_genres
-            JOIN artists_songs ON artists_songs.artist_id = artists_genres.artist_id
-            JOIN archive ON archive.song_id = artists_songs.song_id
-    WHERE archive.added_at < now() - INTERVAL '1 day';
+    SELECT DISTINCT g.name
+    FROM genres g
+        JOIN artists_genres ag on g.id = ag.genre_id
+            JOIN artists_songs "as" ON "as".artist_id = ag.artist_id
+            JOIN archive a ON a.song_id = "as".song_id
+    WHERE a.added_at < now() - INTERVAL '1 day';
     """
     genres_before_today = conn.select_query_raw(sql=genres_before_today_sql)
     genres_before_today = [x[0] for x in genres_before_today]
@@ -177,4 +179,3 @@ def post_webhook():
     webhook = DiscordWebhook(url=WEBHOOK_URL)
     webhook.add_embed(embed)
     webhook.execute()
-

@@ -3,19 +3,42 @@ import ArtistGenre from '../../database/models/ArtistGenre.model'
 import Artist from '../../database/models/Artist.model'
 import {
   IFindGenresLikeArgs,
-  IGetArtistsFromGenreArgs
+  IGetArtistsFromGenreArgs,
+  IGetGenreArgs
 } from './interfaces/Genres'
+import Genre from '../../database/models/Genre.model'
 
 export default {
   Query: {
+    async getGenre(_parent, args: IGetGenreArgs) {
+      const { id } = args
+      return await Genre.findOne({
+        where: {
+          id
+        }
+      })
+    },
     async getGenres() {
-      const results = await ArtistGenre.findAll({
+      const results = await Genre.findAll({
         attributes: [
-          'genre',
-          [Sequelize.fn('COUNT', Sequelize.col('genre')), 'numArtists']
+          'id',
+          'name',
+          [
+            Sequelize.fn('COUNT', Sequelize.col('artistGenres.artist_id')),
+            'numArtists'
+          ]
         ],
-        group: 'genre',
-        order: [[Sequelize.fn('COUNT', Sequelize.col('genre')), 'DESC']]
+        group: ['name', 'id'],
+        order: [
+          [
+            Sequelize.fn('COUNT', Sequelize.col('artistGenres.artist_id')),
+            'DESC'
+          ]
+        ],
+        include: {
+          model: ArtistGenre,
+          attributes: []
+        }
       }).catch((err) => console.error(err))
 
       const genres = JSON.parse(JSON.stringify(results))
@@ -26,16 +49,26 @@ export default {
       return genres
     },
     async getArtistsFromGenre(_parent, args: IGetArtistsFromGenreArgs) {
-      const { genreName } = args
+      const { genreId } = args
       const results = await Artist.findAll({
-        include: {
-          model: ArtistGenre,
-          where: {
-            genre: genreName
+        include: [
+          {
+            model: ArtistGenre,
+            include: [
+              {
+                model: Genre,
+                where: {
+                  id: genreId
+                },
+                required: true
+              }
+            ],
+            required: true
           }
-        }
+        ]
       }).catch((err) => console.error(err))
       const artists = JSON.parse(JSON.stringify(results))
+
       if (artists.length > 0) {
         return artists
       } else {
@@ -44,11 +77,10 @@ export default {
     },
     async findGenresLike(_parent, args: IFindGenresLikeArgs) {
       const { searchQuery } = args
-      let results = await ArtistGenre.findAll({
+      let results = await Genre.findAll({
         limit: 25,
-        attributes: [[Sequelize.literal('DISTINCT genre'), 'genre']],
         where: {
-          genre: {
+          name: {
             [Op.iLike]: `%${searchQuery}%`
           }
         }

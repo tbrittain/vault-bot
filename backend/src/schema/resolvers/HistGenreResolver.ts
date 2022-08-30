@@ -1,12 +1,18 @@
 import HistGenre from '../../database/models/HistGenre.model'
 import { Op } from 'sequelize'
 import { IGetHistGenresArgs } from './interfaces/HistGenres'
-import { validateDateStrings } from "../../utils/DateValidator";
 
 export default {
   Query: {
     async getHistGenres(_parent, args: IGetHistGenresArgs) {
-      const { startDate, endDate } = validateDateStrings(args.startDate, args.endDate)
+      let { startDate, endDate } = args
+      if (!endDate) {
+        endDate = new Date(startDate)
+        endDate.setDate(endDate.getDate() + 7)
+      }
+
+      startDate.setHours(0, 0, 0, 0)
+      endDate.setHours(0, 0, 0, 0)
 
       let result = await HistGenre.findAll({
         where: {

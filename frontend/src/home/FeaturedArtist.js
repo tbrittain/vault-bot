@@ -21,9 +21,7 @@ const FeaturedArtist = () => {
 	const { loading, error } = useQuery(FEATURED_ARTIST_QUERY, {
 		onCompleted: (data) => {
 			setArtist(data?.getFeaturedArtist)
-			setArtistGenres(
-				data?.getFeaturedArtist?.genres.map((genre) => genre.genre)
-			)
+			setArtistGenres(data?.getFeaturedArtist?.genres)
 		},
 	})
 

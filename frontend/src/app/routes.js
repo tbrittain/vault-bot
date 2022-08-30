@@ -33,7 +33,7 @@ function RouteHandler() {
 					<Route exact path="/artists" element={<ArtistListContainer />} />
 					<Route path="/artists/:artistId" element={<ArtistContainer />} />
 					<Route exact path="/genres" element={<GenreListContainer />} />
-					<Route path="/genres/:genreName" element={<GenreContainer />} />
+					<Route path="/genres/:genreId" element={<GenreContainer />} />
 					<Route path="*" element={<PageNotFound />} />
 				</Routes>
 			</CSSTransition>

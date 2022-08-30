@@ -55,24 +55,27 @@ def selects_playlists_coordinator():
         selected_genre = choice(genres)
 
         genre_playlist_sql = f"""
-        SELECT songs.id
-        FROM songs
-        JOIN artists_songs ON artists_songs.song_id = songs.id
-        JOIN artists ON artists.id = artists_songs.artist_id
-        JOIN artists_genres ON artists_genres.artist_id = artists.id
-        WHERE artists_genres.genre = '{selected_genre}'
+        SELECT s.id
+        FROM songs s
+                 JOIN artists_songs "as" ON "as".song_id = s.id
+                 JOIN artists a ON a.id = "as".artist_id
+                 JOIN artists_genres ag ON ag.artist_id = a.id
+                 JOIN genres g on g.id = ag.genre_id
+        WHERE g.id = '{selected_genre[0]}'
+          AND s.is_blacklisted = FALSE
+          AND a.is_blacklisted = FALSE
         ORDER BY RANDOM()
         LIMIT 100;
         """
 
         description = f"A randomly selected genre tracked by VaultBot. " \
-                      f"Currently: {str.title(selected_genre)}."
+                      f"Currently: {str.title(selected_genre[1])}."
 
         sp.playlist_change_details(playlist_id=GENRE_PLAYLIST_ID, description=description)
         update_playlist(playlist_id=GENRE_PLAYLIST_ID, playlist_sql=genre_playlist_sql, conn=conn)
 
         logger.info(f"Updating aggregate playlist Genre (id: {GENRE_PLAYLIST_ID})")
-        logger.info(f"New genre: {selected_genre}, selected out of {len(genres)} viable genres")
+        logger.info(f"New genre: {selected_genre[1]}, selected out of {len(genres)} viable genres")
     # endregion
 
     # region Shift playlist
@@ -97,11 +100,17 @@ def selects_playlists_coordinator():
             ranges.append([summary_statistics["Q3"], summary_statistics["maximum"]])
 
     shift_playlist_sql = f"""
-    SELECT MIN(songs.id)
-    FROM songs
-    WHERE songs.{first_characteristic} BETWEEN {ranges[0][0]} AND {ranges[0][1]}
-    AND songs.{second_characteristic} BETWEEN {ranges[1][0]} AND {ranges[1][1]}
-    GROUP BY songs.name
+    SELECT MIN(s.id)
+    FROM songs s
+             JOIN artists_songs "as" ON "as".song_id = s.id
+             JOIN artists a ON a.id = "as".artist_id
+             JOIN artists_genres ag ON ag.artist_id = a.id
+             JOIN genres g on g.id = ag.genre_id
+    WHERE s.{first_characteristic} BETWEEN {ranges[0][0]} AND {ranges[0][1]}
+        AND s.{second_characteristic} BETWEEN {ranges[1][0]} AND {ranges[1][1]}
+        AND s.is_blacklisted = FALSE
+        AND a.is_blacklisted = FALSE
+    GROUP BY s.name
     ORDER BY RANDOM()
     LIMIT 100;
     """
@@ -221,19 +230,19 @@ def get_viable_genres(conn: DatabaseConnection) -> list:
     Retrieves genres containing a minimum of 20 songs from 4+ artists
     """
     sql = """
-    SELECT artists_genres.genre, COUNT(songs.id)
-    FROM songs
-    JOIN artists_songs ON artists_songs.song_id = songs.id
-    JOIN artists ON artists.id = artists_songs.artist_id
-    JOIN artists_genres ON artists_genres.artist_id = artists.id
-    GROUP BY artists_genres.genre
-    HAVING COUNT(songs.id) >= 20
-    AND COUNT(DISTINCT artists.id) >= 4
-    ORDER BY COUNT(songs.id) DESC;
+    SELECT g.id, g.name, COUNT(s.id)
+    FROM songs s
+             JOIN artists_songs "as" ON "as".song_id = s.id
+             JOIN artists a ON a.id = "as".artist_id
+             JOIN artists_genres ag ON ag.artist_id = a.id
+             JOIN genres g on ag.genre_id = g.id
+    GROUP BY g.id, g.name
+    HAVING COUNT(s.id) >= 20
+       AND COUNT(DISTINCT a.id) >= 4
+    ORDER BY COUNT(s.id) DESC;
     """
 
-    genres = conn.select_query_raw(sql=sql)
-    return [x[0] for x in genres]
+    return conn.select_query_raw(sql=sql)
 
 
 def get_viable_characteristics(conn: DatabaseConnection) -> list:

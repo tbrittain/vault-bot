@@ -1,7 +1,11 @@
 export interface IGetArtistsFromGenreArgs {
-  genreName: string
+  genreId: string
 }
 
 export interface IFindGenresLikeArgs {
   searchQuery: string
+}
+
+export interface IGetGenreArgs {
+  id: string
 }
