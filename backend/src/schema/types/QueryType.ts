@@ -27,7 +27,6 @@ export default gql`
     getWhenTrackAddedByUsers(id: String!): [SongHistory!]!
 
     # Hist data
-    # TODO: FIX THESE IN RESOLVERS
     getHistGenres(startDate: DateTime!, endDate: DateTime): [HistGenre!]
     getHistTracking(startDate: DateTime!, endDate: DateTime): [HistTracking!]
 

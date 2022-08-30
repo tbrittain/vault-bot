@@ -13,7 +13,7 @@ export const GENERAL_STATS_QUERY = gql`
 `
 
 export const HISTORICAL_GENRES_QUERY = gql`
-	query historicalGenresQuery($startDate: String!) {
+	query historicalGenresQuery($startDate: DateTime!) {
 		getHistGenres(startDate: $startDate) {
 			updatedAt
 			genre
