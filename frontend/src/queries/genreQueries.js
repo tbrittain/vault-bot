@@ -13,7 +13,7 @@ export const ARTISTS_FROM_GENRE_QUERY = gql`
 export const GENRE_SEARCH_QUERY = gql`
 	query genreSearchQuery($searchQuery: String!) {
 		findGenresLike(searchQuery: $searchQuery) {
-			genre
+			name
 		}
 	}
 `

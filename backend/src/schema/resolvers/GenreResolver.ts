@@ -67,11 +67,10 @@ export default {
     },
     async findGenresLike(_parent, args: IFindGenresLikeArgs) {
       const { searchQuery } = args
-      let results = await ArtistGenre.findAll({
+      let results = await Genre.findAll({
         limit: 25,
-        attributes: [[Sequelize.literal('DISTINCT genre'), 'genre']],
         where: {
-          genre: {
+          name: {
             [Op.iLike]: `%${searchQuery}%`
           }
         }
