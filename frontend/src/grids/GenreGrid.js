@@ -30,35 +30,40 @@ const GenreGrid = (props) => {
 							: 4
 					}
 				>
-					{props.genres.map((genre) => (
-						<ImageListItem key={genre} className={classes.tile}>
-							<Button
-								variant="contained"
-								size="large"
-								className={classes.button}
-								component={Link}
-								to={`/genres/${genre}`}
-								lang="en"
-								sx={{
-									backgroundColor: genreToMuiColor(genre),
-									"&:hover": {
-										backgroundColor: lighten(genreToMuiColor(genre), 0.25),
-									},
-								}}
-							>
-								<Typography
-									variant="body1"
+					{props.genres.map((genre) => {
+						return (
+							<ImageListItem key={genre.id} className={classes.tile}>
+								<Button
+									variant="contained"
+									size="large"
+									className={classes.button}
+									component={Link}
+									to={`/genres/${genre.id}`}
+									lang="en"
 									sx={{
-										color: theme.palette.getContrastText(
-											genreToMuiColor(genre)
-										),
+										backgroundColor: genreToMuiColor(genre.name),
+										"&:hover": {
+											backgroundColor: lighten(
+												genreToMuiColor(genre.name),
+												0.25
+											),
+										},
 									}}
 								>
-									{genre}
-								</Typography>
-							</Button>
-						</ImageListItem>
-					))}
+									<Typography
+										variant="body1"
+										sx={{
+											color: theme.palette.getContrastText(
+												genreToMuiColor(genre.name)
+											),
+										}}
+									>
+										{genre.name}
+									</Typography>
+								</Button>
+							</ImageListItem>
+						)
+					})}
 				</ImageList>
 			)}
 			{(typeof props.genres === "undefined" || props.genres.length === 0) && (

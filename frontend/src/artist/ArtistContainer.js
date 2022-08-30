@@ -23,7 +23,7 @@ const ArtistContainer = () => {
 		onCompleted: (data) => {
 			setArtistName(data.getArtist.name)
 			setArtistArt(data.getArtist.art)
-			setGenres(data.getArtist.genres.map((genre) => genre.genre))
+			setGenres(data.getArtist.genres)
 			setNumSongs(data.getArtist.songs.length)
 
 			const albumSongs = {}
