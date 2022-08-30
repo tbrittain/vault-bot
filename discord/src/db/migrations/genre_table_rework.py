@@ -50,8 +50,23 @@ def migration_005(cur):
     --#region View remediation
     UPDATE genres
     SET is_whitelisted = TRUE
-    WHERE (genres.name::text = ANY
-           ('{"pop rap", edm, house, "tropical house", "uk dance", "deep groove house", "bass house", "electronic trap", "la pop", metropopolis, "pop edm", "big room", "vocal house", moombahton, "pop dance", "trap latino", grime, "disco house"}'::text[]));
+    WHERE genres.name = 'pop rap'
+       OR genres.name = 'edm'
+       OR genres.name = 'tropical house'
+       OR genres.name = 'uk dance'
+       OR genres.name = 'deep groove house'
+       OR genres.name = 'bass house'
+       OR genres.name = 'electronic trap'
+       OR genres.name = 'la pop'
+       OR genres.name = 'metropopolis'
+       OR genres.name = 'pop edm'
+       OR genres.name = 'big room'
+       OR genres.name = 'vocal house'
+       OR genres.name = 'moombahton'
+       OR genres.name = 'pop dance'
+       OR genres.name = 'trap latino'
+       OR genres.name = 'grime'
+       OR genres.name = 'disco house';
     
     CREATE VIEW v_party_playlist(id, count) AS
     SELECT s.id,
