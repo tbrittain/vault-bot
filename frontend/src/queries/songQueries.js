@@ -44,6 +44,10 @@ export const SONG_QUERY = gql`
 				liveness
 				valence
 			}
+			songRank {
+				numTimesAdded
+				rank
+			}
 		}
 	}
 `
@@ -94,17 +98,6 @@ export const ALL_SONGS_QUERY = gql`
 				numTimesAdded
 				rank
 			}
-		}
-	}
-`
-
-export const ALL_SONGS_QUERY_SIMPLE = gql`
-	query allSongsQuerySimple {
-		getTracks {
-			name
-			id
-			art
-			album
 		}
 	}
 `
