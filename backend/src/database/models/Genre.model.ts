@@ -2,6 +2,7 @@ import { ITableOptions } from './interfaces/ITableOptions'
 import {
   Column,
   HasMany,
+  HasOne,
   IsUUID,
   Model,
   PrimaryKey,
@@ -10,6 +11,7 @@ import {
 } from 'sequelize-typescript'
 import { DataTypes } from 'sequelize'
 import ArtistGenre from './ArtistGenre.model'
+import GenreRank from './GenreRank.model'
 
 const GenreOptions: ITableOptions = {
   tableName: 'genres',
@@ -32,4 +34,7 @@ export default class Genre extends Model {
 
   @HasMany(() => ArtistGenre)
   artistGenres!: ArtistGenre[]
+
+  @HasOne(() => GenreRank)
+  genreRank: GenreRank
 }
