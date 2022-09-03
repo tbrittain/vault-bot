@@ -9,7 +9,7 @@ export default gql`
     songs: [Song!]!
     wikiBio: wikiBio
     featured: String
-    rank: ArtistRank
+    artistRank: ArtistRank
   }
 
   type wikiBio {

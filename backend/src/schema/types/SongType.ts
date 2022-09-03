@@ -10,7 +10,7 @@ export default gql`
     previewUrl: String
     details: SongDetails!
     history: [SongHistory!]
-    rank: SongRank
+    songRank: SongRank
   }
 
   type SongDetails {

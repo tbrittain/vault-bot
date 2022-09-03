@@ -5,6 +5,7 @@ import {
   ForeignKey,
   IsUUID,
   Model,
+  PrimaryKey,
   Table
 } from 'sequelize-typescript'
 import { DataTypes } from 'sequelize'
@@ -18,6 +19,7 @@ const GenreRankOptions: ITableOptions = {
 
 @Table(GenreRankOptions)
 export default class GenreRank extends Model {
+  @PrimaryKey
   @IsUUID(4)
   @Column({
     type: DataTypes.UUID

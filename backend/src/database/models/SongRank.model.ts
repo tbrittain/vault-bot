@@ -4,6 +4,7 @@ import {
   Column,
   ForeignKey,
   Model,
+  PrimaryKey,
   Table
 } from 'sequelize-typescript'
 import Song from './Song.model'
@@ -16,6 +17,7 @@ const SongRankOptions: ITableOptions = {
 
 @Table(SongRankOptions)
 export default class SongRank extends Model {
+  @PrimaryKey
   @Column
   @ForeignKey(() => Song)
   songId!: string

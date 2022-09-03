@@ -4,7 +4,7 @@ export default gql`
   type Genre {
     id: UUID!
     name: String!
-    rank: GenreRank
+    genreRank: GenreRank
   }
 
   type GenreRank {

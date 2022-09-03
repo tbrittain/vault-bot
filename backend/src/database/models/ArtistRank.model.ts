@@ -4,6 +4,7 @@ import {
   Column,
   ForeignKey,
   Model,
+  PrimaryKey,
   Table
 } from 'sequelize-typescript'
 import Artist from './Artist.model'
@@ -16,6 +17,7 @@ const ArtistRankOptions: ITableOptions = {
 
 @Table(ArtistRankOptions)
 export default class ArtistRank extends Model {
+  @PrimaryKey
   @Column
   @ForeignKey(() => Artist)
   artistId!: string
