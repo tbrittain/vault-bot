@@ -18,7 +18,6 @@ const GlobalCss = withStyles({
 	},
 })(() => null)
 
-// TODO - DataGrid API has changed
 const columns = [
 	{
 		field: "albumArt",
@@ -42,9 +41,40 @@ const columns = [
 		),
 	},
 	{
+		field: "artists",
+		headerName: "Artists",
+		width: 250,
+		renderCell: (params) => {
+			const artists = params.formattedValue
+			return (
+				<>
+					{artists.map((artist, index, self) => (
+						<>
+							<Link
+								to={`/artists/${artist.id}`}
+								className={songListStyles().songListLink}
+							>
+								{artist.name}
+							</Link>
+							{index !== self.length - 1 && ", "}
+						</>
+					))}
+				</>
+			)
+		},
+	},
+	{
 		field: "albumName",
 		headerName: "Album",
 		width: 125,
+	},
+	{
+		field: "numTimesAdded",
+		headerName: "# Times Added",
+	},
+	{
+		field: "rank",
+		headerName: "Rank",
 	},
 	{
 		field: "length",
@@ -97,6 +127,9 @@ const SongList = () => {
 					energy: track.details.energy,
 					valence: track.details.valence,
 					loudness: track.details.loudness,
+					artists: track.artists,
+					numTimesAdded: track.songRank.numTimesAdded,
+					rank: track.songRank.rank,
 				}
 				temp.push(newRow)
 			}
@@ -126,9 +159,13 @@ const SongList = () => {
 					columns={columns}
 					rows={rows}
 					rowHeight={35}
-					checkboxSelection
 					components={{
 						Toolbar: GridToolbar,
+					}}
+					initialState={{
+						sorting: {
+							sortModel: [{ field: "rank", sort: "asc" }],
+						},
 					}}
 				/>
 			</div>

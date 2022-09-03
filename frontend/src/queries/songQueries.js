@@ -86,6 +86,14 @@ export const ALL_SONGS_QUERY = gql`
 				valence
 				loudness
 			}
+			artists {
+				id
+				name
+			}
+			songRank {
+				numTimesAdded
+				rank
+			}
 		}
 	}
 `
