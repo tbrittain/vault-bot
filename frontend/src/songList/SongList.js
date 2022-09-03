@@ -128,8 +128,8 @@ const SongList = () => {
 					valence: track.details.valence,
 					loudness: track.details.loudness,
 					artists: track.artists,
-					numTimesAdded: track.songRank.numTimesAdded,
-					rank: track.songRank.rank,
+					numTimesAdded: track.songRank?.numTimesAdded,
+					rank: track.songRank?.rank,
 				}
 				temp.push(newRow)
 			}
@@ -164,7 +164,10 @@ const SongList = () => {
 					}}
 					initialState={{
 						sorting: {
-							sortModel: [{ field: "rank", sort: "asc" }],
+							sortModel: [
+								{ field: "numTimesAdded", sort: "desc" },
+								{ field: "rank", sort: "asc" },
+							],
 						},
 					}}
 				/>

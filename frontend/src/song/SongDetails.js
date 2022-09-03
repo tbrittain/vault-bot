@@ -221,24 +221,26 @@ const SongDetails = (props) => {
 									}}
 								/>
 							</Button>
-							<Box
-								sx={{
-									display: "flex",
-									justifyContent: "center",
-									flexDirection: "column",
-									alignItems: "center",
-								}}
-							>
-								<Chip
-									label={`#${rank.rank} by number of times added (${rank.numTimesAdded})`}
-									icon={<EmojiEvents />}
-									color="secondary"
+							{rank && (
+								<Box
 									sx={{
-										width: "fit-content",
-										margin: "10px",
+										display: "flex",
+										justifyContent: "center",
+										flexDirection: "column",
+										alignItems: "center",
 									}}
-								/>
-							</Box>
+								>
+									<Chip
+										label={`#${rank.rank} by number of times added (${rank.numTimesAdded})`}
+										icon={<EmojiEvents />}
+										color="secondary"
+										sx={{
+											width: "fit-content",
+											margin: "10px",
+										}}
+									/>
+								</Box>
+							)}
 						</div>
 					</div>
 					<div className={classes.innerContainer}>

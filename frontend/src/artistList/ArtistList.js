@@ -76,10 +76,10 @@ const ArtistList = () => {
 					id: artist.id,
 					art: artist.art,
 					name: artist.name,
-					numUniqueSongs: artist.artistRank.numUniqueSongs,
-					numUniqueSongsRank: artist.artistRank.numUniqueSongsRank,
-					numNonUniqueSongs: artist.artistRank.numNonUniqueSongs,
-					numNonUniqueSongsRank: artist.artistRank.numNonUniqueSongsRank,
+					numUniqueSongs: artist.artistRank?.numUniqueSongs,
+					numUniqueSongsRank: artist.artistRank?.numUniqueSongsRank,
+					numNonUniqueSongs: artist.artistRank?.numNonUniqueSongs,
+					numNonUniqueSongsRank: artist.artistRank?.numNonUniqueSongsRank,
 				}
 				temp.push(newRow)
 			}
@@ -104,7 +104,19 @@ const ArtistList = () => {
 					flexGrow: 1,
 				}}
 			>
-				<DataGrid columns={columns} rows={rows} rowHeight={75} />
+				<DataGrid
+					columns={columns}
+					rows={rows}
+					rowHeight={75}
+					initialState={{
+						sorting: {
+							sortModel: [
+								{ field: "numUniqueSongs", sort: "desc" },
+								{ field: "numUniqueSongsRank", sort: "asc" },
+							],
+						},
+					}}
+				/>
 			</div>
 		</div>
 	)

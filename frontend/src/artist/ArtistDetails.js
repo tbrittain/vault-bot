@@ -61,7 +61,7 @@ const ArtistDetails = (props) => {
 						component="a"
 						href={artistLink}
 						style={{
-							marginTop: 10,
+							margin: 10,
 							backgroundColor: "rgb(35, 207, 95)",
 							color: "white",
 						}}

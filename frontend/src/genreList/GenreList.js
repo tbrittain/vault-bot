@@ -81,10 +81,10 @@ const GenreList = () => {
 				const row = {
 					id: genre.id,
 					name: genre.name,
-					numArtists: genre.genreRank.numArtists, // TODO: test this when the rank does not exist yet
-					numArtistsRank: genre.genreRank.numArtistsRank,
-					numSongs: genre.genreRank.numSongs,
-					numSongsRank: genre.genreRank.numSongsRank,
+					numArtists: genre.genreRank?.numArtists,
+					numArtistsRank: genre.genreRank?.numArtistsRank,
+					numSongs: genre.genreRank?.numSongs,
+					numSongsRank: genre.genreRank?.numSongsRank,
 				}
 				temp.push(row)
 			}
@@ -109,7 +109,19 @@ const GenreList = () => {
 					flexGrow: 1,
 				}}
 			>
-				<DataGrid columns={columns} rows={rows} rowHeight={75} />
+				<DataGrid
+					columns={columns}
+					rows={rows}
+					rowHeight={75}
+					initialState={{
+						sorting: {
+							sortModel: [
+								{ field: "numArtists", sort: "desc" },
+								{ field: "numArtistsRank", sort: "asc" },
+							],
+						},
+					}}
+				/>
 			</div>
 		</div>
 	)
