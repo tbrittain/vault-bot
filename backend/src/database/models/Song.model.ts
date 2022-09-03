@@ -1,13 +1,15 @@
 import {
   BelongsToMany,
   Column,
+  HasOne,
   Model,
   PrimaryKey,
   Table
-} from "sequelize-typescript";
+} from 'sequelize-typescript'
 import { ITableOptions } from './interfaces/ITableOptions'
-import ArtistSong from "./ArtistSong.model";
-import Artist from "./Artist.model";
+import ArtistSong from './ArtistSong.model'
+import Artist from './Artist.model'
+import SongRank from './SongRank.model'
 
 const SongOptions: ITableOptions = {
   tableName: 'songs',
@@ -62,4 +64,7 @@ export default class Song extends Model {
 
   @BelongsToMany(() => Artist, () => ArtistSong)
   artists!: Artist[]
+
+  @HasOne(() => SongRank)
+  songRank: SongRank
 }
