@@ -70,7 +70,7 @@ export default {
     }
   },
   Genre: {
-    async genreRank(parent: Genre | undefined) {
+    async genreRank(parent: Genre) {
       if (parent.genreRank) return parent.genreRank
 
       const genreId = parent.id

@@ -2,15 +2,10 @@ import ArtistGenre from '../../database/models/ArtistGenre.model'
 import Song from '../../database/models/Song.model'
 import Artist from '../../database/models/Artist.model'
 import { Op } from 'sequelize'
-import {
-  IArtistGenresParent,
-  IArtistInfo,
-  IArtistSongsParent,
-  IArtistWikiBioParent,
-  IFindArtistsLikeArgs
-} from './interfaces/Artists'
+import { IArtistInfo, IFindArtistsLikeArgs } from './interfaces/Artists'
 import { getArtistBio } from '../../utils/WikipediaSearch'
 import Genre from '../../database/models/Genre.model'
+import ArtistRank from '../../database/models/ArtistRank.model'
 
 export default {
   Query: {
@@ -58,8 +53,11 @@ export default {
     },
     async getArtists() {
       let result = await Artist.findAll({
-        order: [['name', 'asc']]
+        include: {
+          model: ArtistRank
+        }
       }).catch((err) => console.error(err))
+
       result = JSON.parse(JSON.stringify(result))
       return result
     },
@@ -78,7 +76,7 @@ export default {
     }
   },
   Artist: {
-    async songs(parent: IArtistSongsParent) {
+    async songs(parent: Artist) {
       const artistId = parent.id
 
       let result = await Song.findAll({
@@ -95,7 +93,7 @@ export default {
       result = JSON.parse(JSON.stringify(result))
       return result
     },
-    async genres(parent: IArtistGenresParent) {
+    async genres(parent: Artist) {
       const artistId = parent.id
 
       let result = await ArtistGenre.findAll({
@@ -114,9 +112,22 @@ export default {
 
       return []
     },
-    async wikiBio(parent: IArtistWikiBioParent) {
+    async wikiBio(parent: Artist) {
       const originalArtistName = String(parent.name)
       return await getArtistBio(originalArtistName)
+    },
+    async artistRank(parent: Artist) {
+      if (parent.artistRank) return parent.artistRank
+
+      const artistId = parent.id
+      let result = await ArtistRank.findOne({
+        where: {
+          artistId
+        }
+      })
+
+      result = JSON.parse(JSON.stringify(result))
+      return result
     }
   }
 }
