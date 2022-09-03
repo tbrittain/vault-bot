@@ -28,8 +28,12 @@ export const ALL_GENRES_QUERY = gql`
 		getGenres {
 			id
 			name
-			numArtists
-			rank
+			genreRank {
+				numArtists
+				numArtistsRank
+				numSongs
+				numSongsRank
+			}
 		}
 	}
 `
