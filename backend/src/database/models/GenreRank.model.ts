@@ -1,5 +1,12 @@
 import { ITableOptions } from './interfaces/ITableOptions'
-import { BelongsTo, Column, IsUUID, Model, Table } from 'sequelize-typescript'
+import {
+  BelongsTo,
+  Column,
+  ForeignKey,
+  IsUUID,
+  Model,
+  Table
+} from 'sequelize-typescript'
 import { DataTypes } from 'sequelize'
 import Genre from './Genre.model'
 
@@ -15,6 +22,7 @@ export default class GenreRank extends Model {
   @Column({
     type: DataTypes.UUID
   })
+  @ForeignKey(() => Genre)
   genreId!: string
 
   @BelongsTo(() => Genre)
