@@ -10,6 +10,12 @@ export const ARTISTS_FROM_GENRE_QUERY = gql`
 		getGenre(id: $genreId) {
 			id
 			name
+			genreRank {
+				numArtists
+				numArtistsRank
+				numSongs
+				numSongsRank
+			}
 		}
 	}
 `
