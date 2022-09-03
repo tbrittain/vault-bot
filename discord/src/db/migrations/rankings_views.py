@@ -37,7 +37,7 @@ def migration_006(cur):
                        JOIN songs s ON s.id = "as".song_id
                        JOIN archive a2 ON s.id = a2.song_id
               GROUP BY a.id)
-    SELECT a.id,
+    SELECT a.id      AS artist_id,
            a.name,
            aus.num_unique_songs,
            aus.rank  AS num_unique_songs_rank,
@@ -69,7 +69,7 @@ def migration_006(cur):
                        JOIN artists_songs "as" ON a.id = "as".artist_id
                        JOIN songs s ON "as".song_id = s.id
               GROUP BY g.id)
-    SELECT g.id,
+    SELECT g.id      AS genre_id,
            g.name,
            grba.num_artists,
            grba.rank AS num_artists_rank,
