@@ -70,6 +70,12 @@ export const ARTIST_QUERY = gql`
 				art
 				album
 			}
+			artistRank {
+				numUniqueSongs
+				numUniqueSongsRank
+				numNonUniqueSongs
+				numNonUniqueSongsRank
+			}
 		}
 	}
 `
