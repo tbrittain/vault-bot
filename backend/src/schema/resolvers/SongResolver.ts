@@ -1,16 +1,15 @@
-import Song from "../../database/models/Song.model";
-import { Op, Sequelize } from "sequelize";
+import Song from '../../database/models/Song.model'
+import { Op, Sequelize } from 'sequelize'
 import {
   IFindTracksLikeArgs,
   IGetSimilarTracksArgs,
   IGetTrackArgs,
-  IGetTracksFromAlbumArgs,
-  ISongArtist,
-  ISongDetails
-} from "./interfaces/Songs";
-import { getSimilarSongs } from "../../database/utils/SongSimilarity";
-import ArchiveSong from "../../database/models/ArchiveSong.model";
-import Artist from "../../database/models/Artist.model";
+  IGetTracksFromAlbumArgs
+} from './interfaces/Songs'
+import { getSimilarSongs } from '../../database/utils/SongSimilarity'
+import ArchiveSong from '../../database/models/ArchiveSong.model'
+import Artist from '../../database/models/Artist.model'
+import SongRank from '../../database/models/SongRank.model'
 
 export default {
   Query: {
@@ -27,8 +26,16 @@ export default {
     },
     async getTracks() {
       let result = await Song.findAll({
-        order: [['name', 'asc']]
+        include: [
+          {
+            model: SongRank
+          },
+          {
+            model: Artist
+          }
+        ]
       }).catch((err) => console.error(err))
+
       result = JSON.parse(JSON.stringify(result))
       return result
     },
@@ -107,7 +114,7 @@ export default {
     }
   },
   Song: {
-    async details(parent: ISongDetails) {
+    async details(parent: Song) {
       return {
         length: parent.length,
         tempo: parent.tempo,
@@ -120,7 +127,8 @@ export default {
         valence: parent.valence
       }
     },
-    async artists(parent: ISongArtist) {
+    async artists(parent: Song) {
+      if (parent.artists) return parent.artists
       const { id: songId } = parent
       return await Artist.findAll({
         include: [
@@ -135,7 +143,7 @@ export default {
         .then((res) => JSON.parse(JSON.stringify(res)))
         .catch((err) => console.error(err))
     },
-    async history(parent: IGetTrackArgs) {
+    async history(parent: Song) {
       const { id } = parent
       return await ArchiveSong.findAll({
         where: {
@@ -144,6 +152,20 @@ export default {
       })
         .then((res) => JSON.parse(JSON.stringify(res)))
         .catch((err) => console.error(err))
+    },
+    async songRank(parent: Song) {
+      if (parent.songRank) return parent.songRank
+
+      const songId = parent.id
+
+      let result = await SongRank.findOne({
+        where: {
+          songId
+        }
+      })
+
+      result = JSON.parse(JSON.stringify(result))
+      return result
     }
   }
 }
