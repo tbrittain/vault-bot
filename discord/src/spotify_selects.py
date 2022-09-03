@@ -39,8 +39,14 @@ def selects_playlists_coordinator():
         conn.terminate()
         return
 
+    top_50_playlist_sql = """
+    SELECT song_id AS id, num_times_added AS count
+    FROM v_rankings_songs
+    ORDER BY rank
+    LIMIT 50
+    """
+
     party_playlist_sql = "SELECT * FROM v_party_playlist;"
-    top_50_playlist_sql = "SELECT * FROM v_top_50_playlist;"
     chill_playlist_sql = "SELECT * FROM v_chill_playlist;"
     light_playlist_sql = "SELECT * FROM v_light_playlist;"
     moody_playlist_sql = "SELECT * FROM v_moody_playlist;"

@@ -82,6 +82,8 @@ def migration_006(cur):
                   ON g.id = grbs.genre_id
     ORDER BY num_artists DESC, num_songs DESC;
     
+    DROP VIEW v_top_50_playlist;
+    
     INSERT INTO migration (id, description)
     VALUES ('{MIGRATION_ID}', 'Create rankings views for artists, songs, and genres');
     """)
