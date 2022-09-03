@@ -7,10 +7,9 @@ import { Alert, Avatar } from "@mui/material"
 import { DataGrid } from "@mui/x-data-grid"
 import { ALL_ARTISTS_QUERY } from "../queries/artistQueries"
 
-// TODO - DataGrid API has changed
 const columns = [
 	{
-		field: "artistArt",
+		field: "art",
 		headerName: "Artist Art",
 		width: 175,
 		sortable: false,
@@ -27,9 +26,9 @@ const columns = [
 		),
 	},
 	{
-		field: "artistName",
+		field: "name",
 		headerName: "Artist",
-		width: 300,
+		width: 150,
 		renderCell: (params) => (
 			<Link
 				to={`/artists/${params.id}`}
@@ -38,6 +37,30 @@ const columns = [
 				{params.value}
 			</Link>
 		),
+	},
+	{
+		field: "numUniqueSongs",
+		headerName: "# Unique Songs",
+		width: 150,
+		type: "number",
+	},
+	{
+		field: "numUniqueSongsRank",
+		headerName: "# Unique Songs Rank",
+		width: 150,
+		type: "number",
+	},
+	{
+		field: "numNonUniqueSongs",
+		headerName: "# Songs",
+		width: 150,
+		type: "number",
+	},
+	{
+		field: "numNonUniqueSongsRank",
+		headerName: "# Songs Rank",
+		width: 150,
+		type: "number",
 	},
 ]
 
@@ -52,7 +75,11 @@ const ArtistList = () => {
 				const newRow = {
 					id: artist.id,
 					art: artist.art,
-					artistName: artist.name,
+					name: artist.name,
+					numUniqueSongs: artist.artistRank.numUniqueSongs,
+					numUniqueSongsRank: artist.artistRank.numUniqueSongsRank,
+					numNonUniqueSongs: artist.artistRank.numNonUniqueSongs,
+					numNonUniqueSongsRank: artist.artistRank.numNonUniqueSongsRank,
 				}
 				temp.push(newRow)
 			}

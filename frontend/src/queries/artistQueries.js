@@ -22,6 +22,7 @@ export const ARTIST_BIO_QUERY = gql`
 	}
 `
 
+// TODO: Update this with ranking too
 export const FEATURED_ARTIST_QUERY = gql`
 	query featuredArtistQuery {
 		getFeaturedArtist {
@@ -43,6 +44,12 @@ export const ALL_ARTISTS_QUERY = gql`
 			name
 			id
 			art
+			artistRank {
+				numUniqueSongs
+				numUniqueSongsRank
+				numNonUniqueSongs
+				numNonUniqueSongsRank
+			}
 		}
 	}
 `
