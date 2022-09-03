@@ -13,24 +13,19 @@ import { ARTISTS_FROM_GENRE_QUERY } from "../queries/genreQueries"
 const GenreContainer = () => {
 	const classes = genreStyles()
 	const theme = useTheme()
-	const { genreName } = useParams()
+	const { genreId } = useParams()
+	const [genre, setGenre] = useState({})
 	const [artists, setArtists] = useState([])
 
 	const { loading, error } = useQuery(ARTISTS_FROM_GENRE_QUERY, {
 		variables: {
-			genreName,
+			genreId,
 		},
 		onCompleted: (data) => {
+			setGenre(data?.getGenre)
 			setArtists(data?.getArtistsFromGenre)
 		},
 	})
-
-	const everyNoiseGenre = genreName
-		.replaceAll(" ", "")
-		.replaceAll("&", "")
-		.replaceAll("-", "")
-
-	const everyNoiseLink = `https://everynoise.com/engenremap-${everyNoiseGenre}.html`
 
 	if (loading) {
 		return <LoadingScreen text="Loading genre..." />
@@ -42,6 +37,13 @@ const GenreContainer = () => {
 		)
 	}
 
+	const everyNoiseGenre = genre.name
+		.replaceAll(" ", "")
+		.replaceAll("&", "")
+		.replaceAll("-", "")
+
+	const everyNoiseLink = `https://everynoise.com/engenremap-${everyNoiseGenre}.html`
+
 	return (
 		<>
 			<Typography variant="h1">Genre Details</Typography>
@@ -49,27 +51,27 @@ const GenreContainer = () => {
 				className={classes.title}
 				elevation={3}
 				style={{
-					backgroundColor: genreToMuiColor(genreName),
+					backgroundColor: genreToMuiColor(genre.name),
 				}}
 			>
 				<Typography
 					variant="h2"
 					sx={{
-						color: theme.palette.getContrastText(genreToMuiColor(genreName)),
+						color: theme.palette.getContrastText(genreToMuiColor(genre.name)),
 						textTransform: "capitalize",
 						fontWeight: "fontWeightBold",
 					}}
 				>
-					<i>{genreName}</i>
+					<i>{genre.name}</i>
 				</Typography>
 				<Typography
 					variant="h6"
 					style={{
 						fontWeight: "fontWeightLight",
-						color: theme.palette.getContrastText(genreToMuiColor(genreName)),
+						color: theme.palette.getContrastText(genreToMuiColor(genre.name)),
 					}}
 				>
-					"Total artists:
+					Total artists:{" "}
 					{artists.length >= 20 && (
 						<CountUpAnimation>{Number(artists.length)}</CountUpAnimation>
 					)}
@@ -82,7 +84,7 @@ const GenreContainer = () => {
 					target="_blank"
 					rel="noopener noreferrer"
 					style={{
-						color: theme.palette.getContrastText(genreToMuiColor(genreName)),
+						color: theme.palette.getContrastText(genreToMuiColor(genre.name)),
 					}}
 				>
 					Open on EveryNoise

@@ -4,7 +4,6 @@ import { Link } from "react-router-dom"
 import LoadingScreen from "../loading/LoadingScreen"
 import genreListStyles from "./GenreListStyles"
 import genreToMuiColor from "../utils/genreToMuiColor"
-import { v4 as uuidv4 } from "uuid"
 import { Alert, Paper, Typography } from "@mui/material"
 import { DataGrid } from "@mui/x-data-grid"
 import { ALL_GENRES_QUERY } from "../queries/genreQueries"
@@ -18,7 +17,7 @@ const columns = [
 		renderCell: (params) => (
 			<Paper
 				component={Link}
-				to={`/genres/${params.value}`}
+				to={`/genres/${params.id}`}
 				style={{
 					width: "97%",
 					height: "97%",
@@ -26,7 +25,7 @@ const columns = [
 					justifyContent: "center",
 					alignItems: "center",
 					textDecoration: "none",
-					background: genreToMuiColor(params.value),
+					background: genreToMuiColor(params.formattedValue),
 				}}
 			>
 				<Typography
@@ -36,10 +35,12 @@ const columns = [
 						margin: 5,
 						fontWeight: "fontWeightLight",
 						color: (theme) =>
-							theme.palette.getContrastText(genreToMuiColor(params.value)),
+							theme.palette.getContrastText(
+								genreToMuiColor(params.formattedValue)
+							),
 					}}
 				>
-					{params.value}
+					{params.formattedValue}
 				</Typography>
 			</Paper>
 		),
@@ -67,8 +68,8 @@ const GenreList = () => {
 			const temp = []
 			for (const genre of data.getGenres) {
 				const newRow = {
-					id: uuidv4(),
-					genreName: genre.genre,
+					id: genre.id,
+					genreName: genre.name,
 					numArtists: genre.numArtists,
 					rank: genre.rank,
 				}

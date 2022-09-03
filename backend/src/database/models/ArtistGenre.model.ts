@@ -1,4 +1,5 @@
 import {
+  BelongsTo,
   Column,
   ForeignKey,
   Model,
@@ -7,6 +8,7 @@ import {
 } from 'sequelize-typescript'
 import Artist from './Artist.model'
 import { ITableOptions } from './interfaces/ITableOptions'
+import Genre from './Genre.model'
 
 const ArtistGenreOptions: ITableOptions = {
   tableName: 'artists_genres',
@@ -21,7 +23,14 @@ export default class ArtistGenre extends Model {
   @ForeignKey(() => Artist)
   artistId!: string
 
+  @BelongsTo(() => Artist)
+  artist!: Artist
+
   @PrimaryKey
   @Column
-  genre!: string
+  @ForeignKey(() => Genre)
+  genreId!: string
+
+  @BelongsTo(() => Genre)
+  genre!: Genre
 }

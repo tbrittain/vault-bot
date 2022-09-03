@@ -29,7 +29,8 @@ export const SONG_QUERY = gql`
 				name
 				art
 				genres {
-					genre
+					id
+					name
 				}
 			}
 			details {
