@@ -191,3 +191,14 @@ def featured_artist():
         conn.commit()
 
     conn.terminate()
+
+
+def refresh_rankings():
+    conn = DatabaseConnection()
+
+    conn.raw_query("REFRESH MATERIALIZED VIEW v_rankings_songs;")
+    conn.raw_query("REFRESH MATERIALIZED VIEW v_rankings_artists;")
+    conn.raw_query("REFRESH MATERIALIZED VIEW v_rankings_genres;")
+
+    conn.commit()
+    conn.terminate()

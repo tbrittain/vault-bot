@@ -10,7 +10,7 @@ from discord.ext import tasks, commands
 
 import src.discord_responses as discord_responses
 from src.database_connection import migrate_database
-from src.historical_tracking import playlist_snapshot_coordinator, featured_artist
+from src.historical_tracking import playlist_snapshot_coordinator, featured_artist, refresh_rankings
 from src.spotify_commands import force_refresh_cache, expired_track_removal, update_playlist_description, \
     song_search, validate_song_and_add
 from src.spotify_selects import selects_playlists_coordinator
@@ -81,7 +81,7 @@ async def on_ready():
 async def hourly_cleanup():
     await bot.wait_until_ready()
     logger.info(f"Beginning hourly cleanup...")
-    with alive_bar(total=5, title='Hourly cleanup...') as bar:
+    with alive_bar(total=6, title='Hourly cleanup...') as bar:
         logger.debug("Performing expired track removal (if necessary)...")
         force_refresh_cache()
         expired_track_removal()
@@ -103,6 +103,9 @@ async def hourly_cleanup():
         bar()
         logger.debug('Checking whether to select a new featured artist')
         featured_artist()
+        bar()
+        logger.debug('Refreshing rankings views')
+        refresh_rankings()
         bar()
         logger.info('Playlist stats logging complete!')
     logger.info('Hourly playlist cleanup complete!')

@@ -8,10 +8,9 @@ import { Alert, Paper, Typography } from "@mui/material"
 import { DataGrid } from "@mui/x-data-grid"
 import { ALL_GENRES_QUERY } from "../queries/genreQueries"
 
-// TODO - DataGrid API has changed
 const columns = [
 	{
-		field: "genreName",
+		field: "name",
 		headerName: "Genre",
 		width: 300,
 		renderCell: (params) => (
@@ -47,13 +46,25 @@ const columns = [
 	},
 	{
 		field: "numArtists",
-		headerName: "Artists",
+		headerName: "# Artists",
 		width: 150,
 		type: "number",
 	},
 	{
-		field: "rank",
-		headerName: "Rank",
+		field: "numArtistsRank",
+		headerName: "# Artists Rank",
+		width: 150,
+		type: "number",
+	},
+	{
+		field: "numSongs",
+		headerName: "# Songs",
+		width: 150,
+		type: "number",
+	},
+	{
+		field: "numSongsRank",
+		headerName: "# Songs Rank",
 		width: 150,
 		type: "number",
 	},
@@ -67,13 +78,15 @@ const GenreList = () => {
 		onCompleted: (data) => {
 			const temp = []
 			for (const genre of data.getGenres) {
-				const newRow = {
+				const row = {
 					id: genre.id,
-					genreName: genre.name,
-					numArtists: genre.numArtists,
-					rank: genre.rank,
+					name: genre.name,
+					numArtists: genre.genreRank?.numArtists,
+					numArtistsRank: genre.genreRank?.numArtistsRank,
+					numSongs: genre.genreRank?.numSongs,
+					numSongsRank: genre.genreRank?.numSongsRank,
 				}
-				temp.push(newRow)
+				temp.push(row)
 			}
 			setRows(temp)
 		},
@@ -96,7 +109,19 @@ const GenreList = () => {
 					flexGrow: 1,
 				}}
 			>
-				<DataGrid columns={columns} rows={rows} rowHeight={75} />
+				<DataGrid
+					columns={columns}
+					rows={rows}
+					rowHeight={75}
+					initialState={{
+						sorting: {
+							sortModel: [
+								{ field: "numArtists", sort: "desc" },
+								{ field: "numArtistsRank", sort: "asc" },
+							],
+						},
+					}}
+				/>
 			</div>
 		</div>
 	)

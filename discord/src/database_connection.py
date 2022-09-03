@@ -88,6 +88,16 @@ class DatabaseConnection:
 
         return tracking[0]
 
+    def raw_query(self, sql):
+        cur = self.conn.cursor()
+        try:
+            cur.execute(sql)
+        except Exception as e:
+            error_code = psycopg2.errors.lookup(e.pgcode)
+            raise error_code
+        finally:
+            cur.close()
+
     def select_query_raw(self, sql: str):
         cur = self.conn.cursor()
         try:

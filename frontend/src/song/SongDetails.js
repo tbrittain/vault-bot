@@ -14,6 +14,7 @@ import {
 	Avatar,
 	Box,
 	Button,
+	Chip,
 	IconButton,
 	Paper,
 	Tab,
@@ -22,11 +23,13 @@ import {
 	useMediaQuery,
 	useTheme,
 } from "@mui/material"
+import { EmojiEvents } from "@mui/icons-material"
 
 const SongDetails = (props) => {
 	const classes = songStyles()
 	const theme = useTheme()
 	const songLink = `spotify:track:${props.id}`
+	const rank = props.rank
 
 	const [value, setValue] = useState(0)
 	const [playing, setPlaying] = useState(false)
@@ -205,7 +208,7 @@ const SongDetails = (props) => {
 								component="a"
 								href={songLink}
 								sx={{
-									marginTop: 10,
+									marginTop: "10px",
 									backgroundColor: "rgb(35, 207, 95)",
 									color: "white",
 									fontWeight: "fontWeightLight",
@@ -218,6 +221,26 @@ const SongDetails = (props) => {
 									}}
 								/>
 							</Button>
+							{rank && (
+								<Box
+									sx={{
+										display: "flex",
+										justifyContent: "center",
+										flexDirection: "column",
+										alignItems: "center",
+									}}
+								>
+									<Chip
+										label={`#${rank.rank} by number of times added (${rank.numTimesAdded})`}
+										icon={<EmojiEvents />}
+										color="secondary"
+										sx={{
+											width: "fit-content",
+											margin: "10px",
+										}}
+									/>
+								</Box>
+							)}
 						</div>
 					</div>
 					<div className={classes.innerContainer}>

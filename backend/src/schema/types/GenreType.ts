@@ -4,7 +4,13 @@ export default gql`
   type Genre {
     id: UUID!
     name: String!
-    numArtists: Int
-    rank: Int
+    genreRank: GenreRank
+  }
+
+  type GenreRank {
+    numArtists: NonNegativeInt!
+    numArtistsRank: NonNegativeInt!
+    numSongs: NonNegativeInt!
+    numSongsRank: NonNegativeInt!
   }
 `

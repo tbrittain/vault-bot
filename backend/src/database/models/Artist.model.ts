@@ -2,6 +2,7 @@ import {
   BelongsToMany,
   Column,
   HasMany,
+  HasOne,
   Model,
   PrimaryKey,
   Table
@@ -10,6 +11,7 @@ import ArtistGenre from './ArtistGenre.model'
 import { ITableOptions } from './interfaces/ITableOptions'
 import ArtistSong from './ArtistSong.model'
 import Song from './Song.model'
+import ArtistRank from './ArtistRank.model'
 
 const ArtistOptions: ITableOptions = {
   tableName: 'artists',
@@ -37,4 +39,7 @@ export default class Artist extends Model {
 
   @BelongsToMany(() => Song, () => ArtistSong)
   songs!: Song[]
+
+  @HasOne(() => ArtistRank)
+  artistRank: ArtistRank
 }

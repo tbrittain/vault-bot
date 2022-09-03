@@ -14,7 +14,7 @@ const ArtistContainer = () => {
 	const [artistArt, setArtistArt] = useState("")
 	const [genres, setGenres] = useState([])
 	const [albumSongs, setAlbumSongs] = useState({})
-	const [numSongs, setNumSongs] = useState(0)
+	const [rank, setRank] = useState()
 
 	const { loading, error } = useQuery(ARTIST_QUERY, {
 		variables: {
@@ -24,7 +24,7 @@ const ArtistContainer = () => {
 			setArtistName(data.getArtist.name)
 			setArtistArt(data.getArtist.art)
 			setGenres(data.getArtist.genres)
-			setNumSongs(data.getArtist.songs.length)
+			setRank(data.getArtist?.artistRank)
 
 			const albumSongs = {}
 			for (const song of data.getArtist.songs) {
@@ -68,8 +68,8 @@ const ArtistContainer = () => {
 					name={artistName}
 					albumSongs={albumSongs}
 					artistArt={artistArt}
-					numSongs={numSongs}
 					id={artistId}
+					rank={rank}
 				/>
 				<Typography variant="h1">Artist Genres</Typography>
 				<Paper elevation={3}>

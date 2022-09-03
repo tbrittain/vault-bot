@@ -2,13 +2,15 @@ import { makeStyles } from "@mui/styles"
 
 const artistStyles = makeStyles((theme) => ({
 	artistTop: {
+		background: theme.palette.primary.light,
+		boxShadow: `0px 0px 4px ${theme.palette.primary.main}`,
+	},
+	artistTopContent: {
 		display: "flex",
 		flexDirection: "column",
 		justifyContent: "center",
 		alignItems: "center",
 		padding: 10,
-		background: theme.palette.primary.light,
-		boxShadow: `0px 0px 4px ${theme.palette.primary.main}`,
 	},
 	artistName: {
 		color:

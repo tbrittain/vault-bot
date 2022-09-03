@@ -1,4 +1,4 @@
-import { Op, Sequelize } from 'sequelize'
+import { Op } from 'sequelize'
 import ArtistGenre from '../../database/models/ArtistGenre.model'
 import Artist from '../../database/models/Artist.model'
 import {
@@ -7,6 +7,7 @@ import {
   IGetGenreArgs
 } from './interfaces/Genres'
 import Genre from '../../database/models/Genre.model'
+import GenreRank from '../../database/models/GenreRank.model'
 
 export default {
   Query: {
@@ -20,33 +21,12 @@ export default {
     },
     async getGenres() {
       const results = await Genre.findAll({
-        attributes: [
-          'id',
-          'name',
-          [
-            Sequelize.fn('COUNT', Sequelize.col('artistGenres.artist_id')),
-            'numArtists'
-          ]
-        ],
-        group: ['name', 'id'],
-        order: [
-          [
-            Sequelize.fn('COUNT', Sequelize.col('artistGenres.artist_id')),
-            'DESC'
-          ]
-        ],
         include: {
-          model: ArtistGenre,
-          attributes: []
+          model: GenreRank
         }
       }).catch((err) => console.error(err))
 
-      const genres = JSON.parse(JSON.stringify(results))
-
-      for (let i = 0; i < genres.length; i++) {
-        genres[i].rank = i + 1
-      }
-      return genres
+      return JSON.parse(JSON.stringify(results))
     },
     async getArtistsFromGenre(_parent, args: IGetArtistsFromGenreArgs) {
       const { genreId } = args
@@ -87,6 +67,21 @@ export default {
       }).catch((err) => console.error(err))
       results = JSON.parse(JSON.stringify(results))
       return results
+    }
+  },
+  Genre: {
+    async genreRank(parent: Genre) {
+      if (parent.genreRank) return parent.genreRank
+
+      const genreId = parent.id
+      let result = await GenreRank.findOne({
+        where: {
+          genreId
+        }
+      })
+
+      result = JSON.parse(JSON.stringify(result))
+      return result
     }
   }
 }

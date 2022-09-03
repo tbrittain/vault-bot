@@ -10,6 +10,7 @@ import { SONG_QUERY } from "../queries/songQueries"
 const SongContainer = () => {
 	const { songId } = useParams()
 	const [song, setSong] = useState()
+	const [rank, setRank] = useState()
 
 	const { loading, error } = useQuery(SONG_QUERY, {
 		variables: {
@@ -17,6 +18,7 @@ const SongContainer = () => {
 		},
 		onCompleted: (data) => {
 			setSong(data?.getTrack)
+			setRank(data?.getTrack?.songRank)
 		},
 	})
 
@@ -43,6 +45,7 @@ const SongContainer = () => {
 					songPreview={song.previewUrl}
 					details={song.details}
 					id={songId}
+					rank={rank}
 				/>
 				<Typography variant="h2">
 					{song.artists.length > 1 ? "Artists" : "Artist"}
