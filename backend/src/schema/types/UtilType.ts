@@ -11,6 +11,6 @@ export default gql`
 
   type ChangeLogPost {
     post: String!
-    date: String!
+    date: DateTime!
   }
 `

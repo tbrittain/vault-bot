@@ -29,12 +29,26 @@ export default {
       const changeLogPosts = []
       for (let i = 0; i < postNames.length; i++) {
         const post = postNames[i]
-        const postDate = post.replace('.md', '')
+        const date = post
+          .replace('.md', '')
+          .split('T')
+          .map((x) => x.split('-'))
+          .flatMap((x) => x.map((y) => Number(y)))
+
+        const formattedDateTime = new Date(
+          date[0],
+          date[1],
+          date[2],
+          date[3],
+          date[4],
+          date[5]
+        )
+
         const postPath = path.join(__dirname, `../../changeLogPosts/${post}`)
         const postContent = fs.readFileSync(postPath, 'utf8')
         changeLogPosts.push({
           post: postContent,
-          date: postDate
+          date: formattedDateTime
         })
       }
       return changeLogPosts
