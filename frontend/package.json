@@ -35,7 +35,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "npx prettier --write ."
+    "lint": "npx prettier --config .prettierrc.json --write ."
   },
   "eslintConfig": {
     "extends": "react-app"
