@@ -1,17 +1,17 @@
 export interface IGetTrackArgs {
-  id: string
+	id: string
 }
 
 export interface IGetTracksFromAlbumArgs {
-  album: string
-  artistId: string
+	album: string
+	artistId: string
 }
 
 export interface IFindTracksLikeArgs {
-  searchQuery: string
+	searchQuery: string
 }
 
 export interface IGetSimilarTracksArgs {
-  id: string
-  limit?: number
+	id: string
+	limit?: number
 }

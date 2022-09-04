@@ -74,7 +74,7 @@ const ArtistDetails = (props) => {
 						/>
 					</Button>
 				</Box>
-				{rank && (
+				{rank && rank.numNonUniqueSongs > 1 && (
 					<Box
 						sx={{
 							display: "flex",
