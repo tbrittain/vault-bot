@@ -22,8 +22,8 @@ const gridStyles = makeStyles((theme) => ({
 	},
 	artistCard: {},
 	artistArt: {
-		height: "12vw",
-		width: "12vw",
+		height: "12vw !important",
+		width: "12vw !important",
 		objectFit: "cover",
 		minWidth: 100,
 		minHeight: 100,

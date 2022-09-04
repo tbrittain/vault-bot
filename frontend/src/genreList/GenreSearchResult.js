@@ -18,7 +18,7 @@ const GenreSearchResult = (props) => {
 			item
 			spacing={2}
 			component={Link}
-			to={`/genres/${props.name}`}
+			to={`/genres/${props.id}`}
 			style={{
 				textDecoration: "none",
 				width: "100%",
