@@ -211,7 +211,6 @@ const SongDetails = (props) => {
 									marginTop: "10px",
 									backgroundColor: "rgb(35, 207, 95)",
 									color: "white",
-									fontWeight: "fontWeightLight",
 								}}
 							>
 								Open on Spotify
