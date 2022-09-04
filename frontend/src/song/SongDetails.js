@@ -194,7 +194,7 @@ const SongDetails = (props) => {
 								sx={{
 									lineHeight: "inherit",
 									[theme.breakpoints.up("sm")]: {
-										paddingTop: 3,
+										paddingTop: "3px",
 									},
 								}}
 							>

@@ -178,7 +178,7 @@ const FeaturedArtist = () => {
 								color="secondary"
 								sx={{
 									width: "fit-content",
-									margin: "3px",
+									margin: "6px",
 								}}
 							/>
 							<Chip
@@ -187,7 +187,7 @@ const FeaturedArtist = () => {
 								color="secondary"
 								sx={{
 									width: "fit-content",
-									margin: "3px",
+									margin: "6px",
 								}}
 							/>
 						</Box>
