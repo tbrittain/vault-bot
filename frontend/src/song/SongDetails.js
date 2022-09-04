@@ -221,7 +221,7 @@ const SongDetails = (props) => {
 									}}
 								/>
 							</Button>
-							{rank && (
+							{rank && rank.numTimesAdded > 1 && (
 								<Box
 									sx={{
 										display: "flex",

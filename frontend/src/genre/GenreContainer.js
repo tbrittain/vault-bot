@@ -105,7 +105,7 @@ const GenreContainer = () => {
 						/>
 					</Button>
 				</Box>
-				{rank && (
+				{rank && rank.numSongs > 1 && (
 					<Box
 						sx={{
 							display: "flex",
