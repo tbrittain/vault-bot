@@ -7,6 +7,8 @@ const songStyles = makeStyles((theme) => ({
 		animationIterationCount: "infinite",
 	},
 	albumArt: {
+		height: "12vw !important",
+		width: "12vw !important",
 		margin: theme.spacing(4),
 		boxShadow: "0px 0px 4px #adadad",
 		minWidth: 175,
@@ -71,8 +73,8 @@ const songStyles = makeStyles((theme) => ({
 		},
 	},
 	artistArt: {
-		width: "12vw",
-		height: "12vw",
+		width: "10vw !important",
+		height: "10vw !important",
 		margin: "auto",
 		boxShadow: "0px 0px 4px #adadad",
 		minWidth: 150,

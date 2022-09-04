@@ -2,13 +2,15 @@ import { makeStyles } from "@mui/styles"
 
 const artistStyles = makeStyles((theme) => ({
 	artistTop: {
+		background: theme.palette.primary.light,
+		boxShadow: `0px 0px 4px ${theme.palette.primary.main}`,
+	},
+	artistTopContent: {
 		display: "flex",
 		flexDirection: "column",
 		justifyContent: "center",
 		alignItems: "center",
 		padding: 10,
-		background: theme.palette.primary.light,
-		boxShadow: `0px 0px 4px ${theme.palette.primary.main}`,
 	},
 	artistName: {
 		color:
@@ -30,8 +32,8 @@ const artistStyles = makeStyles((theme) => ({
 				: theme.palette.primary.contrastText,
 	},
 	artistArt: {
-		width: "12vw",
-		height: "12vw",
+		width: "10vw !important",
+		height: "10vw !important",
 		margin: "auto",
 		boxShadow: "0px 0px 4px #adadad",
 		minHeight: 125,
@@ -70,8 +72,6 @@ const artistStyles = makeStyles((theme) => ({
 		},
 	},
 	albumArt: {
-		width: "12vw",
-		height: "12vw",
 		boxShadow: "0px 0px 4px #adadad",
 		minHeight: 125,
 		minWidth: 125,

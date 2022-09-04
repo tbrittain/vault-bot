@@ -1,7 +1,7 @@
 MIGRATION_ID = "0125f66d-688f-4c42-8f80-cb5346362519"
 
 
-def migration_006(cur):
+def migration_007(cur):
     cur.execute(f"""
     CREATE TABLE featured_artists
     (

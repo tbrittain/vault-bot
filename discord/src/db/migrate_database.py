@@ -5,6 +5,7 @@ from .migrations.artist_song_link_table import MIGRATION_ID as ARTIST_SONG_LINK_
 from .migrations.artists_genres_featured_tracking import MIGRATION_ID as ARTISTS_GENRES_FEATURED_TRACKING_ID
 from .migrations.energy_aggregate_playlist import MIGRATION_ID as ENERGY_AGGREGATE_PLAYLIST_MIGRATION_ID
 from .migrations.genre_table_rework import MIGRATION_ID as GENRE_REWORK_MIGRATION_ID
+from .migrations.rankings_views import MIGRATION_ID as RANKINGS_VIEWS_MIGRATION_ID
 from .migrations.selects_refactor import MIGRATION_ID as SELECTS_REFACTOR_MIGRATION_ID
 
 
@@ -42,8 +43,14 @@ def run_migration(cur, logger: logging.Logger):
         migration_005(cur)
         logger.info("Migration 005 complete")
 
-    if ARTISTS_GENRES_FEATURED_TRACKING_ID not in migration_ids:
-        logger.info("Running migration 005")
-        from .migrations.artists_genres_featured_tracking import migration_006
+    if RANKINGS_VIEWS_MIGRATION_ID not in migration_ids:
+        logger.info("Running migration 006")
+        from .migrations.rankings_views import migration_006
         migration_006(cur)
-        logger.info("Migration 005 complete")
+        logger.info("Migration 006 complete")
+
+    if ARTISTS_GENRES_FEATURED_TRACKING_ID not in migration_ids:
+        logger.info("Running migration 007")
+        from .migrations.artists_genres_featured_tracking import migration_007
+        migration_007(cur)
+        logger.info("Migration 007 complete")

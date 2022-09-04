@@ -29,8 +29,9 @@ const GenreSearchContainer = (props) => {
 			{results.length > 0 &&
 				results.map((genre) => (
 					<GenreSearchResult
-						key={genre.genre}
-						name={genre.genre}
+						key={genre.id}
+						id={genre.id}
+						name={genre.name}
 						searchQuery={searchQuery}
 					/>
 				))}

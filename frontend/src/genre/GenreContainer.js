@@ -4,11 +4,20 @@ import { useQuery } from "@apollo/client"
 import OpenInNewIcon from "@mui/icons-material/OpenInNew"
 import LoadingScreen from "../loading/LoadingScreen"
 import ArtistGrid from "../grids/ArtistGrid"
-import CountUpAnimation from "../effects/CountUpAnimation"
 import genreStyles from "./GenreStyles"
 import genreToMuiColor from "../utils/genreToMuiColor"
-import { Alert, Button, Paper, Typography, useTheme } from "@mui/material"
+import {
+	Alert,
+	Box,
+	Button,
+	Chip,
+	Paper,
+	Typography,
+	useMediaQuery,
+	useTheme,
+} from "@mui/material"
 import { ARTISTS_FROM_GENRE_QUERY } from "../queries/genreQueries"
+import { EmojiEvents } from "@mui/icons-material"
 
 const GenreContainer = () => {
 	const classes = genreStyles()
@@ -16,6 +25,8 @@ const GenreContainer = () => {
 	const { genreId } = useParams()
 	const [genre, setGenre] = useState({})
 	const [artists, setArtists] = useState([])
+	const [rank, setRank] = useState()
+	const isSmallScreen = useMediaQuery("(max-width:850px)")
 
 	const { loading, error } = useQuery(ARTISTS_FROM_GENRE_QUERY, {
 		variables: {
@@ -24,6 +35,7 @@ const GenreContainer = () => {
 		onCompleted: (data) => {
 			setGenre(data?.getGenre)
 			setArtists(data?.getArtistsFromGenre)
+			setRank(data?.getGenre?.genreRank)
 		},
 	})
 
@@ -44,6 +56,15 @@ const GenreContainer = () => {
 
 	const everyNoiseLink = `https://everynoise.com/engenremap-${everyNoiseGenre}.html`
 
+	const desktopRankStyling =
+		!isSmallScreen && genre.name.length < 14
+			? {
+					position: "absolute",
+					top: 10,
+					right: 10,
+			  }
+			: {}
+
 	return (
 		<>
 			<Typography variant="h1">Genre Details</Typography>
@@ -52,48 +73,67 @@ const GenreContainer = () => {
 				elevation={3}
 				style={{
 					backgroundColor: genreToMuiColor(genre.name),
+					position: "relative",
 				}}
 			>
-				<Typography
-					variant="h2"
-					sx={{
-						color: theme.palette.getContrastText(genreToMuiColor(genre.name)),
-						textTransform: "capitalize",
-						fontWeight: "fontWeightBold",
-					}}
-				>
-					<i>{genre.name}</i>
-				</Typography>
-				<Typography
-					variant="h6"
-					style={{
-						fontWeight: "fontWeightLight",
-						color: theme.palette.getContrastText(genreToMuiColor(genre.name)),
-					}}
-				>
-					Total artists:{" "}
-					{artists.length >= 20 && (
-						<CountUpAnimation>{Number(artists.length)}</CountUpAnimation>
-					)}
-					{artists.length < 20 && artists.length}
-				</Typography>
-				<Button
-					variant="outlined"
-					component="a"
-					href={everyNoiseLink}
-					target="_blank"
-					rel="noopener noreferrer"
-					style={{
-						color: theme.palette.getContrastText(genreToMuiColor(genre.name)),
-					}}
-				>
-					Open on EveryNoise
-					<OpenInNewIcon
-						style={{
-							paddingLeft: 4,
+				<Box>
+					<Typography
+						variant="h2"
+						sx={{
+							color: theme.palette.getContrastText(genreToMuiColor(genre.name)),
+							textTransform: "capitalize",
+							fontWeight: "fontWeightBold",
 						}}
-					/>
-				</Button>
+					>
+						<i>{genre.name}</i>
+					</Typography>
+					<Button
+						variant="outlined"
+						component="a"
+						href={everyNoiseLink}
+						target="_blank"
+						rel="noopener noreferrer"
+						style={{
+							color: theme.palette.getContrastText(genreToMuiColor(genre.name)),
+						}}
+					>
+						Open on EveryNoise
+						<OpenInNewIcon
+							style={{
+								paddingLeft: 4,
+							}}
+						/>
+					</Button>
+				</Box>
+				{rank && rank.numSongs > 1 && (
+					<Box
+						sx={{
+							display: "flex",
+							justifyContent: "center",
+							flexDirection: "column",
+							alignItems: "center",
+							...desktopRankStyling,
+						}}
+					>
+						<Chip
+							label={`#${rank.numArtistsRank} by number of artists (${rank.numArtists})`}
+							icon={<EmojiEvents />}
+							color="secondary"
+							sx={{
+								width: "fit-content",
+								margin: "6px",
+							}}
+						/>
+						<Chip
+							label={`#${rank.numSongsRank} by number of songs (${rank.numSongs})`}
+							icon={<EmojiEvents />}
+							color="secondary"
+							sx={{
+								width: "fit-content",
+							}}
+						/>
+					</Box>
+				)}
 			</Paper>
 			<ArtistGrid artists={artists} />
 		</>
