@@ -3,8 +3,8 @@ from os import getenv, path
 
 from discord_webhook import DiscordWebhook, DiscordEmbed
 
-from .vb_utils import access_secret_version, get_logger
 from .database_connection import DatabaseConnection
+from .vb_utils import access_secret_version, get_logger
 
 base_dir = path.dirname(path.dirname(path.abspath(__file__)))
 logger = get_logger(__name__)
@@ -36,11 +36,13 @@ def get_daily_stats() -> dict:
 
     # pull number of tracks added in the last day
     current_date = datetime.utcnow()
-    start_of_day = current_date - timedelta(days=1)
     date_format = "%Y-%m-%d %H:%M:%S"
 
-    tracks_added_sql = f"""SELECT COUNT(*) FROM dynamic WHERE added_at BETWEEN '{start_of_day.strftime(date_format)}'
-    AND '{current_date.strftime(date_format)}';"""
+    tracks_added_sql = f"""
+    SELECT COUNT(*)
+    FROM dynamic
+    WHERE added_at BETWEEN now() - interval '1 day' AND now();
+    """
     tracks_added = conn.select_query_raw(sql=tracks_added_sql)
     playlist_data['tracks_added_today'] = tracks_added[0][0]
 
@@ -48,30 +50,55 @@ def get_daily_stats() -> dict:
     expiration_date = current_date - timedelta(days=13)
     expiration_date = expiration_date.replace(hour=0, minute=0, second=0, microsecond=0)
     day_before_expiration = expiration_date + timedelta(days=1)
-    tracks_to_remove_sql = f"""SELECT COUNT(*) FROM dynamic WHERE added_at BETWEEN 
-    '{expiration_date.strftime(date_format)}' AND '{day_before_expiration.strftime(date_format)}';"""
+
+    tracks_to_remove_sql = f"""
+    SELECT COUNT(*)
+    FROM dynamic
+    WHERE added_at BETWEEN '{expiration_date.strftime(date_format)}'
+    AND '{day_before_expiration.strftime(date_format)}';
+    """
+
     tracks_to_remove = conn.select_query_raw(sql=tracks_to_remove_sql)
     playlist_data['tracks_to_remove'] = tracks_to_remove[0][0]
 
     # pull novel tracks
-    novel_tracks_sql = f"""WITH songs_added_today AS (
-    SELECT songs.name AS name, songs.id AS id FROM songs JOIN archive ON archive.song_id = songs.id
-    WHERE archive.added_at BETWEEN '{start_of_day.strftime(date_format)}' AND '{current_date.strftime(date_format)}')
-    SELECT songs_added_today.name, songs_added_today.id FROM songs_added_today JOIN archive
-    ON songs_added_today.id = archive.song_id GROUP BY songs_added_today.name, songs_added_today.id
-    HAVING COUNT(archive.song_id) = 1;"""
+    novel_tracks_sql = f"""
+    WITH songs_added_today AS (
+        SELECT songs.name AS name, songs.id AS id
+        FROM songs
+            JOIN archive ON archive.song_id = songs.id
+        WHERE archive.added_at BETWEEN now() - INTERVAL '1 day' AND now()
+        )
+    SELECT songs_added_today.name, songs_added_today.id
+    FROM songs_added_today
+        JOIN archive ON songs_added_today.id = archive.song_id
+    GROUP BY songs_added_today.name, songs_added_today.id
+    HAVING COUNT(archive.song_id) = 1;
+    """
     novel_tracks = conn.select_query_raw(sql=novel_tracks_sql)
     playlist_data['novel_tracks_added'] = len(novel_tracks)
 
     # pull genres and isolate novel ones
-    genres_added_today_sql = f"""SELECT DISTINCT artists_genres.genre AS genre FROM artists_genres JOIN archive
-    ON archive.artist_id = artists_genres.artist_id WHERE archive.added_at BETWEEN 
-    '{start_of_day.strftime(date_format)}' AND '{current_date.strftime(date_format)}';"""
+    genres_added_today_sql = f"""
+    SELECT DISTINCT g.name
+    FROM genres g
+        JOIN artists_genres ag on g.id = ag.genre_id
+        JOIN artists_songs "as" ON "as".artist_id = ag.artist_id
+        JOIN archive a ON a.song_id = "as".song_id
+    WHERE a.added_at BETWEEN now() - INTERVAL '1 day' AND now();
+    """
+
     genres_added_today = conn.select_query_raw(sql=genres_added_today_sql)
     genres_added_today = [x[0] for x in genres_added_today]
 
-    genres_before_today_sql = f"""SELECT DISTINCT artists_genres.genre FROM artists_genres JOIN archive
-    ON archive.artist_id = artists_genres.artist_id WHERE archive.added_at < '{start_of_day.strftime(date_format)}';"""
+    genres_before_today_sql = f"""
+    SELECT DISTINCT g.name
+    FROM genres g
+        JOIN artists_genres ag on g.id = ag.genre_id
+            JOIN artists_songs "as" ON "as".artist_id = ag.artist_id
+            JOIN archive a ON a.song_id = "as".song_id
+    WHERE a.added_at < now() - INTERVAL '1 day';
+    """
     genres_before_today = conn.select_query_raw(sql=genres_before_today_sql)
     genres_before_today = [x[0] for x in genres_before_today]
 
@@ -82,14 +109,23 @@ def get_daily_stats() -> dict:
     playlist_data['novel_genres'] = ''.join(str(e) + ', ' for e in novel_genres)
 
     # pull artists and isolate novel ones
-    artists_added_today_sql = f"""SELECT DISTINCT artists.name AS name FROM artists JOIN archive ON 
-    archive.artist_id = artists.id WHERE archive.added_at BETWEEN '{start_of_day.strftime(date_format)}' 
-    AND '{current_date.strftime(date_format)}';"""
+    artists_added_today_sql = f"""
+    SELECT DISTINCT artists.name AS name
+    FROM artists
+            JOIN artists_songs ON artists_songs.artist_id = artists.id
+            JOIN archive ON archive.song_id = artists_songs.song_id
+    WHERE archive.added_at BETWEEN now() - INTERVAL '1 day' AND now();
+    """
     artists_added_today = conn.select_query_raw(sql=artists_added_today_sql)
     artists_added_today = [x[0] for x in artists_added_today]
 
-    artists_before_today_sql = f"""SELECT DISTINCT artists.name AS name FROM artists JOIN archive
-    ON archive.artist_id = artists.id WHERE archive.added_at < '{start_of_day.strftime(date_format)}';"""
+    artists_before_today_sql = f"""
+    SELECT DISTINCT artists.name AS name
+    FROM artists
+            JOIN artists_songs ON artists_songs.artist_id = artists.id
+            JOIN archive ON archive.song_id = artists_songs.song_id
+    WHERE archive.added_at < now() - INTERVAL '1 day';
+    """
     artists_before_today = conn.select_query_raw(sql=artists_before_today_sql)
     artists_before_today = [x[0] for x in artists_before_today]
 
@@ -143,4 +179,3 @@ def post_webhook():
     webhook = DiscordWebhook(url=WEBHOOK_URL)
     webhook.add_embed(embed)
     webhook.execute()
-

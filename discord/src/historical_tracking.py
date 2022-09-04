@@ -6,7 +6,6 @@ from .database_connection import DatabaseConnection
 from .spotify_commands import dyn_playlist_genres
 from .vb_utils import get_logger
 
-
 logger = get_logger(__name__)
 
 
@@ -41,7 +40,11 @@ def playlist_snapshot_coordinator():
     novelty = dynamic_playlist_novelty()
     logger.debug(f"Current playlist novelty: {round(novelty, 3)}")
 
-    pkey_sql = """SELECT id FROM historical_tracking ORDER BY updated_at DESC LIMIT 1;"""
+    pkey_sql = """
+    SELECT id FROM historical_tracking
+    ORDER BY updated_at DESC
+    LIMIT 1;
+    """
     most_recent_h_track_pkey = conn.select_query_raw(pkey_sql)
     if len(most_recent_h_track_pkey) == 0:
         most_recent_h_track_pkey = 0
@@ -101,8 +104,13 @@ def historical_average_features():
 
 def dynamic_playlist_novelty():
     conn = DatabaseConnection()
-    sql = """SELECT dynamic.song_id, COUNT(archive.song_id) AS count FROM dynamic INNER JOIN archive ON 
-    dynamic.song_id = archive.song_id GROUP BY dynamic.song_id HAVING COUNT(archive.song_id) = 1; """
+    sql = """
+    SELECT dynamic.song_id, COUNT(archive.song_id) AS count
+    FROM dynamic
+    INNER JOIN archive ON dynamic.song_id = archive.song_id
+    GROUP BY dynamic.song_id
+    HAVING COUNT(archive.song_id) = 1;
+    """
     unique_songs = conn.select_query_raw(sql=sql)
     existing_songs = conn.select_query(query_literal="song_id", table="dynamic")
 
@@ -112,10 +120,16 @@ def dynamic_playlist_novelty():
 
 def playlist_diversity_index():
     conn = DatabaseConnection()
-    sql = """SELECT artists_genres.genre, COUNT(artists_genres.genre) 
-    FROM artists_genres INNER JOIN dynamic ON artists_genres.artist_id = 
-    dynamic.artist_id GROUP BY artists_genres.genre ORDER BY 
-    COUNT(artists_genres.genre) DESC;"""
+    sql = """
+    SELECT g.name, COUNT(g.name)
+    FROM dynamic d
+             JOIN songs s ON d.song_id = s.id
+             JOIN artists_songs ON s.id = artists_songs.song_id
+             JOIN artists_genres ON artists_songs.artist_id = artists_genres.artist_id
+             JOIN genres g on artists_genres.genre_id = g.id
+    GROUP BY g.name
+    ORDER BY COUNT(g.name) DESC
+    """
     genre_counts = conn.select_query_raw(sql=sql)
     genre_counts = [x[1] for x in genre_counts]
 
@@ -135,7 +149,11 @@ def playlist_diversity_index():
 
 def featured_artist():
     conn = DatabaseConnection()
-    last_update_sql = """SELECT featured FROM artists WHERE featured IS NOT NULL ORDER BY featured DESC LIMIT 1;"""
+    last_update_sql = """
+    SELECT featured FROM artists
+    WHERE featured IS NOT NULL
+    ORDER BY featured DESC LIMIT 1;
+    """
     last_update = conn.select_query_raw(sql=last_update_sql)
 
     if len(last_update) == 0:
@@ -146,9 +164,15 @@ def featured_artist():
 
     if date_today != last_update:
         logger.debug('Selecting a new featured artist')
-        viable_artists_sql = """SELECT artists.id, artists.name, COUNT(songs.id) FROM artists JOIN songs
-        ON artists.id = songs.artist_id GROUP BY artists.id, artists.name HAVING COUNT(songs.id) >= 3
-        ORDER BY COUNT(songs.id) DESC;"""
+        viable_artists_sql = """
+        SELECT artists.id, artists.name, COUNT(songs.id)
+        FROM artists
+            JOIN artists_songs ON artists.id = artists_songs.artist_id
+            JOIN songs ON artists_songs.song_id = songs.id
+        GROUP BY artists.id, artists.name
+        HAVING COUNT(songs.id) >= 3
+        ORDER BY COUNT(songs.id) DESC;
+        """
         viable_artists = conn.select_query_raw(sql=viable_artists_sql)
 
         if len(viable_artists) == 0:
@@ -159,13 +183,22 @@ def featured_artist():
         viable_artists = [x[0] for x in viable_artists]
         selected_artist = choice(viable_artists)
 
-        update_selected_artist_sql = f"""UPDATE artists SET featured = NOW()::timestamp 
-        WHERE id = '{selected_artist}';"""
+        update_selected_artist_sql = f"""
+        UPDATE artists SET featured = NOW()::timestamp 
+        WHERE id = '{selected_artist}';
+        """
         conn.update_query_raw(sql=update_selected_artist_sql)
         conn.commit()
 
     conn.terminate()
 
 
-if __name__ == "__main__":
-    playlist_snapshot_coordinator()
+def refresh_rankings():
+    conn = DatabaseConnection()
+
+    conn.raw_query("REFRESH MATERIALIZED VIEW v_rankings_songs;")
+    conn.raw_query("REFRESH MATERIALIZED VIEW v_rankings_artists;")
+    conn.raw_query("REFRESH MATERIALIZED VIEW v_rankings_genres;")
+
+    conn.commit()
+    conn.terminate()

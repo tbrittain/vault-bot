@@ -1,42 +1,43 @@
 {
-  "name": "vaultbot-express-backend",
-  "version": "2.1.0",
-  "description": "Backend GraphQL API for querying song information",
-  "main": "server.ts",
-  "scripts": {
-    "start": "node build/server.js",
-    "dev": "nodemon --config nodemon.json src/server.ts",
-    "build-local": "tsc && xcopy /E /I .\\src\\changeLogPosts .\\build\\changeLogPosts",
-    "build": "tsc && cp -R src/changeLogPosts build/changeLogPosts",
-    "format": "npx ts-standard --fix && npx prettier --config .prettierrc.json --write ."
-  },
-  "author": "Trey Brittain",
-  "license": "ISC",
-  "dependencies": {
-    "@graphql-tools/load-files": "^6.3.2",
-    "@graphql-tools/merge": "^8.2.13",
-    "apollo-server-core": "^3.7.0",
-    "apollo-server-express": "^3.7.0",
-    "axios": "^0.27.2",
-    "cors": "^2.8.5",
-    "express": "^4.18.1",
-    "graphql": "^16.5.0",
-    "graphql-validation-complexity": "^0.4.2",
-    "pg": "^8.7.3",
-    "pg-hstore": "^2.3.4",
-    "reflect-metadata": "^0.1.13",
-    "sequelize": "^6.20.0",
-    "sequelize-typescript": "^2.1.3"
-  },
-  "devDependencies": {
-    "@types/express": "^4.17.11",
-    "@types/node": "^17.0.35",
-    "@types/validator": "^13.7.2",
-    "dotenv": "^16.0.1",
-    "nodemon": "^2.0.16",
-    "prettier": "^2.6.2",
-    "ts-node": "^10.8.0",
-    "ts-standard": "^11.0.0",
-    "typescript": "^4.6.4"
-  }
+	"name": "vaultbot-express-backend",
+	"version": "2.1.0",
+	"description": "Backend GraphQL API for querying song information",
+	"main": "server.ts",
+	"scripts": {
+		"start": "node build/server.js",
+		"dev": "nodemon --config nodemon.json src/server.ts",
+		"build-local": "tsc && xcopy /E /I .\\src\\changeLogPosts .\\build\\changeLogPosts",
+		"build": "tsc && cp -R src/changeLogPosts build/changeLogPosts",
+		"format": "npx prettier --config .prettierrc.json --write ."
+	},
+	"author": "Trey Brittain",
+	"license": "ISC",
+	"dependencies": {
+		"@graphql-tools/load-files": "^6.6.1",
+		"@graphql-tools/merge": "^8.3.4",
+		"apollo-server-core": "^3.10.2",
+		"apollo-server-express": "^3.10.2",
+		"axios": "^0.27.2",
+		"cors": "^2.8.5",
+		"express": "^4.18.1",
+		"graphql": "^16.6.0",
+		"graphql-scalars": "^1.18.0",
+		"graphql-validation-complexity": "^0.4.2",
+		"pg": "^8.8.0",
+		"pg-hstore": "^2.3.4",
+		"reflect-metadata": "^0.1.13",
+		"sequelize": "^6.21.4",
+		"sequelize-typescript": "^2.1.3"
+	},
+	"devDependencies": {
+		"@types/express": "^4.17.11",
+		"@types/node": "^18.7.14",
+		"@types/validator": "^13.7.6",
+		"dotenv": "^16.0.2",
+		"nodemon": "^2.0.19",
+		"prettier": "^2.7.1",
+		"ts-node": "^10.9.1",
+		"ts-standard": "^11.0.0",
+		"typescript": "^4.8.2"
+	}
 }
