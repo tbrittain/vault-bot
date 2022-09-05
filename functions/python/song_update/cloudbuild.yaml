@@ -1,0 +1,27 @@
+steps:
+  - name: 'docker.io/library/python:3.8-slim'
+    dir: $_SRC_FOLDER
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        pip install --upgrade pip
+        pip install poetry==1.1.13
+        poetry export --without-hashes --output requirements.txt
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:alpine'
+    args:
+      - gcloud
+      - --quiet
+      - functions
+      - deploy
+      - $_FUNCTION_NAME
+      - --region=$_REGION
+      - --source=$_SRC_FOLDER
+      - --trigger-topic=song_update
+      - --runtime=$_RUNTIME
+      - --entry-point=$_ENTRY_POINT
+      - --timeout=$_TIMEOUT
+      - --set-env-vars=ENVIRONMENT=$_ENVIRONMENT,LOGGING_MODE=$_LOGGING_MODE,QUEUE_NAME=$_QUEUE_NAME
+      - --memory=$_MEMORY
+      - --update-labels=$_LABELS
+      - $_TRIGGER_SPEC
