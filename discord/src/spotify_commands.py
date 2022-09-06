@@ -331,6 +331,43 @@ def remove_songs_from_playlist(song_ids: list[str]):
                                                 items=song_ids)
 
 
+def balance_duplicate_song_lookup(song_id: str):
+    conn = DatabaseConnection()
+    potential_duplicates = conn.select_query_raw(f"""
+        SELECT s.id,
+               s.name,
+               s.length,
+               s.tempo,
+               s.album,
+               s.art,
+               s.acousticness,
+               s.danceability,
+               s.liveness,
+               s.instrumentalness,
+               s.valence
+        FROM songs s
+                 JOIN artists_songs "as" on s.id = "as".song_id
+        WHERE "as".artist_id = ANY (SELECT as2.artist_id
+                                    FROM artists_songs as2
+                                    WHERE as2.song_id = '{song_id}')
+    """)
+
+    # first, filter by length to those that are within 0.1 minutes of the given song ID, and also
+    # within 5bpm of the same tempo
+    # then, out of those results, filter those down to those with significant name similarity
+    # then filter down to results that share significant similarity with regard to song characteristics
+    # once we are at this point, then we can assume that all the results left represent the same songs
+    # then (if more than one result) we need to select which song is the one we want to be that target
+    # song for all of these duplicate results
+    # priority: 1. the result(s) that have a song preview
+    # 2. if in different albums, the result that has the most songs in that same album
+    # (which will require another trip to the database)
+    # finally, we choose that ultimate result ID to be the target ID, and we set all the found duplicate
+    # source IDs to that target ID in the lookup table
+
+    conn.terminate()
+
+
 async def validate_song_and_add(ctx: discord.ext.commands.Context, song_url_or_id):
     try:
         converted_song_id = await get_song_id_from_user_input(song_url_or_id)
@@ -365,6 +402,8 @@ async def validate_song_and_add(ctx: discord.ext.commands.Context, song_url_or_i
         remove_song_from_playlist(converted_song_id)
         await ctx.channel.send(unexpected_error_response)
         return
+
+    balance_duplicate_song_lookup(converted_song_id)
 
     logger.debug(f'Song of ID {converted_song_id} added to playlists '
                  f'by {ctx.author} via private message')
