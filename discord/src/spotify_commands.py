@@ -10,6 +10,7 @@ import spotipy
 from spotipy import SpotifyException
 from spotipy.cache_handler import CacheHandler
 from spotipy.oauth2 import SpotifyOAuth
+from thefuzz import fuzz
 
 from .database_connection import DatabaseConnection, access_secret_version
 from .discord_responses import AFFIRMATIVES
@@ -332,6 +333,9 @@ def remove_songs_from_playlist(song_ids: list[str]):
 
 
 def balance_duplicate_song_lookup(song_id: str):
+    # TODO: Here, define keywords indicating non-original song
+    # i.e. remix, rework, etc.
+
     conn = DatabaseConnection()
     potential_duplicates = conn.select_query_raw(f"""
         SELECT s.id,
@@ -352,9 +356,18 @@ def balance_duplicate_song_lookup(song_id: str):
                                     WHERE as2.song_id = '{song_id}')
     """)
 
-    # first, filter by length to those that are within 0.1 minutes of the given song ID, and also
-    # within 5bpm of the same tempo
+    initial = next(x for x in potential_duplicates if x[0] == song_id)
+    rest = [x for x in potential_duplicates if x[0] != song_id]
+
+    filtered = list(filter(lambda x: abs(x[2] - initial[2]) < 0.1 and
+                                     abs(x[3] - initial[3]) < 5, rest))
+
+    # TODO: here, filter out remixes if the given song is not a remix
+    # or filter to only remixes if that given song is a remix?
+
     # then, out of those results, filter those down to those with significant name similarity
+    filtered = list(filter(lambda x: fuzz.partial_ratio(x[1], initial[1]) > 90, filtered))
+
     # then filter down to results that share significant similarity with regard to song characteristics
     # once we are at this point, then we can assume that all the results left represent the same songs
     # then (if more than one result) we need to select which song is the one we want to be that target
