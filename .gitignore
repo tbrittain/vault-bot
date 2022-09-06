@@ -145,4 +145,3 @@ dmypy.json
 /discord/src/cache.json
 .DS_store
 /discord/token.json
-/functions/python/song_update/run_local.bat
