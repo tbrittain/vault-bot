@@ -445,13 +445,11 @@ def balance_duplicate_song_lookup(song_id: str):
         album_songs = list(filter(lambda x: x[0] not in all_combined_song_ids, album_songs))
         song_id_album_count[song_row[0]] = len(album_songs)
 
-    max_album_count = max(song_id_album_count.values())
-    max_album_count_song_ids = [x for x, y in song_id_album_count if y == max_album_count]
-
-    # grab the first element returned in max_album_count_song_ids, regardless of whether
+    # grab the first element returned for max_album_count_song_id, regardless of whether
     # there are more than 1, since if we get to this point, the songs that are left are
     # by all accounts identical in all the ways that we care about
-    mark_source_songs_as_duplicates(conn, max_album_count_song_ids[0], all_combined_song_ids)
+    max_album_count_song_id = max(song_id_album_count, key=lambda x: song_id_album_count[x])
+    mark_source_songs_as_duplicates(conn, max_album_count_song_id, all_combined_song_ids)
     conn.terminate()
 
 
