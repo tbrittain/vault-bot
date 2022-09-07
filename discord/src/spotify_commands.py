@@ -337,8 +337,18 @@ def remove_songs_from_playlist(song_ids: list[str]):
 
 
 def balance_duplicate_song_lookup(song_id: str):
-    def mark_target_songs_as_duplicates(target_song_id: str, source_song_ids: List[str]):
-        pass
+    def mark_source_songs_as_duplicates(_conn: DatabaseConnection, target_song_id: str, source_song_ids: List[str]):
+        formatted_source_song_ids = ", ".join(source_song_ids)
+
+        sql = f"""
+        UPDATE duplicate_song_lookup
+        SET target_song_id = '{target_song_id}'
+        WHERE source_song_id = ANY(
+        '{{{formatted_source_song_ids}}}'
+        )
+        """
+        _conn.raw_query(sql)
+        _conn.commit()
 
     conn = DatabaseConnection()
     potential_duplicates = conn.select_query_raw(f"""
@@ -408,12 +418,14 @@ def balance_duplicate_song_lookup(song_id: str):
     all_combined_song_ids = [x[0] for x in combined]
     filtered = list(filter(lambda x: x[5] is not None, combined))
     if len(filtered) == 1:
-        mark_target_songs_as_duplicates(filtered[0][0], all_combined_song_ids)
+        mark_source_songs_as_duplicates(conn, filtered[0][0], all_combined_song_ids)
         conn.terminate()
         return
     elif len(filtered) == 0:
         # reset filtered, since none of the potential target songs will have a song preview
         filtered = combined
+    # the else case above would indicate that there are multiple songs with song previews,
+    # so we retain the result saved in the filtered variable
 
     # 2. if in different albums, the result that has the most songs in that same album
     # (which will require another trip to the database)
@@ -439,7 +451,7 @@ def balance_duplicate_song_lookup(song_id: str):
     # grab the first element returned in max_album_count_song_ids, regardless of whether
     # there are more than 1, since if we get to this point, the songs that are left are
     # by all accounts identical in all the ways that we care about
-    mark_target_songs_as_duplicates(max_album_count_song_ids[0], all_combined_song_ids)
+    mark_source_songs_as_duplicates(conn, max_album_count_song_ids[0], all_combined_song_ids)
     conn.terminate()
 
 
