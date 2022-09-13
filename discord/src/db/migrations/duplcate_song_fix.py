@@ -41,6 +41,11 @@ def migration_008(cur):
     SELECT id, dsl.target_song_id AS song_id, added_by, added_at
     FROM archive a
              JOIN duplicate_song_lookup dsl ON a.song_id = dsl.source_song_id;
+             
+    CREATE VIEW v_dynamic AS
+    SELECT dsl.target_song_id AS song_id, added_by, added_at, popularity
+    FROM dynamic d
+             JOIN duplicate_song_lookup dsl ON d.song_id = dsl.source_song_id;
 
     DROP VIEW v_chill_playlist;
     CREATE VIEW v_chill_playlist(id, count) AS
@@ -227,5 +232,5 @@ def migration_008(cur):
     ORDER BY num_artists DESC, num_songs DESC;
     
     INSERT INTO migration (id, description)
-    VALUES ('{MIGRATION_ID}', 'Created duplicate song lookup table and v_songs and v_archive views.');
+    VALUES ('{MIGRATION_ID}', 'Created duplicate song lookup table and v_songs, v_archive, and v_dynamic views.');
     """)
