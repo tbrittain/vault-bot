@@ -2,6 +2,7 @@ from os import getenv
 from typing import List
 
 import psycopg2
+from alive_progress import alive_bar
 from thefuzz import fuzz
 
 DB_USER = getenv("DB_USER")
@@ -15,6 +16,7 @@ if None in [DB_USER, DB_PASS, DB_PORT, DB_NAME, DB_HOST]:
     exit(1)
 
 
+# TODO: Add debug logging
 def balance_duplicate_song_lookup(song_id: str, conn):
     def mark_source_songs_as_duplicates(_conn, target_song_id: str, source_song_ids: List[str]):
         formatted_source_song_ids = ", ".join(source_song_ids)
@@ -31,7 +33,7 @@ def balance_duplicate_song_lookup(song_id: str, conn):
         _cur.close()
 
     cur = conn.cursor()
-    potential_duplicates = cur.execute(f"""
+    cur.execute(f"""
         SELECT s.id,
                s.name,
                s.length,
@@ -50,11 +52,12 @@ def balance_duplicate_song_lookup(song_id: str, conn):
                                     WHERE as2.song_id = '{song_id}')
         GROUP BY s.id;
     """)
+    potential_duplicates = cur.fetchall()
     cur.close()
 
     # meaning we only got our original song back
     if len(potential_duplicates) == 1:
-        return
+        return [song_id]
 
     initial = next(x for x in potential_duplicates if x[0] == song_id)
     initial_is_remix = initial[1].lower().__contains__('remix')
@@ -65,19 +68,19 @@ def balance_duplicate_song_lookup(song_id: str, conn):
                                      abs(x[3] - initial[3]) < 5, rest))
 
     if len(filtered) == 0:
-        return
+        return [song_id]
 
     filtered = [x for x in filtered if x[1].lower().__contains__('remix')] if initial_is_remix \
         else [x for x in filtered if not x[1].lower().__contains__('remix')]
 
     if len(filtered) == 0:
-        return
+        return [song_id]
 
     # then, out of those results, filter those down to those with significant name similarity
     filtered = list(filter(lambda x: fuzz.partial_ratio(x[1], initial[1]) > 90, filtered))
 
     if len(filtered) == 0:
-        return
+        return [song_id]
 
     # then filter down to results that share significant similarity with regard to song characteristics
     filtered = list(filter(lambda x: abs(x[6] - initial[6]) < 0.1 and
@@ -92,11 +95,11 @@ def balance_duplicate_song_lookup(song_id: str, conn):
     # priority: 1. the result(s) that have a song preview
     combined = filtered
     combined.append(initial)
-    all_combined_song_ids = [x[0] for x in combined]
+    all_combined_song_ids: List[str] = [x[0] for x in combined]
     filtered = list(filter(lambda x: x[5] is not None, combined))
     if len(filtered) == 1:
         mark_source_songs_as_duplicates(conn, filtered[0][0], all_combined_song_ids)
-        return
+        return all_combined_song_ids
     elif len(filtered) == 0:
         # reset filtered, since none of the potential target songs will have a song preview
         filtered = combined
@@ -108,7 +111,7 @@ def balance_duplicate_song_lookup(song_id: str, conn):
     song_id_album_count = {}
     for song_row in filtered:
         cur = conn.cursor()
-        album_songs = cur.execute(f"""
+        cur.execute(f"""
         SELECT s.id, s.name, s.album
         FROM songs s
                  JOIN artists_songs "as" on s.id = "as".song_id
@@ -118,6 +121,7 @@ def balance_duplicate_song_lookup(song_id: str, conn):
         AND s.album = '{song_row[4]}'
         GROUP BY s.id;
         """)
+        album_songs = cur.fetchall()
         cur.close()
 
         album_songs = list(filter(lambda x: x[0] not in all_combined_song_ids, album_songs))
@@ -141,12 +145,22 @@ def main():
     )
 
     cur = conn.cursor()
-    # TODO: here, get ALL song IDs
-    # iterate over them, and cache the ones that have been balanced
-    # when iterating over them, check if it is cached, and then short circuit in that case
+    cur.execute("SELECT id FROM songs")
+    all_song_ids = [x[0] for x in cur.fetchall()]
     cur.close()
-    conn.rollback()
-    # or conn.commit()
+
+    cache = []
+    with alive_bar(len(all_song_ids)) as bar:
+        for song_id in all_song_ids:
+            if song_id in cache:
+                bar()
+                continue
+
+            updated_source_song_ids = balance_duplicate_song_lookup(song_id, conn)
+            cache.append(updated_source_song_ids)
+            bar()
+
+    conn.rollback()  # or conn.commit()
     conn.close()
 
 
