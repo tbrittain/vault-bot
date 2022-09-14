@@ -9,7 +9,7 @@ import { ITableOptions } from './interfaces/ITableOptions'
 import Song from './Song.model'
 
 const DynamicSongOptions: ITableOptions = {
-	tableName: 'dynamic',
+	tableName: 'v_dynamic',
 	timestamps: false,
 	underscored: true
 }

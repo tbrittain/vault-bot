@@ -12,7 +12,7 @@ import Artist from './Artist.model'
 import SongRank from './SongRank.model'
 
 const SongOptions: ITableOptions = {
-	tableName: 'songs',
+	tableName: 'v_songs',
 	timestamps: false,
 	underscored: true
 }
