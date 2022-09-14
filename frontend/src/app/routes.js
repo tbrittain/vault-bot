@@ -34,7 +34,8 @@ function RouteHandler() {
 					<Route path="/artists/:artistId" element={<ArtistContainer />} />
 					<Route exact path="/genres" element={<GenreListContainer />} />
 					<Route path="/genres/:genreId" element={<GenreContainer />} />
-					<Route path="*" element={<PageNotFound />} />
+					<Route path="/404" element={<PageNotFound />} />
+					<Route element={<PageNotFound />} />
 				</Routes>
 			</CSSTransition>
 		</TransitionGroup>
