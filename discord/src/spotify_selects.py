@@ -62,7 +62,7 @@ def selects_playlists_coordinator():
 
         genre_playlist_sql = f"""
         SELECT s.id
-        FROM songs s
+        FROM v_songs s
                  JOIN artists_songs "as" ON "as".song_id = s.id
                  JOIN artists a ON a.id = "as".artist_id
                  JOIN artists_genres ag ON ag.artist_id = a.id
@@ -107,7 +107,7 @@ def selects_playlists_coordinator():
 
     shift_playlist_sql = f"""
     SELECT MIN(s.id)
-    FROM songs s
+    FROM v_songs s
              JOIN artists_songs "as" ON "as".song_id = s.id
              JOIN artists a ON a.id = "as".artist_id
              JOIN artists_genres ag ON ag.artist_id = a.id
