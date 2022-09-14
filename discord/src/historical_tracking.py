@@ -6,7 +6,6 @@ from .database_connection import DatabaseConnection
 from .spotify_commands import dyn_playlist_genres
 from .vb_utils import get_logger
 
-
 logger = get_logger(__name__)
 
 
@@ -110,7 +109,8 @@ def dynamic_playlist_novelty():
     FROM dynamic
     INNER JOIN archive ON dynamic.song_id = archive.song_id
     GROUP BY dynamic.song_id
-    HAVING COUNT(archive.song_id) = 1; """
+    HAVING COUNT(archive.song_id) = 1;
+    """
     unique_songs = conn.select_query_raw(sql=sql)
     existing_songs = conn.select_query(query_literal="song_id", table="dynamic")
 
@@ -121,13 +121,14 @@ def dynamic_playlist_novelty():
 def playlist_diversity_index():
     conn = DatabaseConnection()
     sql = """
-    SELECT artists_genres.genre, COUNT(artists_genres.genre)
-    FROM dynamic
-        JOIN songs ON dynamic.song_id = songs.id
-        JOIN artists_songs ON songs.id = artists_songs.song_id
-        JOIN artists_genres ON artists_songs.artist_id = artists_genres.artist_id
-    GROUP BY artists_genres.genre
-    ORDER BY COUNT(artists_genres.genre) DESC
+    SELECT g.name, COUNT(g.name)
+    FROM dynamic d
+             JOIN songs s ON d.song_id = s.id
+             JOIN artists_songs ON s.id = artists_songs.song_id
+             JOIN artists_genres ON artists_songs.artist_id = artists_genres.artist_id
+             JOIN genres g on artists_genres.genre_id = g.id
+    GROUP BY g.name
+    ORDER BY COUNT(g.name) DESC
     """
     genre_counts = conn.select_query_raw(sql=sql)
     genre_counts = [x[1] for x in genre_counts]
@@ -189,4 +190,15 @@ def featured_artist():
         conn.update_query_raw(sql=update_selected_artist_sql)
         conn.commit()
 
+    conn.terminate()
+
+
+def refresh_rankings():
+    conn = DatabaseConnection()
+
+    conn.raw_query("REFRESH MATERIALIZED VIEW v_rankings_songs;")
+    conn.raw_query("REFRESH MATERIALIZED VIEW v_rankings_artists;")
+    conn.raw_query("REFRESH MATERIALIZED VIEW v_rankings_genres;")
+
+    conn.commit()
     conn.terminate()

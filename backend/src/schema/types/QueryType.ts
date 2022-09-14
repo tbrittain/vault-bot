@@ -1,33 +1,38 @@
 import { gql } from 'apollo-server-express'
 
 export default gql`
-  type Query {
-    # Artists
-    getArtist(id: String, name: String): Artist!
-    getArtists: [Artist!]!
-    getFeaturedArtist: Artist!
-    getArtistsFromGenre(genreName: String!): [Artist!]!
-    findArtistsLike(searchQuery: String!): [Artist!]!
+	scalar UUID
+	scalar DateTime
+	scalar NonNegativeInt
 
-    # Genres
-    getGenres(limit: Int): [Genre!]!
-    findGenresLike(searchQuery: String!): [Genre!]!
+	type Query {
+		# Artists
+		getArtist(id: String, name: String): Artist
+		getArtists: [Artist!]!
+		getFeaturedArtist: Artist!
+		getArtistsFromGenre(genreId: UUID!): [Artist!]!
+		findArtistsLike(searchQuery: String!): [Artist!]!
 
-    # Tracks
-    getTrack(id: String!): Song!
-    getTracks: [Song!]!
-    getSimilarTracks(id: String!, limit: Int): [SimilarSong]!
-    getAvgTrackDetails: SongDetails!
-    getTracksFromAlbum(album: String!, artistId: String!): [Song!]!
-    findTracksLike(searchQuery: String!): [Song!]!
-    getWhenTrackAddedByUsers(id: String!): [SongHistory!]!
+		# Genres
+		getGenre(id: UUID): Genre
+		getGenres(limit: NonNegativeInt): [Genre!]!
+		findGenresLike(searchQuery: String!): [Genre!]!
 
-    # Hist data
-    getHistGenres(startDate: String!, endDate: String): [HistGenre!]
-    getHistTracking(startDate: String!, endDate: String): [HistTracking!]
+		# Tracks
+		getTrack(id: String!): Song
+		getTracks: [Song!]!
+		getSimilarTracks(id: String!, limit: NonNegativeInt): [SimilarSong]!
+		getAvgTrackDetails: SongDetails!
+		getTracksFromAlbum(album: String!, artistId: String!): [Song!]!
+		findTracksLike(searchQuery: String!): [Song!]!
+		getWhenTrackAddedByUsers(id: String!): [SongHistory!]!
 
-    # Misc
-    getCurrentOverallStats: CurrentOverallStats!
-    getChangeLogPosts: [ChangeLogPost!]!
-  }
+		# Hist data
+		getHistGenres(startDate: DateTime!, endDate: DateTime): [HistGenre!]
+		getHistTracking(startDate: DateTime!, endDate: DateTime): [HistTracking!]
+
+		# Misc
+		getCurrentOverallStats: CurrentOverallStats!
+		getChangeLogPosts: [ChangeLogPost!]!
+	}
 `
