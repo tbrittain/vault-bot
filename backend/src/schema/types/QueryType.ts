@@ -7,19 +7,19 @@ export default gql`
 
 	type Query {
 		# Artists
-		getArtist(id: String, name: String): Artist!
+		getArtist(id: String, name: String): Artist
 		getArtists: [Artist!]!
 		getFeaturedArtist: Artist!
 		getArtistsFromGenre(genreId: UUID!): [Artist!]!
 		findArtistsLike(searchQuery: String!): [Artist!]!
 
 		# Genres
-		getGenre(id: UUID): Genre!
+		getGenre(id: UUID): Genre
 		getGenres(limit: NonNegativeInt): [Genre!]!
 		findGenresLike(searchQuery: String!): [Genre!]!
 
 		# Tracks
-		getTrack(id: String!): Song!
+		getTrack(id: String!): Song
 		getTracks: [Song!]!
 		getSimilarTracks(id: String!, limit: NonNegativeInt): [SimilarSong]!
 		getAvgTrackDetails: SongDetails!

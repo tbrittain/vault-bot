@@ -47,13 +47,7 @@ export default {
 					}
 				]
 			}).catch((err) => console.error(err))
-			const artists = JSON.parse(JSON.stringify(results))
-
-			if (artists.length > 0) {
-				return artists
-			} else {
-				throw new Error('No artists found matching provided genre')
-			}
+			return JSON.parse(JSON.stringify(results))
 		},
 		async findGenresLike(_parent, args: IFindGenresLikeArgs) {
 			const { searchQuery } = args
