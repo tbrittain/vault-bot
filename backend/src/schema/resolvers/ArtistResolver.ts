@@ -32,12 +32,8 @@ export default {
 				where: condition
 			}).catch((err) => console.error(err))
 
-			if (result != null) {
-				result = JSON.parse(JSON.stringify(result))
-				return result
-			} else {
-				throw new Error('No results found for artist provided')
-			}
+			result = JSON.parse(JSON.stringify(result))
+			return result
 		},
 		async getFeaturedArtist() {
 			let result = await Artist.findOne({
