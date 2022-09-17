@@ -409,6 +409,10 @@ def balance_duplicate_song_lookup(song_id: str):
                                      abs(x[9] - initial[9]) < 0.1 and
                                      abs(x[10] - initial[10]) < 0.1, rest))
 
+    if len(filtered) == 0:
+        conn.terminate()
+        return
+
     # once we are at this point, then we can assume that all the results left represent the same songs.
     # then (if more than one result) we need to select which song is the one we want to be that target
     # song for all of these duplicate results
