@@ -94,7 +94,7 @@ def balance_duplicate_song_lookup(song_id: str, conn):
         return [song_id]
 
     # then, out of those results, filter those down to those with significant name similarity
-    filtered = list(filter(lambda x: fuzz.partial_ratio(x[1], initial[1]) > 90, filtered))
+    filtered = list(filter(lambda x: fuzz.ratio(x[1], initial[1]) > 90, filtered))
 
     print("\nFiltered by song name under 90% fuzzy substring similarity")
     pprint(filtered)
@@ -108,7 +108,7 @@ def balance_duplicate_song_lookup(song_id: str, conn):
                                      abs(x[7] - initial[7]) < 0.1 and
                                      abs(x[8] - initial[8]) < 0.1 and
                                      abs(x[9] - initial[9]) < 0.1 and
-                                     abs(x[10] - initial[10]) < 0.1, rest))
+                                     abs(x[10] - initial[10]) < 0.1, filtered))
 
     print("\nFiltered by 10% deviation from source song characteristics")
     pprint(filtered)
@@ -148,6 +148,8 @@ def balance_duplicate_song_lookup(song_id: str, conn):
     print("\nDetermining which song has the most sibling songs in the same album")
     song_id_album_count = {}
     for song_row in filtered:
+        escaped_album_name = song_row[4].replace("'", "''")
+
         cur = conn.cursor()
         cur.execute(f"""
         SELECT s.id, s.name, s.album
@@ -156,7 +158,7 @@ def balance_duplicate_song_lookup(song_id: str, conn):
         WHERE "as".artist_id = ANY (SELECT as2.artist_id
                                     FROM artists_songs as2
                                     WHERE as2.song_id = '{song_row[0]}')
-        AND s.album = '{song_row[4]}'
+        AND s.album = '{escaped_album_name}'
         GROUP BY s.id;
         """)
         album_songs = cur.fetchall()
@@ -196,6 +198,10 @@ def main():
     cache = []
     print("Beginning duplicate song mapping")
     print(f"Starting with {len(all_song_ids)} total potential duplicates")
+
+    # all_song_ids = ['04WUbtvYkOpPVZWFYokO6J', '1U5KLauD740gADxs1pAEyh', '1U5KLauD740gADxs1pAEyh',
+    #                 '2DrVfBmyN5B9T5SjNbQwGy', '0kLrrh7Z1gySNTunBH790J']
+
     with alive_bar(len(all_song_ids)) as bar:
         for song_id in all_song_ids:
             if song_id in cache:
@@ -205,7 +211,7 @@ def main():
 
             updated_source_song_ids = balance_duplicate_song_lookup(song_id, conn)
             print(f"\nAdding {len(updated_source_song_ids)} songs to the cache")
-            cache.append(updated_source_song_ids)
+            cache.extend(updated_source_song_ids)
             bar()
 
     conn.commit()
