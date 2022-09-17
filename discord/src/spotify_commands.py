@@ -396,7 +396,7 @@ def balance_duplicate_song_lookup(song_id: str):
         return
 
     # then, out of those results, filter those down to those with significant name similarity
-    filtered = list(filter(lambda x: fuzz.partial_ratio(x[1], initial[1]) > 90, filtered))
+    filtered = list(filter(lambda x: fuzz.ratio(x[1], initial[1]) > 90, filtered))
 
     if len(filtered) == 0:
         conn.terminate()
@@ -407,7 +407,11 @@ def balance_duplicate_song_lookup(song_id: str):
                                      abs(x[7] - initial[7]) < 0.1 and
                                      abs(x[8] - initial[8]) < 0.1 and
                                      abs(x[9] - initial[9]) < 0.1 and
-                                     abs(x[10] - initial[10]) < 0.1, rest))
+                                     abs(x[10] - initial[10]) < 0.1, filtered))
+
+    if len(filtered) == 0:
+        conn.terminate()
+        return
 
     # once we are at this point, then we can assume that all the results left represent the same songs.
     # then (if more than one result) we need to select which song is the one we want to be that target
@@ -431,6 +435,8 @@ def balance_duplicate_song_lookup(song_id: str):
     # (which will require another trip to the database)
     song_id_album_count = {}
     for song_row in filtered:
+        escaped_album_name = song_row[4].replace("'", "''")
+
         album_songs = conn.select_query_raw(f"""
         SELECT s.id, s.name, s.album
         FROM songs s
@@ -438,7 +444,7 @@ def balance_duplicate_song_lookup(song_id: str):
         WHERE "as".artist_id = ANY (SELECT as2.artist_id
                                     FROM artists_songs as2
                                     WHERE as2.song_id = '{song_row[0]}')
-        AND s.album = '{song_row[4]}'
+        AND s.album = '{escaped_album_name}'
         GROUP BY s.id;
         """)
 
