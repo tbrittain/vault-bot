@@ -2,18 +2,16 @@ import Song from '../models/Song.model'
 import sequelize from '../index'
 
 const SIMILARITY_SQL_QUERY = `
-    WITH ss AS (
-        SELECT *
-        FROM songs
-        WHERE songs.id = :songId
-    )
+    WITH ss AS (SELECT *
+                FROM v_songs s2
+                WHERE s2.id = :songId)
     SELECT *
-    FROM songs s
+    FROM v_songs s
     WHERE s.danceability BETWEEN ((SELECT ss.danceability FROM ss) - 0.1) AND ((SELECT ss.danceability FROM ss) + 0.1)
-        AND s.energy BETWEEN ((SELECT ss.energy FROM ss) - 0.1) AND ((SELECT ss.energy FROM ss) + 0.1)
-        AND s.valence BETWEEN ((SELECT ss.valence FROM ss) - 0.1) AND ((SELECT ss.valence FROM ss) + 0.1)
-        AND s.loudness BETWEEN ((SELECT ss.loudness FROM ss) - 3) AND ((SELECT ss.loudness FROM ss) + 3)
-        AND s.id != (SELECT ss.id FROM ss);
+      AND s.energy BETWEEN ((SELECT ss.energy FROM ss) - 0.1) AND ((SELECT ss.energy FROM ss) + 0.1)
+      AND s.valence BETWEEN ((SELECT ss.valence FROM ss) - 0.1) AND ((SELECT ss.valence FROM ss) + 0.1)
+      AND s.loudness BETWEEN ((SELECT ss.loudness FROM ss) - 3) AND ((SELECT ss.loudness FROM ss) + 3)
+      AND s.id != (SELECT ss.id FROM ss);
 `
 
 async function calculateSimilarity(sourceSong, targetSong: Song) {
