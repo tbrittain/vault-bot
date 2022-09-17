@@ -199,9 +199,6 @@ def main():
     print("Beginning duplicate song mapping")
     print(f"Starting with {len(all_song_ids)} total potential duplicates")
 
-    # all_song_ids = ['04WUbtvYkOpPVZWFYokO6J', '1U5KLauD740gADxs1pAEyh', '1U5KLauD740gADxs1pAEyh',
-    #                 '2DrVfBmyN5B9T5SjNbQwGy', '0kLrrh7Z1gySNTunBH790J']
-
     with alive_bar(len(all_song_ids)) as bar:
         for song_id in all_song_ids:
             if song_id in cache:
