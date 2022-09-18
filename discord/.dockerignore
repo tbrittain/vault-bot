@@ -5,3 +5,4 @@ src/__pycache__
 *.log
 docker_run.txt
 *.bat
+one_time_updates

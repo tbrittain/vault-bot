@@ -9,7 +9,7 @@ import { ITableOptions } from './interfaces/ITableOptions'
 import Song from './Song.model'
 
 const ArchiveSongOptions: ITableOptions = {
-	tableName: 'archive',
+	tableName: 'v_archive',
 	timestamps: false,
 	underscored: true
 }

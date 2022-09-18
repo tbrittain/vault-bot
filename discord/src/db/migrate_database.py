@@ -2,6 +2,7 @@ import logging
 
 from .migrations.archive_serial_pkey_fix import MIGRATION_ID as ARCHIVE_SERIAL_PKEY_FIX_MIGRATION_ID
 from .migrations.artist_song_link_table import MIGRATION_ID as ARTIST_SONG_LINK_TABLE_MIGRATION_ID
+from .migrations.duplcate_song_fix import MIGRATION_ID as DUPLICATE_SONG_FIX_MIGRATION_ID
 from .migrations.artists_genres_featured_tracking import MIGRATION_ID as ARTISTS_GENRES_FEATURED_TRACKING_ID
 from .migrations.energy_aggregate_playlist import MIGRATION_ID as ENERGY_AGGREGATE_PLAYLIST_MIGRATION_ID
 from .migrations.genre_table_rework import MIGRATION_ID as GENRE_REWORK_MIGRATION_ID
@@ -9,7 +10,7 @@ from .migrations.rankings_views import MIGRATION_ID as RANKINGS_VIEWS_MIGRATION_
 from .migrations.selects_refactor import MIGRATION_ID as SELECTS_REFACTOR_MIGRATION_ID
 
 
-def run_migration(cur, logger: logging.Logger):
+def run_migrations(cur, logger: logging.Logger):
     cur.execute("SELECT id FROM migration")
     migration_ids = [row[0] for row in cur.fetchall()]
 
@@ -54,3 +55,9 @@ def run_migration(cur, logger: logging.Logger):
         from .migrations.artists_genres_featured_tracking import migration_007
         migration_007(cur)
         logger.info("Migration 007 complete")
+
+    if DUPLICATE_SONG_FIX_MIGRATION_ID not in migration_ids:
+        logger.info("Running migration 008")
+        from .migrations.duplcate_song_fix import migration_008
+        migration_008(cur)
+        logger.info("Migration 008 complete")

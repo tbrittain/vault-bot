@@ -6,6 +6,7 @@
 .vscode
 .vs/*
 backend/build
+/discord/token.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -139,9 +140,4 @@ dmypy.json
 # Pyre type checker
 .pyre/
 /embeds/
-/discord/archive.csv
-/discord/VaultBot.bat
-/discord/vibrant-sound-292320.json
-/discord/src/cache.json
 .DS_store
-/discord/token.json

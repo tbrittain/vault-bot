@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { useParams } from "react-router-dom"
+import { Navigate, useParams } from "react-router-dom"
 import { useQuery } from "@apollo/client"
 import LoadingScreen from "../loading/LoadingScreen"
 import ArtistDetails from "./ArtistDetails"
@@ -15,12 +15,18 @@ const ArtistContainer = () => {
 	const [genres, setGenres] = useState([])
 	const [albumSongs, setAlbumSongs] = useState({})
 	const [rank, setRank] = useState()
+	const [processing, setProcessing] = useState(true)
 
-	const { loading, error } = useQuery(ARTIST_QUERY, {
+	const { error } = useQuery(ARTIST_QUERY, {
 		variables: {
 			artistId,
 		},
 		onCompleted: (data) => {
+			if (!data.getArtist) {
+				setProcessing(false)
+				return
+			}
+
 			setArtistName(data.getArtist.name)
 			setArtistArt(data.getArtist.art)
 			setGenres(data.getArtist.genres)
@@ -47,16 +53,26 @@ const ArtistContainer = () => {
 				}
 			}
 			setAlbumSongs(albumSongs)
+
+			setProcessing(false)
 		},
 	})
 
-	if (loading) {
+	if (processing) {
 		return <LoadingScreen text="Loading artist..." />
 	}
 
 	if (error) {
 		return (
 			<Alert severity="error">An error occurred during data retrieval :(</Alert>
+		)
+	}
+
+	if (!artistName) {
+		return (
+			<div>
+				<Navigate to="/404" />
+			</div>
 		)
 	}
 

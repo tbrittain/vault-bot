@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { useParams } from "react-router-dom"
+import { Navigate, useParams } from "react-router-dom"
 import { useQuery } from "@apollo/client"
 import OpenInNewIcon from "@mui/icons-material/OpenInNew"
 import LoadingScreen from "../loading/LoadingScreen"
@@ -26,9 +26,10 @@ const GenreContainer = () => {
 	const [genre, setGenre] = useState({})
 	const [artists, setArtists] = useState([])
 	const [rank, setRank] = useState()
+	const [processing, setProcessing] = useState(true)
 	const isSmallScreen = useMediaQuery("(max-width:850px)")
 
-	const { loading, error } = useQuery(ARTISTS_FROM_GENRE_QUERY, {
+	const { error } = useQuery(ARTISTS_FROM_GENRE_QUERY, {
 		variables: {
 			genreId,
 		},
@@ -36,16 +37,25 @@ const GenreContainer = () => {
 			setGenre(data?.getGenre)
 			setArtists(data?.getArtistsFromGenre)
 			setRank(data?.getGenre?.genreRank)
+			setProcessing(false)
 		},
 	})
 
-	if (loading) {
+	if (processing) {
 		return <LoadingScreen text="Loading genre..." />
 	}
 
-	if (error || !artists.length) {
+	if (error) {
 		return (
 			<Alert severity="error">An error occurred during data retrieval :(</Alert>
+		)
+	}
+
+	if (!genre) {
+		return (
+			<div>
+				<Navigate to="/404" />
+			</div>
 		)
 	}
 
