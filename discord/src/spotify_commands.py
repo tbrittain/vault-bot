@@ -381,7 +381,7 @@ def balance_duplicate_song_lookup(song_id: str):
 
     rest = [x for x in potential_duplicates if x[0] != song_id]
 
-    filtered = list(filter(lambda x: abs(x[2] - initial[2]) < 0.1 and
+    filtered = list(filter(lambda x: abs(x[2] - initial[2]) < 0.17 and
                                      abs(x[3] - initial[3]) < 5, rest))
 
     if len(filtered) == 0:
@@ -403,11 +403,11 @@ def balance_duplicate_song_lookup(song_id: str):
         return
 
     # then filter down to results that share significant similarity with regard to song characteristics
-    filtered = list(filter(lambda x: abs(x[6] - initial[6]) < 0.1 and
+    filtered = list(filter(lambda x: abs(x[6] - initial[6]) < 0.2 and
                                      abs(x[7] - initial[7]) < 0.1 and
                                      abs(x[8] - initial[8]) < 0.1 and
                                      abs(x[9] - initial[9]) < 0.1 and
-                                     abs(x[10] - initial[10]) < 0.1, filtered))
+                                     abs(x[10] - initial[10]) < 0.2, filtered))
 
     if len(filtered) == 0:
         conn.terminate()
