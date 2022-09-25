@@ -25,7 +25,7 @@ def get_logger(name) -> logging.Logger:
     return logger
 
 
-def access_secret_version(secret_id, project_id, version_id="1") -> str:
+def access_secret_version(secret_id, project_id, version_id="latest") -> str:
     """
     Pull a secret stored in Google Cloud Secret Manager
     @param secret_id: ID of the secret

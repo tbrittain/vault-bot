@@ -50,7 +50,7 @@ elif environment == "prod":
                                           project_id=project_id)
     REDIRECT_URI = access_secret_version(secret_id="db-spotify-redirect-uri",
                                          project_id=project_id)
-    TOKEN = access_secret_version('vb-spotify-cache', project_id, '3')
+    TOKEN = access_secret_version('vb-spotify-cache', project_id)
 
     DYNAMIC_PLAYLIST_ID = '5YQHb5wt9d0hmShWNxjsTs'
 else:
