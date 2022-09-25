@@ -14,13 +14,18 @@ def get_logger(name) -> logging.Logger:
     """
     logger = logging.getLogger(name)
 
+    if environment == "production":
+        logging_level = logging.INFO
+    else:
+        logging_level = logging.DEBUG
+
     # Log to console
     handler = logging.StreamHandler()
-    handler.setLevel(logging.DEBUG)
+    handler.setLevel(logging_level)
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     handler.setFormatter(formatter)
 
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging_level)
     logger.addHandler(handler)
     return logger
 
