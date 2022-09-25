@@ -1,9 +1,7 @@
 import logging
 from os import getenv
 
-import google.cloud.logging
 from google.cloud import secretmanager
-from google.cloud.logging.handlers import CloudLoggingHandler
 
 environment = getenv("ENVIRONMENT")
 
@@ -17,24 +15,22 @@ def get_logger(name) -> logging.Logger:
     logger = logging.getLogger(name)
 
     if environment == "production":
-        # Log to Google Cloud Logging
-        client = google.cloud.logging.Client()
-        handler = CloudLoggingHandler(client, name=name)
-        logger.setLevel(logging.INFO)
-        logger.addHandler(handler)
+        logging_level = logging.INFO
     else:
-        # Log to console
-        handler = logging.StreamHandler()
-        handler.setLevel(logging.DEBUG)
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        handler.setFormatter(formatter)
+        logging_level = logging.DEBUG
 
-        logger.setLevel(logging.DEBUG)
-        logger.addHandler(handler)
+    # Log to console
+    handler = logging.StreamHandler()
+    handler.setLevel(logging_level)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    handler.setFormatter(formatter)
+
+    logger.setLevel(logging_level)
+    logger.addHandler(handler)
     return logger
 
 
-def access_secret_version(secret_id, project_id, version_id="1") -> str:
+def access_secret_version(secret_id, project_id, version_id="latest") -> str:
     """
     Pull a secret stored in Google Cloud Secret Manager
     @param secret_id: ID of the secret
@@ -51,4 +47,3 @@ def access_secret_version(secret_id, project_id, version_id="1") -> str:
 def array_chunks(lst, n):
     for i in range(0, len(lst), n):
         yield lst[i:i + n]
-
