@@ -9,7 +9,7 @@
     "@fontsource/rubik": "^4.5.11",
     "@mui/icons-material": "^5.10.6",
     "@mui/material": "^5.10.7",
-    "@mui/styles": "^5.10.6",
+    "@mui/styles": "^5.10.7",
     "@mui/x-data-grid": "^5.17.4",
     "axios": "^0.27.2",
     "chart.js": "^3.9.1",
