@@ -10,7 +10,7 @@ from discord.ext import tasks, commands
 
 import src.discord_responses as discord_responses
 from src.database_connection import migrate_database
-from src.historical_tracking import playlist_snapshot_coordinator, featured_artist, refresh_rankings
+from src.historical_tracking import playlist_snapshot_coordinator, set_featured_artist, refresh_rankings
 from src.spotify_commands import force_refresh_cache, expired_track_removal, update_playlist_description, \
     song_search, validate_song_and_add
 from src.spotify_selects import selects_playlists_coordinator
@@ -102,7 +102,7 @@ async def hourly_cleanup():
             post_webhook()
         bar()
         logger.debug('Checking whether to select a new featured artist')
-        featured_artist()
+        set_featured_artist()
         bar()
         logger.debug('Refreshing rankings views')
         refresh_rankings()
