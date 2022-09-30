@@ -8,7 +8,7 @@ export default gql`
 		genres: [Genre]
 		songs: [Song!]!
 		wikiBio: wikiBio
-		featured: String
+		featuredDates: [FeaturedDate]!
 		artistRank: ArtistRank
 	}
 

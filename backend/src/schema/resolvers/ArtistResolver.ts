@@ -6,6 +6,7 @@ import { IArtistInfo, IFindArtistsLikeArgs } from './interfaces/Artists'
 import { getArtistBio } from '../../utils/WikipediaSearch'
 import Genre from '../../database/models/Genre.model'
 import ArtistRank from '../../database/models/ArtistRank.model'
+import FeaturedArtist from '../../database/models/FeaturedArtist.model'
 
 export default {
 	Query: {
@@ -124,6 +125,15 @@ export default {
 
 			result = JSON.parse(JSON.stringify(result))
 			return result
+		},
+		async featuredDates(parent: Artist) {
+			const artistId = parent.id
+
+			return await FeaturedArtist.findAll({
+				where: {
+					artistId
+				}
+			})
 		}
 	}
 }

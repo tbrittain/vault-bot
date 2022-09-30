@@ -13,4 +13,8 @@ export default gql`
 		post: String!
 		date: DateTime!
 	}
+
+	type FeaturedDate {
+		featuredDate: DateTime!
+	}
 `
