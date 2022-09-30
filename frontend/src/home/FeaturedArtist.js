@@ -21,12 +21,16 @@ const FeaturedArtist = () => {
 	const classes = homeStyles()
 
 	const [artist, setArtist] = useState()
+	const [featuredDate, setFeaturedDate] = useState(new Date())
 	const [artistGenres, setArtistGenres] = useState([])
 	const [rank, setRank] = useState()
 
 	const { loading, error } = useQuery(FEATURED_ARTIST_QUERY, {
 		onCompleted: (data) => {
 			setArtist(data?.getFeaturedArtist)
+			setFeaturedDate(
+				getMostRecentFeaturedDate(data?.getFeaturedArtist.featuredDates)
+			)
 			setArtistGenres(data?.getFeaturedArtist?.genres)
 			setRank(data?.getFeaturedArtist?.artistRank)
 		},
@@ -67,7 +71,6 @@ const FeaturedArtist = () => {
 		)
 	}
 
-	const dateToday = new Date(artist.featured)
 	const backgroundStyling = {
 		backgroundImage: `url(${artist.art})`,
 		backgroundPosition: "center center",
@@ -107,7 +110,7 @@ const FeaturedArtist = () => {
 					}}
 				>
 					Featured artist for{" "}
-					{dateToday.toLocaleDateString(undefined, {
+					{featuredDate.toLocaleDateString(undefined, {
 						weekday: "long",
 						month: "long",
 						day: "numeric",
@@ -199,6 +202,23 @@ const FeaturedArtist = () => {
 			</div>
 		</div>
 	)
+}
+
+const getMostRecentFeaturedDate = (featuredDateObjects) => {
+	if (featuredDateObjects.length === 1) {
+		return new Date(featuredDateObjects[0].featuredDate)
+	}
+
+	const sortedDates = featuredDateObjects
+		.map((x) => new Date(x.featuredDate))
+		.sort((date1, date2) => {
+			const date1time = date1.getTime()
+			const date2time = date2.getTime()
+
+			return date2time - date1time
+		})
+
+	return sortedDates[0]
 }
 
 export default FeaturedArtist

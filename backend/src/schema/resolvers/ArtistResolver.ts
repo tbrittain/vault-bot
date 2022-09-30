@@ -6,6 +6,7 @@ import { IArtistInfo, IFindArtistsLikeArgs } from './interfaces/Artists'
 import { getArtistBio } from '../../utils/WikipediaSearch'
 import Genre from '../../database/models/Genre.model'
 import ArtistRank from '../../database/models/ArtistRank.model'
+import FeaturedArtist from '../../database/models/FeaturedArtist.model'
 
 export default {
 	Query: {
@@ -37,12 +38,12 @@ export default {
 		},
 		async getFeaturedArtist() {
 			let result = await Artist.findOne({
-				where: {
-					featured: {
-						[Op.not]: null
-					}
+				include: {
+					model: FeaturedArtist,
+					separate: true,
+					order: [['featuredDate', 'desc']]
 				},
-				order: [['featured', 'desc']]
+				limit: 1
 			}).catch((err) => console.error(err))
 			result = JSON.parse(JSON.stringify(result))
 			return result
@@ -124,6 +125,15 @@ export default {
 
 			result = JSON.parse(JSON.stringify(result))
 			return result
+		},
+		async featuredDates(parent: Artist) {
+			const artistId = parent.id
+
+			return await FeaturedArtist.findAll({
+				where: {
+					artistId
+				}
+			})
 		}
 	}
 }

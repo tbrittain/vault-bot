@@ -81,6 +81,12 @@ def selects_playlists_coordinator():
         sp.playlist_change_details(playlist_id=GENRE_PLAYLIST_ID, description=description)
         update_playlist(playlist_id=GENRE_PLAYLIST_ID, playlist_sql=genre_playlist_sql, conn=conn)
 
+        featured_genre_sql = f"""
+        INSERT INTO featured_genres (genre_id, featured_date)
+        VALUES ('{selected_genre[0]}', NOW()::timestamp)
+        """
+        conn.raw_query(featured_genre_sql)
+
         logger.info(f"Updating aggregate playlist Genre (id: {GENRE_PLAYLIST_ID})")
         logger.info(f"New genre: {selected_genre[1]}, selected out of {len(genres)} viable genres")
     # endregion

@@ -147,12 +147,13 @@ def playlist_diversity_index():
         return 0
 
 
-def featured_artist():
+def set_featured_artist():
     conn = DatabaseConnection()
     last_update_sql = """
-    SELECT featured FROM artists
-    WHERE featured IS NOT NULL
-    ORDER BY featured DESC LIMIT 1;
+    SELECT featured_date
+    FROM featured_artists
+    ORDER BY featured_date DESC
+    LIMIT 1;
     """
     last_update = conn.select_query_raw(sql=last_update_sql)
 
@@ -183,11 +184,11 @@ def featured_artist():
         viable_artists = [x[0] for x in viable_artists]
         selected_artist = choice(viable_artists)
 
-        update_selected_artist_sql = f"""
-        UPDATE artists SET featured = NOW()::timestamp 
-        WHERE id = '{selected_artist}';
+        insert_selected_featured_artist_sql = f"""
+        INSERT INTO featured_artists (artist_id, featured_date)
+        VALUES ('{selected_artist}', NOW()::timestamp)
         """
-        conn.update_query_raw(sql=update_selected_artist_sql)
+        conn.raw_query(insert_selected_featured_artist_sql)
         conn.commit()
 
     conn.terminate()

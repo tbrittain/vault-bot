@@ -32,7 +32,9 @@ export const FEATURED_ARTIST_QUERY = gql`
 				id
 				name
 			}
-			featured
+			featuredDates {
+				featuredDate
+			}
 			artistRank {
 				numUniqueSongs
 				numUniqueSongsRank

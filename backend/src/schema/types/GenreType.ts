@@ -5,6 +5,7 @@ export default gql`
 		id: UUID!
 		name: String!
 		genreRank: GenreRank
+		featuredDates: [FeaturedDate]!
 	}
 
 	type GenreRank {

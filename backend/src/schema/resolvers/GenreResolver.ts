@@ -8,6 +8,7 @@ import {
 } from './interfaces/Genres'
 import Genre from '../../database/models/Genre.model'
 import GenreRank from '../../database/models/GenreRank.model'
+import FeaturedGenre from '../../database/models/FeaturedGenre.model'
 
 export default {
 	Query: {
@@ -76,6 +77,15 @@ export default {
 
 			result = JSON.parse(JSON.stringify(result))
 			return result
+		},
+		async featuredDates(parent: Genre) {
+			const genreId = parent.id
+
+			return await FeaturedGenre.findAll({
+				where: {
+					genreId
+				}
+			})
 		}
 	}
 }
