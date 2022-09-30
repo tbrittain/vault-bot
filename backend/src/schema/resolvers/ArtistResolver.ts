@@ -38,12 +38,12 @@ export default {
 		},
 		async getFeaturedArtist() {
 			let result = await Artist.findOne({
-				where: {
-					featured: {
-						[Op.not]: null
-					}
+				include: {
+					model: FeaturedArtist,
+					separate: true,
+					order: [['featuredDate', 'desc']]
 				},
-				order: [['featured', 'desc']]
+				limit: 1
 			}).catch((err) => console.error(err))
 			result = JSON.parse(JSON.stringify(result))
 			return result
