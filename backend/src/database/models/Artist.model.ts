@@ -12,6 +12,7 @@ import { ITableOptions } from './interfaces/ITableOptions'
 import ArtistSong from './ArtistSong.model'
 import Song from './Song.model'
 import ArtistRank from './ArtistRank.model'
+import FeaturedArtist from './FeaturedArtist.model'
 
 const ArtistOptions: ITableOptions = {
 	tableName: 'artists',
@@ -39,4 +40,7 @@ export default class Artist extends Model {
 
 	@HasOne(() => ArtistRank)
 	artistRank: ArtistRank
+
+	@HasMany(() => FeaturedArtist)
+	featuredDates: FeaturedArtist[]
 }

@@ -1,4 +1,5 @@
 import {
+	BelongsTo,
 	Column,
 	ForeignKey,
 	Model,
@@ -20,6 +21,9 @@ export default class FeaturedArtist extends Model {
 	@Column
 	@ForeignKey(() => Artist)
 	artistId!: string
+
+	@BelongsTo(() => Artist)
+	artist!: Artist
 
 	@Column
 	featuredDate!: Date
