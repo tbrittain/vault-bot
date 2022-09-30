@@ -31,9 +31,6 @@ export default class Artist extends Model {
 	@Column
 	art!: string
 
-	@Column
-	featured!: Date
-
 	@HasMany(() => ArtistGenre)
 	artistGenres!: ArtistGenre[]
 
