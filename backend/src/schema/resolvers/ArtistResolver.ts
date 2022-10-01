@@ -41,6 +41,7 @@ export default {
 				include: {
 					model: FeaturedArtist,
 					separate: true,
+					required: true,
 					order: [['featuredDate', 'desc']]
 				},
 				limit: 1
