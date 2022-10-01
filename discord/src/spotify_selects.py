@@ -86,6 +86,7 @@ def selects_playlists_coordinator():
         VALUES ('{selected_genre[0]}', NOW()::timestamp)
         """
         conn.raw_query(featured_genre_sql)
+        conn.commit()
 
         logger.info(f"Updating aggregate playlist Genre (id: {GENRE_PLAYLIST_ID})")
         logger.info(f"New genre: {selected_genre[1]}, selected out of {len(genres)} viable genres")
