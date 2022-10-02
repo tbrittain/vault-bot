@@ -37,16 +37,16 @@ export default {
 			return result
 		},
 		async getFeaturedArtist() {
-			let result = await Artist.findOne({
+			let result = await FeaturedArtist.findOne({
 				include: {
-					model: FeaturedArtist,
-					separate: true,
-					order: [['featuredDate', 'desc']]
+					model: Artist
 				},
+				order: [['featuredDate', 'desc']],
 				limit: 1
-			}).catch((err) => console.error(err))
+			})
+
 			result = JSON.parse(JSON.stringify(result))
-			return result
+			return result.artist
 		},
 		async getArtists() {
 			let result = await Artist.findAll({
