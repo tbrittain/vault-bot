@@ -4,21 +4,19 @@ import { Link } from "react-router-dom"
 import LoadingScreen from "../loading/LoadingScreen"
 import genreListStyles from "./GenreListStyles"
 import genreToMuiColor from "../utils/genreToMuiColor"
-import { v4 as uuidv4 } from "uuid"
 import { Alert, Paper, Typography } from "@mui/material"
 import { DataGrid } from "@mui/x-data-grid"
 import { ALL_GENRES_QUERY } from "../queries/genreQueries"
 
-// TODO - DataGrid API has changed
 const columns = [
 	{
-		field: "genreName",
+		field: "name",
 		headerName: "Genre",
 		width: 300,
 		renderCell: (params) => (
 			<Paper
 				component={Link}
-				to={`/genres/${params.value}`}
+				to={`/genres/${params.id}`}
 				style={{
 					width: "97%",
 					height: "97%",
@@ -26,7 +24,7 @@ const columns = [
 					justifyContent: "center",
 					alignItems: "center",
 					textDecoration: "none",
-					background: genreToMuiColor(params.value),
+					background: genreToMuiColor(params.formattedValue),
 				}}
 			>
 				<Typography
@@ -36,23 +34,37 @@ const columns = [
 						margin: 5,
 						fontWeight: "fontWeightLight",
 						color: (theme) =>
-							theme.palette.getContrastText(genreToMuiColor(params.value)),
+							theme.palette.getContrastText(
+								genreToMuiColor(params.formattedValue)
+							),
 					}}
 				>
-					{params.value}
+					{params.formattedValue}
 				</Typography>
 			</Paper>
 		),
 	},
 	{
 		field: "numArtists",
-		headerName: "Artists",
+		headerName: "# Artists",
 		width: 150,
 		type: "number",
 	},
 	{
-		field: "rank",
-		headerName: "Rank",
+		field: "numArtistsRank",
+		headerName: "# Artists Rank",
+		width: 150,
+		type: "number",
+	},
+	{
+		field: "numSongs",
+		headerName: "# Songs",
+		width: 150,
+		type: "number",
+	},
+	{
+		field: "numSongsRank",
+		headerName: "# Songs Rank",
 		width: 150,
 		type: "number",
 	},
@@ -66,13 +78,15 @@ const GenreGrid = () => {
 		onCompleted: (data) => {
 			const temp = []
 			for (const genre of data.getGenres) {
-				const newRow = {
-					id: uuidv4(),
-					genreName: genre.genre,
-					numArtists: genre.numArtists,
-					rank: genre.rank,
+				const row = {
+					id: genre.id,
+					name: genre.name,
+					numArtists: genre.genreRank?.numArtists,
+					numArtistsRank: genre.genreRank?.numArtistsRank,
+					numSongs: genre.genreRank?.numSongs,
+					numSongsRank: genre.genreRank?.numSongsRank,
 				}
-				temp.push(newRow)
+				temp.push(row)
 			}
 			setRows(temp)
 		},
@@ -95,7 +109,19 @@ const GenreGrid = () => {
 					flexGrow: 1,
 				}}
 			>
-				<DataGrid columns={columns} rows={rows} rowHeight={75} />
+				<DataGrid
+					columns={columns}
+					rows={rows}
+					rowHeight={75}
+					initialState={{
+						sorting: {
+							sortModel: [
+								{ field: "numArtists", sort: "desc" },
+								{ field: "numArtistsRank", sort: "asc" },
+							],
+						},
+					}}
+				/>
 			</div>
 		</div>
 	)

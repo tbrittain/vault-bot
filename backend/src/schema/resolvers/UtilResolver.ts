@@ -5,15 +5,15 @@ import DynamicSong from '../../database/models/DynamicSong.model'
 import ArchiveSong from '../../database/models/ArchiveSong.model'
 import Song from '../../database/models/Song.model'
 import Artist from '../../database/models/Artist.model'
-import ArtistGenre from '../../database/models/ArtistGenre.model'
+import Genre from '../../database/models/Genre.model'
 
 export default {
 	Query: {
 		async getCurrentOverallStats() {
 			let result = await DynamicSong.findAll({
 				attributes: [
-					[Sequelize.fn('count', Sequelize.col('song_id')), 'dynamicNumTracks'],
-				],
+					[Sequelize.fn('count', Sequelize.col('song_id')), 'dynamicNumTracks']
+				]
 			}).catch((err) => console.error(err))
 
 			result = JSON.parse(JSON.stringify(result))
@@ -29,23 +29,37 @@ export default {
 			const changeLogPosts = []
 			for (let i = 0; i < postNames.length; i++) {
 				const post = postNames[i]
-				const postDate = post.replace('.md', '')
+				const date = post
+					.replace('.md', '')
+					.split('T')
+					.map((x) => x.split('-'))
+					.flatMap((x) => x.map((y) => Number(y)))
+
+				const formattedDateTime = new Date(
+					date[0],
+					date[1],
+					date[2],
+					date[3],
+					date[4],
+					date[5]
+				)
+
 				const postPath = path.join(__dirname, `../../changeLogPosts/${post}`)
 				const postContent = fs.readFileSync(postPath, 'utf8')
 				changeLogPosts.push({
 					post: postContent,
-					date: postDate,
+					date: formattedDateTime
 				})
 			}
 			return changeLogPosts
-		},
+		}
 	},
 	CurrentOverallStats: {
 		async totalNumTracks() {
 			let result = await Song.findAll({
 				attributes: [
-					[Sequelize.fn('count', Sequelize.col('id')), 'totalNumTracks'],
-				],
+					[Sequelize.fn('count', Sequelize.col('id')), 'totalNumTracks']
+				]
 			}).catch((err) => console.error(err))
 			result = JSON.parse(JSON.stringify(result))
 			return result[0].totalNumTracks
@@ -53,8 +67,8 @@ export default {
 		async archiveNumTracks() {
 			let result = await ArchiveSong.findAll({
 				attributes: [
-					[Sequelize.fn('count', Sequelize.col('song_id')), 'archiveNumTracks'],
-				],
+					[Sequelize.fn('count', Sequelize.col('song_id')), 'archiveNumTracks']
+				]
 			}).catch((err) => console.error(err))
 			result = JSON.parse(JSON.stringify(result))
 			return result[0].archiveNumTracks
@@ -62,16 +76,14 @@ export default {
 		async totalNumArtists() {
 			let result = await Artist.findAll({
 				attributes: [
-					[Sequelize.fn('count', Sequelize.col('id')), 'totalNumArtists'],
-				],
+					[Sequelize.fn('count', Sequelize.col('id')), 'totalNumArtists']
+				]
 			}).catch((err) => console.error(err))
 			result = JSON.parse(JSON.stringify(result))
 			return result[0].totalNumArtists
 		},
 		async totalNumGenres() {
-			return await ArtistGenre.aggregate('genre', 'count', {
-				distinct: true,
-			})
-		},
-	},
+			return await Genre.aggregate('id', 'count')
+		}
+	}
 }

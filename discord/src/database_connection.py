@@ -1,13 +1,14 @@
 from datetime import datetime
 from io import StringIO
 from os import getenv
+from typing import Union
 
 import pandas as pd
 import psycopg2
 import psycopg2.errors
 
 from .db.create_schema import create_schema, create_migration_table, get_existing_tables
-from .db.migrate_database import run_migration
+from .db.migrate_database import run_migrations
 from .vb_utils import access_secret_version, get_logger
 
 logger = get_logger(__name__)
@@ -86,6 +87,16 @@ class DatabaseConnection:
             return []
 
         return tracking[0]
+
+    def raw_query(self, sql):
+        cur = self.conn.cursor()
+        try:
+            cur.execute(sql)
+        except Exception as e:
+            error_code = psycopg2.errors.lookup(e.pgcode)
+            raise error_code
+        finally:
+            cur.close()
 
     def select_query_raw(self, sql: str):
         cur = self.conn.cursor()
@@ -198,7 +209,8 @@ class DatabaseConnection:
             cur.close()
         return df.count()[0]
 
-    def insert_single_row(self, table: str, columns: tuple, row: tuple) -> bool:
+    def insert_single_row(self, table: str, columns: tuple, row: tuple,
+                          return_column_name: str = None) -> Union[int, bool]:
         cur = self.conn.cursor()
 
         num_params = len(row)
@@ -212,14 +224,20 @@ class DatabaseConnection:
 
         formatted_columns = str(columns).replace("'", "").replace('"', '')
 
+        inserted_id = None
         try:
-            cur.execute(f"""INSERT INTO {table} {formatted_columns} VALUES {params}""", row)
+            sql = f"""INSERT INTO {table} {formatted_columns} VALUES {params}"""
+            if return_column_name:
+                sql += f" RETURNING {return_column_name}"
+            cur.execute(sql, row)
+            if return_column_name:
+                inserted_id = cur.fetchone()[0]
         except Exception as e:
             error_code = psycopg2.errors.lookup(e.pgcode)
             raise error_code
         finally:
             cur.close()
-        return True
+        return inserted_id if return_column_name else True
 
 
 def migrate_database():
@@ -273,7 +291,7 @@ def migrate_database():
         logger.debug("Migration table exists, skipping...")
 
     logger.debug("Running migrations...")
-    run_migration(cur, logger)
+    run_migrations(cur, logger)
     logger.debug("Migrations complete.")
 
     cur.close()

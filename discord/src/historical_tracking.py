@@ -121,13 +121,14 @@ def dynamic_playlist_novelty():
 def playlist_diversity_index():
     conn = DatabaseConnection()
     sql = """
-    SELECT artists_genres.genre, COUNT(artists_genres.genre)
-    FROM dynamic
-        JOIN songs ON dynamic.song_id = songs.id
-        JOIN artists_songs ON songs.id = artists_songs.song_id
-        JOIN artists_genres ON artists_songs.artist_id = artists_genres.artist_id
-    GROUP BY artists_genres.genre
-    ORDER BY COUNT(artists_genres.genre) DESC
+    SELECT g.name, COUNT(g.name)
+    FROM dynamic d
+             JOIN songs s ON d.song_id = s.id
+             JOIN artists_songs ON s.id = artists_songs.song_id
+             JOIN artists_genres ON artists_songs.artist_id = artists_genres.artist_id
+             JOIN genres g on artists_genres.genre_id = g.id
+    GROUP BY g.name
+    ORDER BY COUNT(g.name) DESC
     """
     genre_counts = conn.select_query_raw(sql=sql)
     genre_counts = [x[1] for x in genre_counts]
@@ -146,12 +147,13 @@ def playlist_diversity_index():
         return 0
 
 
-def featured_artist():
+def set_featured_artist():
     conn = DatabaseConnection()
     last_update_sql = """
-    SELECT featured FROM artists
-    WHERE featured IS NOT NULL
-    ORDER BY featured DESC LIMIT 1;
+    SELECT featured_date
+    FROM featured_artists
+    ORDER BY featured_date DESC
+    LIMIT 1;
     """
     last_update = conn.select_query_raw(sql=last_update_sql)
 
@@ -164,13 +166,14 @@ def featured_artist():
     if date_today != last_update:
         logger.debug('Selecting a new featured artist')
         viable_artists_sql = """
-        SELECT artists.id, artists.name, COUNT(songs.id)
+        SELECT artists.id, artists.name, COUNT(s.id)
         FROM artists
-            JOIN artists_songs ON artists.id = artists_songs.artist_id
-            JOIN songs ON artists_songs.song_id = songs.id
+                 JOIN artists_songs "as" ON artists.id = "as".artist_id
+                 JOIN songs s ON "as".song_id = s.id
+                 JOIN archive a on s.id = a.song_id
         GROUP BY artists.id, artists.name
-        HAVING COUNT(songs.id) >= 3
-        ORDER BY COUNT(songs.id) DESC;
+        HAVING COUNT(a.id) >= 3
+        ORDER BY COUNT(a.id) DESC;
         """
         viable_artists = conn.select_query_raw(sql=viable_artists_sql)
 
@@ -182,11 +185,22 @@ def featured_artist():
         viable_artists = [x[0] for x in viable_artists]
         selected_artist = choice(viable_artists)
 
-        update_selected_artist_sql = f"""
-        UPDATE artists SET featured = NOW()::timestamp 
-        WHERE id = '{selected_artist}';
+        insert_selected_featured_artist_sql = f"""
+        INSERT INTO featured_artists (artist_id, featured_date)
+        VALUES ('{selected_artist}', NOW()::timestamp)
         """
-        conn.update_query_raw(sql=update_selected_artist_sql)
+        conn.raw_query(insert_selected_featured_artist_sql)
         conn.commit()
 
+    conn.terminate()
+
+
+def refresh_rankings():
+    conn = DatabaseConnection()
+
+    conn.raw_query("REFRESH MATERIALIZED VIEW v_rankings_songs;")
+    conn.raw_query("REFRESH MATERIALIZED VIEW v_rankings_artists;")
+    conn.raw_query("REFRESH MATERIALIZED VIEW v_rankings_genres;")
+
+    conn.commit()
     conn.terminate()

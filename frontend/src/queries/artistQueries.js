@@ -29,9 +29,18 @@ export const FEATURED_ARTIST_QUERY = gql`
 			id
 			art
 			genres {
-				genre
+				id
+				name
 			}
-			featured
+			featuredDates {
+				featuredDate
+			}
+			artistRank {
+				numUniqueSongs
+				numUniqueSongsRank
+				numNonUniqueSongs
+				numNonUniqueSongsRank
+			}
 		}
 	}
 `
@@ -42,6 +51,12 @@ export const ALL_ARTISTS_QUERY = gql`
 			name
 			id
 			art
+			artistRank {
+				numUniqueSongs
+				numUniqueSongsRank
+				numNonUniqueSongs
+				numNonUniqueSongsRank
+			}
 		}
 	}
 `
@@ -53,13 +68,20 @@ export const ARTIST_QUERY = gql`
 			id
 			art
 			genres {
-				genre
+				name
+				id
 			}
 			songs {
 				name
 				id
 				art
 				album
+			}
+			artistRank {
+				numUniqueSongs
+				numUniqueSongsRank
+				numNonUniqueSongs
+				numNonUniqueSongsRank
 			}
 		}
 	}

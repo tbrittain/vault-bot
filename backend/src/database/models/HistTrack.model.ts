@@ -2,41 +2,41 @@ import { Column, Model, PrimaryKey, Table } from 'sequelize-typescript'
 import { ITableOptions } from './interfaces/ITableOptions'
 
 const HistTrackOptions: ITableOptions = {
-  tableName: 'historical_tracking',
-  timestamps: false,
-  underscored: true
+	tableName: 'historical_tracking',
+	timestamps: false,
+	underscored: true
 }
 
 @Table(HistTrackOptions)
 export default class HistTrack extends Model {
-  @PrimaryKey
-  @Column
-  id!: number
+	@PrimaryKey
+	@Column
+	id!: number
 
-  @Column
-  updatedAt!: Date
+	@Column
+	updatedAt!: Date
 
-  @Column
-  pdi!: number
+	@Column
+	pdi!: number
 
-  @Column
-  popularity!: number
+	@Column
+	popularity!: number
 
-  @Column
-  danceability!: number
+	@Column
+	danceability!: number
 
-  @Column
-  energy!: number
+	@Column
+	energy!: number
 
-  @Column
-  valence!: number
+	@Column
+	valence!: number
 
-  @Column
-  songLength!: number
+	@Column
+	songLength!: number
 
-  @Column
-  tempo!: number
+	@Column
+	tempo!: number
 
-  @Column
-  novelty!: number
+	@Column
+	novelty!: number
 }

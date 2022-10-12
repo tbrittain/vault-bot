@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import homeStyles from "./HomeStyles"
 import { useQuery } from "@apollo/client"
 import { Link } from "react-router-dom"
@@ -6,28 +6,38 @@ import GenreGrid from "../grids/GenreGrid"
 import {
 	Alert,
 	Avatar,
+	Box,
+	Chip,
 	CircularProgress,
 	Paper,
 	Typography,
+	useMediaQuery,
 	useTheme,
 } from "@mui/material"
 import { FEATURED_ARTIST_QUERY } from "../queries/artistQueries"
+import { EmojiEvents } from "@mui/icons-material"
 
 const FeaturedArtist = () => {
 	const classes = homeStyles()
 
-	const [artist, setArtist] = React.useState()
-	const [artistGenres, setArtistGenres] = React.useState([])
+	const [artist, setArtist] = useState()
+	const [featuredDate, setFeaturedDate] = useState(new Date())
+	const [artistGenres, setArtistGenres] = useState([])
+	const [rank, setRank] = useState()
+
 	const { loading, error } = useQuery(FEATURED_ARTIST_QUERY, {
 		onCompleted: (data) => {
 			setArtist(data?.getFeaturedArtist)
-			setArtistGenres(
-				data?.getFeaturedArtist?.genres.map((genre) => genre.genre)
+			setFeaturedDate(
+				getMostRecentFeaturedDate(data?.getFeaturedArtist.featuredDates)
 			)
+			setArtistGenres(data?.getFeaturedArtist?.genres)
+			setRank(data?.getFeaturedArtist?.artistRank)
 		},
 	})
 
 	const theme = useTheme()
+	const isSmallScreen = useMediaQuery("(max-width:850px)")
 
 	if (loading || !artist || !artistGenres) {
 		return (
@@ -61,7 +71,6 @@ const FeaturedArtist = () => {
 		)
 	}
 
-	const dateToday = new Date(artist.featured)
 	const backgroundStyling = {
 		backgroundImage: `url(${artist.art})`,
 		backgroundPosition: "center center",
@@ -75,6 +84,15 @@ const FeaturedArtist = () => {
 		height: "100%",
 		width: "100%",
 	}
+
+	const desktopRankStyling =
+		!isSmallScreen && artist.name.length < 14
+			? {
+					position: "absolute",
+					top: 10,
+					right: 10,
+			  }
+			: {}
 
 	return (
 		<div
@@ -92,7 +110,7 @@ const FeaturedArtist = () => {
 					}}
 				>
 					Featured artist for{" "}
-					{dateToday.toLocaleDateString(undefined, {
+					{featuredDate.toLocaleDateString(undefined, {
 						weekday: "long",
 						month: "long",
 						day: "numeric",
@@ -100,50 +118,83 @@ const FeaturedArtist = () => {
 				</Typography>
 			</div>
 			<div>
-				<div
-					style={{
-						display: "grid",
-						gridTemplate: "1fr / 1fr",
-						placeItems: "center",
-						background: "none",
-					}}
-				>
+				<div style={{ position: "relative" }}>
 					<div
-						className={classes.featuredArtistInfo}
 						style={{
-							gridColumn: "1 / 1",
-							gridRow: "1 / 1",
-							height: "100%",
-							width: "100%",
+							display: "grid",
+							gridTemplate: "1fr / 1fr",
+							placeItems: "center",
+							background: "none",
 						}}
 					>
-						<Avatar
-							src={artist.art}
-							alt={artist.name}
-							component={Link}
-							to={`/artists/${artist.id}`}
-							className={classes.artistArt}
-						/>
-						<Paper
-							square={false}
+						<div
+							className={classes.featuredArtistInfo}
 							style={{
-								backgroundColor: theme.palette.primary.light,
+								gridColumn: "1 / 1",
+								gridRow: "1 / 1",
+								height: "100%",
+								width: "100%",
 							}}
 						>
-							<Typography
+							<Avatar
+								src={artist.art}
+								alt={artist.name}
 								component={Link}
 								to={`/artists/${artist.id}`}
-								variant="h2"
-								className={classes.featuredArtistName}
-								sx={{
-									fontWeight: "bold",
+								className={classes.artistArt}
+							/>
+							<Paper
+								square={false}
+								style={{
+									backgroundColor: theme.palette.primary.light,
 								}}
 							>
-								<i>{artist.name}</i>
-							</Typography>
-						</Paper>
+								<Typography
+									component={Link}
+									to={`/artists/${artist.id}`}
+									variant="h2"
+									className={classes.featuredArtistName}
+									sx={{
+										fontWeight: "bold",
+									}}
+								>
+									<i>{artist.name}</i>
+								</Typography>
+							</Paper>
+						</div>
+						<div style={backgroundStyling} />
 					</div>
-					<div style={backgroundStyling} />
+					{rank && (
+						<Box
+							sx={{
+								display: "flex",
+								justifyContent: "center",
+								flexDirection: "column",
+								alignItems: "center",
+								zIndex: 1000,
+								...desktopRankStyling,
+							}}
+						>
+							<Chip
+								label={`#${rank.numUniqueSongsRank} by number of unique songs (${rank.numUniqueSongs})`}
+								icon={<EmojiEvents />}
+								color="secondary"
+								sx={{
+									width: "fit-content",
+									margin: "6px",
+								}}
+							/>
+							<Chip
+								label={`#${rank.numNonUniqueSongsRank} by total number of songs (${rank.numNonUniqueSongs})`}
+								icon={<EmojiEvents />}
+								color="secondary"
+								sx={{
+									width: "fit-content",
+									margin: "6px",
+								}}
+							/>
+						</Box>
+					)}
 				</div>
 				<div className={classes.genreContainer}>
 					<GenreGrid genres={artistGenres} />
@@ -151,6 +202,23 @@ const FeaturedArtist = () => {
 			</div>
 		</div>
 	)
+}
+
+const getMostRecentFeaturedDate = (featuredDateObjects) => {
+	if (featuredDateObjects.length === 1) {
+		return new Date(featuredDateObjects[0].featuredDate)
+	}
+
+	const sortedDates = featuredDateObjects
+		.map((x) => new Date(x.featuredDate))
+		.sort((date1, date2) => {
+			const date1time = date1.getTime()
+			const date2time = date2.getTime()
+
+			return date2time - date1time
+		})
+
+	return sortedDates[0]
 }
 
 export default FeaturedArtist

@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { useParams } from "react-router-dom"
+import { Navigate, useParams } from "react-router-dom"
 import { useQuery } from "@apollo/client"
 import SongDetails from "./SongDetails"
 import SongArtists from "./SongArtist"
@@ -10,23 +10,35 @@ import { SONG_QUERY } from "../queries/songQueries"
 const SongContainer = () => {
 	const { songId } = useParams()
 	const [song, setSong] = useState()
+	const [rank, setRank] = useState()
+	const [processing, setProcessing] = useState(true)
 
-	const { loading, error } = useQuery(SONG_QUERY, {
+	const { error } = useQuery(SONG_QUERY, {
 		variables: {
 			songId,
 		},
 		onCompleted: (data) => {
 			setSong(data?.getTrack)
+			setRank(data?.getTrack?.songRank)
+			setProcessing(false)
 		},
 	})
 
-	if (loading || !song) {
+	if (processing) {
 		return <LoadingScreen text="Loading song..." />
 	}
 
 	if (error) {
 		return (
 			<Alert severity="error">An error occurred during data retrieval :(</Alert>
+		)
+	}
+
+	if (!song) {
+		return (
+			<div>
+				<Navigate to="/404" />
+			</div>
 		)
 	}
 
@@ -43,6 +55,7 @@ const SongContainer = () => {
 					songPreview={song.previewUrl}
 					details={song.details}
 					id={songId}
+					rank={rank}
 				/>
 				<Typography variant="h2">
 					{song.artists.length > 1 ? "Artists" : "Artist"}

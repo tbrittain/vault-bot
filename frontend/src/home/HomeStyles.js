@@ -86,8 +86,8 @@ const homeStyles = makeStyles((theme) => ({
 		zIndex: 26,
 	},
 	artistArt: {
-		width: "12vw",
-		height: "12vw",
+		width: "10vw !important",
+		height: "10vw !important",
 		margin: 15,
 		boxShadow: "0px 0px 4px #adadad",
 		minHeight: 125,

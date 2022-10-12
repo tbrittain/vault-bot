@@ -29,7 +29,8 @@ export const SONG_QUERY = gql`
 				name
 				art
 				genres {
-					genre
+					id
+					name
 				}
 			}
 			details {
@@ -42,6 +43,10 @@ export const SONG_QUERY = gql`
 				instrumentalness
 				liveness
 				valence
+			}
+			songRank {
+				numTimesAdded
+				rank
 			}
 		}
 	}
@@ -85,17 +90,14 @@ export const ALL_SONGS_QUERY = gql`
 				valence
 				loudness
 			}
-		}
-	}
-`
-
-export const ALL_SONGS_QUERY_SIMPLE = gql`
-	query allSongsQuerySimple {
-		getTracks {
-			name
-			id
-			art
-			album
+			artists {
+				id
+				name
+			}
+			songRank {
+				numTimesAdded
+				rank
+			}
 		}
 	}
 `

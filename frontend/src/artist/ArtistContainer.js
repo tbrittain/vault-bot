@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { useParams } from "react-router-dom"
+import { Navigate, useParams } from "react-router-dom"
 import { useQuery } from "@apollo/client"
 import LoadingScreen from "../loading/LoadingScreen"
 import ArtistDetails from "./ArtistDetails"
@@ -14,17 +14,23 @@ const ArtistContainer = () => {
 	const [artistArt, setArtistArt] = useState("")
 	const [genres, setGenres] = useState([])
 	const [albumSongs, setAlbumSongs] = useState({})
-	const [numSongs, setNumSongs] = useState(0)
+	const [rank, setRank] = useState()
+	const [processing, setProcessing] = useState(true)
 
-	const { loading, error } = useQuery(ARTIST_QUERY, {
+	const { error } = useQuery(ARTIST_QUERY, {
 		variables: {
 			artistId,
 		},
 		onCompleted: (data) => {
+			if (!data.getArtist) {
+				setProcessing(false)
+				return
+			}
+
 			setArtistName(data.getArtist.name)
 			setArtistArt(data.getArtist.art)
-			setGenres(data.getArtist.genres.map((genre) => genre.genre))
-			setNumSongs(data.getArtist.songs.length)
+			setGenres(data.getArtist.genres)
+			setRank(data.getArtist?.artistRank)
 
 			const albumSongs = {}
 			for (const song of data.getArtist.songs) {
@@ -47,16 +53,26 @@ const ArtistContainer = () => {
 				}
 			}
 			setAlbumSongs(albumSongs)
+
+			setProcessing(false)
 		},
 	})
 
-	if (loading) {
+	if (processing) {
 		return <LoadingScreen text="Loading artist..." />
 	}
 
 	if (error) {
 		return (
 			<Alert severity="error">An error occurred during data retrieval :(</Alert>
+		)
+	}
+
+	if (!artistName) {
+		return (
+			<div>
+				<Navigate to="/404" />
+			</div>
 		)
 	}
 
@@ -68,8 +84,8 @@ const ArtistContainer = () => {
 					name={artistName}
 					albumSongs={albumSongs}
 					artistArt={artistArt}
-					numSongs={numSongs}
 					id={artistId}
+					rank={rank}
 				/>
 				<Typography variant="h1">Artist Genres</Typography>
 				<Paper elevation={3}>
