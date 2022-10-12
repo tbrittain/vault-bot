@@ -166,13 +166,14 @@ def set_featured_artist():
     if date_today != last_update:
         logger.debug('Selecting a new featured artist')
         viable_artists_sql = """
-        SELECT artists.id, artists.name, COUNT(songs.id)
+        SELECT artists.id, artists.name, COUNT(s.id)
         FROM artists
-            JOIN artists_songs ON artists.id = artists_songs.artist_id
-            JOIN songs ON artists_songs.song_id = songs.id
+                 JOIN artists_songs "as" ON artists.id = "as".artist_id
+                 JOIN songs s ON "as".song_id = s.id
+                 JOIN archive a on s.id = a.song_id
         GROUP BY artists.id, artists.name
-        HAVING COUNT(songs.id) >= 3
-        ORDER BY COUNT(songs.id) DESC;
+        HAVING COUNT(a.id) >= 3
+        ORDER BY COUNT(a.id) DESC;
         """
         viable_artists = conn.select_query_raw(sql=viable_artists_sql)
 
