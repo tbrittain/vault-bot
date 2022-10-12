@@ -100,18 +100,25 @@ def selects_playlists_coordinator():
     second_characteristic = choice(viable_characteristics)
 
     ranges = []
+    descriptors = []
+
     for characteristic in [first_characteristic, second_characteristic]:
         summary_statistics = get_summary_statistics(conn=conn, characteristic=characteristic)
 
         quartile = choice(["Q1", "Q2", "Q3", "Q4"])
+
         if quartile == "Q1":
             ranges.append([summary_statistics["minimum"], summary_statistics["Q1"]])
+            descriptors.append("bottom 25%")
         elif quartile == "Q2":
             ranges.append([summary_statistics["Q1"], summary_statistics["mean"]])
+            ranges.append("lower-middle 25%")
         elif quartile == "Q3":
             ranges.append([summary_statistics["mean"], summary_statistics["Q3"]])
+            descriptors.append("upper-middle 25%")
         elif quartile == "Q4":
             ranges.append([summary_statistics["Q3"], summary_statistics["maximum"]])
+            descriptors.append("highest 25%")
 
     shift_playlist_sql = f"""
     SELECT s.id
@@ -129,20 +136,8 @@ def selects_playlists_coordinator():
     LIMIT 100;
     """
 
-    first_characteristic_lower = f"{ranges[0][0] * 100:.1f}%"
-    first_characteristic_upper = f"{ranges[0][1] * 100:.1f}%"
-    second_characteristic_lower = f"{ranges[1][0] * 100:.1f}%"
-    second_characteristic_upper = f"{ranges[1][1] * 100:.1f}%"
-    if first_characteristic == "tempo":
-        first_characteristic_lower = f"{ranges[0][0]:.0f} BPM"
-        first_characteristic_upper = f"{ranges[0][1]:.0f} BPM"
-    elif second_characteristic == "tempo":
-        second_characteristic_lower = f"{ranges[1][0]:.0f} BPM"
-        second_characteristic_upper = f"{ranges[1][1]:.0f} BPM"
-
-    description = f"100 randomly selected songs tracked by VaultBot that have a {first_characteristic} " \
-                  f"between {first_characteristic_lower} and {first_characteristic_upper} and a " \
-                  f"{second_characteristic} between {second_characteristic_lower} and {second_characteristic_upper}."
+    description = f"100 randomly selected songs tracked by VaultBot within the {descriptors[0]} " \
+                  f"{first_characteristic} and the {descriptors[1]} {second_characteristic}."
 
     sp.playlist_change_details(playlist_id=SHIFT_PLAYLIST_ID, description=description)
     update_playlist(playlist_id=SHIFT_PLAYLIST_ID, playlist_sql=shift_playlist_sql, conn=conn)
