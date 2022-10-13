@@ -17,6 +17,17 @@ export default function SearchResult({
 		String(name)
 	)
 
+	let computedBackgroundStyle
+	let computedTextStyle
+
+	if (typeof backgroundStyle == "function") {
+		computedBackgroundStyle = backgroundStyle(name)
+	}
+
+	if (typeof textStyle == "function") {
+		computedTextStyle = textStyle(name)
+	}
+
 	return (
 		<Grid
 			item
@@ -28,7 +39,10 @@ export default function SearchResult({
 				width: "100%",
 			}}
 		>
-			<Paper className={classes.genreResultItem} style={backgroundStyle}>
+			<Paper
+				className={classes.searchResultItem}
+				style={computedBackgroundStyle ?? backgroundStyle}
+			>
 				<div
 					style={{
 						margin: "auto auto",
@@ -36,7 +50,10 @@ export default function SearchResult({
 						padding: "0.5rem",
 					}}
 				>
-					<Typography variant="subtitle1" style={textStyle}>
+					<Typography
+						variant="subtitle1"
+						style={computedTextStyle ?? textStyle}
+					>
 						{beginText}
 						<u>{underline}</u>
 						{endText}

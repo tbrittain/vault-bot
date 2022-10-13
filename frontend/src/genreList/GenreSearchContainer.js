@@ -1,14 +1,13 @@
-import React from "react"
-import genreListStyles from "./GenreListStyles"
+import React, { useState } from "react"
 import { useQuery } from "@apollo/client"
-import GenreSearchResult from "./GenreSearchResult"
-import { Alert, Grid, Paper, Typography } from "@mui/material"
+import { Alert, useTheme } from "@mui/material"
 import { GENRE_SEARCH_QUERY } from "../queries/genreQueries"
+import SearchContainer from "../search/SearchContainer"
+import genreToMuiColor from "../utils/genreToMuiColor"
 
-const GenreSearchContainer = (props) => {
-	const classes = genreListStyles()
-	const { searchQuery } = props
-	const [results, setResults] = React.useState([])
+export default function GenreSearchContainer({ searchQuery }) {
+	const theme = useTheme()
+	const [results, setResults] = useState([])
 	const { error } = useQuery(GENRE_SEARCH_QUERY, {
 		variables: {
 			searchQuery,
@@ -18,6 +17,16 @@ const GenreSearchContainer = (props) => {
 		},
 	})
 
+	const backgroundStyle = (name) => ({
+		background: genreToMuiColor(name),
+	})
+
+	const textStyle = (name) => ({
+		textDecoration: "none",
+		lineHeight: "inherit",
+		color: theme.palette.getContrastText(genreToMuiColor(name)),
+	})
+
 	if (error) {
 		return (
 			<Alert severity="error">An error occurred during data retrieval :(</Alert>
@@ -25,29 +34,12 @@ const GenreSearchContainer = (props) => {
 	}
 
 	return (
-		<Grid container spacing={1} className={classes.queryResultContainer}>
-			{results.length > 0 &&
-				results.map((genre) => (
-					<GenreSearchResult
-						key={genre.id}
-						id={genre.id}
-						name={genre.name}
-						searchQuery={searchQuery}
-					/>
-				))}
-			{results.length === 0 && (
-				<Grid item className={classes.songResultNoneFound}>
-					<Paper
-						style={{
-							padding: 10,
-						}}
-					>
-						<Typography variant="subtitle1">No results found :(</Typography>
-					</Paper>
-				</Grid>
-			)}
-		</Grid>
+		<SearchContainer
+			results={results}
+			searchQuery={searchQuery}
+			itemType="genre"
+			resultBackgroundStyle={backgroundStyle}
+			resultTextStyle={textStyle}
+		/>
 	)
 }
-
-export default GenreSearchContainer
