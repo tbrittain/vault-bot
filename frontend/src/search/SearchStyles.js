@@ -59,4 +59,5 @@ export default makeStyles((theme) => ({
 		width: "100%",
 		height: "calc(50vh + 100px)",
 	},
+	searchResultNoneFound: {},
 }))
