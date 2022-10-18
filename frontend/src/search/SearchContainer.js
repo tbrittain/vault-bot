@@ -24,7 +24,7 @@ export default function SearchContainer({
 				results.map((item) => (
 					<SearchResult
 						key={item.id}
-						uri={toUri(item.id)}
+						toUri={toUri(item.id)}
 						name={item.name}
 						searchQuery={searchQuery}
 						backgroundStyle={resultBackgroundStyle}
