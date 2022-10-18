@@ -9,6 +9,10 @@ export default function SearchContainer({
 	resultBackgroundStyle,
 	resultTextStyle,
 	itemType,
+	textInnerContent,
+	textInnerContentKey,
+	textPostContent,
+	textPostContentKey,
 }) {
 	const classes = searchStyles()
 
@@ -16,6 +20,10 @@ export default function SearchContainer({
 	switch (itemType) {
 		case "genre":
 			toUri = (id) => `/genres/${id}`
+			break
+		case "song":
+			toUri = (id) => `/songs/${id}`
+			break
 	}
 
 	return (
@@ -29,6 +37,25 @@ export default function SearchContainer({
 						searchQuery={searchQuery}
 						backgroundStyle={resultBackgroundStyle}
 						textStyle={resultTextStyle}
+						imageUrl={item?.art}
+						textInnerContent={
+							textInnerContent !== null &&
+							typeof textInnerContent === "function" &&
+							textInnerContentKey !== null
+								? textInnerContent(item[textInnerContentKey])
+								: textInnerContent !== null
+								? textInnerContent
+								: null
+						}
+						textPostContent={
+							textPostContent !== null &&
+							typeof textPostContent === "function" &&
+							textPostContentKey !== null
+								? textPostContent(item[textPostContentKey])
+								: textPostContent !== null
+								? textPostContent
+								: null
+						}
 					/>
 				))}
 			{results.length === 0 && (

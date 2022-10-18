@@ -1,12 +1,10 @@
 import React, { useState } from "react"
-import songListStyles from "./SongListStyles"
 import { useQuery } from "@apollo/client"
-import SongSearchResult from "./SongSearchResult"
-import { Alert, Grid, Paper, Typography } from "@mui/material"
+import { Alert, Box, Typography } from "@mui/material"
 import { SONG_SEARCH_QUERY } from "../queries/songQueries"
+import SearchContainer from "../search/SearchContainer"
 
 const SongSearchContainer = (props) => {
-	const classes = songListStyles()
 	const { searchQuery } = props
 	const [results, setResults] = useState([])
 
@@ -25,32 +23,43 @@ const SongSearchContainer = (props) => {
 		)
 	}
 
+	const innerText = (artist) => (
+		<>
+			<Box component="span" sx={{ fontWeight: "fontWeightLight" }}>
+				{" "}
+				by
+			</Box>{" "}
+			{artist}
+		</>
+	)
+
+	const postText = (album) => (
+		<>
+			<Typography
+				variant="body2"
+				sx={{
+					textDecoration: "none",
+					fontWeight: "fontWeightLight",
+				}}
+			>
+				<Box component="span" sx={{ fontWeight: "fontWeightLight" }}>
+					from the album
+				</Box>{" "}
+				{album}
+			</Typography>
+		</>
+	)
+
 	return (
-		<Grid container spacing={1} className={classes.queryResultContainer}>
-			{results &&
-				results.map((song) => (
-					<SongSearchResult
-						key={song.id}
-						name={song.name}
-						id={song.id}
-						art={song.art}
-						artist={song.artists[0].name}
-						album={song.album}
-						searchQuery={searchQuery}
-					/>
-				))}
-			{results && results.length === 0 && (
-				<Grid item className={classes.songResultNoneFound}>
-					<Paper
-						style={{
-							padding: 10,
-						}}
-					>
-						<Typography variant="subtitle1">No results found :(</Typography>
-					</Paper>
-				</Grid>
-			)}
-		</Grid>
+		<SearchContainer
+			results={results}
+			searchQuery={searchQuery}
+			itemType="song"
+			textInnerContent={innerText}
+			textInnerContentKey="artist"
+			textPostContent={postText}
+			textPostContentKey="album"
+		/>
 	)
 }
 
