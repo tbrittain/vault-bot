@@ -60,4 +60,9 @@ export default makeStyles((theme) => ({
 		height: "calc(50vh + 100px)",
 	},
 	searchResultNoneFound: {},
+	searchResultImage: {
+		width: 60,
+		height: 60,
+		boxShadow: "0px 0px 2px #adadad",
+	},
 }))

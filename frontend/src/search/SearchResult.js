@@ -1,4 +1,4 @@
-import { Grid, Paper, Typography } from "@mui/material"
+import { Avatar, Grid, Paper, Typography } from "@mui/material"
 import extractUnderline from "../utils/underline"
 import searchStyles from "./SearchStyles"
 import { Link } from "react-router-dom"
@@ -7,9 +7,12 @@ import React from "react"
 export default function SearchResult({
 	searchQuery,
 	name,
-	uri,
+	toUri,
 	backgroundStyle,
 	textStyle,
+	imageUrl,
+	textInnerContent,
+	textPostContent,
 }) {
 	const classes = searchStyles()
 	const { beginText, underline, endText } = extractUnderline(
@@ -33,7 +36,7 @@ export default function SearchResult({
 			item
 			spacing={2}
 			component={Link}
-			to={uri}
+			to={toUri}
 			style={{
 				textDecoration: "none",
 				width: "100%",
@@ -43,6 +46,19 @@ export default function SearchResult({
 				className={classes.searchResultItem}
 				style={computedBackgroundStyle ?? backgroundStyle}
 			>
+				{imageUrl && (
+					<div
+						style={{
+							padding: "0.5rem",
+						}}
+					>
+						<Avatar
+							alt={`Image for ${name}`}
+							src={imageUrl}
+							className={classes.searchResultImage}
+						/>
+					</div>
+				)}
 				<div
 					style={{
 						margin: "auto auto",
@@ -57,7 +73,9 @@ export default function SearchResult({
 						{beginText}
 						<u>{underline}</u>
 						{endText}
+						{textInnerContent}
 					</Typography>
+					{textPostContent}
 				</div>
 			</Paper>
 		</Grid>
