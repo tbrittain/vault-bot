@@ -24,6 +24,9 @@ export default function SearchContainer({
 		case "song":
 			toUri = (id) => `/songs/${id}`
 			break
+		case "artist":
+			toUri = (id) => `/artists/${id}`
+			break
 	}
 
 	return (

@@ -1,12 +1,10 @@
 import React, { useState } from "react"
-import artistListStyles from "./ArtistListStyles"
 import { useQuery } from "@apollo/client"
-import ArtistSearchResult from "./ArtistSearchResult"
-import { Alert, Grid, Paper, Typography } from "@mui/material"
+import { Alert } from "@mui/material"
 import { ARTIST_SEARCH_QUERY } from "../queries/artistQueries"
+import SearchContainer from "../search/SearchContainer"
 
-const ArtistSearchContainer = (props) => {
-	const classes = artistListStyles()
+export default function ArtistSearchContainer(props) {
 	const { searchQuery } = props
 	const [results, setResults] = useState([])
 	const { error } = useQuery(ARTIST_SEARCH_QUERY, {
@@ -25,30 +23,10 @@ const ArtistSearchContainer = (props) => {
 	}
 
 	return (
-		<Grid container spacing={1} className={classes.queryResultContainer}>
-			{results.length > 0 ? (
-				results.map((artist) => (
-					<ArtistSearchResult
-						key={artist.id}
-						name={artist.name}
-						id={artist.id}
-						art={artist.art}
-						searchQuery={searchQuery}
-					/>
-				))
-			) : (
-				<Grid item className={classes.songResultNoneFound}>
-					<Paper
-						style={{
-							padding: 10,
-						}}
-					>
-						<Typography variant="subtitle1">No results found :(</Typography>
-					</Paper>
-				</Grid>
-			)}
-		</Grid>
+		<SearchContainer
+			results={results}
+			searchQuery={searchQuery}
+			itemType="artist"
+		/>
 	)
 }
-
-export default ArtistSearchContainer
