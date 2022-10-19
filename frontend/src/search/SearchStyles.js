@@ -46,6 +46,7 @@ export default makeStyles((theme) => ({
 		maxHeight: "35ch",
 		overflowY: "auto",
 		background: "none",
+		maxWidth: 500,
 	},
 	searchResultItem: {
 		display: "flex",
