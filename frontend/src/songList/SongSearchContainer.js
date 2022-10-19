@@ -23,13 +23,13 @@ const SongSearchContainer = (props) => {
 		)
 	}
 
-	const innerText = (artist) => (
+	const innerText = (artists) => (
 		<>
 			<Box component="span" sx={{ fontWeight: "fontWeightLight" }}>
 				{" "}
 				by
 			</Box>{" "}
-			{artist}
+			{artists[0].name}
 		</>
 	)
 
@@ -56,7 +56,7 @@ const SongSearchContainer = (props) => {
 			searchQuery={searchQuery}
 			itemType="song"
 			textInnerContent={innerText}
-			textInnerContentKey="artist"
+			textInnerContentKey="artists"
 			textPostContent={postText}
 			textPostContentKey="album"
 		/>
