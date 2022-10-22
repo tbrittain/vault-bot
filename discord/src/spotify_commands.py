@@ -169,7 +169,7 @@ def get_song_details(song_id, user):
                'added_by': user,
                'added_at': str(datetime.now()),
                'song_length': (float(s['duration_ms']) / 60000),
-               'album_art': s['album']['images'][0]['url'],
+               'album_art': s['album']['images'][2]['url'],
                'artists': artists_details,
                }
 
