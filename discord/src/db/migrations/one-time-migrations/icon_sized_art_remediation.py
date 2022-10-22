@@ -93,7 +93,7 @@ def main():
 
     cur.close()
 
-    conn.rollback()
+    conn.commit()
     conn.close()
 
 
