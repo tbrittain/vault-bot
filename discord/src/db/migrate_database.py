@@ -1,9 +1,10 @@
 import logging
 
+from .migrations.albums_songs_rework import MIGRATION_ID as ALBUM_SONGS_REWORK_MIGRATION_ID
 from .migrations.archive_serial_pkey_fix import MIGRATION_ID as ARCHIVE_SERIAL_PKEY_FIX_MIGRATION_ID
 from .migrations.artist_song_link_table import MIGRATION_ID as ARTIST_SONG_LINK_TABLE_MIGRATION_ID
-from .migrations.duplcate_song_fix import MIGRATION_ID as DUPLICATE_SONG_FIX_MIGRATION_ID
 from .migrations.artists_genres_featured_tracking import MIGRATION_ID as ARTISTS_GENRES_FEATURED_TRACKING_ID
+from .migrations.duplcate_song_fix import MIGRATION_ID as DUPLICATE_SONG_FIX_MIGRATION_ID
 from .migrations.energy_aggregate_playlist import MIGRATION_ID as ENERGY_AGGREGATE_PLAYLIST_MIGRATION_ID
 from .migrations.genre_table_rework import MIGRATION_ID as GENRE_REWORK_MIGRATION_ID
 from .migrations.rankings_views import MIGRATION_ID as RANKINGS_VIEWS_MIGRATION_ID
@@ -61,3 +62,9 @@ def run_migrations(cur, logger: logging.Logger):
         from .migrations.duplcate_song_fix import migration_008
         migration_008(cur)
         logger.info("Migration 008 complete")
+
+    if ALBUM_SONGS_REWORK_MIGRATION_ID not in migration_ids:
+        logger.info("Running migration 009")
+        from .migrations.albums_songs_rework import migration_009
+        migration_009(cur)
+        logger.info("Migration 009 complete")
