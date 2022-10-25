@@ -8,7 +8,7 @@
     "@emotion/styled": "^11.10.4",
     "@fontsource/rubik": "^4.5.11",
     "@mui/icons-material": "^5.10.9",
-    "@mui/material": "^5.10.10",
+    "@mui/material": "^5.10.11",
     "@mui/styles": "^5.10.10",
     "@mui/x-data-grid": "^5.17.8",
     "axios": "^1.1.3",
