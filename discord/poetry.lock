@@ -315,8 +315,8 @@ python-versions = ">=3.8"
 
 [package.dependencies]
 numpy = [
-    {version = ">=1.21.0", markers = "python_version >= \"3.10\""},
     {version = ">=1.20.3", markers = "python_version < \"3.10\""},
+    {version = ">=1.21.0", markers = "python_version >= \"3.10\""},
 ]
 python-dateutil = ">=2.8.1"
 pytz = ">=2020.1"
@@ -458,7 +458,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
 name = "spotipy"
-version = "2.20.0"
+version = "2.21.0"
 description = "A light weight Python library for the Spotify Web API"
 category = "main"
 optional = false
@@ -529,7 +529,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "39e5cba8fc504be6892e905a5f64dbb696b3e14a516038cf8a65e7624875f8ae"
+content-hash = "a31ca691cec67856b424c421d70708e50f7cb632145ea8efc716d567f9b25d05"
 
 [metadata.files]
 about-time = [
@@ -882,9 +882,9 @@ six = [
     {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
 ]
 spotipy = [
-    {file = "spotipy-2.20.0-py2-none-any.whl", hash = "sha256:b5844cef1d4e5f76c14e4e92a7072ab333844057c01eb24a09d38fb761716b1f"},
-    {file = "spotipy-2.20.0-py3-none-any.whl", hash = "sha256:d63a921ca6287eec12fdc72b80977df086d4f8609cd962fe8397a4a82165db5e"},
-    {file = "spotipy-2.20.0.tar.gz", hash = "sha256:e26a99b75be2fc42375b2b4b355dc44fa1e59efc773afa17b784e1a4c0a818c9"},
+    {file = "spotipy-2.21.0-py2-none-any.whl", hash = "sha256:1e34fe31fe0722e4a3cb85d90003948924b1dd8c28367ea8e0f8d11662e63c76"},
+    {file = "spotipy-2.21.0-py3-none-any.whl", hash = "sha256:26f6f924ffed5195601c6d623dfd1f822474ffdac7e5c61ab63b468aaa48b196"},
+    {file = "spotipy-2.21.0.tar.gz", hash = "sha256:621161a9b5aa015681c2ee1bb8873cee2ee6b440d84040da9d2a57cd67f7d5e5"},
 ]
 thefuzz = [
     {file = "thefuzz-0.19.0-py2.py3-none-any.whl", hash = "sha256:4fcdde8e40f5ca5e8106bc7665181f9598a9c8b18b0a4d38c41a095ba6788972"},
