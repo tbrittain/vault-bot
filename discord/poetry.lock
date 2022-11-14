@@ -110,18 +110,18 @@ dev = ["PyTest", "PyTest (<5)", "PyTest-Cov", "PyTest-Cov (<2.6)", "bump2version
 
 [[package]]
 name = "discord"
-version = "2.0.0"
+version = "2.1.0"
 description = "A mirror package for discord.py. Please install that instead."
 category = "main"
 optional = false
 python-versions = "*"
 
 [package.dependencies]
-"discord.py" = ">=2.0.0"
+"discord.py" = ">=2.1.0"
 
 [[package]]
-name = "discord.py"
-version = "2.0.0"
+name = "discord-py"
+version = "2.1.0"
 description = "A Python wrapper for the Discord API"
 category = "main"
 optional = false
@@ -132,7 +132,7 @@ aiohttp = ">=3.7.4,<4"
 
 [package.extras]
 docs = ["sphinx (==4.4.0)", "sphinxcontrib-trio (==1.1.2)", "sphinxcontrib-websupport", "typing-extensions (>=4.3,<5)"]
-speed = ["Brotli", "aiodns (>=1.1)", "cchardet", "orjson (>=3.5.4)"]
+speed = ["Brotli", "aiodns (>=1.1)", "cchardet (==2.1.7)", "orjson (>=3.5.4)"]
 test = ["coverage[toml]", "pytest", "pytest-asyncio", "pytest-cov", "pytest-mock", "typing-extensions (>=4.3,<5)"]
 voice = ["PyNaCl (>=1.3.0,<1.6)"]
 
@@ -529,7 +529,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "a31ca691cec67856b424c421d70708e50f7cb632145ea8efc716d567f9b25d05"
+content-hash = "a83ecedbe0260a580188722c9e65de15169a609181480cf599927f732331576f"
 
 [metadata.files]
 about-time = [
@@ -608,12 +608,12 @@ deprecated = [
     {file = "Deprecated-1.2.13.tar.gz", hash = "sha256:43ac5335da90c31c24ba028af536a91d41d53f9e6901ddb021bcc572ce44e38d"},
 ]
 discord = [
-    {file = "discord-2.0.0-py3-none-any.whl", hash = "sha256:ffc714978d338d2b506e4924d66d7d02a649378a46743e2bdf42ef1bd43d1a67"},
-    {file = "discord-2.0.0.tar.gz", hash = "sha256:b6df1dd56c19750b3cb9b69de85bf463e712a0db232546ae8109c04bf0a61083"},
+    {file = "discord-2.1.0-py3-none-any.whl", hash = "sha256:44515e6d02e61528b2a81e511e03b3f60ce0b3737ba9efc69c2defce2f1ebc1d"},
+    {file = "discord-2.1.0.tar.gz", hash = "sha256:3f479fcab569c621528c0190092d6383b4da13ec9631711ce3c14f33aedff4ff"},
 ]
-"discord.py" = [
-    {file = "discord.py-2.0.0-py3-none-any.whl", hash = "sha256:18b06870bdc85d29e0d55f4a4b2abe9d7cdae2b197e23d49f82886ba27ba1aec"},
-    {file = "discord.py-2.0.0.tar.gz", hash = "sha256:c36f26935938194c3465c2abf8ecfbbf5560c50b189f1b746d6f00d1e78c0d3b"},
+discord-py = [
+    {file = "discord.py-2.1.0-py3-none-any.whl", hash = "sha256:a2cfa9f09e3013aaaa43600cc8dfaf67c532dd34afcb71e550f5a0dc9133a5e0"},
+    {file = "discord.py-2.1.0.tar.gz", hash = "sha256:027ccdd22b5bb66a9e19cbd8daa1bc74b49271a16a074d57e52f288fcfa208e8"},
 ]
 discord-webhook = [
     {file = "discord-webhook-0.17.0.tar.gz", hash = "sha256:bb47e5fc83f73614d7b2a3764b84359b52c96a94aadf3302bc3c067dd21b43cc"},
@@ -835,6 +835,8 @@ protobuf = [
 psycopg2 = [
     {file = "psycopg2-2.9.5-cp310-cp310-win32.whl", hash = "sha256:d3ef67e630b0de0779c42912fe2cbae3805ebaba30cda27fea2a3de650a9414f"},
     {file = "psycopg2-2.9.5-cp310-cp310-win_amd64.whl", hash = "sha256:4cb9936316d88bfab614666eb9e32995e794ed0f8f6b3b718666c22819c1d7ee"},
+    {file = "psycopg2-2.9.5-cp311-cp311-win32.whl", hash = "sha256:093e3894d2d3c592ab0945d9eba9d139c139664dcf83a1c440b8a7aa9bb21955"},
+    {file = "psycopg2-2.9.5-cp311-cp311-win_amd64.whl", hash = "sha256:920bf418000dd17669d2904472efeab2b20546efd0548139618f8fa305d1d7ad"},
     {file = "psycopg2-2.9.5-cp36-cp36m-win32.whl", hash = "sha256:b9ac1b0d8ecc49e05e4e182694f418d27f3aedcfca854ebd6c05bb1cffa10d6d"},
     {file = "psycopg2-2.9.5-cp36-cp36m-win_amd64.whl", hash = "sha256:fc04dd5189b90d825509caa510f20d1d504761e78b8dfb95a0ede180f71d50e5"},
     {file = "psycopg2-2.9.5-cp37-cp37m-win32.whl", hash = "sha256:922cc5f0b98a5f2b1ff481f5551b95cd04580fd6f0c72d9b22e6c0145a4840e0"},
