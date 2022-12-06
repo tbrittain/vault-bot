@@ -11,7 +11,7 @@
     "@mui/material": "^5.10.16",
     "@mui/styles": "^5.10.16",
     "@mui/x-data-grid": "^5.17.14",
-    "axios": "^1.2.0",
+    "axios": "^1.2.1",
     "chart.js": "^3.9.1",
     "chartjs-adapter-date-fns": "^2.0.1",
     "date-fns": "^2.29.3",
