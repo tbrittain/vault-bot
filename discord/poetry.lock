@@ -1,10 +1,10 @@
 [[package]]
 name = "about-time"
-version = "3.1.1"
+version = "4.2.1"
 description = "Easily measure timing and throughput of code blocks, with beautiful human friendly representations."
 category = "main"
 optional = false
-python-versions = "*"
+python-versions = ">=3.7, <4"
 
 [[package]]
 name = "aiohttp"
@@ -27,14 +27,14 @@ speedups = ["aiodns", "brotlipy", "cchardet"]
 
 [[package]]
 name = "alive-progress"
-version = "2.4.1"
+version = "3.0.0"
 description = "A new kind of Progress Bar, with real-time throughput, ETA, and very cool animations!"
 category = "main"
 optional = false
 python-versions = ">=3.7, <4"
 
 [package.dependencies]
-about-time = "3.1.1"
+about-time = "4.2.1"
 grapheme = "0.6.0"
 
 [[package]]
@@ -533,12 +533,12 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "4bdc660514d9871da054f0d8ae2fc44bfaccb2f51f78ee3710afe20a1a564b4b"
+content-hash = "2472a323ab112b871f2278e9521e20cc651aef438d6d8866b5c8722cc2e9e82a"
 
 [metadata.files]
 about-time = [
-    {file = "about-time-3.1.1.tar.gz", hash = "sha256:586b329450c9387d1ae8c42d2db4f5b4c57a54508d0f1b7bb00322ffd5ce9f9b"},
-    {file = "about_time-3.1.1-py3-none-any.whl", hash = "sha256:96841beb3f9b5de1cbb323d2bdb0fa9abdecbc46f2d546b9b3c2483d23daa17a"},
+    {file = "about-time-4.2.1.tar.gz", hash = "sha256:6a538862d33ce67d997429d14998310e1dbfda6cb7d9bbfbf799c4709847fece"},
+    {file = "about_time-4.2.1-py3-none-any.whl", hash = "sha256:8bbf4c75fe13cbd3d72f49a03b02c5c7dca32169b6d49117c257e7eb3eaee341"},
 ]
 aiohttp = [
     {file = "aiohttp-3.7.4.post0-cp36-cp36m-macosx_10_14_x86_64.whl", hash = "sha256:3cf75f7cdc2397ed4442594b935a11ed5569961333d49b7539ea741be2cc79d5"},
@@ -580,8 +580,8 @@ aiohttp = [
     {file = "aiohttp-3.7.4.post0.tar.gz", hash = "sha256:493d3299ebe5f5a7c66b9819eacdcfbbaaf1a8e84911ddffcdc48888497afecf"},
 ]
 alive-progress = [
-    {file = "alive-progress-2.4.1.tar.gz", hash = "sha256:089757c8197f27ad972ba27e1060f6db92368d83c736884e159034fd74865323"},
-    {file = "alive_progress-2.4.1-py3-none-any.whl", hash = "sha256:5503ffca0a0607d5f0d24d3b10a718fe50e375470fa07602b246333eb7ec88ee"},
+    {file = "alive-progress-3.0.0.tar.gz", hash = "sha256:9c122a47162fea67918b656cf3687ef3d8a661b451114bb07f4409bc869309cc"},
+    {file = "alive_progress-3.0.0-py3-none-any.whl", hash = "sha256:02b0e59b3a85a66df296716ff0e72b765378b569873f31c158d06fa11dd49ae9"},
 ]
 async-timeout = [
     {file = "async-timeout-3.0.1.tar.gz", hash = "sha256:0c3c816a028d47f659d6ff5c745cb2acf1f966da1fe5c19c77a70282b25f4c5f"},
