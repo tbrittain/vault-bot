@@ -223,14 +223,14 @@ voice = ["PyNaCl (>=1.3.0,<1.6)"]
 
 [[package]]
 name = "discord-webhook"
-version = "1.0.0"
+version = "1.1.0"
 description = "execute discord webhooks"
 category = "main"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "discord-webhook-1.0.0.tar.gz", hash = "sha256:b1ef5ae80ec9b28c978b7dbff07b9db2fd6597d728ac0524b27cd02336cedfca"},
-    {file = "discord_webhook-1.0.0-py3-none-any.whl", hash = "sha256:b4bb897d32509c5bedc6e1c8485431e8ba81eff5bec28a969c9fe33552a08da4"},
+    {file = "discord-webhook-1.1.0.tar.gz", hash = "sha256:9ea24d124e3932c15afac6b7811849920299fca7ea0905c9d4c0ae07f72155b3"},
+    {file = "discord_webhook-1.1.0-py3-none-any.whl", hash = "sha256:e357966432be2dcf7e1fed01213b6f75be1df4d40c17269b8c24f8a6b5afc78a"},
 ]
 
 [package.dependencies]
@@ -1055,4 +1055,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "1a364164b6135ee6f9ab525f19bcefebf9ae466e4f223a54a85f7623adc626b4"
+content-hash = "12ad6134a67a8314e4bf3298603d6b3423015941956b8e70f6909fb0b0444105"
