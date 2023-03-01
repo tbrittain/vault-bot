@@ -296,14 +296,14 @@ reauth = ["pyu2f (>=0.1.5)"]
 
 [[package]]
 name = "google-cloud-secret-manager"
-version = "2.15.1"
+version = "2.16.0"
 description = "Google Cloud Secret Manager API client library"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "google-cloud-secret-manager-2.15.1.tar.gz", hash = "sha256:d2e6d3be91d3e877c283995f75bcc09cfefba163d9c3637bf2a66cead1a29ba3"},
-    {file = "google_cloud_secret_manager-2.15.1-py2.py3-none-any.whl", hash = "sha256:b58ff057bfddb1d69fd78a12e6c47a4c2c264882d3390053a27f6e1145516617"},
+    {file = "google-cloud-secret-manager-2.16.0.tar.gz", hash = "sha256:3b52b9a9df36a3e3e7cd6678d060bed0f4a05b366fa79865ec8985c51831e56c"},
+    {file = "google_cloud_secret_manager-2.16.0-py2.py3-none-any.whl", hash = "sha256:c6227eac647ddcf7e395a99420c4e55c0d6e23577771f91e03e39a1068824c5d"},
 ]
 
 [package.dependencies]
@@ -1055,4 +1055,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "12ad6134a67a8314e4bf3298603d6b3423015941956b8e70f6909fb0b0444105"
+content-hash = "9bf133d5ebd7501bd72136dba7a581f2cd712d8ddaf35752360727b6fc24131c"
