@@ -187,29 +187,29 @@ dev = ["PyTest", "PyTest (<5)", "PyTest-Cov", "PyTest-Cov (<2.6)", "bump2version
 
 [[package]]
 name = "discord"
-version = "2.1.0"
+version = "2.2.2"
 description = "A mirror package for discord.py. Please install that instead."
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "discord-2.1.0-py3-none-any.whl", hash = "sha256:44515e6d02e61528b2a81e511e03b3f60ce0b3737ba9efc69c2defce2f1ebc1d"},
-    {file = "discord-2.1.0.tar.gz", hash = "sha256:3f479fcab569c621528c0190092d6383b4da13ec9631711ce3c14f33aedff4ff"},
+    {file = "discord-2.2.2-py3-none-any.whl", hash = "sha256:1c6af76ed703d07159149e5406d2857419970925454867e145a228cc0996045e"},
+    {file = "discord-2.2.2.tar.gz", hash = "sha256:d6b9c3420150cea67fc72f0aa2f0bd885c37406cf3d13def8fdf77cc59ca510a"},
 ]
 
 [package.dependencies]
-"discord.py" = ">=2.1.0"
+"discord.py" = ">=2.2.2"
 
 [[package]]
 name = "discord-py"
-version = "2.1.0"
+version = "2.2.2"
 description = "A Python wrapper for the Discord API"
 category = "main"
 optional = false
 python-versions = ">=3.8.0"
 files = [
-    {file = "discord.py-2.1.0-py3-none-any.whl", hash = "sha256:a2cfa9f09e3013aaaa43600cc8dfaf67c532dd34afcb71e550f5a0dc9133a5e0"},
-    {file = "discord.py-2.1.0.tar.gz", hash = "sha256:027ccdd22b5bb66a9e19cbd8daa1bc74b49271a16a074d57e52f288fcfa208e8"},
+    {file = "discord.py-2.2.2-py3-none-any.whl", hash = "sha256:38fc52a784727b8e5e5749267089400035b187a009028eddfabeb182abcc6d52"},
+    {file = "discord.py-2.2.2.tar.gz", hash = "sha256:b9944056bcb5711b2d04088848fd004466cf117c15c84fa798bf55470f28275f"},
 ]
 
 [package.dependencies]
@@ -1055,4 +1055,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "12ad6134a67a8314e4bf3298603d6b3423015941956b8e70f6909fb0b0444105"
+content-hash = "411eb037e9337b2bd897ccf8c3d4ccec464ab136153ad70a670681c9ffceffe4"
