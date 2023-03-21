@@ -34,7 +34,7 @@
 		"@types/node": "^18.15.5",
 		"@types/validator": "^13.7.12",
 		"dotenv": "^16.0.3",
-		"nodemon": "^2.0.20",
+		"nodemon": "^2.0.21",
 		"prettier": "^2.8.4",
 		"ts-node": "^10.9.1",
 		"ts-standard": "^12.0.2",
