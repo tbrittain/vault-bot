@@ -2,14 +2,14 @@
 
 [[package]]
 name = "about-time"
-version = "3.1.1"
+version = "4.2.1"
 description = "Easily measure timing and throughput of code blocks, with beautiful human friendly representations."
 category = "main"
 optional = false
-python-versions = "*"
+python-versions = ">=3.7, <4"
 files = [
-    {file = "about-time-3.1.1.tar.gz", hash = "sha256:586b329450c9387d1ae8c42d2db4f5b4c57a54508d0f1b7bb00322ffd5ce9f9b"},
-    {file = "about_time-3.1.1-py3-none-any.whl", hash = "sha256:96841beb3f9b5de1cbb323d2bdb0fa9abdecbc46f2d546b9b3c2483d23daa17a"},
+    {file = "about-time-4.2.1.tar.gz", hash = "sha256:6a538862d33ce67d997429d14998310e1dbfda6cb7d9bbfbf799c4709847fece"},
+    {file = "about_time-4.2.1-py3-none-any.whl", hash = "sha256:8bbf4c75fe13cbd3d72f49a03b02c5c7dca32169b6d49117c257e7eb3eaee341"},
 ]
 
 [[package]]
@@ -72,18 +72,18 @@ speedups = ["aiodns", "brotlipy", "cchardet"]
 
 [[package]]
 name = "alive-progress"
-version = "2.4.1"
+version = "3.1.0"
 description = "A new kind of Progress Bar, with real-time throughput, ETA, and very cool animations!"
 category = "main"
 optional = false
 python-versions = ">=3.7, <4"
 files = [
-    {file = "alive-progress-2.4.1.tar.gz", hash = "sha256:089757c8197f27ad972ba27e1060f6db92368d83c736884e159034fd74865323"},
-    {file = "alive_progress-2.4.1-py3-none-any.whl", hash = "sha256:5503ffca0a0607d5f0d24d3b10a718fe50e375470fa07602b246333eb7ec88ee"},
+    {file = "alive-progress-3.1.0.tar.gz", hash = "sha256:c076a076591ff926ac19941bd73065e298118b6d38900d2d6ff53d2e355be3c1"},
+    {file = "alive_progress-3.1.0-py3-none-any.whl", hash = "sha256:908ded254221e958fe2851bcbcd24451fb3820011d473db71f329c370a4018a2"},
 ]
 
 [package.dependencies]
-about-time = "3.1.1"
+about-time = "4.2.1"
 grapheme = "0.6.0"
 
 [[package]]
@@ -1055,4 +1055,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "12ad6134a67a8314e4bf3298603d6b3423015941956b8e70f6909fb0b0444105"
+content-hash = "9c8a183b1332da8b5357ed74ab6b969a489a62018baac151b7a0345ff47d2f0d"
